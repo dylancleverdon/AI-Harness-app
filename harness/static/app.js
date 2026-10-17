@@ -210,56 +210,6 @@ function showFiles(runId, files, box) {
   });
 }
 
-// ---- AI edit -------------------------------------------------------------
-const aim = $('#ai-modal'); let aiResult = null, aiAbort = null;
-$('#ai-btn').onclick = async () => {
-  if (!state.script) return;
-  $('#ai-name').textContent = state.script; $('#ai-diff').classList.add('hidden'); $('#ai-apply').classList.add('hidden'); $('#ai-status').textContent = '';
-  const ms = (await api('/status')).lmstudio; const sel = $('#ai-model'); sel.replaceChildren(el('option', { value: '', textContent: 'Whatever is loaded' }));
-  ms.models.filter(m => m.type !== 'embeddings').forEach(m => sel.append(el('option', { value: m.id, textContent: m.id + (m.loaded ? ' (loaded)' : '') })));
-  if (!ms.ok) $('#ai-status').textContent = '⚠ LM Studio server not reachable. Start it in the Developer tab.';
-  aim.classList.remove('hidden'); $('#ai-instr').focus();
-};
-$('#ai-close').onclick = () => { aiAbort && aiAbort.abort(); aim.classList.add('hidden'); };
-$('#ai-cancel').onclick = () => aiAbort && aiAbort.abort();
-function renderDiff(text) {
-  const box = $('#ai-diff'); box.replaceChildren();
-  text.split('\n').forEach(l => { if (l === '') return; const c = l.startsWith('+++') || l.startsWith('---') ? 'hunk' : l.startsWith('@@') ? 'hunk' : l[0] === '+' ? 'add' : l[0] === '-' ? 'del' : ''; box.append(el('span', { className: c, textContent: l + '\n' })); });
-  box.classList.remove('hidden');
-}
-$('#ai-go').onclick = async () => {
-  const instruction = $('#ai-instr').value.trim(); if (!instruction) { $('#ai-instr').focus(); return; }
-  const original = $('#editor').value; aiResult = null; aiAbort = new AbortController();
-  $('#ai-go').classList.add('hidden'); $('#ai-cancel').classList.remove('hidden'); $('#ai-apply').classList.add('hidden'); $('#ai-diff').classList.add('hidden'); $('#ai-status').textContent = 'Starting…';
-  try {
-    const r = await fetch('/api/ai-edit', { method: 'POST', signal: aiAbort.signal, headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: state.script, content: original, instruction, model: $('#ai-model').value }) });
-    const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '';
-    for (;;) {
-      const { done, value } = await rd.read(); if (done) break; buf += dec.decode(value, { stream: true });
-      const parts = buf.split('\n\n'); buf = parts.pop();
-      for (const p of parts) {
-        if (!p.startsWith('data: ')) continue; const ev = JSON.parse(p.slice(6));
-        if (ev.type === 'info') $('#ai-status').textContent = `${ev.model} · context ${ev.context} · ${ev.chunks} section(s)`;
-        else if (ev.type === 'progress') $('#ai-status').textContent = `Editing section ${ev.chunk}/${ev.chunks}…`;
-        else if (ev.type === 'error') $('#ai-status').textContent = '✕ ' + ev.message;
-        else if (ev.type === 'done') {
-          aiResult = ev.edited;
-          $('#ai-status').textContent = ev.changed ? 'Review the changes below.' + (ev.notes.length ? ' Notes: ' + ev.notes.join('; ') : '') : 'The model made no changes.';
-          if (ev.changed) { renderDiff(ev.diff); $('#ai-apply').classList.remove('hidden'); }
-        }
-      }
-    }
-  } catch (e) { $('#ai-status').textContent = e.name === 'AbortError' ? 'Cancelled.' : '✕ ' + e.message; }
-  $('#ai-go').classList.remove('hidden'); $('#ai-cancel').classList.add('hidden'); aiAbort = null;
-};
-$('#ai-apply').onclick = async () => {
-  if (aiResult == null) return;
-  const r = await api('/ai-edit/apply', { method: 'POST', body: { name: state.script, content: aiResult } });
-  $('#editor').value = aiResult; aim.classList.add('hidden');
-  const c = $('#console'); c.replaceChildren(el('div', { className: 'sys', textContent: 'AI edit applied.' + (r.backup ? ' Previous version backed up to ' + r.backup : '') }));
-};
-
 function appendLine(l) {
   const c = $('#console'), stick = c.scrollTop + c.clientHeight > c.scrollHeight - 40;
   c.append(el('div', { className: l.s, textContent: l.x })); if (stick) c.scrollTop = c.scrollHeight;

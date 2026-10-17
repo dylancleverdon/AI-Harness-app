@@ -70,40 +70,6 @@ def test_script_path_traversal_blocked():
     assert c.put("/api/scripts/x.txt", json={"content": ""}).status_code == 400
 
 
-def test_ai_edit_chunks_and_stream(monkeypatch):
-    from harness import ai_edit
-    text = "".join(f"line {i}\n" if i % 5 else "\n" for i in range(400))
-    chunks = ai_edit.split_into_chunks(text, 300)
-    assert "".join(chunks) == text and len(chunks) > 5
-
-    class R:
-        status_code = 200
-        text = ""
-
-        def __init__(self, content):
-            self._c = content
-
-        def json(self):
-            return {"choices": [{"message": {"content": self._c}, "finish_reason": "stop"}]}
-
-    def fake_post(url, json=None, timeout=None):
-        user = json["messages"][1]["content"]
-        section = user.split("SECTION TO EDIT:\n")[1].split("\nREAD-ONLY CONTEXT AFTER")[0]
-        return R("```\n" + section.replace("line", "LINE") + "\n```")
-
-    monkeypatch.setattr(ai_edit.httpx, "post", fake_post)
-    monkeypatch.setattr(ai_edit, "context_length", lambda m: 500)
-    events = list(ai_edit.edit_stream("a.py", text, "uppercase", model="m"))
-    assert events[-1]["type"] == "done" and events[-1]["changed"]
-    assert events[-1]["edited"].count("LINE") == text.count("line")
-
-    monkeypatch.setattr(ai_edit.httpx, "post", lambda *a, **k: (_ for _ in ()).throw(ai_edit.httpx.ConnectError("x")))
-    assert list(ai_edit.edit_stream("a.py", "x\n", "i", model="m"))[-1]["type"] == "error"
-
-    events = list(ai_edit.edit_stream("a.py", "x\n", "i", model="m", mem_level=lambda: "red"))
-    assert "memory guard" in events[-1]["message"]
-
-
 def test_params_discovery_and_files(tmp_path):
     from harness import params
     src = open("scripts/examples/cpp_generator_example.py").read()
