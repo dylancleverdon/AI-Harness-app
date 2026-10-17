@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Harness</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div id="app">
+  <nav id="rail">
+    <button data-page="run" class="active" title="Scripts">⌘<span>Scripts</span></button>
+    <button data-page="memory" title="Memory">▤<span>Memory</span></button>
+    <button data-page="models" title="Models">◈<span>Models</span></button>
+    <button data-page="reports" title="Reports">⚑<span>Reports</span></button>
+    <button data-page="settings" title="Settings">⚙<span>Settings</span></button>
+  </nav>
+  <main>
+    <header id="topbar">
+      <div class="brand">AI Harness <small id="version"></small></div>
+      <div class="pills">
+        <span class="pill" id="lm-pill"><i class="dot"></i><b>LM Studio</b> <em id="lm-text">…</em></span>
+        <span class="pill" id="mem-pill"><i class="dot"></i><b>Memory</b> <em id="mem-text">…</em></span>
+        <button id="update-btn" class="hidden"></button>
+      </div>
+    </header>
+    <div id="alert" class="hidden"></div>
+
+    <section id="page-run" class="page active">
+      <aside class="side">
+        <div class="side-head"><span>Scripts</span><button id="new-script" class="ghost" title="New script">＋</button></div>
+        <ul id="script-list" class="list"></ul>
+      </aside>
+      <div class="content split">
+        <div class="editor-pane">
+          <div class="toolbar">
+            <span id="script-name" class="title">No script selected</span>
+            <input id="script-args" placeholder="arguments (optional)">
+            <button id="save-btn" class="ghost">Save</button>
+            <button id="run-btn" class="primary">▶ Run</button>
+            <button id="stop-btn" class="danger hidden">■ Stop</button>
+          </div>
+          <textarea id="editor" spellcheck="false"></textarea>
+        </div>
+        <div class="console-pane">
+          <div class="toolbar">
+            <span class="title">Console</span><span id="run-state" class="badge"></span>
+            <span id="run-mem" class="muted"></span>
+            <span class="spacer"></span>
+            <button id="report-btn" class="ghost hidden">Copy failure report</button>
+          </div>
+          <div id="diagnosis"></div>
+          <pre id="console"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-memory" class="page">
+      <div class="content pad">
+        <div class="cards">
+          <div class="card"><label>Available</label><big id="m-avail">–</big><small id="m-avail-sub"></small></div>
+          <div class="card"><label>Used</label><big id="m-used">–</big><small id="m-total"></small></div>
+          <div class="card"><label>Swap</label><big id="m-swap">–</big><small id="m-swap-sub"></small></div>
+          <div class="card"><label>LM Studio</label><big id="m-lms">–</big><small>app + server processes</small></div>
+          <div class="card"><label>Level</label><big id="m-level">–</big><small id="m-pressure"></small></div>
+        </div>
+        <div class="panel">
+          <h3>Available memory, last 10 minutes</h3>
+          <canvas id="chart" height="220"></canvas>
+          <div class="legend"><i class="g"></i>green <i class="y"></i>yellow <i class="o"></i>orange <i class="r"></i>red — dashed lines are your thresholds</div>
+        </div>
+        <div class="panel">
+          <h3>Running scripts</h3>
+          <div id="active-runs" class="muted">Nothing running.</div>
+        </div>
+        <div class="panel">
+          <h3>Memory guard</h3>
+          <p class="muted">When memory reaches the trip level for 2 seconds in a row, running scripts are stopped automatically. Configure in Settings.</p>
+          <div id="guard-state"></div>
+          <ul id="guard-events" class="events"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-models" class="page">
+      <aside class="side">
+        <div class="side-head"><span>Models on LM Studio</span><button id="refresh-models" class="ghost">↻</button></div>
+        <ul id="model-list" class="list"></ul>
+        <div class="side-foot"><button id="unload-btn" class="ghost wide">Unload all models</button></div>
+      </aside>
+      <div class="content chat">
+        <div class="toolbar"><span class="title">Quick chat</span><select id="chat-model"></select></div>
+        <div id="chat-log"></div>
+        <form id="chat-form"><input id="chat-input" placeholder="Send a message to the loaded model…" autocomplete="off"><button class="primary">Send</button></form>
+      </div>
+    </section>
+
+    <section id="page-reports" class="page">
+      <aside class="side">
+        <div class="side-head"><span>Run history</span><button id="refresh-runs" class="ghost">↻</button></div>
+        <ul id="run-list" class="list"></ul>
+      </aside>
+      <div class="content pad" id="report-view"><p class="muted">Select a run to see its report.</p></div>
+    </section>
+
+    <section id="page-settings" class="page">
+      <div class="content pad narrow">
+        <div class="panel">
+          <h3>Updates</h3>
+          <p>Version <b id="s-version"></b> <span id="s-update-msg" class="muted"></span></p>
+          <button id="check-update" class="ghost">Check for updates</button>
+          <button id="apply-update" class="primary hidden">Update &amp; restart</button>
+          <label class="check"><input type="checkbox" data-setting="auto_update"> Check for updates on launch (and pull them when you open the app)</label>
+        </div>
+        <div class="panel">
+          <h3>LM Studio</h3>
+          <label>Server URL <input data-setting="lmstudio_url"></label>
+          <p class="muted">LM Studio → Developer tab → Start Server. Default is http://localhost:1234.</p>
+        </div>
+        <div class="panel">
+          <h3>Memory guard</h3>
+          <label class="check"><input type="checkbox" data-setting="guard_enabled"> Auto-stop scripts when memory is too high</label>
+          <label>Trip at level
+            <select data-setting="guard_trip_level"><option>yellow</option><option>orange</option><option>red</option></select></label>
+          <div class="row3">
+            <label>Yellow below % free <input type="number" data-setting="yellow_below_pct"></label>
+            <label>Orange below % free <input type="number" data-setting="orange_below_pct"></label>
+            <label>Red below % free <input type="number" data-setting="red_below_pct"></label>
+          </div>
+          <label class="check"><input type="checkbox" data-setting="unload_models_on_trip"> Also unload LM Studio models when the guard trips (needs the <code>lms</code> CLI)</label>
+          <label>Max script runtime (seconds, 0 = unlimited) <input type="number" data-setting="max_runtime_sec"></label>
+        </div>
+        <div class="panel">
+          <h3>Python</h3>
+          <label>Interpreter for scripts (blank = built-in environment with <code>openai</code> installed) <input data-setting="python"></label>
+          <p class="muted">Scripts live in <code id="scripts-dir"></code>. They get <code>OPENAI_BASE_URL</code>, <code>OPENAI_API_KEY</code>, <code>LMSTUDIO_BASE_URL</code> and <code>AIHARNESS_MODEL</code> set automatically.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>
