@@ -234,11 +234,13 @@ class Chat:
 
 # ---------- the two modes ----------
 
-def run_edit_mode(chat, instruction, text, name, chunk_chars, max_tokens, check, report):
+def run_edit_mode(chat, instruction, text, name, chunk_chars, max_tokens, check, report, log=None):
     """Section by section: ask for SEARCH/REPLACE blocks, apply only the safe ones. Returns (text, stats)."""
     chunks = split_into_chunks(text, chunk_chars)
     file_map = outline(text, max(1500, chunk_chars // 3))
     stats = {"applied": 0, "not_found": 0, "broke": 0}
+    log = log if log is not None else []
+    cur = {"section": 0}
 
     def ask(section, depth=0):
         user = (f"INSTRUCTION:\n{instruction}\n\nFILE: {name}\n\n"
@@ -252,17 +254,26 @@ def run_edit_mode(chat, instruction, text, name, chunk_chars, max_tokens, check,
             return [b for p in parts for b in ask(p, depth + 1)]
         if reason == "length":
             chat.notes.append("a reply was cut off; only complete edits were used")
+        if not parse_blocks(reply):
+            log.append({"section": cur["section"], "outcome": "no edits", "reason": "reply: " + (reply or "").strip()[:300],
+                        "search": "", "replace": ""})
         return parse_blocks(reply)
+
+    def note(outcome, reason, search, replace):
+        log.append({"section": cur["section"], "outcome": outcome, "reason": reason, "search": search, "replace": replace})
 
     for i, chunk in enumerate(chunks):
         check()
         report(i + 1, len(chunks), stats)
+        cur["section"] = i + 1
         for search, replace in ask(chunk):
             if search == replace:
+                note("ignored", "search and replace identical", search, replace)
                 continue
             spot = find_unique(text, search)
             if not spot:
                 stats["not_found"] += 1
+                note("skipped", "the SEARCH text was not found (or matched more than once) in the file", search, replace)
                 continue
             s, e = spot
             new_part = reindent(search, text[s:e], replace)
@@ -273,9 +284,11 @@ def run_edit_mode(chat, instruction, text, name, chunk_chars, max_tokens, check,
             if err and not syntax_error(text, name):
                 stats["broke"] += 1
                 chat.notes.append(f"rejected an edit that would break the file ({err})")
+                note("rejected", f"would have broken the file: {err}", search, replace)
                 continue
             text = candidate
             stats["applied"] += 1
+            note("applied", "", search, replace)
     return text, stats
 
 
@@ -314,6 +327,58 @@ def run_rewrite_mode(chat, instruction, text, chunk_chars, max_tokens, check, re
         after = head_lines(chunks[i + 1], CONTEXT_LINES) if i + 1 < len(chunks) else ""
         out.append(edit(chunk, before, after))
     return "".join(out)
+
+
+def fence(text, lang=""):
+    """Markdown code block that survives backticks inside the text."""
+    longest = max((len(m) for m in re.findall(r"`+", text)), default=0)
+    ticks = "`" * max(3, longest + 1)
+    return f"{ticks}{lang}\n{text.rstrip(chr(10))}\n{ticks}"
+
+
+def clip(text, limit=150_000):
+    return text if len(text) <= limit else text[:limit] + f"\n... [truncated, {len(text) - limit:,} more characters]"
+
+
+def build_review(name, original, edited, instruction, info, stats, notes, log, diff):
+    """A self-contained markdown file to hand to Claude: was the small model's edit right?"""
+    rewrite = info["mode"] == "rewrite"
+    lang = "python" if name.endswith(".py") else ""
+    out = [f"# Review request: did a small local model edit `{name}` correctly?", "",
+           "You are reviewing the work of a small local LLM (run through LM Studio). Below is the exact "
+           "instruction it was given, what it changed, and the full before/after. Please check:", "",
+           "1. Does the edit do what the instruction asked, completely?",
+           "2. Was anything changed, removed or invented that the instruction did NOT ask for?",
+           "3. Is the edited code correct (bugs, wrong logic, broken imports, placeholder/stub code)?",
+           "4. Did any skipped/rejected edit (listed below) matter, i.e. did the model fail to do something it should have?",
+           "5. Verdict: ACCEPT / ACCEPT WITH FIXES / REJECT, with concrete fixes, and how the instruction or "
+           "prompt could be worded so the small model does better next time.", "",
+           "## Setup", "",
+           f"- File: `{name}` ({len(original.splitlines())} lines -> {len(edited.splitlines())} lines)",
+           f"- Model: `{info['model']}` (context {info['context']} tokens)",
+           f"- Method: {'rewrite whole sections (the model retypes the text)' if rewrite else 'find-and-replace edits (the model only writes SEARCH/REPLACE blocks; edits whose SEARCH text is missing are skipped; edits that break .py/.json are rejected)'}",
+           f"- Sections the file was split into: {info['chunks']}"]
+    if stats:
+        out.append(f"- Result: {stats['applied']} applied, {stats['not_found']} skipped (SEARCH text not found), "
+                   f"{stats['broke']} rejected (would break the file)")
+    if notes:
+        out.append("- Notes: " + "; ".join(dict.fromkeys(notes)))
+    out += ["", "## The instruction the model was given", "", fence(instruction), "",
+            "## System prompt the model was given", "", fence(REWRITE_PROMPT if rewrite else EDIT_PROMPT)]
+    if not rewrite:
+        out += ["", "## Every edit the model proposed", ""]
+        if not log:
+            out.append("(none)")
+        for n, e in enumerate(log, 1):
+            out += [f"### Edit {n}: {e['outcome'].upper()} (section {e['section']})", ""]
+            if e["reason"]:
+                out += [f"Reason: {e['reason']}", ""]
+            if e["search"] or e["replace"]:
+                out += ["SEARCH:", fence(e["search"], lang), "REPLACE:", fence(e["replace"], lang), ""]
+    out += ["", "## Diff (original -> edited)", "", fence(diff or "(no changes)", "diff"), "",
+            "## Original file", "", fence(clip(original), lang), "",
+            "## Edited file", "", fence(clip(edited), lang), ""]
+    return "\n".join(out)
 
 
 def unified_diff(name, original, edited):
@@ -360,6 +425,8 @@ def edit_stream(name, original, instruction, model=None, mode="edit", mem_level=
                 q.put({"type": "progress", "chunk": i, "chunks": total, "stats": stats})
 
             chat = Chat(m)
+            log = []
+            info = {"model": m, "context": ctx, "chunks": n, "mode": mode}
             if rewrite:
                 edited = run_rewrite_mode(chat, instruction, original, chunk_chars, max_tokens, check, report)
                 if not original.endswith("\n") and edited.endswith("\n"):
@@ -370,9 +437,11 @@ def edit_stream(name, original, instruction, model=None, mode="edit", mem_level=
                 stats = None
             else:
                 edited, stats = run_edit_mode(chat, instruction, original, name, chunk_chars, max_tokens,
-                                              check, report)
+                                              check, report, log)
+            diff = unified_diff(name, original, edited)
+            review = build_review(name, original, edited, instruction, info, stats, chat.notes, log, diff)
             q.put({"type": "done", "edited": edited, "changed": edited != original, "notes": chat.notes,
-                   "stats": stats, "diff": unified_diff(name, original, edited)})
+                   "stats": stats, "diff": diff, "review": review})
         except EditError as e:
             q.put({"type": "error", "message": str(e)})
         except Exception as e:  # never leave the UI hanging

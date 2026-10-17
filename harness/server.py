@@ -113,6 +113,12 @@ def ai_edit_run(body: dict = Body(...)):
         for ev in ai_edit.edit_stream(body.get("name", "script.py"), body.get("content", ""),
                                       body.get("instruction", ""), body.get("model") or None,
                                       "rewrite" if body.get("mode") == "rewrite" else "edit", level):
+            if ev.get("type") == "done" and ev.get("review"):  # keep a copy of the review on disk
+                d = DATA_DIR / "ai-edit-reviews"
+                d.mkdir(parents=True, exist_ok=True)
+                f = d / f"{Path(body.get('name', 'script')).stem}-{time.strftime('%Y%m%d-%H%M%S')}.md"
+                f.write_text(ev["review"])
+                ev["review_path"] = str(f)
             yield f"data: {json.dumps(ev)}\n\n"
     return StreamingResponse(gen(), media_type="text/event-stream")
 

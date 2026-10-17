@@ -211,7 +211,7 @@ function showFiles(runId, files, box) {
 }
 
 // ---- AI edit -------------------------------------------------------------
-const aim = $('#ai-modal'); let aiResult = null, aiAbort = null;
+const aim = $('#ai-modal'); let aiResult = null, aiAbort = null, aiReview = null;
 $('#ai-btn').onclick = async () => {
   if (!state.script) return;
   $('#ai-name').textContent = state.script; $('#ai-diff').classList.add('hidden'); $('#ai-apply').classList.add('hidden'); $('#ai-status').textContent = '';
@@ -229,7 +229,7 @@ function renderDiff(text) {
 }
 $('#ai-go').onclick = async () => {
   const instruction = $('#ai-instr').value.trim(); if (!instruction) { $('#ai-instr').focus(); return; }
-  const original = $('#editor').value; aiResult = null; aiAbort = new AbortController();
+  const original = $('#editor').value; aiResult = null; aiReview = null; $('#ai-review-btns').classList.add('hidden'); aiAbort = new AbortController();
   $('#ai-go').classList.add('hidden'); $('#ai-cancel').classList.remove('hidden'); $('#ai-apply').classList.add('hidden'); $('#ai-diff').classList.add('hidden'); $('#ai-status').textContent = 'Starting…';
   try {
     const r = await fetch('/api/ai-edit', { method: 'POST', signal: aiAbort.signal, headers: { 'Content-Type': 'application/json' },
@@ -244,15 +244,23 @@ $('#ai-go').onclick = async () => {
         else if (ev.type === 'progress') $('#ai-status').textContent = `Section ${ev.chunk}/${ev.chunks}…` + (ev.stats ? ` ${ev.stats.applied} edit(s) applied so far` : '');
         else if (ev.type === 'error') $('#ai-status').textContent = '✕ ' + ev.message;
         else if (ev.type === 'done') {
-          aiResult = ev.edited;
+          aiResult = ev.edited; aiReview = ev.review; $('#ai-review-btns').classList.remove('hidden');
           const st = ev.stats ? ` Applied ${ev.stats.applied}, skipped ${ev.stats.not_found} (text not found), rejected ${ev.stats.broke} (would break the file).` : '';
-          $('#ai-status').textContent = (ev.changed ? 'Review the changes below.' : 'The model made no changes.') + st + (ev.notes.length ? ' Notes: ' + [...new Set(ev.notes)].join('; ') : '');
+          $('#ai-status').textContent = (ev.changed ? 'Review the changes below.' : 'The model made no changes.') + st + (ev.notes.length ? ' Notes: ' + [...new Set(ev.notes)].join('; ') : '') + (ev.review_path ? ' Review saved to ' + ev.review_path : '');
           if (ev.changed) { renderDiff(ev.diff); $('#ai-apply').classList.remove('hidden'); }
         }
       }
     }
   } catch (e) { $('#ai-status').textContent = e.name === 'AbortError' ? 'Cancelled.' : '✕ ' + e.message; }
   $('#ai-go').classList.remove('hidden'); $('#ai-cancel').classList.add('hidden'); aiAbort = null;
+};
+$('#ai-copy-review').onclick = async () => {
+  try { await navigator.clipboard.writeText(aiReview); $('#ai-copy-review').textContent = 'Copied ✓ — paste into Claude'; } catch { prompt('Copy this review:', aiReview); }
+  setTimeout(() => $('#ai-copy-review').textContent = 'Copy review', 3000);
+};
+$('#ai-dl-review').onclick = () => {
+  const a = el('a', { href: URL.createObjectURL(new Blob([aiReview], { type: 'text/markdown' })), download: `ai-edit-review-${state.script.replace(/\.py$/, '')}.md` });
+  document.body.append(a); a.click(); a.remove();
 };
 $('#ai-apply').onclick = async () => {
   if (aiResult == null) return;

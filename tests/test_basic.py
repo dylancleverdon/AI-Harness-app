@@ -105,10 +105,15 @@ def test_ai_edit_find_replace_is_safe(monkeypatch):
     assert ev["type"] == "done" and ev["stats"] == {"applied": 2, "not_found": 1, "broke": 1}
     assert ev["edited"] == "def a():\n    return 10\n\n\ndef b():\n    return 20\n"
     assert "NO CHANGES" not in ev["edited"]
+    rv = ev["review"]
+    assert "Review request" in rv and "change" in rv  # instruction included
+    assert "APPLIED" in rv and "SKIPPED" in rv and "REJECTED" in rv and "def b(:" in rv
+    assert "## Original file" in rv and "## Edited file" in rv and "return 20" in rv
+    assert "SEARCH/REPLACE" in rv or "SEARCH" in rv  # system prompt included
 
     ai = _fake_lm(monkeypatch, lambda m: "NO CHANGES")
     ev = list(ai.edit_stream("x.py", src, "change", model="m"))[-1]
-    assert ev["type"] == "done" and not ev["changed"]
+    assert ev["type"] == "done" and not ev["changed"] and "NO CHANGES" in ev["review"]  # model's reply is shown
 
 
 def test_ai_edit_rewrite_mode_and_guards(monkeypatch):
