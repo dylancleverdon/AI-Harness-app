@@ -23,7 +23,7 @@ elif [ -f "$(dirname "$0")/harness/__main__.py" ] 2>/dev/null; then
   say "Using this checkout: $APP_HOME"
 else
   say "Downloading AI Harness to $APP_HOME"
-  git clone --quiet "$REPO_URL" "$APP_HOME"
+  git clone --quiet --branch "${AIHARNESS_BRANCH:-main}" "$REPO_URL" "$APP_HOME"
 fi
 
 say "Setting up Python environment (one-time, ~1 minute)"
