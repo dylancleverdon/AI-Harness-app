@@ -28,15 +28,16 @@ The install is a git checkout, so updating is just a pull:
 2. Open AI Harness. The top bar shows LM Studio status and the live memory level.
 3. **Scripts**: pick or edit a script, then **▶ Run** (⌘↵). Scripts get `OPENAI_BASE_URL`, `OPENAI_API_KEY`, `LMSTUDIO_BASE_URL` and `AIHARNESS_MODEL` set, so `OpenAI()` just works. Scripts live in `~/AIHarness/scripts`.
 4. **Memory**: available/used/swap, LM Studio's own footprint, per-script RSS, a 10-minute chart with your thresholds, and macOS memory pressure.
-5. **Models**: what LM Studio has loaded vs. on disk, quick chat, *Unload all*.
-6. **Reports**: history of every run with traceback, output and memory over time, plus **Copy failure report** (markdown with diagnosis, traceback, output tail, LM Studio and memory state, and the script source, ready to paste to Claude).
+5. **AI Edit**: in the Scripts toolbar, ✨ AI Edit lets your local model change the open script from a plain-English instruction. By default the model never retypes your file: it writes small find-and-replace edits, each applied only if its "find" text really exists, and any edit that would break a `.py`/`.json` file is rejected. You see a diff plus counts of applied/skipped/rejected edits, and nothing changes until you click Apply (the old version is backed up to `~/AIHarness/backups`). A *Rewrite sections* method is there for prose, not code. Big files are split into sections that fit the model's context; the memory guard also stops an edit that runs memory too high.
+6. **Models**: what LM Studio has loaded vs. on disk, quick chat, *Unload all*.
+7. **Reports**: history of every run with traceback, output and memory over time, plus **Copy failure report** (markdown with diagnosis, traceback, output tail, LM Studio and memory state, and the script source, ready to paste to Claude).
 
 ## Script options, files and folders
 
 - **Run settings:** if a script uses `argparse`, AI Harness reads its options (without running it) and shows a form: number boxes, dropdowns for `choices`, checkboxes for flags. The values you used last are saved per script and pre-filled next time. Options you leave at their default aren't passed. There are also free-form *Extra arguments* and *Environment variables* boxes for scripts that read `os.environ`.
 - **Picking files/folders:** path-like options get 📁 / 📄 buttons that open the native macOS chooser.
 - **Files the model/script generates:** scripts can write anywhere your user can (there's no sandbox). After each run, AI Harness lists files created or changed in the script folder, any folder passed as an option, and any `~/…` paths hard-coded in the script, with *Preview* and *Show in Finder*. The list is also in Reports and the failure report.
-- Options set through constants at the top of a script (rather than argparse) can't be detected; use the Environment variables box for those.
+- Options set through constants at the top of a script (rather than argparse) can't be detected; use AI Edit or env vars for those.
 
 ## Memory guard
 

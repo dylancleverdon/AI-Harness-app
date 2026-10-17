@@ -70,6 +70,69 @@ def test_script_path_traversal_blocked():
     assert c.put("/api/scripts/x.txt", json={"content": ""}).status_code == 400
 
 
+def _fake_lm(monkeypatch, reply_fn):
+    from harness import ai_edit
+
+    class R:
+        status_code = 200
+        text = ""
+
+        def __init__(self, content):
+            self._c = content
+
+        def json(self):
+            return {"choices": [{"message": {"content": self._c}, "finish_reason": "stop"}]}
+
+    monkeypatch.setattr(ai_edit.httpx, "post", lambda url, json=None, timeout=None: R(reply_fn(json["messages"])))
+    monkeypatch.setattr(ai_edit, "context_length", lambda m: 8000)
+    return ai_edit
+
+
+def block(search, replace):
+    return f"<<<<<<< SEARCH\n{search}\n=======\n{replace}\n>>>>>>> REPLACE\n"
+
+
+def test_ai_edit_find_replace_is_safe(monkeypatch):
+    src = "def a():\n    return 1\n\n\ndef b():\n    return 2\n"
+    replies = iter([
+        block("def a():\n    return 1", "def a():\n    return 10")            # good
+        + block("return 999", "return 0")                                      # text not in file -> skipped
+        + block("def b():\n    return 2", "def b(:\n    return 2")           # breaks syntax -> rejected
+        + block("  return 2", "  return 20"),                                  # wrong indentation -> still found
+    ])
+    ai = _fake_lm(monkeypatch, lambda m: next(replies))
+    ev = list(ai.edit_stream("x.py", src, "change", model="m"))[-1]
+    assert ev["type"] == "done" and ev["stats"] == {"applied": 2, "not_found": 1, "broke": 1}
+    assert ev["edited"] == "def a():\n    return 10\n\n\ndef b():\n    return 20\n"
+    assert "NO CHANGES" not in ev["edited"]
+
+    ai = _fake_lm(monkeypatch, lambda m: "NO CHANGES")
+    ev = list(ai.edit_stream("x.py", src, "change", model="m"))[-1]
+    assert ev["type"] == "done" and not ev["changed"]
+
+
+def test_ai_edit_rewrite_mode_and_guards(monkeypatch):
+    ai = _fake_lm(monkeypatch, lambda m: "```\nHELLO there\n```")
+    ev = list(ai.edit_stream("n.md", "hello there\n", "shout", model="m", mode="rewrite"))[-1]
+    assert ev["edited"] == "HELLO there\n"
+
+    ev = list(ai.edit_stream("a.py", "x = 1\n", "i", model="m", mem_level=lambda: "red"))[-1]
+    assert ev["type"] == "error" and "memory guard" in ev["message"]
+
+    monkeypatch.setattr(ai.httpx, "post", lambda *a, **k: (_ for _ in ()).throw(ai.httpx.ConnectError("x")))
+    assert list(ai.edit_stream("a.py", "x\n", "i", model="m"))[-1]["type"] == "error"
+
+
+def test_ai_edit_endpoint_apply_backs_up():
+    from harness.config import DATA_DIR
+    from harness.server import app
+    c = TestClient(app)
+    (SCRIPTS_DIR / "e.py").write_text("old = 1\n")
+    r = c.post("/api/ai-edit/apply", json={"name": "e.py", "content": "new = 2\n"}).json()
+    assert (SCRIPTS_DIR / "e.py").read_text() == "new = 2\n"
+    assert r["backup"].startswith(str(DATA_DIR / "backups")) and open(r["backup"]).read() == "old = 1\n"
+
+
 def test_params_discovery_and_files(tmp_path):
     from harness import params
     src = open("scripts/examples/cpp_generator_example.py").read()
