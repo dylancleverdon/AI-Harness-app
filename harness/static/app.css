@@ -85,3 +85,15 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 .ai-row label { flex: 1; } .ai-row select { width: 100%; display: block; margin-top: 3px; }
 #ai-diff { overflow: auto; background: #101013; border-radius: 8px; padding: 10px; margin: 10px 0 0; font: 12px/1.5 ui-monospace, Menlo, monospace; white-space: pre; min-height: 120px; }
 #ai-diff .add { color: var(--green); background: #3ecf8e14; display: block; } #ai-diff .del { color: var(--red); background: #eb575714; display: block; } #ai-diff .hunk { color: var(--accent); display: block; }
+
+#run-settings { border-bottom: 1px solid var(--border); background: var(--panel); max-height: 45%; overflow: auto; }
+#run-settings summary { padding: 7px 12px; cursor: pointer; color: var(--muted); } #run-settings[open] summary { color: var(--text); }
+#rs-body { padding: 4px 12px 12px; } #rs-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 14px; }
+#rs-body label { display: block; font-size: 12px; } #rs-body label input:not([type=checkbox]), #rs-body label select, #rs-body label textarea { display: block; width: 100%; margin-top: 2px; }
+#rs-body label.check { display: flex; gap: 6px; align-items: center; margin-top: 18px; } #rs-body small { display: block; color: var(--muted); font-size: 11px; }
+.rs-extra { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 10px 0; }
+.file { display: flex; gap: 8px; align-items: center; padding: 2px 0; } .file code { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: rtl; text-align: left; }
+#files:not(.hidden) { padding: 8px 12px; background: #1d2620; border-bottom: 1px solid var(--border); max-height: 30%; overflow: auto; }
+.file button { padding: 0 8px; font-size: 11px; }
+
+.pathrow { display: flex; gap: 4px; margin-top: 2px; } .pathrow input { margin-top: 0 !important; flex: 1; } .pathrow button { padding: 0 8px; }

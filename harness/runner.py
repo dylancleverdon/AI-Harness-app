@@ -17,6 +17,32 @@ SUMMARY_KEYS = ("id", "script", "args", "started", "ended", "status", "exit_code
                 "kill_reason", "peak_rss_mb", "duration")
 
 
+SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv"}
+
+
+def snapshot(dirs, cap=20000):
+    snap = {}
+    for d in dirs:
+        for root, dirnames, files in os.walk(d):
+            dirnames[:] = [x for x in dirnames if x not in SKIP_DIRS and not x.startswith(".")]
+            for f in files:
+                if f.endswith(".pyc") or f.startswith(".") or len(snap) >= cap:
+                    continue
+                fp = os.path.join(root, f)
+                try:
+                    st = os.stat(fp)
+                    snap[fp] = (st.st_mtime, st.st_size)
+                except OSError:
+                    pass
+    return snap
+
+
+def diff_snapshots(before, after):
+    out = [{"path": p, "status": "new" if p not in before else "modified", "size": v[1]}
+           for p, v in after.items() if before.get(p) != v]
+    return sorted(out, key=lambda f: f["path"])[:200]
+
+
 class Run:
     def __init__(self, script, args):
         self.id = time.strftime("%Y%m%d-%H%M%S-") + uuid.uuid4().hex[:4]
@@ -31,6 +57,9 @@ class Run:
         self.mem = []  # {t, rss_mb, avail_pct, level}
         self.peak_rss_mb = 0
         self.proc = None
+        self.files = []
+        self.watch = []
+        self.before = {}
         self.lock = threading.Lock()
 
     def add(self, stream, text):
@@ -51,6 +80,7 @@ class Run:
         d["output"] = self.output()
         d["traceback"] = diagnose.extract_traceback(d["output"])
         d["hints"] = diagnose.diagnose(d)
+        d["files"] = self.files
         return d
 
 
@@ -61,7 +91,7 @@ class RunManager:
         self._trip_count = 0
 
     # ---- lifecycle -------------------------------------------------------
-    def start(self, script, args=""):
+    def start(self, script, args="", argv=None, extra_env=None, watch=None):
         path = (SCRIPTS_DIR / script).resolve()
         if SCRIPTS_DIR.resolve() not in path.parents or not path.is_file():
             raise FileNotFoundError(script)
@@ -70,9 +100,13 @@ class RunManager:
         base = lmstudio.base_url()
         env = {**os.environ, "PYTHONUNBUFFERED": "1", "LMSTUDIO_BASE_URL": base,
                "OPENAI_BASE_URL": base + "/v1", "OPENAI_API_KEY": "lm-studio",
-               "AIHARNESS_RUN_ID": run.id, "AIHARNESS_MODEL": lmstudio.loaded_model()}
+               "AIHARNESS_RUN_ID": run.id, "AIHARNESS_MODEL": lmstudio.loaded_model(), **(extra_env or {})}
         py = cfg["python"] or sys.executable
-        cmd = [py, "-u", str(path)] + (__import__("shlex").split(args) if args else [])
+        import shlex
+        cmd = [py, "-u", str(path)] + (argv or []) + (shlex.split(args) if args else [])
+        run.args = " ".join(shlex.quote(a) for a in cmd[3:])
+        run.watch = watch or [SCRIPTS_DIR]
+        run.before = snapshot(run.watch)
         try:
             run.proc = subprocess.Popen(cmd, cwd=SCRIPTS_DIR, env=env, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, text=True, bufsize=1,
@@ -99,10 +133,18 @@ class RunManager:
         time.sleep(0.2)  # let pump threads drain
         run.exit_code, run.ended = code, time.time()
         if run.kill_reason:
-            run.status = "killed" if run.kill_reason.startswith("memory guard") else "stopped"
+            final = "killed" if run.kill_reason.startswith("memory guard") else "stopped"
         else:
-            run.status = "ok" if code == 0 else "failed"
+            final = "ok" if code == 0 else "failed"
+        try:
+            run.files = diff_snapshots(run.before, snapshot(run.watch))
+        except Exception:
+            run.files = []
+        run.before = {}
         run.add("sys", f"[exited with code {code} after {run.summary()['duration']}s]")
+        if run.files:
+            run.add("sys", f"[{len(run.files)} file(s) created or changed - see the list below]")
+        run.status = final  # last, so anything seeing a finished run also sees its files and output
         self._finalize(run)
 
     def stop(self, run_id, reason="stopped by user"):
@@ -190,7 +232,7 @@ class RunManager:
     def load(self, run_id):
         """Full detail (+lines, mem) for a live or saved run, or None."""
         run = self.runs.get(run_id)
-        if run and run.status == "running":
+        if run:  # in memory (running, or just finished and not yet flushed to disk)
             d = run.detail()
             d["lines"], d["mem"] = list(run.lines), list(run.mem)
             return d
@@ -226,6 +268,8 @@ def report_markdown(d, app_version, lm, mem_snap):
     out = d.get("output", "")
     tail = "\n".join(out.splitlines()[-80:])
     lines += ["", "## Output (last 80 lines)", "```", tail, "```"]
+    if d.get("files"):
+        lines += ["", "## Files created/changed"] + [f"- {f['status']}: {f['path']} ({f['size']} bytes)" for f in d["files"][:40]]
     if d.get("mem"):
         step = max(1, len(d["mem"]) // 12)
         lines += ["", "## Memory timeline", "| t (s) | script MB | system avail % | level |", "|---|---|---|---|"]

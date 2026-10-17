@@ -35,12 +35,16 @@
         <div class="editor-pane">
           <div class="toolbar">
             <span id="script-name" class="title">No script selected</span>
-            <input id="script-args" placeholder="arguments (optional)">
             <button id="ai-btn" class="ghost" title="Edit this script with your local model">✨ AI Edit</button>
             <button id="save-btn" class="ghost">Save</button>
             <button id="run-btn" class="primary">▶ Run</button>
             <button id="stop-btn" class="danger hidden">■ Stop</button>
           </div>
+          <details id="run-settings" class="hidden"><summary>Run settings <span id="rs-summary" class="muted"></span></summary>
+            <div id="rs-body"><div id="rs-form"></div>
+              <div class="rs-extra"><label>Extra arguments <input id="rs-extra" placeholder="anything else, passed as-is"></label>
+              <label>Environment variables <textarea id="rs-env" rows="2" placeholder="KEY=value (one per line)"></textarea></label></div>
+              <button id="rs-reset" class="ghost">Reset to script defaults</button></div></details>
           <textarea id="editor" spellcheck="false"></textarea>
         </div>
         <div class="console-pane">
@@ -51,6 +55,7 @@
             <button id="report-btn" class="ghost hidden">Copy failure report</button>
           </div>
           <div id="diagnosis"></div>
+          <div id="files" class="hidden"></div>
           <pre id="console"></pre>
         </div>
       </div>

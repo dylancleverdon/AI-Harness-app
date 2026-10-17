@@ -11,7 +11,7 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import ai_edit, lmstudio, memory, updater
+from . import ai_edit, lmstudio, memory, params, updater
 from .config import DATA_DIR, SCRIPTS_DIR, settings
 from .runner import RunManager, report_markdown
 
@@ -132,13 +132,78 @@ def ai_edit_apply(body: dict = Body(...)):
 
 
 # ---- runs -----------------------------------------------------------------
+@app.get("/api/script-settings/{name:path}")
+def script_settings(name: str):
+    """Options discovered in the script (argparse) plus the values used last time."""
+    p = _script_path(name)
+    if not p.is_file():
+        raise HTTPException(404)
+    return {"params": params.parse_params(p.read_text()), **params.get_saved(name)}
+
+
+@app.put("/api/script-settings/{name:path}")
+def save_script_settings(name: str, body: dict = Body(...)):
+    _script_path(name)
+    return params.save(name, body)
+
+
 @app.post("/api/runs")
 def start_run(body: dict = Body(...)):
-    try:
-        run = runs.start(body["script"], body.get("args", ""))
-    except FileNotFoundError:
+    name = body["script"]
+    p = _script_path(name)
+    if not p.is_file():
         raise HTTPException(404, "script not found")
+    src = p.read_text()
+    plist = params.parse_params(src)
+    saved = params.get_saved(name)
+    values = body.get("values", saved["values"])
+    if "values" in body or "extra" in body or "env" in body:  # remember what was used for next time
+        params.save(name, {"values": values, "extra": body.get("extra", saved["extra"]),
+                           "env": body.get("env", saved["env"])})
+    extra = body.get("extra", body.get("args", saved["extra"]))
+    env = params.parse_env(body.get("env", saved["env"]))
+    run = runs.start(name, extra, params.build_argv(plist, values), env,
+                     params.watch_dirs(plist, values, src, SCRIPTS_DIR))
     return run.summary()
+
+
+@app.post("/api/pick")
+def pick_path(body: dict = Body(...)):
+    """Open the native macOS file/folder chooser and return the chosen absolute path ('' if cancelled)."""
+    kind = "folder" if body.get("kind") == "folder" else "file"
+    if sys.platform != "darwin":
+        raise HTTPException(501, "The file picker only works on macOS - type the path instead.")
+    start = Path(body.get("start") or "~").expanduser()
+    while not start.is_dir() and start != start.parent:
+        start = start.parent
+    script = ('tell application "System Events"\nactivate\n'
+              f'set p to POSIX path of (choose {kind} with prompt "Choose a {kind} for this script" '
+              f'default location (POSIX file "{start}"))\nend tell\nreturn p')
+    r = subprocess.run(["osascript", "-e", script], capture_output=True, text=True, timeout=600)
+    return {"path": r.stdout.strip().rstrip("/") if r.returncode == 0 and kind == "folder" else r.stdout.strip()}
+
+
+@app.post("/api/reveal")
+def reveal(body: dict = Body(...)):
+    """Show a file a run produced in Finder (macOS) - only files listed on a run are allowed."""
+    d = runs.load(body.get("run", ""))
+    path = body.get("path", "")
+    if not d or path not in [f["path"] for f in d.get("files", [])]:
+        raise HTTPException(403, "not a file from this run")
+    if sys.platform == "darwin":
+        subprocess.Popen(["open", "-R", path])
+    return {"ok": sys.platform == "darwin"}
+
+
+@app.get("/api/run-file")
+def run_file(run: str, path: str):
+    """Preview (first 200 KB) of a text file a run produced."""
+    d = runs.load(run)
+    if not d or path not in [f["path"] for f in d.get("files", [])]:
+        raise HTTPException(403, "not a file from this run")
+    with open(path, "rb") as f:
+        data = f.read(200_000)
+    return PlainTextResponse(data.decode("utf-8", errors="replace"))
 
 
 @app.get("/api/runs")

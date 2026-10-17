@@ -102,3 +102,34 @@ def test_ai_edit_chunks_and_stream(monkeypatch):
 
     events = list(ai_edit.edit_stream("a.py", "x\n", "i", model="m", mem_level=lambda: "red"))
     assert "memory guard" in events[-1]["message"]
+
+
+def test_params_discovery_and_files(tmp_path):
+    from harness import params
+    src = open("scripts/examples/cpp_generator_example.py").read()
+    ps = params.parse_params(src)
+    names = [p["dest"] for p in ps]
+    assert names == ["task", "out_dir", "workers", "max_tokens", "style", "verbose"]
+    assert ps[1]["path"] and ps[4]["choices"] == ["modern", "c-like"] and ps[5]["kind"] == "bool"
+    argv = params.build_argv(ps, {"task": "sort ints", "workers": 4, "verbose": True, "max_tokens": 2048})
+    assert argv == ["sort ints", "--workers", "4", "--verbose"]
+    params.save("a.py", {"values": {"workers": 4}, "extra": "-x"})
+    assert params.get_saved("a.py")["values"] == {"workers": 4}
+    assert params.parse_env("A=1\n# c\nB = two") == {"A": "1", "B": "two"}
+
+    from harness.server import app
+    c = TestClient(app)
+    out = tmp_path / "gen"
+    (SCRIPTS_DIR / "w.py").write_text(
+        "import argparse, pathlib\nap=argparse.ArgumentParser()\nap.add_argument('--out-dir')\n"
+        "a=ap.parse_args()\np=pathlib.Path(a.out_dir); p.mkdir(parents=True); (p/'main.cpp').write_text('int main(){}')\n")
+    rid = c.post("/api/runs", json={"script": "w.py", "values": {"out_dir": str(out)}}).json()["id"]
+    for _ in range(50):
+        d = c.get(f"/api/runs/{rid}").json()
+        if d["status"] != "running":
+            break
+        time.sleep(0.1)
+    assert d["status"] == "ok" and [f["path"] for f in d["files"]] == [str(out / "main.cpp")]
+    assert c.get("/api/run-file", params={"run": rid, "path": str(out / "main.cpp")}).text == "int main(){}"
+    assert c.get("/api/run-file", params={"run": rid, "path": "/etc/passwd"}).status_code == 403
+    assert c.get("/api/script-settings/w.py").json()["values"]["out_dir"] == str(out)

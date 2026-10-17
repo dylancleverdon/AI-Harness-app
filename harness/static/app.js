@@ -113,10 +113,10 @@ async function loadScripts(select) {
 }
 async function openScript(n) {
   state.script = n; $('#script-name').textContent = n;
-  $('#editor').value = (await api('/scripts/' + n)).content;
+  $('#editor').value = (await api('/scripts/' + n)).content; loadRunSettings(n);
   $$('#script-list li').forEach(li => li.classList.toggle('sel', li.firstChild.textContent === n));
 }
-async function saveScript() { if (state.script) await api('/scripts/' + state.script, { method: 'PUT', body: { content: $('#editor').value } }); }
+async function saveScript() { if (state.script) { await api('/scripts/' + state.script, { method: 'PUT', body: { content: $('#editor').value } }); loadRunSettings(state.script); } }
 $('#save-btn').onclick = saveScript;
 $('#editor').addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); saveScript(); }
@@ -153,6 +153,61 @@ async function importFiles(files) {
     catch (e) { li.className = 'bad-t'; li.textContent = `✕ ${f.name}: ${e.message}`; }
   }
   if (last) { await loadScripts(last); $('#rail button[data-page=run]').click(); }
+}
+
+// ---- run settings (discovered options, remembered between runs) -----------
+let rs = { params: [], values: {} }, rsTimer;
+const flagName = p => p.flags.find(f => f.startsWith('--')) || p.flags[0];
+async function loadRunSettings(name) {
+  const box = $('#run-settings'); let d;
+  try { d = await api('/script-settings/' + name); } catch { box.classList.add('hidden'); return; }
+  rs = { params: d.params, values: { ...d.values } };
+  $('#rs-extra').value = d.extra || ''; $('#rs-env').value = d.env || '';
+  const form = $('#rs-form'); form.replaceChildren();
+  d.params.forEach(p => {
+    const cur = p.dest in rs.values ? rs.values[p.dest] : p.default;
+    const label = el('label', { className: p.kind === 'bool' ? 'check' : '' });
+    let input;
+    if (p.kind === 'bool') { input = el('input', { type: 'checkbox', checked: !!cur }); label.append(input, p.dest.replace(/_/g, ' ')); }
+    else {
+      if (p.choices) input = el('select', {}, ...p.choices.map(c => el('option', { value: c, textContent: c, selected: String(c) === String(cur) })));
+      else input = el('input', { type: p.kind === 'int' || p.kind === 'float' || p.kind === 'count' ? 'number' : 'text', value: cur ?? '', placeholder: p.default == null ? (p.required ? 'required' : '') : '', step: p.kind === 'float' ? 'any' : undefined });
+      label.append(p.dest.replace(/_/g, ' ') + (p.required ? ' *' : ''), input);
+    }
+    if (p.path && p.kind === 'str' && !p.choices) {  // Browse… buttons for file/folder options
+      const row = el('div', { className: 'pathrow' }); input.after && null; label.removeChild(input); row.append(input);
+      [['📁', 'folder', 'Choose a folder'], ['📄', 'file', 'Choose a file']].forEach(([icon, kind, tip]) => {
+        const b = el('button', { type: 'button', textContent: icon, title: tip, className: 'ghost' });
+        b.onclick = async () => {
+          try { const r = await api('/pick', { method: 'POST', body: { kind, start: input.value } });
+            if (r.path) { input.value = r.path; input.dispatchEvent(new Event('change')); } }
+          catch (e) { alert(e.message.includes('macOS') ? 'The picker only works on macOS. Type the path instead.' : e.message); }
+        }; row.append(b);
+      }); label.append(row);
+    }
+    if (p.help) label.append(el('small', { textContent: p.help }));
+    input.onchange = () => { rs.values[p.dest] = p.kind === 'bool' ? input.checked : (p.kind === 'int' || p.kind === 'count') && input.value !== '' ? parseInt(input.value) : p.kind === 'float' && input.value !== '' ? parseFloat(input.value) : input.value; persistRunSettings(); };
+    form.append(label);
+  });
+  box.classList.remove('hidden'); box.open = box.open || d.params.length > 0 && !box.dataset.touched;
+  $('#rs-summary').textContent = d.params.length ? `· ${d.params.length} option(s) found, last values remembered` : '· no options detected in this script';
+}
+$('#run-settings').addEventListener('toggle', e => e.target.dataset.touched = 1);
+function persistRunSettings() { clearTimeout(rsTimer); rsTimer = setTimeout(() => state.script && api('/script-settings/' + state.script, { method: 'PUT', body: { values: rs.values, extra: $('#rs-extra').value, env: $('#rs-env').value } }), 300); }
+$('#rs-extra').oninput = $('#rs-env').oninput = persistRunSettings;
+$('#rs-reset').onclick = () => { rs.values = {}; persistRunSettings(); setTimeout(() => loadRunSettings(state.script), 500); };
+const runBody = () => ({ script: state.script, values: rs.values, extra: $('#rs-extra').value, env: $('#rs-env').value });
+
+// ---- files a run produced -------------------------------------------------
+function showFiles(runId, files, box) {
+  box.replaceChildren(); box.classList.toggle('hidden', !files || !files.length); if (!files || !files.length) return;
+  box.append(el('b', { textContent: `Files created or changed (${files.length})` }));
+  files.slice(0, 50).forEach(f => {
+    const row = el('div', { className: 'file' }, el('span', { className: 'tag' + (f.status === 'new' ? '' : ' off'), textContent: f.status }), el('code', { textContent: f.path, title: f.path }), el('small', { className: 'muted', textContent: (f.size / 1024).toFixed(1) + ' KB' }));
+    const view = el('button', { textContent: 'Preview' }); view.onclick = async () => { const t = await api(`/run-file?run=${runId}&path=${encodeURIComponent(f.path)}`); const w = el('pre', { className: 'report', textContent: t }); row.after(w); view.disabled = true; };
+    const rev = el('button', { textContent: 'Show in Finder' }); rev.onclick = () => api('/reveal', { method: 'POST', body: { run: runId, path: f.path } });
+    row.append(view, rev); box.append(row);
+  });
 }
 
 // ---- AI edit -------------------------------------------------------------
@@ -217,8 +272,8 @@ function setRunState(s) {
 }
 $('#run-btn').onclick = async () => {
   if (!state.script) return; await saveScript();
-  $('#console').replaceChildren(); $('#diagnosis').replaceChildren();
-  state.run = await api('/runs', { method: 'POST', body: { script: state.script, args: $('#script-args').value } });
+  $('#console').replaceChildren(); $('#diagnosis').replaceChildren(); $('#files').classList.add('hidden');
+  state.run = await api('/runs', { method: 'POST', body: runBody() });
   setRunState('running'); watchRun(state.run.id);
 };
 $('#stop-btn').onclick = () => state.run && api(`/runs/${state.run.id}/stop`, { method: 'POST' });
@@ -228,7 +283,7 @@ function watchRun(id) {
   es.onmessage = e => appendLine(JSON.parse(e.data));
   es.addEventListener('done', async e => {
     es.close(); const s = JSON.parse(e.data); setRunState(s.status);
-    const d = await api('/runs/' + id); showDiagnosis(d.hints, $('#diagnosis'));
+    const d = await api('/runs/' + id); showDiagnosis(d.hints, $('#diagnosis')); showFiles(id, d.files, $('#files'));
   });
   es.onerror = () => es.close();
 }
@@ -298,6 +353,7 @@ async function showReport(id) {
     el('div', { className: 'muted', textContent: `${new Date(d.started * 1000).toLocaleString()} · ${d.duration}s · exit ${d.exit_code} · peak ${d.peak_rss_mb} MB${d.kill_reason ? ' · ' + d.kill_reason : ''}` }),
     el('div', {}, copy, ' ', rerun));
   const dg = el('div', { className: 'panel' }); showDiagnosis(d.hints, dg); if (d.hints?.length) v.append(dg);
+  if (d.files && d.files.length) { const fb = el('div', { className: 'panel' }); showFiles(id, d.files, fb); fb.classList.remove('hidden'); v.append(fb); }
   if (d.traceback) v.append(el('h3', { textContent: `Traceback — ${d.traceback.file}:${d.traceback.line}` }), el('pre', { className: 'report', textContent: d.traceback.text }));
   v.append(el('h3', { textContent: 'Output' }), el('pre', { className: 'report', textContent: d.output || '(no output)' }));
   if (d.mem && d.mem.length) { const cv = el('canvas', { height: 120 }); v.append(el('h3', { textContent: 'Script memory over time (MB)' }), cv); drawRunMem(cv, d.mem); }
