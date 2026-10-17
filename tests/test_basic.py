@@ -230,3 +230,50 @@ def test_stale_runtime_setting_ignored(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "SETTINGS_FILE", f)
     s = config.Settings()
     assert s.get("guard_trip_level") == "red" and "max_runtime_sec" not in s.get()
+
+
+def test_pip_uses_script_python_and_maps_clang(monkeypatch):
+    from harness import config, diagnose, server
+    out = "ModuleNotFoundError: No module named 'clang'"
+    h = diagnose.diagnose({"status": "failed", "exit_code": 1, "output": out})
+    assert h[0]["action"]["pip"] == "libclang"  # not the unrelated 'clang' package
+    h = diagnose.diagnose({"status": "failed", "exit_code": 1, "output": "error: externally-managed-environment"})
+    assert "pip is blocked" in h[0]["title"]
+
+    calls = []
+
+    class P:
+        returncode, stdout, stderr = 0, "ok", ""
+
+    monkeypatch.setattr(server.subprocess, "run", lambda cmd, **k: calls.append(cmd) or P())
+    c = TestClient(server.app)
+    r = c.post("/api/pip", json={"package": "libclang requests>=2"}).json()
+    assert r["ok"] and calls[-1][1:] == ["-m", "pip", "install", "libclang", "requests>=2"]
+    assert calls[-1][0] == config.script_python()
+    config.settings.update({"python": "/opt/custom/bin/python3"})  # pip must follow the interpreter scripts use
+    c.post("/api/pip", json={"package": "libclang"})
+    assert calls[-1][0] == "/opt/custom/bin/python3"
+    config.settings.update({"python": ""})
+    for bad in ("--break-system-packages", "x; rm -rf /", "", "a $(b)"):
+        assert c.post("/api/pip", json={"package": bad}).status_code == 400
+
+
+def test_params_path_default_append_and_help_path(tmp_path, monkeypatch):
+    from harness import params, runner
+    src = (
+        "import argparse\nfrom pathlib import Path\nap = argparse.ArgumentParser()\n"
+        "ap.add_argument('--input', required=True, type=Path)\n"
+        "ap.add_argument('--workdir', default=Path('./build'), type=Path)\n"
+        "ap.add_argument('--libclang', default=None, help='path to libclang dylib/so')\n"
+        "ap.add_argument('--flag', action='append', default=[], dest='extra_flags')\n"
+        "ap.add_argument('--resume', action='store_true')\n")
+    ps = {p["dest"]: p for p in params.parse_params(src)}
+    assert ps["workdir"]["default"] == "./build" and ps["workdir"]["path"]
+    assert ps["libclang"]["path"] and ps["input"]["path"] and ps["input"]["required"]
+    assert ps["extra_flags"]["kind"] == "append"
+    argv = params.build_argv(list(ps.values()), {"input": "/a/b.cpp", "extra_flags": "-I/x\n\n-DFOO=1\n", "resume": True})
+    assert argv == ["--input", "/a/b.cpp", "--flag", "-I/x", "--flag", "-DFOO=1", "--resume"]  # workdir left at default
+
+    monkeypatch.setattr(runner.os.path, "isdir", lambda d: d == "/opt/homebrew/bin")
+    assert runner.gui_safe_path("/usr/bin:/bin").split(":")[:2] == ["/opt/homebrew/bin", "/usr/bin"]
+    assert runner.gui_safe_path("/opt/homebrew/bin:/usr/bin") == "/opt/homebrew/bin:/usr/bin"  # no duplicates

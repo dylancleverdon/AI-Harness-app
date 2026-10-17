@@ -18,7 +18,12 @@ def _lit(node, default=None):
     try:
         return ast.literal_eval(node)
     except (ValueError, TypeError, SyntaxError):
-        return default
+        pass
+    # Path("./build") / PurePath(...) -> "./build"
+    if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in ("Path", "PurePath")
+            and node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str)):
+        return node.args[0].value
+    return default
 
 
 def parse_params(source):
@@ -44,14 +49,16 @@ def parse_params(source):
         typ = kw["type"].id if "type" in kw and isinstance(kw["type"], ast.Name) else "str"
         if typ not in ("int", "float", "str", "Path"):
             typ = "str"
-        kind = {"store_true": "bool", "store_false": "bool", "count": "count"}.get(action, typ if typ != "Path" else "str")
+        kind = {"store_true": "bool", "store_false": "bool", "count": "count", "append": "append"}.get(
+            action, typ if typ != "Path" else "str")
         default = _lit(kw["default"]) if "default" in kw else (False if action == "store_true" else True if action == "store_false" else None)
         out.append({"dest": dest, "flags": flags, "positional": positional, "kind": kind, "action": action,
                     "default": default, "help": _lit(kw.get("help"), "") if "help" in kw else "",
                     "choices": _lit(kw["choices"]) if "choices" in kw else None,
                     "required": bool(_lit(kw["required"], False)) if "required" in kw else positional,
                     "nargs": _lit(kw["nargs"]) if "nargs" in kw else None,
-                    "path": typ == "Path" or bool(PATHY.search(dest)) and kind == "str"})
+                    "path": typ == "Path" or kind == "str" and bool(
+                        PATHY.search(dest) or re.search(r"\bpath\b|\bfolder\b|\bdirectory\b", str(_lit(kw.get("help"), "")), re.I))})
     return out
 
 
@@ -64,6 +71,11 @@ def build_argv(params, values):
         if p["kind"] == "bool":
             if bool(v) != bool(p["default"]):
                 opts.append(flag)
+            continue
+        if p["kind"] == "append":  # repeatable option: one value per line
+            for line in str(v or "").splitlines() if not isinstance(v, list) else v:
+                if str(line).strip():
+                    opts += [flag, str(line).strip()]
             continue
         if p["kind"] == "count":
             opts += [flag] * int(v or 0)

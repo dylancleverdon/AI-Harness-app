@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 import subprocess
 import sys
 import threading
@@ -12,7 +13,7 @@ from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import ai_edit, lmstudio, memory, params, updater
-from .config import DATA_DIR, SCRIPTS_DIR, settings
+from .config import DATA_DIR, SCRIPTS_DIR, script_python, settings
 from .runner import RunManager, report_markdown
 
 STATIC = Path(__file__).parent / "static"
@@ -53,7 +54,8 @@ def ping():
 @app.get("/api/status")
 def status():
     return {"version": VERSION, "lmstudio": lmstudio.status(), "memory": monitor.latest,
-            "settings": settings.get(), "scripts_dir": str(SCRIPTS_DIR), "update": _update}
+            "settings": settings.get(), "scripts_dir": str(SCRIPTS_DIR), "update": _update,
+            "python": script_python()}
 
 
 @app.get("/api/settings")
@@ -97,11 +99,16 @@ def delete_script(name: str):
 
 @app.post("/api/pip")
 def pip_install(body: dict = Body(...)):
-    pkg = body.get("package", "")
-    if not pkg or pkg.startswith("-") or " " in pkg:
+    """Install into the interpreter scripts actually run with. Accepts one or several space-separated packages."""
+    pkgs = str(body.get("package", "")).split()
+    if not pkgs or not all(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._\-\[\],<>=!~]*", p) for p in pkgs):
         raise HTTPException(400, "bad package name")
-    r = subprocess.run([sys.executable, "-m", "pip", "install", pkg], capture_output=True, text=True)
-    return {"ok": r.returncode == 0, "log": (r.stdout + r.stderr)[-1500:]}
+    py = script_python()
+    try:
+        r = subprocess.run([py, "-m", "pip", "install", *pkgs], capture_output=True, text=True, timeout=900)
+    except (OSError, subprocess.SubprocessError) as e:
+        return {"ok": False, "python": py, "log": f"Could not run pip with {py}: {e}"}
+    return {"ok": r.returncode == 0, "python": py, "log": (r.stdout + r.stderr)[-2000:]}
 
 
 # ---- AI edit ----------------------------------------------------------------

@@ -53,6 +53,8 @@ APP_HOME="$APP_HOME"
 DATA_DIR="$DATA_DIR"
 URL="http://127.0.0.1:$PORT"
 ping() { curl -fs "\$URL/api/ping" >/dev/null 2>&1; }
+# Apps opened from the Dock get a bare PATH; add Homebrew so scripts can find clang++, git, etc.
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:\$PATH"
 
 if ! ping; then
   # Easy updates: grab the latest code every time the app starts (turn off in Settings).

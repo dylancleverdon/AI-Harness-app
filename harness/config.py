@@ -51,6 +51,12 @@ class Settings:
 settings = Settings()
 
 
+def script_python():
+    """The interpreter scripts run with (Settings > Python), else the app's own private virtualenv."""
+    import sys
+    return settings.get("python").strip() or sys.executable
+
+
 def ensure_dirs():
     """Create the data dirs and seed example scripts on first run."""
     SCRIPTS_DIR.mkdir(parents=True, exist_ok=True)

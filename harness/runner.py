@@ -13,7 +13,7 @@ import uuid
 from pathlib import Path
 
 from . import diagnose, lmstudio, memory
-from .config import RUNS_DIR, SCRIPTS_DIR, settings
+from .config import RUNS_DIR, SCRIPTS_DIR, script_python, settings
 
 
 SUMMARY_KEYS = ("id", "script", "args", "started", "ended", "status", "exit_code",
@@ -25,6 +25,13 @@ ANSI = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[@-Z\\-_]")
 
 def clean(text):
     return ANSI.sub("", text)
+
+
+def gui_safe_path(path):
+    """Apps launched from the Dock/Finder get a bare PATH, so Homebrew tools (clang++, git, ...) go missing."""
+    extra = [d for d in ("/opt/homebrew/bin", "/opt/homebrew/sbin", "/usr/local/bin", "/usr/local/sbin")
+             if os.path.isdir(d) and d not in path.split(":")]
+    return ":".join(extra + ([path] if path else []))
 
 
 SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv"}
@@ -50,7 +57,7 @@ def snapshot(dirs, cap=20000):
 def diff_snapshots(before, after):
     out = [{"path": p, "status": "new" if p not in before else "modified", "size": v[1]}
            for p, v in after.items() if before.get(p) != v]
-    return sorted(out, key=lambda f: f["path"])[:200]
+    return sorted(out, key=lambda f: f["path"])
 
 
 class Run:
@@ -91,7 +98,8 @@ class Run:
         d["output"] = self.output()
         d["traceback"] = diagnose.extract_traceback(d["output"])
         d["hints"] = diagnose.diagnose(d)
-        d["files"] = self.files
+        d["files_total"] = len(self.files)
+        d["files"] = self.files[:200]
         return d
 
 
@@ -129,7 +137,8 @@ class RunManager:
         env = {**os.environ, "PYTHONUNBUFFERED": "1", "LMSTUDIO_BASE_URL": base,
                "OPENAI_BASE_URL": base + "/v1", "OPENAI_API_KEY": "lm-studio",
                "AIHARNESS_RUN_ID": run.id, "AIHARNESS_MODEL": lmstudio.loaded_model(), **(extra_env or {})}
-        py = cfg["python"] or sys.executable
+        py = script_python()
+        env["PATH"] = gui_safe_path(env.get("PATH", ""))
         import shlex
         cmd = [py, "-u", str(path)] + (argv or []) + (shlex.split(args) if args else [])
         run.args = " ".join(shlex.quote(a) for a in cmd[3:])

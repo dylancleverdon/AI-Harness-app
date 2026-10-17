@@ -2,7 +2,10 @@
 import re
 
 PIP_NAMES = {"cv2": "opencv-python", "PIL": "pillow", "yaml": "pyyaml", "sklearn": "scikit-learn",
-             "bs4": "beautifulsoup4", "dotenv": "python-dotenv"}
+             "bs4": "beautifulsoup4", "dotenv": "python-dotenv", "clang": "libclang", "serial": "pyserial",
+             "Crypto": "pycryptodome", "dateutil": "python-dateutil", "git": "GitPython", "jwt": "PyJWT",
+             "skimage": "scikit-image", "zmq": "pyzmq", "usb": "pyusb", "magic": "python-magic",
+             "attr": "attrs", "docx": "python-docx", "pptx": "python-pptx", "fitz": "pymupdf"}
 
 
 def extract_traceback(text):
@@ -36,6 +39,10 @@ def diagnose(run):
     elif run.get("exit_code") in (-9, 137):
         add("Killed by the OS (SIGKILL)", "macOS usually does this when memory runs out. Check the Memory tab.")
 
+    if "externally-managed-environment" in out:
+        add("pip is blocked for that Python", "That's a system/Homebrew Python protecting itself. Don't use "
+            "--break-system-packages: use the one-click install button (it installs into AI Harness's own "
+            "environment), or Settings > Python shows the exact pip command for the interpreter your scripts use.")
     if re.search(r"ConnectError|APIConnectionError|Connection refused|Connection error|ConnectionRefusedError", out):
         add("Can't reach LM Studio",
             "Open LM Studio -> Developer tab -> Start Server, and make sure the URL in Settings matches.")

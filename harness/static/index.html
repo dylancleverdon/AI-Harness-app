@@ -45,6 +45,9 @@
             <div id="rs-body"><div id="rs-form"></div>
               <div class="rs-extra"><label>Extra arguments <input id="rs-extra" placeholder="anything else, passed as-is"></label>
               <label>Environment variables <textarea id="rs-env" rows="2" placeholder="KEY=value (one per line)"></textarea></label></div>
+              <div class="pkgrow"><label>Install a Python package for this script <input id="pkg-input" placeholder="e.g. libclang requests  (separate several with spaces)"></label><button id="pkg-btn" class="ghost">Install</button></div>
+              <pre id="pkg-log" class="hidden"></pre>
+              <div class="muted" id="rs-python"></div>
               <button id="rs-reset" class="ghost">Reset to script defaults</button></div></details>
           <textarea id="editor" spellcheck="false"></textarea>
         </div>
@@ -139,7 +142,8 @@
         </div>
         <div class="panel">
           <h3>Python</h3>
-          <label>Interpreter for scripts (blank = built-in environment with <code>openai</code> installed) <input data-setting="python"></label>
+          <label>Interpreter for scripts (blank = AI Harness's own private environment, which already has <code>openai</code>) <input data-setting="python"></label>
+          <p class="muted">Scripts are running with: <code id="s-python"></code><br>Install packages by hand with: <code id="s-pip"></code></p>
           <p class="muted">Scripts live in <code id="scripts-dir"></code>. They get <code>OPENAI_BASE_URL</code>, <code>OPENAI_API_KEY</code>, <code>LMSTUDIO_BASE_URL</code> and <code>AIHARNESS_MODEL</code> set automatically.</p>
         </div>
       </div>

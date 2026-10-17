@@ -28,7 +28,7 @@ async function refreshStatus() {
   state.settings = s.settings;
   $('#version').textContent = s.version;
   $('#s-version').textContent = s.version;
-  $('#scripts-dir').textContent = s.scripts_dir;
+  $('#scripts-dir').textContent = s.scripts_dir; $('#s-python').textContent = s.python; $('#s-pip').textContent = `${s.python} -m pip install <package>`; $('#rs-python').textContent = 'Runs with Python: ' + s.python;
   const lm = $('#lm-pill');
   lm.className = 'pill ' + (s.lmstudio.ok ? 'ok' : 'bad');
   const loaded = s.lmstudio.models.filter(m => m.loaded).length;
@@ -185,7 +185,8 @@ async function loadRunSettings(name) {
     let input;
     if (p.kind === 'bool') { input = el('input', { type: 'checkbox', checked: !!cur }); label.append(input, p.dest.replace(/_/g, ' ')); }
     else {
-      if (p.choices) input = el('select', {}, ...p.choices.map(c => el('option', { value: c, textContent: c, selected: String(c) === String(cur) })));
+      if (p.kind === 'append') input = el('textarea', { rows: 2, value: Array.isArray(cur) ? cur.join('\n') : (cur ?? ''), placeholder: 'one value per line' });
+      else if (p.choices) input = el('select', {}, ...p.choices.map(c => el('option', { value: c, textContent: c, selected: String(c) === String(cur) })));
       else input = el('input', { type: p.kind === 'int' || p.kind === 'float' || p.kind === 'count' ? 'number' : 'text', value: cur ?? '', placeholder: p.default == null ? (p.required ? 'required' : '') : '', step: p.kind === 'float' ? 'any' : undefined });
       label.append(p.dest.replace(/_/g, ' ') + (p.required ? ' *' : ''), input);
     }
@@ -209,14 +210,22 @@ async function loadRunSettings(name) {
 }
 $('#run-settings').addEventListener('toggle', e => e.target.dataset.touched = 1);
 function persistRunSettings() { clearTimeout(rsTimer); rsTimer = setTimeout(() => state.script && api('/script-settings/' + state.script, { method: 'PUT', body: { values: rs.values, extra: $('#rs-extra').value, env: $('#rs-env').value } }), 300); }
+$('#pkg-btn').onclick = async () => {
+  const pkg = $('#pkg-input').value.trim(), log = $('#pkg-log'); if (!pkg) return;
+  $('#pkg-btn').disabled = true; $('#pkg-btn').textContent = 'Installing…'; log.classList.remove('hidden'); log.textContent = 'pip install ' + pkg + ' …';
+  try { const r = await api('/pip', { method: 'POST', body: { package: pkg } }); log.textContent = (r.ok ? '✓ Installed into ' : '✕ Failed for ') + r.python + '\n\n' + r.log; if (r.ok) $('#pkg-input').value = ''; }
+  catch (e) { log.textContent = '✕ ' + e.message; }
+  $('#pkg-btn').disabled = false; $('#pkg-btn').textContent = 'Install';
+};
+$('#pkg-input').onkeydown = e => { if (e.key === 'Enter') $('#pkg-btn').click(); };
 $('#rs-extra').oninput = $('#rs-env').oninput = persistRunSettings;
 $('#rs-reset').onclick = () => { rs.values = {}; persistRunSettings(); setTimeout(() => loadRunSettings(state.script), 500); };
 const runBody = () => ({ script: state.script, values: rs.values, extra: $('#rs-extra').value, env: $('#rs-env').value });
 
 // ---- files a run produced -------------------------------------------------
-function showFiles(runId, files, box) {
+function showFiles(runId, files, box, total) {
   box.replaceChildren(); box.classList.toggle('hidden', !files || !files.length); if (!files || !files.length) return;
-  box.append(el('b', { textContent: `Files created or changed (${files.length})` }));
+  box.append(el('b', { textContent: `Files created or changed (${total || files.length})` + ((total || files.length) > 50 ? ` — showing the first 50` : '') }));
   files.slice(0, 50).forEach(f => {
     const row = el('div', { className: 'file' }, el('span', { className: 'tag' + (f.status === 'new' ? '' : ' off'), textContent: f.status }), el('code', { textContent: f.path, title: f.path }), el('small', { className: 'muted', textContent: (f.size / 1024).toFixed(1) + ' KB' }));
     const view = el('button', { textContent: 'Preview' }); view.onclick = async () => { const t = await api(`/run-file?run=${runId}&path=${encodeURIComponent(f.path)}`); const w = el('pre', { className: 'report', textContent: t }); row.after(w); view.disabled = true; };
@@ -308,7 +317,7 @@ function watchRun(id) {
   es.addEventListener('live', e => { const x = JSON.parse(e.data).x; $('#live').textContent = x; $('#live').classList.toggle('hidden', !x); });
   es.addEventListener('done', async e => {
     es.close(); $('#live').classList.add('hidden'); const s = JSON.parse(e.data); setRunState(s.status); $('#run-timer').textContent = '⏱ ' + fmtTime(Math.round(s.duration)) + ' total';
-    const d = await api('/runs/' + id); showDiagnosis(d.hints, $('#diagnosis')); showFiles(id, d.files, $('#files'));
+    const d = await api('/runs/' + id); showDiagnosis(d.hints, $('#diagnosis')); showFiles(id, d.files, $('#files'), d.files_total);
   });
   es.onerror = () => es.close();
 }
@@ -378,7 +387,7 @@ async function showReport(id) {
     el('div', { className: 'muted', textContent: `${new Date(d.started * 1000).toLocaleString()} · ${d.duration}s · exit ${d.exit_code} · peak ${d.peak_rss_mb} MB${d.kill_reason ? ' · ' + d.kill_reason : ''}` }),
     el('div', {}, copy, ' ', rerun));
   const dg = el('div', { className: 'panel' }); showDiagnosis(d.hints, dg); if (d.hints?.length) v.append(dg);
-  if (d.files && d.files.length) { const fb = el('div', { className: 'panel' }); showFiles(id, d.files, fb); fb.classList.remove('hidden'); v.append(fb); }
+  if (d.files && d.files.length) { const fb = el('div', { className: 'panel' }); showFiles(id, d.files, fb, d.files_total); fb.classList.remove('hidden'); v.append(fb); }
   if (d.traceback) v.append(el('h3', { textContent: `Traceback — ${d.traceback.file}:${d.traceback.line}` }), el('pre', { className: 'report', textContent: d.traceback.text }));
   v.append(el('h3', { textContent: 'Output' }), el('pre', { className: 'report', textContent: d.output || '(no output)' }));
   if (d.mem && d.mem.length) { const cv = el('canvas', { height: 120 }); v.append(el('h3', { textContent: 'Script memory over time (MB)' }), cv); drawRunMem(cv, d.mem); }
