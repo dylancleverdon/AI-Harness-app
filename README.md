@@ -28,6 +28,7 @@ The install is a git checkout, so updating is just a pull:
 2. Open AI Harness. The top bar shows LM Studio status and the live memory level.
 3. **Scripts**: pick or edit a script, then **▶ Run** (⌘↵). Scripts get `OPENAI_BASE_URL`, `OPENAI_API_KEY`, `LMSTUDIO_BASE_URL` and `AIHARNESS_MODEL` set, so `OpenAI()` just works. Scripts live in `~/AIHarness/scripts`.
 4. **Memory**: available/used/swap, LM Studio's own footprint, per-script RSS, a 10-minute chart with your thresholds, and macOS memory pressure.
+5. **AI Edit**: in the Scripts toolbar, ✨ AI Edit lets your local model rewrite the open script from an instruction, shows a diff, and only applies it when you click Apply (old version backed up to `~/AIHarness/backups`).
 5. **Models**: what LM Studio has loaded vs. on disk, quick chat, *Unload all*.
 6. **Reports**: history of every run with traceback, output and memory over time, plus **Copy failure report** (markdown with diagnosis, traceback, output tail, LM Studio and memory state, and the script source, ready to paste to Claude).
 

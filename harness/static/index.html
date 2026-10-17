@@ -36,6 +36,7 @@
           <div class="toolbar">
             <span id="script-name" class="title">No script selected</span>
             <input id="script-args" placeholder="arguments (optional)">
+            <button id="ai-btn" class="ghost" title="Edit this script with your local model">✨ AI Edit</button>
             <button id="save-btn" class="ghost">Save</button>
             <button id="run-btn" class="primary">▶ Run</button>
             <button id="stop-btn" class="danger hidden">■ Stop</button>
@@ -138,6 +139,18 @@
       </div>
     </section>
   </main>
+</div>
+<div id="ai-modal" class="modal hidden">
+  <div class="modal-box wide">
+    <h3>✨ Edit <span id="ai-name"></span> with LM Studio</h3>
+    <textarea id="ai-instr" rows="3" placeholder="What should change? e.g. “add type hints and docstrings”, “fix the bug where the loop never ends”, “add retry logic to the API calls”"></textarea>
+    <div class="ai-row"><label>Model <select id="ai-model"></select></label>
+      <button id="ai-go" class="primary">Generate edit</button><button id="ai-cancel" class="ghost hidden">Cancel</button></div>
+    <div id="ai-status" class="muted"></div>
+    <pre id="ai-diff" class="hidden"></pre>
+    <div class="modal-foot"><button id="ai-close" class="ghost">Close</button>
+      <button id="ai-apply" class="primary hidden">Apply to script</button></div>
+  </div>
 </div>
 <div id="import-modal" class="modal hidden">
   <div class="modal-box">

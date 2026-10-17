@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 import threading
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -10,8 +11,8 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import lmstudio, memory, updater
-from .config import SCRIPTS_DIR, settings
+from . import ai_edit, lmstudio, memory, updater
+from .config import DATA_DIR, SCRIPTS_DIR, settings
 from .runner import RunManager, report_markdown
 
 STATIC = Path(__file__).parent / "static"
@@ -101,6 +102,33 @@ def pip_install(body: dict = Body(...)):
         raise HTTPException(400, "bad package name")
     r = subprocess.run([sys.executable, "-m", "pip", "install", pkg], capture_output=True, text=True)
     return {"ok": r.returncode == 0, "log": (r.stdout + r.stderr)[-1500:]}
+
+
+# ---- AI edit ----------------------------------------------------------------
+@app.post("/api/ai-edit")
+def ai_edit_run(body: dict = Body(...)):
+    """Streams progress events (SSE); the final 'done' event carries the edited text and a diff."""
+    def gen():
+        level = lambda: (monitor.latest or {}).get("level", "green")
+        for ev in ai_edit.edit_stream(body.get("name", "script.py"), body.get("content", ""),
+                                      body.get("instruction", ""), body.get("model") or None, level):
+            yield f"data: {json.dumps(ev)}\n\n"
+    return StreamingResponse(gen(), media_type="text/event-stream")
+
+
+@app.post("/api/ai-edit/apply")
+def ai_edit_apply(body: dict = Body(...)):
+    """Writes the edited script, first saving a timestamped backup of the old version."""
+    p = _script_path(body["name"])
+    backup = ""
+    if p.is_file():
+        d = DATA_DIR / "backups"
+        d.mkdir(parents=True, exist_ok=True)
+        b = d / f"{p.stem}.{time.strftime('%Y%m%d-%H%M%S')}.py"
+        b.write_text(p.read_text())
+        backup = str(b)
+    p.write_text(body["content"])
+    return {"ok": True, "backup": backup}
 
 
 # ---- runs -----------------------------------------------------------------
