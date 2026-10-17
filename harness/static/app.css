@@ -90,3 +90,5 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 .file button { padding: 0 8px; font-size: 11px; }
 
 .pathrow { display: flex; gap: 4px; margin-top: 2px; } .pathrow input { margin-top: 0 !important; flex: 1; } .pathrow button { padding: 0 8px; }
+
+#live { padding: 6px 12px; background: #17171c; border-top: 1px solid var(--border); font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; white-space: pre; overflow: hidden; text-overflow: ellipsis; color: #cfd0ff; }

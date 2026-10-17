@@ -1,6 +1,8 @@
 """Runs scripts as subprocesses, streams output, samples memory, writes reports."""
+import codecs
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -15,6 +17,13 @@ from .config import RUNS_DIR, SCRIPTS_DIR, settings
 
 SUMMARY_KEYS = ("id", "script", "args", "started", "ended", "status", "exit_code",
                 "kill_reason", "peak_rss_mb", "duration")
+
+
+ANSI = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[@-Z\\-_]")
+
+
+def clean(text):
+    return ANSI.sub("", text)
 
 
 SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", "venv"}
@@ -57,6 +66,7 @@ class Run:
         self.mem = []  # {t, rss_mb, avail_pct, level}
         self.peak_rss_mb = 0
         self.proc = None
+        self.live = {}  # stream -> in-place line (progress bar) shown pinned at the bottom
         self.files = []
         self.watch = []
         self.before = {}
@@ -109,7 +119,7 @@ class RunManager:
         run.before = snapshot(run.watch)
         try:
             run.proc = subprocess.Popen(cmd, cwd=SCRIPTS_DIR, env=env, stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE, text=True, bufsize=1,
+                                        stderr=subprocess.PIPE, bufsize=0,
                                         start_new_session=True)
         except OSError as e:
             run.add("sys", f"Could not start: {e}")
@@ -119,18 +129,52 @@ class RunManager:
             return run
         self.runs[run.id] = run
         run.add("sys", f"$ {' '.join(cmd)}")
+        run.pumps = []
         for stream, pipe in (("out", run.proc.stdout), ("err", run.proc.stderr)):
-            threading.Thread(target=self._pump, args=(run, stream, pipe), daemon=True).start()
+            t = threading.Thread(target=self._pump, args=(run, stream, pipe), daemon=True)
+            t.start()
+            run.pumps.append(t)
         threading.Thread(target=self._wait, args=(run,), daemon=True).start()
         return run
 
     def _pump(self, run, stream, pipe):
-        for line in pipe:
-            run.add(stream, line.rstrip("\n"))
+        """Reads raw output. '\\n' commits a line; a bare '\\r' means the line is being redrawn in place
+        (progress bars), so it's shown as a live line instead of piling up as new lines."""
+        dec = codecs.getincrementaldecoder("utf-8")("replace")
+        cur = last = ""
+        fd = pipe.fileno()
+
+        def live():
+            run.live[stream] = clean(cur).strip("\r") or clean(last)
+
+        while True:
+            try:
+                chunk = os.read(fd, 65536)
+            except OSError:
+                break
+            if not chunk:
+                break
+            for tok in re.split(r"(\r\n|\n|\r)", dec.decode(chunk)):
+                if tok in ("\n", "\r\n"):
+                    run.add(stream, clean(cur) if cur.strip() else clean(last) if last.strip() else "")
+                    cur = last = ""
+                    run.live[stream] = ""
+                elif tok == "\r":
+                    if cur.strip():
+                        last, cur = cur, ""
+                elif tok:
+                    cur += tok
+                    live()
+            live()
+        tail = clean(cur) if cur.strip() else clean(last)
+        if tail.strip():
+            run.add(stream, tail)
+        run.live[stream] = ""
 
     def _wait(self, run):
         code = run.proc.wait()
-        time.sleep(0.2)  # let pump threads drain
+        for t in getattr(run, "pumps", []):
+            t.join(timeout=3)  # let output drain (a stray grandchild holding the pipe can't block us)
         run.exit_code, run.ended = code, time.time()
         if run.kill_reason:
             final = "killed" if run.kill_reason.startswith("memory guard") else "stopped"

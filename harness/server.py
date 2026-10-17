@@ -214,12 +214,17 @@ async def run_stream(run_id: str):
 
     async def gen():
         i = 0
+        last_live = None
         while True:
             with run.lock:
                 new = run.lines[i:]
             for line in new:
                 yield f"data: {json.dumps(line)}\n\n"
             i += len(new)
+            live = run.live.get("err") or run.live.get("out") or ""
+            if live != last_live and run.status == "running":
+                last_live = live
+                yield f"event: live\ndata: {json.dumps({'x': live})}\n\n"
             if run.status != "running" and not new:
                 yield f"event: done\ndata: {json.dumps(run.summary())}\n\n"
                 return

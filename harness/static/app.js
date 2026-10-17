@@ -222,7 +222,7 @@ function setRunState(s) {
 }
 $('#run-btn').onclick = async () => {
   if (!state.script) return; await saveScript();
-  $('#console').replaceChildren(); $('#diagnosis').replaceChildren(); $('#files').classList.add('hidden');
+  $('#console').replaceChildren(); $('#live').classList.add('hidden'); $('#diagnosis').replaceChildren(); $('#files').classList.add('hidden');
   state.run = await api('/runs', { method: 'POST', body: runBody() });
   setRunState('running'); watchRun(state.run.id);
 };
@@ -231,8 +231,9 @@ function watchRun(id) {
   state.es && state.es.close();
   const es = state.es = new EventSource(`/api/runs/${id}/stream`);
   es.onmessage = e => appendLine(JSON.parse(e.data));
+  es.addEventListener('live', e => { const x = JSON.parse(e.data).x; $('#live').textContent = x; $('#live').classList.toggle('hidden', !x); });
   es.addEventListener('done', async e => {
-    es.close(); const s = JSON.parse(e.data); setRunState(s.status);
+    es.close(); $('#live').classList.add('hidden'); const s = JSON.parse(e.data); setRunState(s.status);
     const d = await api('/runs/' + id); showDiagnosis(d.hints, $('#diagnosis')); showFiles(id, d.files, $('#files'));
   });
   es.onerror = () => es.close();

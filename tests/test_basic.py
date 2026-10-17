@@ -99,3 +99,27 @@ def test_params_discovery_and_files(tmp_path):
     assert c.get("/api/run-file", params={"run": rid, "path": str(out / "main.cpp")}).text == "int main(){}"
     assert c.get("/api/run-file", params={"run": rid, "path": "/etc/passwd"}).status_code == 403
     assert c.get("/api/script-settings/w.py").json()["values"]["out_dir"] == str(out)
+
+
+def test_progress_bar_stays_one_live_line():
+    ensure_dirs()
+    from harness.server import app
+    c = TestClient(app)
+    (SCRIPTS_DIR / "bar.py").write_text(
+        "import sys, time\n"
+        "for i in range(1, 4):\n"
+        "    sys.stderr.write(f'\\r\\x1b[K {i}/3 |###|'); sys.stderr.flush(); time.sleep(0.15)\n"
+        "    if i == 2:\n"
+        "        sys.stderr.write('\\r\\x1b[K'); print('FUN_1 -> done', flush=True)\n"
+        "sys.stderr.write('\\n'); print('end')\n")
+    rid = c.post("/api/runs", json={"script": "bar.py"}).json()["id"]
+    for _ in range(60):
+        d = c.get(f"/api/runs/{rid}").json()
+        if d["status"] != "running":
+            break
+        time.sleep(0.1)
+    texts = [l["x"] for l in d["lines"] if l["s"] != "sys"]
+    assert d["status"] == "ok"
+    assert "FUN_1 -> done" in texts and "end" in texts
+    assert [t for t in texts if "/3" in t] == [" 3/3 |###|"]  # redraws collapsed, no escape codes
+    assert not any("\x1b" in t or "\r" in t for t in texts)
