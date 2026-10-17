@@ -18,7 +18,7 @@ DEFAULTS = {
     "orange_below_pct": 15,
     "red_below_pct": 8,
     "unload_models_on_trip": False,
-    "max_runtime_sec": 0,  # 0 = unlimited
+    "keep_awake": True,  # macOS: stop the Mac sleeping while a script runs (caffeinate)
     "python": "",  # interpreter for scripts; empty = harness venv
     "auto_update": True,
 }
@@ -29,7 +29,8 @@ class Settings:
         self._lock = threading.Lock()
         self._data = dict(DEFAULTS)
         try:
-            self._data.update(json.loads(SETTINGS_FILE.read_text()))
+            saved = json.loads(SETTINGS_FILE.read_text())
+            self._data.update({k: v for k, v in saved.items() if k in DEFAULTS})
         except (OSError, ValueError):
             pass
 

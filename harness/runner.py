@@ -3,6 +3,7 @@ import codecs
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -99,6 +100,23 @@ class RunManager:
         self.runs = {}
         self.events = []  # guard / system events shown in the UI
         self._trip_count = 0
+        self.caffeine = None  # `caffeinate` process while we are keeping the Mac awake
+
+    # ---- keep awake ------------------------------------------------------
+    def _sync_awake(self, want):
+        """Hold a macOS `caffeinate` while scripts run (and the toggle is on); release it otherwise.
+        -i/-s stop idle and system sleep (-s only applies on AC power), -m keeps the disk spinning, and
+        -w ties it to this process so it can never outlive the app. The display is still allowed to sleep."""
+        if self.caffeine and self.caffeine.poll() is not None:
+            self.caffeine = None
+        if want and not self.caffeine and sys.platform == "darwin" and shutil.which("caffeinate"):
+            self.caffeine = subprocess.Popen(["caffeinate", "-i", "-m", "-s", "-w", str(os.getpid())])
+        elif not want and self.caffeine:
+            self.caffeine.terminate()
+            self.caffeine = None
+
+    def awake(self):
+        return bool(self.caffeine and self.caffeine.poll() is None)
 
     # ---- lifecycle -------------------------------------------------------
     def start(self, script, args="", argv=None, extra_env=None, watch=None):
@@ -222,9 +240,7 @@ class RunManager:
             run.peak_rss_mb = max(run.peak_rss_mb, round(rss))
             run.mem.append({"t": round(now - run.started, 1), "rss_mb": round(rss),
                             "avail_pct": snap["available_pct"], "level": snap["level"]})
-            limit = cfg["max_runtime_sec"]
-            if limit and now - run.started > limit:
-                self.stop(run.id, f"max runtime of {limit}s reached")
+        self._sync_awake(bool(self.active()) and cfg["keep_awake"])
         trip = memory.LEVELS.index(cfg["guard_trip_level"])
         if cfg["guard_enabled"] and self.active() and memory.LEVELS.index(snap["level"]) >= trip:
             self._trip_count += 1

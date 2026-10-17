@@ -21,6 +21,7 @@
       <div class="pills">
         <span class="pill" id="lm-pill"><i class="dot"></i><b>LM Studio</b> <em id="lm-text">…</em></span>
         <span class="pill" id="mem-pill"><i class="dot"></i><b>Memory</b> <em id="mem-text">…</em></span>
+        <label class="switch" id="awake-switch" title="Keep your Mac awake while a script is running (uses macOS caffeinate). Closing the lid on battery power will still sleep it."><input type="checkbox" id="keep-awake" data-setting="keep_awake"><i></i><span>☕ Keep awake</span></label>
         <button id="update-btn" class="hidden"></button>
       </div>
     </header>
@@ -49,7 +50,7 @@
         </div>
         <div class="console-pane">
           <div class="toolbar">
-            <span class="title">Console</span><span id="run-state" class="badge"></span>
+            <span class="title">Console</span><span id="run-state" class="badge"></span><span id="run-timer" class="timer"></span>
             <span id="run-mem" class="muted"></span>
             <span class="spacer"></span>
             <button id="report-btn" class="ghost hidden">Copy failure report</button>
@@ -135,7 +136,6 @@
             <label>Red below % free <input type="number" data-setting="red_below_pct"></label>
           </div>
           <label class="check"><input type="checkbox" data-setting="unload_models_on_trip"> Also unload LM Studio models when the guard trips (needs the <code>lms</code> CLI)</label>
-          <label>Max script runtime (seconds, 0 = unlimited) <input type="number" data-setting="max_runtime_sec"></label>
         </div>
         <div class="panel">
           <h3>Python</h3>

@@ -191,3 +191,42 @@ def test_progress_bar_stays_one_live_line():
     assert "FUN_1 -> done" in texts and "end" in texts
     assert [t for t in texts if "/3" in t] == [" 3/3 |###|"]  # redraws collapsed, no escape codes
     assert not any("\x1b" in t or "\r" in t for t in texts)
+
+
+def test_keep_awake_and_no_runtime_limit(monkeypatch):
+    from harness import config, runner
+    assert "max_runtime_sec" not in config.DEFAULTS and config.settings.get("keep_awake") is True
+    started = []
+
+    class FakeProc:
+        def __init__(self, cmd):
+            started.append(cmd)
+            self.alive = True
+
+        def poll(self):
+            return None if self.alive else 0
+
+        def terminate(self):
+            self.alive = False
+
+    monkeypatch.setattr(runner.sys, "platform", "darwin")
+    monkeypatch.setattr(runner.shutil, "which", lambda n: "/usr/bin/" + n)
+    monkeypatch.setattr(runner.subprocess, "Popen", lambda cmd, **k: FakeProc(cmd))
+    m = runner.RunManager()
+    m._sync_awake(True)
+    m._sync_awake(True)  # idempotent: one caffeinate only
+    assert len(started) == 1 and started[0][0] == "caffeinate" and "-w" in started[0] and m.awake()
+    m._sync_awake(False)
+    assert not m.awake()
+    m._sync_awake(True)
+    assert len(started) == 2
+
+
+def test_stale_runtime_setting_ignored(tmp_path, monkeypatch):
+    import json
+    from harness import config
+    f = tmp_path / "s.json"
+    f.write_text(json.dumps({"max_runtime_sec": 5, "guard_trip_level": "red"}))
+    monkeypatch.setattr(config, "SETTINGS_FILE", f)
+    s = config.Settings()
+    assert s.get("guard_trip_level") == "red" and "max_runtime_sec" not in s.get()

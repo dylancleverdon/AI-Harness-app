@@ -43,6 +43,11 @@ The install is a git checkout, so updating is just a pull:
 
 Memory is classified green / yellow / orange / red from % available (defaults: yellow < 30%, orange < 15%, red < 8%) and macOS memory pressure. If the level stays at or above your trip level (default **orange**) for 2 consecutive seconds, running scripts get SIGTERM (SIGKILL after 4s), a macOS notification fires, and the run is marked `killed` with the memory numbers. Optionally it also unloads LM Studio models via the `lms` CLI. Try it with `memory_stress.py`.
 
+## Keep awake, timers
+
+- **☕ Keep awake** (top bar switch, on by default): while a script is running, the Mac is kept from sleeping using macOS's built-in `caffeinate` (idle and system sleep, plus the disk; the screen is still allowed to turn off). It's released the moment the last script finishes or you flip the switch off, and it can't outlive the app. Closing the lid on battery power will still put a Mac to sleep.
+- **Run timers:** running scripts show a live ⏱ timer next to their name in the script list, in the console header, and on the Memory page. There's no maximum runtime, so long jobs run until they finish or you stop them (the memory guard still protects you).
+
 ## Failure diagnosis
 
 Failed runs are explained in plain English: LM Studio unreachable, model not loaded, context exceeded, timeouts, bad JSON from the model, killed by the OS, and missing Python packages (with a one-click `pip install`).

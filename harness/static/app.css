@@ -101,3 +101,11 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 #live { padding: 6px 12px; background: #17171c; border-top: 1px solid var(--border); font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; white-space: pre; overflow: hidden; text-overflow: ellipsis; color: #cfd0ff; }
 
 .modal-foot { display: flex; gap: 8px; align-items: center; } .modal-foot .spacer { flex: 1; }
+.switch { display: flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 3px 12px 3px 6px; }
+.switch input { display: none; } .switch i { width: 30px; height: 17px; border-radius: 999px; background: #44444c; position: relative; transition: .15s; }
+.switch i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: #fff; transition: .15s; }
+.switch input:checked + i { background: var(--accent); } .switch input:checked + i::after { left: 15px; }
+.switch.live span { color: var(--green); }
+.timer { font: 12px ui-monospace, "SF Mono", Menlo, monospace; color: var(--text); }
+.list li .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.list li .timer { color: var(--green); font-size: 11px; } .list li.running .name::before { content: "● "; color: var(--green); }

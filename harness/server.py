@@ -273,7 +273,9 @@ async def telemetry():
     async def gen():
         while True:
             payload = {"memory": monitor.latest, "events": runs.events[-5:],
-                       "active": [{"id": r.id, "script": r.script,
+                       "awake": runs.awake(),
+                       "active": [{"id": r.id, "script": r.script, "started": r.started,
+                                   "elapsed": round(time.time() - r.started),
                                    "rss_mb": r.mem[-1]["rss_mb"] if r.mem else 0,
                                    "peak_mb": r.peak_rss_mb} for r in runs.active()]}
             yield f"data: {json.dumps(payload)}\n\n"

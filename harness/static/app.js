@@ -7,6 +7,8 @@ const api = async (path, opts = {}) => {
   return (r.headers.get('content-type') || '').includes('json') ? r.json() : r.text();
 };
 const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); kids.forEach(k => e.append(k)); return e; };
+const fmtTime = s => { const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), x = s % 60, p = n => String(n).padStart(2, '0');
+  return (d ? d + 'd ' : '') + (d || h ? h + ':' + p(m) : m) + ':' + p(x); };
 const LEVEL_COLOR = { green: '#3ecf8e', yellow: '#f2c94c', orange: '#f2994a', red: '#eb5757' };
 
 let state = { script: null, run: null, es: null, settings: {}, status: null, history: [] };
@@ -69,13 +71,25 @@ function onTelemetry(d) {
   $('#m-pressure').textContent = m.pressure ? 'macOS pressure: ' + ({ 1: 'normal', 2: 'warn', 4: 'critical' }[m.pressure] || m.pressure) : '';
   const act = $('#active-runs'); act.replaceChildren();
   if (!d.active.length) act.textContent = 'Nothing running.';
-  d.active.forEach(r => act.append(el('div', { textContent: `${r.script} — ${r.rss_mb} MB now, peak ${r.peak_mb} MB` })));
+  d.active.forEach(r => act.append(el('div', { textContent: `${r.script} — running ${fmtTime(r.elapsed)} · ${r.rss_mb} MB now, peak ${r.peak_mb} MB` })));
+  updateTimers(d);
   $('#guard-state').textContent = state.settings.guard_enabled ? `Armed: stops scripts at ${state.settings.guard_trip_level}.` : 'Guard is disabled.';
   const ev = $('#guard-events'); ev.replaceChildren();
   d.events.slice().reverse().forEach(e => ev.append(el('li', { textContent: new Date(e.t * 1000).toLocaleTimeString() + ' — ' + e.msg })));
   const cur = d.active.find(r => state.run && r.id === state.run.id);
   $('#run-mem').textContent = cur ? `script: ${cur.rss_mb} MB (peak ${cur.peak_mb}) · system: ${m.available_pct}% free` : '';
   if ($('#page-memory').classList.contains('active')) drawChart();
+}
+function updateTimers(d) {
+  const by = Object.fromEntries(d.active.map(r => [r.script, r]));
+  $$('#script-list li').forEach(li => {
+    const r = by[li.dataset.name]; li.classList.toggle('running', !!r);
+    $('.timer', li).textContent = r ? '⏱ ' + fmtTime(r.elapsed) : '';
+  });
+  const cur = state.run && d.active.find(r => r.id === state.run.id);
+  $('#run-timer').textContent = cur ? '⏱ ' + fmtTime(cur.elapsed) : $('#run-timer').textContent;
+  $('#awake-switch').classList.toggle('live', !!d.awake);
+  $('#awake-switch').title = (d.awake ? 'Mac is being kept awake right now. ' : '') + 'Keep your Mac awake while a script is running (uses macOS caffeinate). Closing the lid on battery power will still sleep it.';
 }
 function drawChart() {
   const c = $('#chart'), dpr = devicePixelRatio || 1, w = c.clientWidth, h = 220;
@@ -104,7 +118,8 @@ function connectTelemetry() {
 async function loadScripts(select) {
   const names = await api('/scripts'); const ul = $('#script-list'); ul.replaceChildren();
   names.forEach(n => {
-    const li = el('li', { className: n === state.script ? 'sel' : '' }, el('span', { textContent: n }));
+    const li = el('li', { className: n === state.script ? 'sel' : '' }, el('span', { className: 'name', textContent: n }), el('span', { className: 'timer' }));
+    li.dataset.name = n;
     const del = el('small', { textContent: '✕', title: 'Delete' });
     del.onclick = async ev => { ev.stopPropagation(); if (confirm('Delete ' + n + '?')) { await api('/scripts/' + n, { method: 'DELETE' }); if (state.script === n) state.script = null; loadScripts(); } };
     li.append(del); li.onclick = () => openScript(n); ul.append(li);
@@ -282,7 +297,7 @@ function setRunState(s) {
 $('#run-btn').onclick = async () => {
   if (!state.script) return; await saveScript();
   $('#console').replaceChildren(); $('#live').classList.add('hidden'); $('#diagnosis').replaceChildren(); $('#files').classList.add('hidden');
-  state.run = await api('/runs', { method: 'POST', body: runBody() });
+  state.run = await api('/runs', { method: 'POST', body: runBody() }); $('#run-timer').textContent = '⏱ 0:00';
   setRunState('running'); watchRun(state.run.id);
 };
 $('#stop-btn').onclick = () => state.run && api(`/runs/${state.run.id}/stop`, { method: 'POST' });
@@ -292,7 +307,7 @@ function watchRun(id) {
   es.onmessage = e => appendLine(JSON.parse(e.data));
   es.addEventListener('live', e => { const x = JSON.parse(e.data).x; $('#live').textContent = x; $('#live').classList.toggle('hidden', !x); });
   es.addEventListener('done', async e => {
-    es.close(); $('#live').classList.add('hidden'); const s = JSON.parse(e.data); setRunState(s.status);
+    es.close(); $('#live').classList.add('hidden'); const s = JSON.parse(e.data); setRunState(s.status); $('#run-timer').textContent = '⏱ ' + fmtTime(Math.round(s.duration)) + ' total';
     const d = await api('/runs/' + id); showDiagnosis(d.hints, $('#diagnosis')); showFiles(id, d.files, $('#files'));
   });
   es.onerror = () => es.close();
