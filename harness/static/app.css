@@ -71,3 +71,11 @@ i.g { background: var(--green); } i.y { background: var(--yellow); } i.o { backg
 .tag { font-size: 10px; padding: 0 6px; border-radius: 4px; background: #1f4a37; color: var(--green); } .tag.off { background: var(--panel2); color: var(--muted); }
 pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: auto; white-space: pre-wrap; }
 @media (max-width: 800px) { .side { width: 180px; } }
+
+.modal { position: fixed; inset: 0; background: #000a; display: flex; align-items: center; justify-content: center; z-index: 10; }
+.modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; width: 460px; max-width: 92vw; }
+.modal-box h3 { margin: 0 0 12px; }
+#dropzone { border: 2px dashed var(--border); border-radius: 10px; padding: 28px; text-align: center; transition: .15s; }
+#dropzone big { font-size: 34px; color: var(--muted); } #dropzone p { margin: 6px 0; }
+#dropzone.over { border-color: var(--accent); background: #7c6cf01a; }
+.modal-foot { text-align: right; margin-top: 12px; } .ok-t { color: var(--green); } .bad-t { color: var(--red); }

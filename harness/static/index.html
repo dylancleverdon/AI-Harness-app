@@ -28,7 +28,7 @@
 
     <section id="page-run" class="page active">
       <aside class="side">
-        <div class="side-head"><span>Scripts</span><button id="new-script" class="ghost" title="New script">＋</button></div>
+        <div class="side-head"><span>Scripts</span><span><button id="import-script" class="ghost" title="Import script">⇪ Import</button> <button id="new-script" class="ghost" title="New script">＋</button></span></div>
         <ul id="script-list" class="list"></ul>
       </aside>
       <div class="content split">
@@ -138,6 +138,16 @@
       </div>
     </section>
   </main>
+</div>
+<div id="import-modal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Import scripts</h3>
+    <div id="dropzone"><big>⇪</big><p>Drag &amp; drop <b>.py</b> files here</p><p class="muted">or</p>
+      <button id="pick-files" class="primary">Choose files…</button>
+      <input id="file-input" type="file" accept=".py" multiple hidden></div>
+    <ul id="import-results" class="events"></ul>
+    <div class="modal-foot"><button id="import-close" class="ghost">Close</button></div>
+  </div>
 </div>
 <script src="/static/app.js"></script>
 </body>

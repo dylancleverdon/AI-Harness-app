@@ -129,6 +129,32 @@ $('#new-script').onclick = async () => {
   loadScripts(n);
 };
 
+// ---- import (drag & drop) ----------------------------------------------
+const modal = $('#import-modal'), zone = $('#dropzone');
+const openImport = () => { $('#import-results').replaceChildren(); modal.classList.remove('hidden'); };
+$('#import-script').onclick = openImport;
+$('#import-close').onclick = () => modal.classList.add('hidden');
+modal.onclick = e => { if (e.target === modal) modal.classList.add('hidden'); };
+$('#pick-files').onclick = () => $('#file-input').click();
+$('#file-input').onchange = e => { importFiles([...e.target.files]); e.target.value = ''; };
+['dragenter', 'dragover'].forEach(t => zone.addEventListener(t, e => { e.preventDefault(); zone.classList.add('over'); }));
+['dragleave', 'drop'].forEach(t => zone.addEventListener(t, e => { e.preventDefault(); zone.classList.remove('over'); }));
+zone.addEventListener('drop', e => importFiles([...e.dataTransfer.files]));
+// Dropping files anywhere on the window opens the importer; the modal handles the drop itself.
+window.addEventListener('dragover', e => e.preventDefault());
+window.addEventListener('drop', e => { e.preventDefault(); if (!modal.contains(e.target) && e.dataTransfer.files.length) { openImport(); importFiles([...e.dataTransfer.files]); } });
+async function importFiles(files) {
+  const out = $('#import-results'); let last = null; const existing = await api('/scripts');
+  for (const f of files) {
+    const li = el('li'); out.append(li);
+    if (!f.name.endsWith('.py')) { li.className = 'bad-t'; li.textContent = `✕ ${f.name}: only .py files`; continue; }
+    if (existing.includes(f.name) && !confirm(`${f.name} already exists. Overwrite it?`)) { li.textContent = `– ${f.name}: skipped`; continue; }
+    try { await api('/scripts/' + f.name, { method: 'PUT', body: { content: await f.text() } }); li.className = 'ok-t'; li.textContent = `✓ ${f.name} imported`; last = f.name; }
+    catch (e) { li.className = 'bad-t'; li.textContent = `✕ ${f.name}: ${e.message}`; }
+  }
+  if (last) { await loadScripts(last); $('#rail button[data-page=run]').click(); }
+}
+
 function appendLine(l) {
   const c = $('#console'), stick = c.scrollTop + c.clientHeight > c.scrollHeight - 40;
   c.append(el('div', { className: l.s, textContent: l.x })); if (stick) c.scrollTop = c.scrollHeight;
