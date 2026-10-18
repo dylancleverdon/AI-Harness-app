@@ -1,7 +1,7 @@
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const api = async (path, opts = {}) => {
-  const r = await fetch('/api' + path, { headers: { 'Content-Type': 'application/json' }, ...opts,
+  const r = await fetch('/api' + path, { headers: { 'Content-Type': 'application/json', 'X-Harness': '1' }, ...opts,
     body: opts.body ? JSON.stringify(opts.body) : undefined });
   if (!r.ok) throw new Error((await r.text()) || r.statusText);
   return (r.headers.get('content-type') || '').includes('json') ? r.json() : r.text();
@@ -26,7 +26,7 @@ $$('#rail button').forEach(b => b.onclick = () => {
 async function refreshStatus() {
   const s = state.status = await api('/status');
   state.settings = s.settings;
-  $('#version').textContent = s.version;
+  $('#version').textContent = s.version; setTimeout(updateTermUI, 0);
   $('#s-version').textContent = s.version;
   $('#scripts-dir').textContent = s.scripts_dir; $('#s-python').textContent = s.python; $('#s-pip').textContent = `${s.python} -m pip install <package>`; $('#rs-python').textContent = 'Runs with Python: ' + s.python;
   const lm = $('#lm-pill');
@@ -170,6 +170,37 @@ async function importFiles(files) {
   if (last) { await loadScripts(last); $('#rail button[data-page=run]').click(); }
 }
 
+// ---- console input: type into a running script, or run a shell command --------
+const term = { hist: [], i: 0 };
+try { term.hist = JSON.parse(localStorage.getItem('termHist') || '[]'); } catch { }
+const isRunning = () => $('#run-state').classList.contains('running');
+function updateTermUI() {
+  $('#eof-btn').classList.toggle('hidden', !isRunning());
+  $('#term-input').placeholder = isRunning() ? 'Type here to answer the running script (Enter to send)…' : 'Type a shell command (cd, ls, python, pip…)';
+  $('#term-prompt').textContent = isRunning() ? '›' : ((state.status?.term_cwd || '~').replace(/^.*\/AIHarness/, '~/AIHarness') + ' $');
+}
+$('#term-form').onsubmit = async e => {
+  e.preventDefault(); const t = $('#term-input').value; if (!t.trim() && !isRunning()) return;
+  $('#term-input').value = '';
+  if (t.trim()) { term.hist = [...term.hist.filter(x => x !== t), t].slice(-100); term.i = term.hist.length; try { localStorage.setItem('termHist', JSON.stringify(term.hist)); } catch { } }
+  try {
+    if (isRunning()) { await api(`/runs/${state.run.id}/input`, { method: 'POST', body: { text: t } }); return; }
+    const r = await api('/terminal', { method: 'POST', body: { command: t } });
+    if (r.run) {
+      state.run = r.run; $('#files').classList.add('hidden'); $('#diagnosis').replaceChildren();
+      appendLine({ s: 'sys', x: '' }); setRunState('running'); watchRun(r.run.id); $('#run-timer').textContent = '⏱ 0:00';
+    } else {
+      appendLine({ s: r.cd ? 'sys' : 'err', x: r.cd ? '$ ' + t + '\n' + r.message : r.message }); if (state.status) state.status.term_cwd = r.cwd; updateTermUI();
+    }
+  } catch (err) { appendLine({ s: 'err', x: err.message }); }
+};
+$('#term-input').onkeydown = e => {
+  if (e.key === 'ArrowUp' && term.i > 0) { e.preventDefault(); $('#term-input').value = term.hist[--term.i]; }
+  if (e.key === 'ArrowDown') { e.preventDefault(); term.i = Math.min(term.i + 1, term.hist.length); $('#term-input').value = term.hist[term.i] || ''; }
+  if (e.key === 'd' && e.ctrlKey && isRunning() && !$('#term-input').value) { e.preventDefault(); $('#eof-btn').click(); }
+};
+$('#eof-btn').onclick = () => state.run && api(`/runs/${state.run.id}/input`, { method: 'POST', body: { eof: true } });
+
 // ---- run settings (discovered options, remembered between runs) -----------
 let rs = { params: [], values: {} }, rsTimer;
 const flagName = p => p.flags.find(f => f.startsWith('--')) || p.flags[0];
@@ -256,7 +287,7 @@ $('#ai-go').onclick = async () => {
   const original = $('#editor').value; aiResult = null; aiReview = null; $('#ai-review-btns').classList.add('hidden'); aiAbort = new AbortController();
   $('#ai-go').classList.add('hidden'); $('#ai-cancel').classList.remove('hidden'); $('#ai-apply').classList.add('hidden'); $('#ai-diff').classList.add('hidden'); $('#ai-status').textContent = 'Starting…';
   try {
-    const r = await fetch('/api/ai-edit', { method: 'POST', signal: aiAbort.signal, headers: { 'Content-Type': 'application/json' },
+    const r = await fetch('/api/ai-edit', { method: 'POST', signal: aiAbort.signal, headers: { 'Content-Type': 'application/json', 'X-Harness': '1' },
       body: JSON.stringify({ name: state.script, content: original, instruction, model: $('#ai-model').value, mode: $('#ai-mode').value }) });
     const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '';
     for (;;) {
@@ -302,6 +333,7 @@ function setRunState(s) {
   const running = s === 'running';
   $('#run-btn').classList.toggle('hidden', running); $('#stop-btn').classList.toggle('hidden', !running);
   $('#report-btn').classList.toggle('hidden', running || !state.run);
+  setTimeout(() => { updateTermUI(); if (running === false) $('#term-input').focus(); }, 0);
 }
 $('#run-btn').onclick = async () => {
   if (!state.script) return; await saveScript();
@@ -354,7 +386,7 @@ $('#chat-form').onsubmit = async e => {
   e.preventDefault(); const t = $('#chat-input').value.trim(); if (!t) return; $('#chat-input').value = '';
   chatHistory.push({ role: 'user', content: t }); $('#chat-log').append(el('div', { className: 'msg user', textContent: t }));
   const out = el('div', { className: 'msg' }); $('#chat-log').append(out); let text = '';
-  const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: $('#chat-model').value, messages: chatHistory }) });
+  const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Harness': '1' }, body: JSON.stringify({ model: $('#chat-model').value, messages: chatHistory }) });
   const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '';
   for (;;) {
     const { done, value } = await rd.read(); if (done) break; buf += dec.decode(value, { stream: true });

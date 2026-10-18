@@ -30,7 +30,7 @@ def test_diagnose_traceback_and_hints():
 def test_run_lifecycle_and_guard():
     ensure_dirs()
     from harness.server import app, runs
-    c = TestClient(app)
+    c = TestClient(app, headers={"x-harness": "1"})
     (SCRIPTS_DIR / "t_ok.py").write_text("print('hi')")
     (SCRIPTS_DIR / "t_bad.py").write_text("raise RuntimeError('boom')")
     (SCRIPTS_DIR / "t_sleep.py").write_text("import time; print('x', flush=True); time.sleep(60)")
@@ -65,7 +65,7 @@ def test_run_lifecycle_and_guard():
 
 def test_script_path_traversal_blocked():
     from harness.server import app
-    c = TestClient(app)
+    c = TestClient(app, headers={"x-harness": "1"})
     assert c.put("/api/scripts/../evil.py", json={"content": ""}).status_code in (400, 404)
     assert c.put("/api/scripts/x.txt", json={"content": ""}).status_code == 400
 
@@ -131,7 +131,7 @@ def test_ai_edit_rewrite_mode_and_guards(monkeypatch):
 def test_ai_edit_endpoint_apply_backs_up():
     from harness.config import DATA_DIR
     from harness.server import app
-    c = TestClient(app)
+    c = TestClient(app, headers={"x-harness": "1"})
     (SCRIPTS_DIR / "e.py").write_text("old = 1\n")
     r = c.post("/api/ai-edit/apply", json={"name": "e.py", "content": "new = 2\n"}).json()
     assert (SCRIPTS_DIR / "e.py").read_text() == "new = 2\n"
@@ -152,7 +152,7 @@ def test_params_discovery_and_files(tmp_path):
     assert params.parse_env("A=1\n# c\nB = two") == {"A": "1", "B": "two"}
 
     from harness.server import app
-    c = TestClient(app)
+    c = TestClient(app, headers={"x-harness": "1"})
     out = tmp_path / "gen"
     (SCRIPTS_DIR / "w.py").write_text(
         "import argparse, pathlib\nap=argparse.ArgumentParser()\nap.add_argument('--out-dir')\n"
@@ -172,7 +172,7 @@ def test_params_discovery_and_files(tmp_path):
 def test_progress_bar_stays_one_live_line():
     ensure_dirs()
     from harness.server import app
-    c = TestClient(app)
+    c = TestClient(app, headers={"x-harness": "1"})
     (SCRIPTS_DIR / "bar.py").write_text(
         "import sys, time\n"
         "for i in range(1, 4):\n"
@@ -246,7 +246,7 @@ def test_pip_uses_script_python_and_maps_clang(monkeypatch):
         returncode, stdout, stderr = 0, "ok", ""
 
     monkeypatch.setattr(server.subprocess, "run", lambda cmd, **k: calls.append(cmd) or P())
-    c = TestClient(server.app)
+    c = TestClient(server.app, headers={"x-harness": "1"})
     r = c.post("/api/pip", json={"package": "libclang requests>=2"}).json()
     assert r["ok"] and calls[-1][1:] == ["-m", "pip", "install", "libclang", "requests>=2"]
     assert calls[-1][0] == config.script_python()
@@ -277,3 +277,53 @@ def test_params_path_default_append_and_help_path(tmp_path, monkeypatch):
     monkeypatch.setattr(runner.os.path, "isdir", lambda d: d == "/opt/homebrew/bin")
     assert runner.gui_safe_path("/usr/bin:/bin").split(":")[:2] == ["/opt/homebrew/bin", "/usr/bin"]
     assert runner.gui_safe_path("/opt/homebrew/bin:/usr/bin") == "/opt/homebrew/bin:/usr/bin"  # no duplicates
+
+
+def _wait_done(c, rid, n=80):
+    for _ in range(n):
+        d = c.get(f"/api/runs/{rid}").json()
+        if d["status"] != "running":
+            return d
+        time.sleep(0.1)
+    return d
+
+
+def test_console_input_terminal_and_guards(tmp_path):
+    ensure_dirs()
+    from harness.server import app, runs
+    c = TestClient(app, headers={"x-harness": "1"})
+    (SCRIPTS_DIR / "ask.py").write_text("name = input('Your name? ')\nprint('hello', name)\nprint('rest:', input())\n")
+    rid = c.post("/api/runs", json={"script": "ask.py"}).json()["id"]
+    time.sleep(0.8)
+    assert c.post(f"/api/runs/{rid}/input", json={"text": "Ada"}).status_code == 200
+    assert c.post(f"/api/runs/{rid}/input", json={"text": "bye"}).status_code == 200
+    d = _wait_done(c, rid)
+    out = d["output"]
+    assert d["status"] == "ok" and "hello Ada" in out and "rest: bye" in out and "Your name?" in out
+    assert any(l["s"] == "in" and l["x"] == "Ada" for l in d["lines"])  # typed text is echoed
+    assert c.post(f"/api/runs/{rid}/input", json={"text": "late"}).status_code == 409  # finished
+
+    (SCRIPTS_DIR / "eof.py").write_text("import sys\nprint(len(sys.stdin.read()))\n")
+    rid = c.post("/api/runs", json={"script": "eof.py"}).json()["id"]
+    time.sleep(0.5)
+    c.post(f"/api/runs/{rid}/input", json={"text": "abc"})
+    c.post(f"/api/runs/{rid}/input", json={"eof": True})
+    assert _wait_done(c, rid)["output"].strip().endswith("4")  # 'abc\n' then EOF
+
+    # shell prompt: cd persists, commands run there, python/pip are the scripts' interpreter
+    sub = tmp_path / "work dir"
+    sub.mkdir()
+    (sub / "marker.txt").write_text("x")
+    assert c.post("/api/terminal", json={"command": f'cd "{sub}"'}).json()["cwd"] == str(sub.resolve())
+    r = c.post("/api/terminal", json={"command": "ls && python -c 'import sys; print(sys.executable)'"}).json()
+    d = _wait_done(c, r["run"]["id"])
+    assert d["status"] == "ok" and "marker.txt" in d["output"] and d["script"].startswith("$ ls")
+    assert c.post("/api/terminal", json={"command": "cd /definitely/not/here"}).json()["cd"] is False
+    assert c.post("/api/terminal", json={"command": "exit 3"}).status_code == 200
+    runs.term_cwd = SCRIPTS_DIR
+
+    # security: writes need the header, and only local Host names are served
+    bare = TestClient(app)
+    assert bare.post("/api/terminal", json={"command": "ls"}).status_code == 403
+    assert bare.get("/api/ping").status_code == 200
+    assert TestClient(app, headers={"x-harness": "1", "host": "evil.example.com"}).get("/api/ping").status_code == 403

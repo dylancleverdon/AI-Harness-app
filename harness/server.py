@@ -55,7 +55,7 @@ def ping():
 def status():
     return {"version": VERSION, "lmstudio": lmstudio.status(), "memory": monitor.latest,
             "settings": settings.get(), "scripts_dir": str(SCRIPTS_DIR), "update": _update,
-            "python": script_python()}
+            "python": script_python(), "term_cwd": str(runs.term_cwd)}
 
 
 @app.get("/api/settings")
@@ -233,6 +233,27 @@ def get_run(run_id: str):
     return d
 
 
+@app.post("/api/runs/{run_id}/input")
+def run_input(run_id: str, body: dict = Body(...)):
+    """Type into a running script's stdin (answers input() prompts). eof=true closes stdin (Ctrl-D)."""
+    ok = runs.send_input(run_id, str(body.get("text", "")), bool(body.get("eof")))
+    if not ok:
+        raise HTTPException(409, "that run isn't running (or its input is closed)")
+    return {"ok": True}
+
+
+@app.post("/api/terminal")
+def terminal(body: dict = Body(...)):
+    """Console prompt: run a shell command in the terminal's folder (`cd` changes it)."""
+    cmd = str(body.get("command", "")).strip()
+    if not cmd:
+        raise HTTPException(400, "empty command")
+    if cmd == "cd" or cmd.startswith("cd "):
+        ok, msg = runs.change_dir(cmd[3:].strip().strip("\"'") if cmd != "cd" else "")
+        return {"cd": ok, "message": msg, "cwd": str(runs.term_cwd)}
+    return {"run": runs.start_command(cmd).summary(), "cwd": str(runs.term_cwd)}
+
+
 @app.post("/api/runs/{run_id}/stop")
 def stop_run(run_id: str):
     return {"ok": runs.stop(run_id)}
@@ -335,6 +356,18 @@ def restart(force: bool = False):
         raise HTTPException(409, "scripts are running; stop them first or force")
     updater.restart_soon()
     return {"ok": True}
+
+
+@app.middleware("http")
+async def local_only(request, call_next):
+    """The server can run code, so refuse anything that isn't this app talking to itself: a Host check
+    (blocks DNS rebinding) and a custom header on writes (a web page on another site can't set it)."""
+    host = (request.headers.get("host") or "").split(":")[0]
+    if host not in ("127.0.0.1", "localhost", "testserver"):
+        return PlainTextResponse("forbidden host", status_code=403)
+    if request.method in ("POST", "PUT", "DELETE") and request.headers.get("x-harness") != "1":
+        return PlainTextResponse("missing X-Harness header", status_code=403)
+    return await call_next(request)
 
 
 app.mount("/static", StaticFiles(directory=STATIC), name="static")

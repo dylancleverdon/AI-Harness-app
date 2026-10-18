@@ -112,3 +112,8 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 
 .pkgrow { display: flex; gap: 8px; align-items: end; margin: 6px 0; } .pkgrow label { flex: 1; } .pkgrow button { margin-bottom: 0; }
 #pkg-log { max-height: 140px; overflow: auto; background: #101013; padding: 8px; border-radius: 6px; font: 11px/1.4 ui-monospace, Menlo, monospace; white-space: pre-wrap; }
+
+#term-form { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-top: 1px solid var(--border); background: #131317; }
+#term-prompt { color: var(--accent); font: 12px ui-monospace, Menlo, monospace; white-space: nowrap; max-width: 40%; overflow: hidden; text-overflow: ellipsis; }
+#term-input { flex: 1; font: 12.5px ui-monospace, "SF Mono", Menlo, monospace; background: transparent; border: 0; outline: 0 !important; padding: 4px 0; }
+#console .in { color: #8fd3ff; } #console .in::before { content: "› "; }

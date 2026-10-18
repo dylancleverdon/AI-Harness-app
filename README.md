@@ -44,6 +44,15 @@ The install is a git checkout, so updating is just a pull:
 
 Memory is classified green / yellow / orange / red from % available (defaults: yellow < 30%, orange < 15%, red < 8%) and macOS memory pressure. If the level stays at or above your trip level (default **orange**) for 2 consecutive seconds, running scripts get SIGTERM (SIGKILL after 4s), a macOS notification fires, and the run is marked `killed` with the memory numbers. Optionally it also unloads LM Studio models via the `lms` CLI. Try it with `memory_stress.py`.
 
+## Typing into the console
+
+The input line under the console works in two modes:
+
+- **While a script is running**, what you type is sent to the script (answers `input()` prompts; the prompt text shows pinned above the line). **Ctrl-D** closes the script's input for programs that read until end-of-file.
+- **When nothing is running**, it's a small shell prompt: it runs commands in the scripts folder (`cd` works and is remembered), with `python` and `pip` being the same ones your scripts use. Output streams into the console, shows up in Reports, and can be stopped like any run. ↑/↓ recall earlier commands.
+
+The server only answers requests from this app itself (local Host names, plus a header on every write), because it can run code.
+
 ## Keep awake, timers
 
 - **☕ Keep awake** (top bar switch, on by default): while a script is running, the Mac is kept from sleeping using macOS's built-in `caffeinate` (idle and system sleep, plus the disk; the screen is still allowed to turn off). It's released the moment the last script finishes or you flip the switch off, and it can't outlive the app. Closing the lid on battery power will still put a Mac to sleep.

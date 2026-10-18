@@ -109,6 +109,36 @@ class RunManager:
         self.events = []  # guard / system events shown in the UI
         self._trip_count = 0
         self.caffeine = None  # `caffeinate` process while we are keeping the Mac awake
+        self.term_cwd = SCRIPTS_DIR  # working folder of the console's shell prompt
+
+    # ---- typing into a running program -------------------------------------
+    def send_input(self, run_id, text, eof=False):
+        run = self.runs.get(run_id)
+        if not run or run.status != "running" or not run.proc or not run.proc.stdin:
+            return False
+        try:
+            if text is not None and not eof:
+                run.proc.stdin.write((text + "\n").encode())
+                run.add("in", text)
+            if eof:
+                run.proc.stdin.close()
+                run.add("sys", "[stdin closed (Ctrl-D)]")
+        except (BrokenPipeError, ValueError, OSError):
+            return False
+        return True
+
+    def change_dir(self, target):
+        """Handle `cd` for the console prompt. Returns (ok, message)."""
+        p = Path(os.path.expandvars(os.path.expanduser(target or "~")))
+        p = p if p.is_absolute() else self.term_cwd / p
+        try:
+            p = p.resolve(strict=True)
+        except OSError:
+            return False, f"cd: no such folder: {target}"
+        if not p.is_dir():
+            return False, f"cd: not a folder: {target}"
+        self.term_cwd = p
+        return True, str(p)
 
     # ---- keep awake ------------------------------------------------------
     def _sync_awake(self, want):
@@ -131,23 +161,37 @@ class RunManager:
         path = (SCRIPTS_DIR / script).resolve()
         if SCRIPTS_DIR.resolve() not in path.parents or not path.is_file():
             raise FileNotFoundError(script)
-        cfg = settings.get()
         run = Run(script, args)
+        env = self.run_env(run, extra_env)
+        import shlex
+        cmd = [script_python(), "-u", str(path)] + (argv or []) + (shlex.split(args) if args else [])
+        run.args = " ".join(shlex.quote(a) for a in cmd[3:])
+        return self._launch(run, cmd, SCRIPTS_DIR, env, watch or [SCRIPTS_DIR])
+
+    def run_env(self, run, extra_env=None):
         base = lmstudio.base_url()
         env = {**os.environ, "PYTHONUNBUFFERED": "1", "LMSTUDIO_BASE_URL": base,
                "OPENAI_BASE_URL": base + "/v1", "OPENAI_API_KEY": "lm-studio",
                "AIHARNESS_RUN_ID": run.id, "AIHARNESS_MODEL": lmstudio.loaded_model(), **(extra_env or {})}
-        py = script_python()
         env["PATH"] = gui_safe_path(env.get("PATH", ""))
-        import shlex
-        cmd = [py, "-u", str(path)] + (argv or []) + (shlex.split(args) if args else [])
-        run.args = " ".join(shlex.quote(a) for a in cmd[3:])
-        run.watch = watch or [SCRIPTS_DIR]
+        return env
+
+    def start_command(self, command):
+        """Run a shell command in the terminal's current folder, with the scripts' Python first on PATH
+        so `python` and `pip` here are the same ones scripts use."""
+        run = Run(f"$ {command[:60]}", "")
+        env = self.run_env(run)
+        py_dir = os.path.dirname(script_python())
+        if py_dir and os.path.isdir(py_dir):
+            env["PATH"] = py_dir + ":" + env["PATH"]
+        return self._launch(run, ["/bin/sh", "-c", command], self.term_cwd, env, [], shown=command)
+
+    def _launch(self, run, cmd, cwd, env, watch, shown=None):
+        run.watch = watch
         run.before = snapshot(run.watch)
         try:
-            run.proc = subprocess.Popen(cmd, cwd=SCRIPTS_DIR, env=env, stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE, bufsize=0,
-                                        start_new_session=True)
+            run.proc = subprocess.Popen(cmd, cwd=cwd, env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE, bufsize=0, start_new_session=True)
         except OSError as e:
             run.add("sys", f"Could not start: {e}")
             run.status, run.ended = "failed", time.time()
@@ -155,7 +199,7 @@ class RunManager:
             self.runs[run.id] = run
             return run
         self.runs[run.id] = run
-        run.add("sys", f"$ {' '.join(cmd)}")
+        run.add("sys", f"$ {shown or ' '.join(cmd)}")
         run.pumps = []
         for stream, pipe in (("out", run.proc.stdout), ("err", run.proc.stderr)):
             t = threading.Thread(target=self._pump, args=(run, stream, pipe), daemon=True)
