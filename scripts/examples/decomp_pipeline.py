@@ -98,6 +98,7 @@ from __future__ import annotations
 
 import argparse
 import atexit
+import contextlib
 import hashlib
 import json
 import os
@@ -111,7 +112,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, as_completed, wait
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -188,13 +189,20 @@ def say(text: str) -> None:
         print(text, flush=True)
 
 
+_BAR_TL = threading.local()       # the bar item this thread is working on
+
+
 def phase(text: str) -> None:
-    """Tell the bar what the item in progress is doing now (sequential loops)."""
+    """Tell the bar what this thread's item is doing now."""
     p = BAR["p"]
     if p is not None:
         with p.lock:
-            for v in p.active.values():
-                v[1] = text
+            key = getattr(_BAR_TL, "key", None)
+            if key in p.active:
+                p.active[key][1] = text
+            else:
+                for v in p.active.values():
+                    v[1] = text
 
 
 def plog(P: Paths, msg: str) -> None:
@@ -333,8 +341,46 @@ class ModelError(Exception):
 # What the model is doing right now, for the progress bar and the stall warning:
 # requests waiting for an answer, answers received, when anything last arrived
 # (thinking counts), and answers that were only thinking with no actual reply.
-MODEL_ACTIVITY = {"waiting": 0, "answered": 0, "last": 0.0, "thinking_only": 0}
+MODEL_ACTIVITY = {"waiting": 0, "answered": 0, "last": 0.0, "thinking_only": 0,
+                  "busy": 0.0, "busy_since": 0.0}
+_ACT_LOCK = threading.Lock()
 _TL = threading.local()          # per-thread count of model calls (per function)
+
+
+def _model_started():
+    with _ACT_LOCK:
+        if MODEL_ACTIVITY["waiting"] == 0:
+            MODEL_ACTIVITY["busy_since"] = time.time()
+        MODEL_ACTIVITY["waiting"] += 1
+
+
+def _model_finished():
+    with _ACT_LOCK:
+        MODEL_ACTIVITY["waiting"] -= 1
+        if MODEL_ACTIVITY["waiting"] == 0:
+            MODEL_ACTIVITY["busy"] += time.time() - MODEL_ACTIVITY["busy_since"]
+
+
+def model_busy_seconds() -> float:
+    """Total time at least one request was with the model (so far)."""
+    with _ACT_LOCK:
+        extra = time.time() - MODEL_ACTIVITY["busy_since"] if MODEL_ACTIVITY["waiting"] else 0
+        return MODEL_ACTIVITY["busy"] + extra
+
+
+class ModelUse:
+    """How busy the model was during one stage: "model busy 93%"."""
+
+    def __init__(self):
+        self.t0, self.b0 = time.time(), model_busy_seconds()
+
+    def share(self) -> Optional[float]:
+        el = time.time() - self.t0
+        return (model_busy_seconds() - self.b0) / el if el > 1 else None
+
+    def text(self) -> str:
+        s = self.share()
+        return f"model busy {s * 100:.0f}%" if s is not None else "model busy —"
 
 
 def calls_on_this_thread() -> int:
@@ -425,7 +471,7 @@ class ModelClient:
         sent = time.time()
         self.calls += 1
         _TL.calls = calls_on_this_thread() + 1
-        MODEL_ACTIVITY["waiting"] += 1
+        _model_started()
         MODEL_ACTIVITY["last"] = time.time()
         try:
             if self.kind == "lmstudio":
@@ -457,7 +503,7 @@ class ModelClient:
                          f"server is on and the model is loaded.")
             return None
         finally:
-            MODEL_ACTIVITY["waiting"] -= 1
+            _model_finished()
             if gate:
                 gate.release()
         MODEL_ACTIVITY["answered"] += 1
@@ -526,6 +572,27 @@ def _read_stream(req, kind, timeout=1800):
 
 
 CLIENT: dict = {"c": None}
+
+
+def work_pool(workers: int, items: list, fn, every=0, checkpoint=None) -> None:
+    """fn(item) for every item, on `workers` threads, handed out in order. While
+    one item waits for the model, the others compile, test and prepare their own
+    request, so the model's next job is ready the moment it finishes one (the
+    model gate still limits how many requests it gets at once)."""
+    pool = ThreadPoolExecutor(max_workers=max(1, workers))
+    futs = [pool.submit(fn, it) for it in items]
+    last = time.time()
+    try:
+        for k, fu in enumerate(as_completed(futs), 1):
+            fu.result()
+            # save every `every` items, and at least every 30 seconds
+            if checkpoint and ((every and k % every == 0) or time.time() - last > 30):
+                checkpoint()
+                last = time.time()
+    except BaseException:
+        pool.shutdown(wait=False, cancel_futures=True)
+        raise
+    pool.shutdown(wait=True)
 
 
 def ask_model(model, messages, ctx, max_out=None, temperature=0.2):
@@ -2211,6 +2278,7 @@ class Progress:
     def begin(self, key, label):
         with self.lock:
             self.active[key] = [label, "", time.time()]
+        _BAR_TL.key = key
 
     def set_phase(self, key, phase):
         with self.lock:
@@ -2429,11 +2497,12 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     GATE["gate"] = ModelGate(args.parallel)
     GATE["tuner"] = None
     answered0 = MODEL_ACTIVITY["answered"]
+    use = ModelUse()
 
     def bar_extra():
         # proof of life: is a request with the model right now, and how many came back
         m = (f"model: {'working on ' + str(MODEL_ACTIVITY['waiting']) if MODEL_ACTIVITY['waiting'] else 'idle'}"
-             f", {MODEL_ACTIVITY['answered'] - answered0} answers")
+             f", {MODEL_ACTIVITY['answered'] - answered0} answers, {use.text()[6:]}")
         return m + (f" | parallel {GATE['gate'].limit}" if args.auto_parallel else "")
     prog.extra = bar_extra
     if args.auto_parallel:
@@ -2466,7 +2535,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
             elif entry["status"] == "skipped" and old.get("retries"):
                 entry["retries"] = old["retries"]
             done[key] = entry
-            save_progress(P, progress)
+            dirty[0] = True                   # saved by the main loop (every ~2s)
             if entry["status"] == "done":
                 counts["done"] += 1
         prog.end(key, text)
@@ -2810,20 +2879,43 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                + (f", {note}" if note else "") + ", {secs})"
                + (f"  [check: {', '.join(entry['suspect'])}]" if why else ""))
 
-    # Keep functions in progress, handed out in program order
+    # Keep functions in progress, handed out in program order: --parallel with the
+    # model, plus a few more being prepared (pseudocode, prompt) so a request is
+    # always waiting the moment the model finishes one.
     pending, it = set(), iter(todo)
     warned = [0.0]
+    dirty = [False]
+    last_save = [time.time()]
+    out_every = [30.0]
+
+    def save_now():
+        with state:
+            if dirty[0]:
+                save_progress(P, progress)
+                dirty[0] = False
+        last_save[0] = time.time()
+
+    def outputs_now():
+        # from a copy, so finishing functions never wait for this (it reads every
+        # function and can take a while on a big program)
+        with state:
+            snap = {"functions": {k: dict(v) for k, v in done.items()}}
+        t0 = time.time()
+        write_outputs(P, snap, order, args.comments)
+        out_every[0] = max(30.0, 10 * (time.time() - t0))
     reached_max = False
     try:
-        workers = (args.max_parallel + 4) if args.auto_parallel else args.parallel
+        workers = (args.max_parallel + 4) if args.auto_parallel else args.parallel + 2
         # (not a "with" block: leaving one waits for every function in progress to
         # finish, which made Ctrl+C slow to pause)
         pool = ThreadPoolExecutor(max_workers=workers)
         while True:
             # with --auto-parallel, a few extra functions are kept ready (pseudocode
             # fetched) so the model never waits on Ghidra
-            target = GATE["gate"].limit + 4 if args.auto_parallel else args.parallel
+            target = GATE["gate"].limit + 4 if args.auto_parallel else args.parallel + 2
             while len(pending) < target and not stopping.is_set():
+                if args.max and counts["done"] + len(pending) >= args.max:
+                    break                             # --max: no more than asked for
                 nxt = next(it, None)
                 if nxt is None:
                     break
@@ -2840,9 +2932,10 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                          f"{MODEL_ACTIVITY['waiting']} request(s) are waiting. Check LM "
                          f"Studio's server log: the model may have been unloaded or be stuck "
                          f"(a huge prompt can also take this long).")
-            if time.time() - last_write > 30:
-                with state:
-                    write_outputs(P, progress, order, args.comments)
+            if dirty[0] and time.time() - last_save[0] > 2:
+                save_now()
+            if time.time() - last_write > out_every[0]:
+                outputs_now()
                 last_write = time.time()
             if args.max and counts["done"] >= args.max and not stopping.is_set():
                 stopping.set()                        # let the ones running finish
@@ -2851,6 +2944,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     except KeyboardInterrupt:
         stopping.set()
         prog.close()
+        save_now()
         with state:
             write_outputs(P, progress, order, args.comments)
         try:
@@ -2860,6 +2954,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         print("\nPaused. Run the same command to carry on from here.")
         os._exit(0)                       # don't wait for replies still being written
     prog.close()
+    save_now()
     if GATE["tuner"]:
         GATE["tuner"].stop.set()
     write_outputs(P, progress, order, args.comments)
@@ -2949,6 +3044,7 @@ class Config:
     no_pseudo: bool = False           # skip the pseudocode recovery stage
     # where files about to be replaced are copied first (None: don't)
     snapshot_dir: object = field(default_factory=lambda: (lambda: None))
+    workers: int = 1                  # functions worked on at once (CPU side)
 
     @property
     def funcs_dir(self) -> Path: return self.workdir / "funcs"
@@ -3959,14 +4055,75 @@ def build_pch(cfg: Config) -> bool:
     return True
 
 
-def _pch_flags(cfg: Config) -> list[str]:
+class RWLock:
+    """Many readers or one writer. Compiles read shared.h (and its precompiled
+    header) at the same time; a header repair waits for them and has it alone.
+    A thread holding the write lock may also read."""
+
+    def __init__(self):
+        self._cv = threading.Condition()
+        self._readers = 0
+        self._writer = None
+        self._depth = 0
+        self._waiting = 0
+
+    @contextlib.contextmanager
+    def read(self):
+        me = threading.get_ident()
+        with self._cv:
+            mine = self._writer == me
+            if not mine:
+                while self._writer is not None or self._waiting:
+                    self._cv.wait()
+                self._readers += 1
+        try:
+            yield
+        finally:
+            if not mine:
+                with self._cv:
+                    self._readers -= 1
+                    self._cv.notify_all()
+
+    @contextlib.contextmanager
+    def write(self):
+        me = threading.get_ident()
+        with self._cv:
+            if self._writer == me:
+                self._depth += 1
+            else:
+                self._waiting += 1
+                while self._writer is not None or self._readers:
+                    self._cv.wait()
+                self._waiting -= 1
+                self._writer, self._depth = me, 1
+        try:
+            yield
+        finally:
+            with self._cv:
+                self._depth -= 1
+                if not self._depth:
+                    self._writer = None
+                    self._cv.notify_all()
+
+
+HEADER_LOCK = RWLock()
+
+
+def _pch_flags(cfg: Config, rebuild=True) -> list[str]:
     """Use the PCH only if it's at least as new as shared.h (the header can be
-    repaired mid-run); rebuild it once if it's stale."""
+    repaired mid-run); rebuild it once if it's stale (rebuild=False: just say
+    whether it can be used)."""
     pch = _pch_path(cfg)
+
+    def fresh():
+        return pch.exists() and pch.stat().st_mtime >= cfg.shared_h.stat().st_mtime
     try:
-        if not pch.exists() or pch.stat().st_mtime < cfg.shared_h.stat().st_mtime:
-            if not build_pch(cfg):
+        if not fresh():
+            if not rebuild:
                 return []
+            with HEADER_LOCK.write():
+                if not fresh() and not build_pch(cfg):
+                    return []
         return ["-include-pch", str(pch)]
     except OSError:
         return []
@@ -3977,10 +4134,12 @@ def compile_tu(cfg: Config, rel_path: str) -> tuple[bool, str, list[dict]]:
     (The old version passed -fdiagnostics-format=json, which is a GCC-only flag:
     clang rejects it, so EVERY function was reported as failing.)"""
     src = cfg.workdir / rel_path
-    cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}",
-           "-fsyntax-only", "-w", "-ferror-limit=20", *PIC_FLAGS,
-           *_pch_flags(cfg), *cfg.extra_flags, str(src)]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
+    _pch_flags(cfg)                       # brings the PCH up to date first, if needed
+    with HEADER_LOCK.read():
+        cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}",
+               "-fsyntax-only", "-w", "-ferror-limit=20", *PIC_FLAGS,
+               *_pch_flags(cfg, rebuild=False), *cfg.extra_flags, str(src)]
+        proc = subprocess.run(cmd, capture_output=True, text=True)
     return proc.returncode == 0, proc.stderr, []
 
 
@@ -4038,6 +4197,11 @@ def _unit_at(units: list[dict], idx: int) -> Optional[dict]:
 
 
 def repair_header(cfg: Config, header_rel: str, max_iter: int = 60) -> bool:
+    with HEADER_LOCK.write():                 # no compile reads it halfway through
+        return _repair_header(cfg, header_rel, max_iter)
+
+
+def _repair_header(cfg: Config, header_rel: str, max_iter: int = 60) -> bool:
     """Make shared.h compile by switching off broken DECLARATIONS, never by
     commenting out arbitrary lines.
 
@@ -4153,7 +4317,8 @@ def validate_headers(cfg: Config) -> bool:
         return False
     if not repair_header(cfg, "shared.h"):
         return False
-    build_pch(cfg)
+    with HEADER_LOCK.write():
+        build_pch(cfg)
     # globals.cpp: definitions whose extern was disabled, duplicates, unknown
     # types... switch those off too so the final link isn't blocked by them.
     if not repair_header(cfg, "globals.cpp"):
@@ -4516,7 +4681,15 @@ def load_cache(cfg: Config) -> dict:
     return {}
 
 def save_cache(cfg: Config, cache: dict) -> None:
-    cfg.cache_path.write_text(json.dumps(cache, indent=0))
+    for _ in range(20):                       # other workers may be adding to it
+        try:
+            text = json.dumps(dict(cache), indent=0)
+            break
+        except RuntimeError:
+            time.sleep(0.02)
+    else:
+        return
+    write_atomic(cfg.cache_path, text)
 
 def cache_key(src: str, err: str) -> str:
     h = hashlib.sha256()
@@ -4542,7 +4715,8 @@ def quarantine(cfg: Config, rec: FuncRecord) -> None:
     log(cfg, f"  QUARANTINE {rec.name}: {rec.last_error.splitlines()[-1] if rec.last_error else '?'}")
 
 
-_FIXCTX: dict = {"plan": ""}
+_FIXCTX: dict = {}
+_FIX_TL = threading.local()       # this thread's last plan (fix stage)
 
 
 def _first_error(err: str, rel: str) -> tuple[int, str]:
@@ -4557,7 +4731,7 @@ def _first_error(err: str, rel: str) -> tuple[int, str]:
 def compile_fix_edit(cfg: Config, rec: FuncRecord, src: str, err: str) -> Optional[str]:
     """Plan and make one small edit to the lines with the first compile error."""
     line, msg = _first_error(err, rec.file)
-    _FIXCTX["plan"] = ""
+    _FIX_TL.plan = ""
     if not line:
         return None
     if not cfg.fix_model_used and not model_check(cfg):
@@ -4572,7 +4746,7 @@ def compile_fix_edit(cfg: Config, rec: FuncRecord, src: str, err: str) -> Option
                         f"what the code does; don't rename the function.",
                         context=(f"Declarations the program already has (use them, don't "
                                  f"redefine them):\n{decls}" if decls else ""))
-    _FIXCTX["plan"] = ctx.last_plan
+    _FIX_TL.plan = ctx.last_plan
     MODEL_STATS["calls"] += 1
     if new is None:
         MODEL_STATS["no_answer"] += 1
@@ -4628,7 +4802,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             phase("compiling the model's edit")
             ok3, err3, _ = compile_tu(cfg, rel)
             write_note(cfg, rel, f"[compile] {_first_error(err, rel)[1][:120]} — plan: "
-                                 f"{_FIXCTX['plan'][:160]} — "
+                                 f"{getattr(_FIX_TL, 'plan', '')[:160]} — "
                                  + ("compiles now." if ok3 else
                                     "still fails: " + _first_error(err3, rel)[1][:100]))
             if ok3:
@@ -4648,23 +4822,31 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
                and not records[m].quarantined]
     total = len(failing)
     log(cfg, f"  fixer loop over {total} failing TU(s), dependency-ordered")
-    fixed_n = 0
+    fixed = [0]
+    use = ModelUse()
     prog = Progress(total, 0, title="repairing functions (callees first)")
-    prog.extra = lambda: f"{fixed_n} fixed"
-    try:
-        for i, m in enumerate(failing, 1):
-            rec = records[m]
-            t1 = time.time()
-            prog.begin(m, rec.name)
+    prog.extra = lambda: f"{fixed[0]} fixed | {use.text()}"
+
+    def one(item):
+        i, m = item
+        rec = records[m]
+        t1 = time.time()
+        prog.begin(m, rec.name)
+        try:
             ok = repair_tu(cfg, rec, cache)
-            if ok:
-                fixed_n += 1
-            log(cfg, f"    [{i}/{total}] {rec.name} -> "
-                     f"{'fixed' if ok else 'quarantined'} ({fmt_duration(time.time() - t1)})")
+        finally:
             prog.end(m)
-            if i % 25 == 0:
-                # this loop can run for hours; save so a rerun picks up from here
-                save_manifest(cfg, records)
+        if ok:
+            fixed[0] += 1
+        log(cfg, f"    [{i}/{total}] {rec.name} -> "
+                 f"{'fixed' if ok else 'quarantined'} ({fmt_duration(time.time() - t1)})")
+
+    def checkpoint():
+        # this loop can run for hours; save so a rerun picks up from here
+        save_manifest(cfg, records)
+        save_cache(cfg, cache)
+    try:
+        work_pool(cfg.workers, list(enumerate(failing, 1)), one, 25, checkpoint)
     finally:
         prog.close()
     save_cache(cfg, cache)
@@ -5011,28 +5193,36 @@ def pseudocode_recovery(cfg: Config, records: dict[str, FuncRecord]) -> None:
     if not current:
         cfg.fix_model_used = ""
         log(cfg, "  (model not available — only the faithful fallback will run)")
-    fixed_n, faithful_n, t0 = 0, 0, time.time()
+    t0 = time.time()
+    counts = {"fixed": 0, "faithful": 0}
+    use = ModelUse()
     prog = Progress(len(targets), 0, title="rebuilding quarantined functions")
-    prog.extra = lambda: f"{fixed_n} re-derived"
-    try:
-        for i, m in enumerate(targets, 1):
-            rec = records[m]
-            if not _pseudo_for(rec, export, index):
-                prog.end(m)
-                continue
-            prog.begin(m, rec.name)
-            if recover_one(cfg, rec, export, index):
-                fixed_n += 1
-                if rec.recovery == "faithful-pseudocode":
-                    faithful_n += 1
-                log(cfg, f"    [{i}/{len(targets)}] {rec.name} -> re-derived ({rec.recovery})")
-            else:
-                log(cfg, f"    [{i}/{len(targets)}] {rec.name} -> still quarantined")
+    prog.extra = lambda: f"{counts['fixed']} re-derived | {use.text()}"
+
+    def one(item):
+        i, m = item
+        rec = records[m]
+        if not _pseudo_for(rec, export, index):
             prog.end(m)
-            if i % 20 == 0:
-                save_manifest(cfg, records)
+            return
+        prog.begin(m, rec.name)
+        try:
+            ok = recover_one(cfg, rec, export, index)
+        finally:
+            prog.end(m)
+        if ok:
+            counts["fixed"] += 1
+            if rec.recovery == "faithful-pseudocode":
+                counts["faithful"] += 1
+            log(cfg, f"    [{i}/{len(targets)}] {rec.name} -> re-derived ({rec.recovery})")
+        else:
+            log(cfg, f"    [{i}/{len(targets)}] {rec.name} -> still quarantined")
+    try:
+        work_pool(cfg.workers, list(enumerate(targets, 1)), one, 20,
+                  lambda: save_manifest(cfg, records))
     finally:
         prog.close()
+    fixed_n, faithful_n = counts["fixed"], counts["faithful"]
     save_manifest(cfg, records)
     log(cfg, f"  pseudocode recovery: {fixed_n} re-derived "
              f"({faithful_n} as faithful pseudocode — review these), "
@@ -5642,6 +5832,7 @@ class ImproveState:
         (self.dir / "history").mkdir(parents=True, exist_ok=True)
         (self.dir / "notes").mkdir(parents=True, exist_ok=True)
         self.path = self.dir / "state.json"
+        self._lock = threading.Lock()
         self.data = {"funcs": {}, "overlay": [], "rounds": [], "global": {}}
         if self.path.exists():
             try:
@@ -5657,7 +5848,16 @@ class ImproveState:
         return self.data["global"].setdefault(key, default)
 
     def save(self):
-        write_atomic(self.path, json.dumps(self.data, indent=1))
+        with self._lock:
+            for _ in range(20):               # workers may be adding to it right now
+                try:
+                    text = json.dumps(self.data, indent=1)
+                    break
+                except RuntimeError:
+                    time.sleep(0.02)
+            else:
+                return
+            write_atomic(self.path, text)
 
 
 def _note_file(cfg: "Config", rel: str) -> Path:
@@ -6151,14 +6351,25 @@ class ImproveCtx:
         self.model = cfg.fix_model_used or None
         self.checks = checks
         self.blocklist = load_blocklist(P) if P else []
+        self._tl = threading.local()
+        self._count_lock = threading.Lock()
         self.last_plan = ""
         self._arity = None
         self.stats: dict[str, dict[str, int]] = {}
 
+    @property
+    def last_plan(self) -> str:
+        return getattr(self._tl, "plan", "")
+
+    @last_plan.setter
+    def last_plan(self, v: str) -> None:
+        self._tl.plan = v
+
     # -- bookkeeping
     def count(self, check: str, what: str, n=1):
-        d = self.stats.setdefault(check, {})
-        d[what] = d.get(what, 0) + n
+        with self._count_lock:
+            d = self.stats.setdefault(check, {})
+            d[what] = d.get(what, 0) + n
 
     def text(self, rec) -> str:
         return (self.cfg.workdir / rec.file).read_text()
@@ -6526,9 +6737,12 @@ WARN_FLAGS_GCC = ["-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-sign-compar
 def detect_warnings(ctx, rec, text):
     cfg = ctx.cfg
     flags = WARN_FLAGS_CLANG if "clang" in Path(cfg.cxx).name else WARN_FLAGS_GCC
-    cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}", "-fsyntax-only", *flags,
-           *PIC_FLAGS, *_pch_flags(cfg), *cfg.extra_flags, str(cfg.workdir / rec.file)]
-    r = subprocess.run(cmd, capture_output=True, text=True)
+    _pch_flags(cfg)
+    with HEADER_LOCK.read():
+        cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}", "-fsyntax-only", *flags,
+               *PIC_FLAGS, *_pch_flags(cfg, rebuild=False), *cfg.extra_flags,
+               str(cfg.workdir / rec.file)]
+        r = subprocess.run(cmd, capture_output=True, text=True)
     out = []
     name = Path(rec.file).name
     for l in r.stderr.splitlines():
@@ -6883,6 +7097,23 @@ _CHECK = {c[0]: c for c in CHECKS}
 _CHECK_OF = {"calls": "behaviour", "difftest": "behaviour", "sanitizer": "behaviour"}
 
 
+def quick_score(ctx: ImproveCtx, rec) -> float:
+    """The cheap checks only (no compiling or tests): to decide what to look at first."""
+    try:
+        text = ctx.text(rec)
+    except OSError:
+        return 0.0
+    total = 0.0
+    for name, detect, _, _, _, expensive in CHECKS:
+        if expensive or name in ("signatures",) or (ctx.checks and name not in ctx.checks):
+            continue
+        try:
+            total += sum(f["weight"] for f in detect(ctx, rec, text))
+        except Exception:
+            pass
+    return total + 0.01                       # never 0: everything gets checked once
+
+
 def detect_all(ctx: ImproveCtx, m: str, rec) -> list[dict]:
     text = ctx.text(rec)
     sha = text_sha(text)
@@ -6906,6 +7137,7 @@ def detect_all(ctx: ImproveCtx, m: str, rec) -> list[dict]:
         out += found
     fs["findings"] = out
     fs["score"] = round(sum(f["weight"] for f in out), 2)
+    fs["sha"] = sha
     return out
 
 
@@ -7014,6 +7246,11 @@ def _gate_files(ctx, paths: list[Path]) -> tuple[bool, str]:
 def global_change(ctx, edits: dict[Path, str], tag: str, round_log: list,
                   ops: Optional[list] = None) -> tuple[bool, str]:
     """Apply edits to several files; keep them only if everything still compiles."""
+    with HEADER_LOCK.write():
+        return _global_change(ctx, edits, tag, round_log, ops)
+
+
+def _global_change(ctx, edits, tag, round_log, ops):
     txn = Txn(ctx.cfg)
     for p, t in edits.items():
         if t != p.read_text():
@@ -7070,6 +7307,19 @@ def _usage_lines(ctx, name: str, limit=4) -> list[str]:
 def _taken_names(ctx) -> set:
     names = set(header_idents(ctx.cfg)) | {r.name for r in ctx.records.values()}
     return names
+
+
+def ask_all(ctx, items: list, fn) -> list:
+    """fn(item) for each item at the same time (questions for the model), answers in
+    the same order. The model gate decides how many it gets at once."""
+    if not items:
+        return []
+    out = [None] * len(items)
+
+    def run(k):
+        out[k] = fn(items[k])
+    work_pool(max(2, ctx.cfg.workers), list(range(len(items))), run)
+    return out
 
 
 def pass_duplicates(ctx, round_log):
@@ -7213,15 +7463,13 @@ def pass_fields(ctx, round_log, limit=6):
         return
     lay = struct_layouts(ctx.cfg)
     done = ctx.state.g("fields_tried", [])
-    n = 0
-    for struct, l in lay.items():
-        if n >= limit or struct in done:
-            continue
+    todo = [(st, l) for st, l in lay.items() if st not in done
+            and any(GENERIC_FIELD.match(f) for _, f, _, _ in l["fields"])][:limit]
+    phase(f"naming the fields of {len(todo)} struct(s)")
+
+    def ask(item):
+        struct, l = item
         generic = [f for _, f, _, _ in l["fields"] if GENERIC_FIELD.match(f)]
-        if not generic:
-            continue
-        done.append(struct)
-        phase(f"naming fields of {struct}")
         files = [p for p in _all_files(ctx) if p.suffix == ".cpp" and any(g in p.read_text() for g in generic)]
         uses: dict[str, list[str]] = {g: [] for g in generic}
         for p in files[:30]:
@@ -7231,7 +7479,11 @@ def pass_fields(ctx, round_log, limit=6):
                     uses[fld].append(t[t.rfind("\n", 0, k) + 1:t.find("\n", k)])
         types = {f: ty for _, f, ty, _ in l["fields"]}
         items = [(g, [f"(type {types[g]})"] + uses[g]) for g in generic[:10]]
-        mapping = ctx.names("field", items, f"They're fields of struct {struct}.")
+        return files, ctx.names("field", items, f"They're fields of struct {struct}.")
+    answers = ask_all(ctx, todo, ask)
+    n = 0
+    for (struct, l), (files, mapping) in zip(todo, answers):
+        done.append(struct)
         existing = {f for _, f, _, _ in l["fields"]}
         clean = {o: v for o, v in mapping.items()
                  if is_ident(v) and v not in existing and not GENERIC_FIELD.match(v)}
@@ -7256,13 +7508,14 @@ def pass_globals(ctx, round_log, limit=24):
              if kind == "global" and GLOBAL_LEFTOVER.match(label) and label not in tried][:limit]
     taken = _taken_names(ctx)
     n = 0
-    for i in range(0, len(cands), 8):
-        batch = cands[i:i + 8]
+    batches = [cands[i:i + 8] for i in range(0, len(cands), 8)]
+    phase(f"naming {len(cands)} global variable(s)")
+    answers = ask_all(ctx, batches, lambda batch: ctx.names(
+        "global", [(g, _usage_lines(ctx, g)) for g in batch],
+        "They're global variables of the program."))
+    for batch, mapping in zip(batches, answers):
         ctx.state.data["global"]["globals_tried"] = sorted(tried | set(batch))
         tried |= set(batch)
-        phase(f"naming global variables ({i + 1}-{i + len(batch)} of {len(cands)})")
-        mapping = ctx.names("global", [(g, _usage_lines(ctx, g)) for g in batch],
-                            "They're global variables of the program.")
         clean = {o: v for o, v in mapping.items() if is_ident(v) and v not in taken
                  and not GLOBAL_LEFTOVER.match(v)}
         if len(set(clean.values())) == len(clean) and clean:
@@ -7355,10 +7608,10 @@ def pass_functions(ctx, round_log, limit=20):
              and r.name not in tried][:limit]
     taken = _taken_names(ctx)
     n = 0
-    for m, r in cands:
-        tried.add(r.name)
-        ctx.state.data["global"]["functions_tried"] = sorted(tried)
-        phase(f"naming function {r.name}")
+    phase(f"naming {len(cands)} function(s)")
+
+    def ask(item):
+        m, r = item
         t = ctx.text(r)
         goal = ctx.goal(r, t)
         callees = [ctx.records[d].name for d in r.deps if d in ctx.records][:8]
@@ -7366,8 +7619,11 @@ def pass_functions(ctx, round_log, limit=20):
                 f"called by: {', '.join(callers.get(r.name, [])[:8]) or 'nothing'}"]
         if r.name in sugg:
             info.append(f"another suggestion was: {sugg[r.name]} (keep the current name if it's better)")
-        mapping = ctx.names("function", [(r.name, info)])
-        new = mapping.get(r.name)
+        return ctx.names("function", [(r.name, info)]).get(r.name)
+    answers = ask_all(ctx, cands, ask)        # the questions go out together
+    for (m, r), new in zip(cands, answers):
+        tried.add(r.name)
+        ctx.state.data["global"]["functions_tried"] = sorted(tried)
         if not new or new == r.name or not is_ident(new) or new in taken or not new[0].islower() \
                 or PLACEHOLDER_FN.match(new) or BAD_NAME.match(new):
             continue
@@ -7552,30 +7808,32 @@ def run_improve(P: "Paths", cfg: "Config", records: dict, args) -> dict:
                 log(cfg, f"    ({name} pass failed: {type(e).__name__}: {e})")
             ctx.state.save()
         funcs = ctx.compiling()
-        prog = Progress(len(funcs), 0, title=f"round {rnd}: checking every function")
-        try:
-            for m, r in funcs:
-                prog.begin(m, r.name)
+        # Worst first, by what's known: last round's score, else a quick look with
+        # the cheap checks. Then checking and fixing run as one pipeline over
+        # --workers functions at once, so while the model works on one function
+        # the others are being compiled and tested and have their request ready.
+        order = {}
+        for m, r in funcs:
+            sc = ctx.state.f(m).get("score")
+            order[m] = sc if sc is not None else quick_score(ctx, r)
+        def needs_look(m, r):
+            fs = ctx.state.f(m)
+            return fs.get("score") is None or fs["score"] > 0 or fs.get("sha") != text_sha(ctx.text(r))
+        queue = sorted((x for x in funcs if needs_look(*x)), key=lambda x: -order[x[0]])
+        start_scores: dict[str, float] = {}
+        kept = [0]
+        use = ModelUse()
+        prog = Progress(len(queue), 0, title=f"round {rnd}: checking and fixing, worst first")
+        prog.extra = lambda: f"{kept[0]} kept | {use.text()}"
+
+        def one(item):
+            m, r = item
+            if deadline and time.time() > deadline:
+                return
+            prog.begin(m, r.name)
+            try:
                 detect_all(ctx, m, r)
-                prog.end(m)
-        finally:
-            prog.close()
-        ctx.state.save()
-        score = round(sum(ctx.state.f(m)["score"] for m, _ in funcs), 1)
-        if first_score is None:
-            first_score = score
-        queue = sorted((x for x in funcs if ctx.state.f(x[0])["score"] > 0),
-                       key=lambda x: -ctx.state.f(x[0])["score"])
-        log(cfg, f"  » round {rnd}: {len(queue)} function(s) have something to improve "
-                 f"(total score {score}; lower is better) — worst first")
-        kept = 0
-        prog = Progress(len(queue), 0, title=f"round {rnd}: small fixes, worst first")
-        prog.extra = lambda: f"{kept} kept"
-        try:
-            for m, r in queue:
-                if deadline and time.time() > deadline:
-                    break
-                prog.begin(m, r.name)
+                start_scores[m] = ctx.state.f(m)["score"]
                 tried: set = set()
                 for _ in range(args.improve_per_function):
                     fl = [f for f in ctx.state.f(m)["findings"] if f["key"] not in tried]
@@ -7585,18 +7843,25 @@ def run_improve(P: "Paths", cfg: "Config", records: dict, args) -> dict:
                     for f in fl:
                         tried.add(f["key"])
                         if attempt_fix(ctx, m, r, f, round_log):
-                            kept += 1
+                            kept[0] += 1
                             detect_all(ctx, m, r)
                             progressed = True
                             break
                     if not progressed:
                         break
+            finally:
                 prog.end(m)
-                if prog.done % 20 == 0:
-                    ctx.state.save()
+        try:
+            work_pool(cfg.workers, queue, one, 20, ctx.state.save)
         finally:
             prog.close()
             ctx.state.save()
+        score = round(sum(start_scores.values()) +
+                      sum(ctx.state.f(m)["score"] or 0 for m, _ in funcs if m not in start_scores), 1)
+        if first_score is None:
+            first_score = score
+        log(cfg, f"  » round {rnd}: checked {len(start_scores)} function(s) (score {score} at the "
+                 f"start; lower is better), {kept[0]} small fix(es) kept, {use.text()}")
         # tidy layout of everything changed this round
         if shutil.which("clang-format"):
             for rel in sorted({f for c in round_log for f in c["files"] if f.startswith("funcs/")}):
@@ -8363,7 +8628,8 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
         callgraph_path=args.callgraph or (P.callgraph if P.callgraph.exists() else None),
         force=args.force, stub_all=args.stub_all, export_path=P.export,
         index_path=P.index, no_pseudo=args.no_pseudo,
-        retry_quarantined=args.retry_quarantined, model_ctx_chars=args.model_ctx_chars)
+        retry_quarantined=args.retry_quarantined, model_ctx_chars=args.model_ctx_chars,
+        workers=args.workers, model_timeout_s=1800)
     cfg.client = client
     cfg.wanted_model = None                   # always the model loaded in LM Studio
     cfg.snapshot_dir = snapshot_dir
@@ -8399,6 +8665,7 @@ def run_pipeline(args) -> int:
 
     client = ModelClient(args.backend, args.api)
     CLIENT["c"] = client
+    GATE["gate"] = ModelGate(args.parallel)
     cxx = find_compiler(args.cxx)
     if not cxx and STAGES.index(last) >= STAGES.index("split"):
         sys.exit(f"No C++ compiler found ({args.cxx}). On a Mac: xcode-select --install; "
@@ -8421,6 +8688,8 @@ def run_pipeline(args) -> int:
             BAR["stage"] = f"[{n}/{len(STAGES)} {stage}]"
             plog(P, f"━━━━ Stage {n}/{len(STAGES)} · {stage} ━━━━ {STAGE_INFO[stage]}")
             t0 = time.time()
+            use = ModelUse()
+            calls0 = client.calls
             mark_stage(P, stage, done=False, started=time.strftime("%Y-%m-%d %H:%M:%S"))
             info: dict = {}
             if stage == "export":
@@ -8478,12 +8747,21 @@ def run_pipeline(args) -> int:
                     ok = build_link(cfg, records)
                     info = {"note": "linked" if ok else "incomplete"}
             ran_something = True
+            if client.calls > calls0:
+                share = use.share()
+                plog(P, f"  {stage}: {client.calls - calls0} model request(s); the model was "
+                        f"busy {share * 100:.0f}% of the stage's {fmt_duration(time.time() - t0)}"
+                        if share is not None else "")
+                info["model_busy"] = round(share * 100) if share is not None else None
             mark_stage(P, stage, done=True, seconds=round(time.time() - t0), **info)
     except KeyboardInterrupt:
         if records is not None:
             save_manifest(cfg, records)
         plog(P, "Paused. Run the same command to carry on from here.")
         write_report(P)
+        sys.stdout.flush()
+        if threading.active_count() > 1 and "pytest" not in sys.modules:
+            os._exit(130)                 # don't wait for replies still being written
         return 130
     except SystemExit:
         if records is not None:
@@ -8568,7 +8846,13 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--max", type=int, default=None, help="stop after N functions")
     g.add_argument("--functions", nargs="+", help="only these functions (names or addresses)")
     g.add_argument("--comments", action="store_true", help="let the model keep comments")
-    g.add_argument("--parallel", type=int, default=1, help="functions at once")
+    g.add_argument("--parallel", type=int, default=1,
+                   help="requests the model works on at once, in every stage (match LM "
+                        "Studio's parallel setting)")
+    g.add_argument("--workers", type=int, default=min(8, max(2, (os.cpu_count() or 2) - 1)),
+                   help="functions prepared at once in the fix / recover / improve stages: "
+                        "while one waits for the model the others compile and test, so the "
+                        "model always has its next request ready")
     g.add_argument("--auto-parallel", action="store_true",
                    help="adjust --parallel by watching the model's queue")
     g.add_argument("--max-parallel", type=int, default=16)

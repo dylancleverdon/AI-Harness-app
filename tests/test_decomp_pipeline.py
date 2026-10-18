@@ -301,7 +301,7 @@ def test_end_to_end(tmp_path, model):
     assert recs["squareIt"]["rederived"] and recs["squareIt"]["recovery"] == "faithful-pseudocode"
     assert recs["clampToZero"]["attempts"] >= 1
     trip = (tmp_path / "build" / recs["tripleValue"]["file"]).read_text()
-    assert "uVar1" not in trip and "value1" in trip           # renamed by improve
+    assert "uVar1" not in trip and re.search(r"\bvalue\d+\b", trip)   # renamed by improve
     assert (tmp_path / "build" / "quarantine").is_dir()      # original kept there
 
     report = json.loads((tmp_path / "report.json").read_text())
