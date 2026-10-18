@@ -62,6 +62,21 @@ The server only answers requests from this app itself (local Host names, plus a 
 
 Failed runs are explained in plain English: LM Studio unreachable, model not loaded, context exceeded, timeouts, bad JSON from the model, killed by the OS, and missing Python packages (with a one-click `pip install`).
 
+## Decomp pipeline (`decomp_pipeline.py`)
+
+`scripts/examples/decomp_pipeline.py` combines `pseudo_to_cpp.py` and `DECOMP_FIXER.py` (kept unchanged in `scripts/legacy/`) into one resumable pipeline: **export** (Ghidra pseudocode) → **rewrite** (model writes readable C++) → **split** (libclang: `shared.h` + one file per function) → **fix** → **recover** (quarantined functions rebuilt from pseudocode) → **link**.
+
+```bash
+python3 decomp_pipeline.py --workdir ~/decomp/MyApp                 # everything, or carry on
+python3 decomp_pipeline.py --workdir ~/decomp/MyApp --to rewrite    # stop after the rewrite
+python3 decomp_pipeline.py --workdir ~/decomp/MyApp --from fix      # e.g. after loading a bigger model
+```
+
+- Whatever model is loaded in LM Studio is used, checked again at each stage (`--pause-between-stages` waits for you to swap models). `--rewrite-model` / `--fix-model` pick one by name.
+- **`--redo` never deletes.** New results replace old ones in place as they finish; before a redo replaces anything the current files are copied to `snapshots/`. A function that's rewritten again keeps its name, so its callers still match.
+- Functions whose upstream code changed are refreshed in the build automatically; the rest keep the fixes they already have.
+- `REPORT.md` / `report.json` sum up every stage. `--adopt-rewrite DIR` / `--adopt-build DIR` copy in runs of the old scripts.
+
 ## Dev
 
 ```bash
