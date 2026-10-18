@@ -327,3 +327,15 @@ def test_console_input_terminal_and_guards(tmp_path):
     assert bare.post("/api/terminal", json={"command": "ls"}).status_code == 403
     assert bare.get("/api/ping").status_code == 200
     assert TestClient(app, headers={"x-harness": "1", "host": "evil.example.com"}).get("/api/ping").status_code == 403
+
+
+def test_origin_alternative_and_static_not_cached():
+    from harness.server import app
+    bare = TestClient(app)
+    ok = bare.post("/api/terminal", json={"command": "cd ."}, headers={"origin": "http://127.0.0.1:8765"})
+    assert ok.status_code == 200  # older cached page: no header, but same-site Origin
+    for evil in ("https://evil.example.com", "null"):
+        r = bare.post("/api/terminal", json={"command": "cd ."}, headers={"origin": evil})
+        assert r.status_code == 403 and "Reload the page" in r.text
+    assert bare.post("/api/terminal", json={"command": "cd ."}).status_code == 403  # no header, no origin
+    assert bare.get("/static/app.js").headers["cache-control"] == "no-cache"

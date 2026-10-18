@@ -365,9 +365,17 @@ async def local_only(request, call_next):
     host = (request.headers.get("host") or "").split(":")[0]
     if host not in ("127.0.0.1", "localhost", "testserver"):
         return PlainTextResponse("forbidden host", status_code=403)
-    if request.method in ("POST", "PUT", "DELETE") and request.headers.get("x-harness") != "1":
-        return PlainTextResponse("missing X-Harness header", status_code=403)
-    return await call_next(request)
+    if request.method in ("POST", "PUT", "DELETE"):
+        # Browsers always attach Origin to cross-site writes and pages can't forge it, so a local Origin proves
+        # the request came from this app (this also keeps an older, cached copy of the page working).
+        origin = (request.headers.get("origin") or "").split("://")[-1].split(":")[0]
+        if request.headers.get("x-harness") != "1" and origin not in ("127.0.0.1", "localhost"):
+            return PlainTextResponse("Blocked: this request didn't come from the AI Harness page. "
+                                     "Reload the page (Cmd+Shift+R) and try again.", status_code=403)
+    response = await call_next(request)
+    if request.url.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "no-cache"  # always revalidate, so updates show up immediately
+    return response
 
 
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
