@@ -108,6 +108,7 @@ class FakeModel:
         self.calls = {"rewrite": 0, "repair": 0, "recover": 0, "other": 0}
         self.rewrite_override = {}
         self.no_code = set()          # Ghidra names the "model" returns no code for
+        self.think_only = set()       # ... or only "thinks" about, with no reply
         fake = self
 
         class H(BaseHTTPRequestHandler):
@@ -137,6 +138,10 @@ class FakeModel:
                 self.send_response(200)
                 self.send_header("Content-Type", "text/event-stream")
                 self.end_headers()
+                if text == "<think-only>":     # LM Studio's separate reasoning stream
+                    chunk = {"choices": [{"delta": {"reasoning_content": "hmm " * 50}}]}
+                    self.wfile.write(f"data: {json.dumps(chunk)}\n\n".encode())
+                    text = ""
                 for i in range(0, len(text), 40):
                     chunk = {"choices": [{"delta": {"content": text[i:i + 40]}}]}
                     self.wfile.write(f"data: {json.dumps(chunk)}\n\n".encode())
@@ -153,6 +158,8 @@ class FakeModel:
             g = re.search(r"Function: (\S+)", messages[1]["content"]).group(1)
             if g in self.no_code:
                 return "Sorry, I can't help with that."
+            if g in self.think_only:
+                return "<think-only>"
             code, name = self.rewrite_override.get(g) or REWRITES[g]
             return f"```cpp\n{code}\n```\nNAME: {name}"
         if system.startswith("You are a C++ repair tool"):
@@ -481,3 +488,16 @@ def test_failed_redo_keeps_old_version_and_retries(tmp_path, model):
     calls = model.calls["rewrite"]
     assert run(tmp_path, model, "--to", "rewrite") == 0
     assert model.calls["rewrite"] == calls + 1
+
+
+def test_model_activity_is_visible(tmp_path, model, capsys):
+    write_export(tmp_path)
+    model.think_only = {"FUN_00001050"}
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    out = capsys.readouterr().out
+    assert "answered a test request" in out                   # startup check
+    assert "model call" in out                                # per-function note
+    assert "spent its whole answer thinking" in out           # thinking-only warning
+    assert re.search(r"this run: \d+ function\(s\) done .* model answers", out)
+    prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())
+    assert prog["functions"]["1050"]["reason"] == "model returned no code"

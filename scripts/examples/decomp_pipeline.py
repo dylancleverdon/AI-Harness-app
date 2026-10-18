@@ -301,6 +301,17 @@ class ModelError(Exception):
     pass
 
 
+# What the model is doing right now, for the progress bar and the stall warning:
+# requests waiting for an answer, answers received, when anything last arrived
+# (thinking counts), and answers that were only thinking with no actual reply.
+MODEL_ACTIVITY = {"waiting": 0, "answered": 0, "last": 0.0, "thinking_only": 0}
+_TL = threading.local()          # per-thread count of model calls (per function)
+
+
+def calls_on_this_thread() -> int:
+    return getattr(_TL, "calls", 0)
+
+
 class ModelClient:
     """Talks to LM Studio's local server (OpenAI-style) or Ollama. Requests are
     streamed, so a long answer never trips a timeout while it's still arriving."""
@@ -384,6 +395,9 @@ class ModelClient:
             gate.acquire()
         sent = time.time()
         self.calls += 1
+        _TL.calls = calls_on_this_thread() + 1
+        MODEL_ACTIVITY["waiting"] += 1
+        MODEL_ACTIVITY["last"] = time.time()
         try:
             if self.kind == "lmstudio":
                 body = {"model": model, "messages": messages, "stream": True,
@@ -402,7 +416,7 @@ class ModelClient:
                 url = self.base + "api/chat"
             req = urllib.request.Request(url, data=json.dumps(body).encode(),
                                          headers={"Content-Type": "application/json"})
-            text, first_word = _read_stream(req, self.kind, timeout)
+            text, first_word, thought = _read_stream(req, self.kind, timeout)
         except urllib.error.HTTPError as e:
             detail = e.read().decode(errors="replace")[:300]
             if fatal:
@@ -414,16 +428,37 @@ class ModelClient:
                          f"server is on and the model is loaded.")
             return None
         finally:
+            MODEL_ACTIVITY["waiting"] -= 1
             if gate:
                 gate.release()
+        MODEL_ACTIVITY["answered"] += 1
         if tuner:
             tuner.record(sent, sum(len(m["content"]) for m in messages), first_word, len(text))
-        return re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
+        out = re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
+        if not out and thought:
+            MODEL_ACTIVITY["thinking_only"] += 1
+            if MODEL_ACTIVITY["thinking_only"] in (1, 10, 100):
+                say(f"  !! the model spent its whole answer thinking ({thought} characters) "
+                    f"and wrote no reply. Turn thinking off for this model in LM Studio, "
+                    f"or give it more room (--ctx).")
+        return out
+
+    def ping(self, model) -> float:
+        """A tiny request, to prove the model really answers. Seconds it took."""
+        t0 = time.time()
+        reply = self.chat(model, [{"role": "user", "content": "Reply with the word OK."}],
+                          max_out=200, temperature=0, timeout=600, fatal=False)
+        if reply is None:
+            raise ModelError(f"{self.name} lists '{model}' but didn't answer a test "
+                             f"request. Check the model is loaded and the server is on.")
+        return time.time() - t0
 
 
 def _read_stream(req, kind, timeout=1800):
-    """Reads a streamed reply. Returns (text, seconds until the first word)."""
-    t0, first, parts = time.time(), None, []
+    """Reads a streamed reply. Returns (text, seconds until the first word, characters
+    of separate thinking). Thinking (LM Studio's reasoning_content) is not part of
+    the reply, but it shows the model is working."""
+    t0, first, parts, thought = time.time(), None, [], 0
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         for raw in resp:
             line = raw.decode(errors="replace").strip()
@@ -437,19 +472,28 @@ def _read_stream(req, kind, timeout=1800):
                     break
                 j = json.loads(data)
                 ch = (j.get("choices") or [{}])[0]
-                piece = (ch.get("delta") or ch.get("message") or {}).get("content") or ""
+                d = ch.get("delta") or ch.get("message") or {}
+                piece = d.get("content") or ""
+                think = d.get("reasoning_content") or d.get("reasoning") or ""
+                if think:
+                    thought += len(think)
+                    if first is None:
+                        first = time.time() - t0
             else:
                 j = json.loads(line)
                 if j.get("error"):
                     raise RuntimeError(j["error"])
                 piece = (j.get("message") or {}).get("content") or ""
+                think = (j.get("message") or {}).get("thinking") or ""
+                thought += len(think)
+            MODEL_ACTIVITY["last"] = time.time()
             if piece:
                 if first is None:
                     first = time.time() - t0
                 parts.append(piece)
             if kind == "ollama" and j.get("done"):
                 break
-    return "".join(parts), (first if first is not None else time.time() - t0)
+    return "".join(parts), (first if first is not None else time.time() - t0), thought
 
 
 CLIENT: dict = {"c": None}
@@ -2339,6 +2383,9 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
 
     model = client.resolve(args.rewrite_model or args.model)
     args.model_in_use = model
+    plog(P, f"  checking that '{model}' really answers ...")
+    took = client.ping(model)
+    plog(P, f"  {client.name} model '{model}' answered a test request in {took:.1f}s")
     plog(P, f"  rewriting with {client.name} model '{model}'"
             + (f", compile check with {COMPILER['cmd']}" if COMPILER["cmd"] else
                " (compile check off: the build stages compile against shared.h)"))
@@ -2351,19 +2398,34 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     prog = Progress(len(selected), len(selected) - len(todo), title="rewriting functions")
     GATE["gate"] = ModelGate(args.parallel)
     GATE["tuner"] = None
+    answered0 = MODEL_ACTIVITY["answered"]
+
+    def bar_extra():
+        # proof of life: is a request with the model right now, and how many came back
+        m = (f"model: {'working on ' + str(MODEL_ACTIVITY['waiting']) if MODEL_ACTIVITY['waiting'] else 'idle'}"
+             f", {MODEL_ACTIVITY['answered'] - answered0} answers")
+        return m + (f" | parallel {GATE['gate'].limit}" if args.auto_parallel else "")
+    prog.extra = bar_extra
     if args.auto_parallel:
         GATE["tuner"] = AutoParallel(GATE["gate"], args.max_parallel,
                                      args.auto_every * 60, prog.log)
-        prog.extra = lambda: f"parallel {GATE['gate'].limit}"
         prog.log(f"  parallel starts at {args.parallel}; adjusting every "
                  f"{args.auto_every} min (max {args.max_parallel})")
     state = threading.RLock()          # guards progress/names when several run at once
     stopping = threading.Event()
     counts = {"done": 0}
+    how: dict[str, int] = {}             # how each function was finished this run
     redo_gen = str(progress.get("redo_gen", 0))
 
-    def finish(key, entry, text):
+    def finish(key, entry, text, kind=None):
+        n_calls = calls_on_this_thread()
+        if kind is None:
+            kind = ("rewritten by the model" if entry.get("status") == "done"
+                    else entry.get("reason") or entry["status"])
+        if entry.get("status") == "done" and not entry.get("pieces") and not entry.get("tiny"):
+            text += f"  · {n_calls} model call{'s' if n_calls != 1 else ''}"
         with state:
+            how[kind] = how.get(kind, 0) + 1
             old = done.get(key) or {}
             if entry["status"] != "done" and old.get("status") == "done":
                 # a redo that came back empty-handed: keep the previous rewrite, and
@@ -2383,8 +2445,10 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         key = f"{addr:x}"
         if stopping.is_set():
             return
+        _TL.calls = 0
         prog.begin(key, gname)
-        prog.set_phase(key, "getting pseudocode")
+        prog.set_phase(key, "getting pseudocode from Ghidra" if ghidra.live and
+                       not ghidra.have_pseudocode(addr) else "reading pseudocode")
         pseudo = ghidra.pseudocode(gname, addr)
         if ghidra.notice:
             prog.log(ghidra.notice)
@@ -2407,7 +2471,8 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
             (P.rewritten_dir / f"{key}.cpp").write_text(tidy_tiny(shown) + "\n")
             return finish(key, {"ghidra": gname, "name": gname, "status": "done",
                                 "tiny": True, "pseudo_sha": psha},
-                          f"  {gname}: small, copied without the model")
+                          f"  {gname}: small, copied without the model (--tiny)",
+                          kind="copied without the model (--tiny)")
         in_tokens = int((len(shown) + len(system)) / CHARS_PER_TOKEN) + 200
         room = args.ctx - in_tokens
         if room < 1500:
@@ -2427,7 +2492,8 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                + (f"\nOther functions it calls were already given these names: "
                   f"{', '.join(called)}" if called else "")
                + f"\n\nGhidra pseudocode:\n```c\n{shown}\n```")
-        prog.set_phase(key, f"writing C++ ({len(shown.splitlines())} lines)")
+        prog.set_phase(key, f"model writing C++ ({len(shown.splitlines())} lines of "
+                            f"pseudocode)")
         reply = ask_model(args.model_in_use, [{"role": "system", "content": system},
                                               {"role": "user", "content": msg}],
                           args.ctx, max_out)
@@ -2589,7 +2655,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         reuse = not gen_file.exists() or gen_file.read_text().strip() == redo_gen
         gen_file.write_text(redo_gen)
         placeholder = PLACEHOLDER.match(gname)
-        state_ = {"done": 0, "fallback": 0, "name": None}
+        state_ = {"done": 0, "fallback": 0, "name": None, "reused": 0}
         lock_ = threading.Lock()
         prog.set_phase(key, f"big: 0/{n} parts")
 
@@ -2599,6 +2665,8 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
             f = pdir / f"{i:04d}-{h}.cpp"
             if f.exists() and reuse:            # done in an earlier session
                 got = f.read_text()
+                with lock_:
+                    state_["reused"] += 1
                 if i == 0 and (pdir / "name.txt").exists():
                     state_["name"] = (pdir / "name.txt").read_text().strip() or None
             else:
@@ -2707,11 +2775,14 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                 f"compiles after {fixes} fix{'es' if fixes != 1 else ''}" if compiled else
                 "not compiling" if compiled is False else "")
         finish(key, entry, f"  {gname} -> {name}  (big: {n} parts"
+               + (f", {state_['reused']} saved from an earlier session" if state_["reused"]
+                  else "")
                + (f", {note}" if note else "") + ", {secs})"
                + (f"  [check: {', '.join(entry['suspect'])}]" if why else ""))
 
     # Keep functions in progress, handed out in program order
     pending, it = set(), iter(todo)
+    warned = [0.0]
     reached_max = False
     try:
         workers = (args.max_parallel + 4) if args.auto_parallel else args.parallel
@@ -2732,6 +2803,13 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
             finished, pending = wait(pending, timeout=5, return_when=FIRST_COMPLETED)
             for f in finished:
                 f.result()                            # surface any error
+            quiet = time.time() - MODEL_ACTIVITY["last"]
+            if MODEL_ACTIVITY["waiting"] and quiet > 180 and time.time() - warned[0] > 600:
+                warned[0] = time.time()
+                prog.log(f"  !! no word from the model for {fmt_duration(quiet)} although "
+                         f"{MODEL_ACTIVITY['waiting']} request(s) are waiting. Check LM "
+                         f"Studio's server log: the model may have been unloaded or be stuck "
+                         f"(a huge prompt can also take this long).")
             if time.time() - last_write > 30:
                 with state:
                     write_outputs(P, progress, order, args.comments)
@@ -2761,7 +2839,9 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     except Exception:
         pass
     mins = (time.time() - t_start) / 60
-    plog(P, f"  this run: {counts['done']} function(s) rewritten in {fmt_duration(mins * 60)}")
+    plog(P, f"  this run: {counts['done']} function(s) done in {fmt_duration(mins * 60)}, "
+            f"{MODEL_ACTIVITY['answered'] - answered0} model answers"
+            + (": " + ", ".join(f"{n} {k}" for k, n in how.items()) if how else ""))
     if reached_max:
         plog(P, f"  reached --max {args.max}; stopping here. Run the same command to continue.")
     return _rewrite_summary(progress, order, stop=reached_max, model=model)
