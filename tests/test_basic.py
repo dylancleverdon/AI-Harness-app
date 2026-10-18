@@ -381,3 +381,63 @@ def test_scripts_get_a_terminal_so_live_progress_works():
         assert [l["x"] for l in d["lines"] if l["s"] != "sys"][0].startswith("isatty False False False")
     finally:
         config.settings.update({"use_pty": True})
+
+
+def test_sensor_parsers():
+    from harness import sensors as s
+    assert [s.parse_thermal_state(x) for x in ("0\n", "1", "2", "3", "", "weird")] == [
+        "nominal", "fair", "serious", "critical", "unknown", "unknown"]
+    assert s.parse_pmset("CPU_Scheduler_Limit = 100\nCPU_Available_CPUs = 8\nCPU_Speed_Limit = 75\n") == 75
+    assert s.parse_pmset("Note: No thermal warning level has been recorded\n") is None
+    got = s.parse_macmon('{"temp":{"cpu_temp_avg":51.26,"gpu_temp_avg":44.0},"gpu_usage":[444,0.37],"all_power":12.34}\n')
+    assert got == {"temp_c": 51.3, "gpu_temp_c": 44.0, "gpu_pct": 37, "power_w": 12.3}
+    assert s.parse_macmon("not json") == {} and s.parse_macmon('{"temp":{}}') == {}
+    assert s.parse_osx_cpu_temp("61.2°C") == {"temp_c": 61.2} and s.parse_osx_cpu_temp("0.0°C") == {}
+    r = s.read_once({})  # never raises, whatever the platform
+    assert r["thermal"] in ("unknown", "nominal", "fair", "serious", "critical")
+
+
+def test_snapshot_has_cpu_and_runs_report_cpu():
+    from harness import memory
+    from harness.server import app, runs
+    snap = memory.Monitor().sample()
+    assert 0 <= snap["cpu_pct"] <= 100 and snap["cores"] and snap["cpu_count"] >= 1 and "thermal" in snap
+    c = TestClient(app, headers={"x-harness": "1"})
+    (SCRIPTS_DIR / "burn.py").write_text("import time\nt=time.time()\nwhile time.time()-t<3: pass\n")
+    rid = c.post("/api/runs", json={"script": "burn.py"}).json()["id"]
+    for _ in range(4):  # on_tick is normally driven by the monitor thread; drive it here
+        time.sleep(0.6)
+        runs.on_tick({**snap, "level": "green"})
+    d = _wait_done(c, rid, 100)
+    assert d["peak_cpu_pct"] >= 50 and d["mem"][-1]["cpu_pct"] >= 0
+    assert "peak CPU" in c.get(f"/api/runs/{rid}/report").text
+
+
+def test_thermal_guard_stops_runs_only_when_enabled():
+    from harness import config
+    from harness.server import app, runs
+    c = TestClient(app, headers={"x-harness": "1"})
+    (SCRIPTS_DIR / "t_sleep.py").write_text("import time; time.sleep(60)")
+    hot = {"level": "green", "available_pct": 80, "available_gb": 10, "swap_used_gb": 0,
+           "thermal": "serious", "temp_c": 96.0, "speed_limit": 70}
+
+    rid = c.post("/api/runs", json={"script": "t_sleep.py"}).json()["id"]
+    for _ in range(8):
+        runs.on_tick(hot)  # guard is off by default: just monitoring
+    assert c.get(f"/api/runs/{rid}").json()["status"] == "running"
+
+    config.settings.update({"thermal_guard": "critical"})
+    for _ in range(8):
+        runs.on_tick(hot)  # serious < critical: still fine
+    assert c.get(f"/api/runs/{rid}").json()["status"] == "running"
+
+    config.settings.update({"thermal_guard": "serious"})
+    try:
+        for _ in range(5):
+            runs.on_tick(hot)
+        d = _wait_done(c, rid)
+        assert d["status"] == "killed" and d["kill_reason"].startswith("thermal guard")
+        assert "96.0 C" in d["kill_reason"] and any("Thermal state SERIOUS" in e["msg"] for e in runs.events)
+        assert any("thermal guard" in h["title"].lower() for h in d["hints"])
+    finally:
+        config.settings.update({"thermal_guard": "off"})

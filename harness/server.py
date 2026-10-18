@@ -55,7 +55,8 @@ def ping():
 def status():
     return {"version": VERSION, "lmstudio": lmstudio.status(), "memory": monitor.latest,
             "settings": settings.get(), "scripts_dir": str(SCRIPTS_DIR), "update": _update,
-            "python": script_python(), "term_cwd": str(runs.term_cwd)}
+            "python": script_python(), "term_cwd": str(runs.term_cwd),
+            "sensor_tools": monitor.sensors.tools()}
 
 
 @app.get("/api/settings")
@@ -304,7 +305,8 @@ async def telemetry():
                        "awake": runs.awake(),
                        "active": [{"id": r.id, "script": r.script, "started": r.started,
                                    "elapsed": round(time.time() - r.started),
-                                   "rss_mb": r.mem[-1]["rss_mb"] if r.mem else 0,
+                                   "rss_mb": r.mem[-1]["rss_mb"] if r.mem else 0, "cpu_pct": r.cpu_now,
+                                   "peak_cpu": r.peak_cpu_pct,
                                    "peak_mb": r.peak_rss_mb} for r in runs.active()]}
             yield f"data: {json.dumps(payload)}\n\n"
             await asyncio.sleep(1)

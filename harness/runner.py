@@ -12,12 +12,12 @@ import time
 import uuid
 from pathlib import Path
 
-from . import diagnose, lmstudio, memory
+from . import diagnose, lmstudio, memory, sensors
 from .config import RUNS_DIR, SCRIPTS_DIR, script_python, settings
 
 
 SUMMARY_KEYS = ("id", "script", "args", "started", "ended", "status", "exit_code",
-                "kill_reason", "peak_rss_mb", "duration")
+                "kill_reason", "peak_rss_mb", "peak_cpu_pct", "duration")
 
 
 ANSI = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[@-Z\\-_]")
@@ -73,6 +73,9 @@ class Run:
         self.lines = []  # {t, s: out|err|sys, x}
         self.mem = []  # {t, rss_mb, avail_pct, level}
         self.peak_rss_mb = 0
+        self.peak_cpu_pct = 0
+        self.cpu_now = 0
+        self._procs = {}  # psutil Process cache for CPU measurement
         self.proc = None
         self.master = None  # pseudo-terminal master fd, when the script runs in a terminal
         self.live = {}  # stream -> in-place line (progress bar) shown pinned at the bottom
@@ -91,7 +94,7 @@ class Run:
     def summary(self):
         return {"id": self.id, "script": self.script, "args": self.args, "started": self.started,
                 "ended": self.ended, "status": self.status, "exit_code": self.exit_code,
-                "kill_reason": self.kill_reason, "peak_rss_mb": self.peak_rss_mb,
+                "kill_reason": self.kill_reason, "peak_rss_mb": self.peak_rss_mb, "peak_cpu_pct": self.peak_cpu_pct,
                 "duration": round((self.ended or time.time()) - self.started, 1)}
 
     def detail(self):
@@ -109,6 +112,7 @@ class RunManager:
         self.runs = {}
         self.events = []  # guard / system events shown in the UI
         self._trip_count = 0
+        self._hot_count = 0
         self.caffeine = None  # `caffeinate` process while we are keeping the Mac awake
         self.term_cwd = SCRIPTS_DIR  # working folder of the console's shell prompt
 
@@ -300,7 +304,7 @@ class RunManager:
                 pass
         run.exit_code, run.ended = code, time.time()
         if run.kill_reason:
-            final = "killed" if run.kill_reason.startswith("memory guard") else "stopped"
+            final = "killed" if run.kill_reason.startswith(("memory guard", "thermal guard")) else "stopped"
         else:
             final = "ok" if code == 0 else "failed"
         try:
@@ -343,8 +347,11 @@ class RunManager:
         for run in self.active():
             rss = memory.tree_rss(run.proc.pid) / 1024**2
             run.peak_rss_mb = max(run.peak_rss_mb, round(rss))
-            run.mem.append({"t": round(now - run.started, 1), "rss_mb": round(rss),
-                            "avail_pct": snap["available_pct"], "level": snap["level"]})
+            run.cpu_now = round(memory.tree_cpu(run._procs, run.proc.pid))
+            run.peak_cpu_pct = max(run.peak_cpu_pct, run.cpu_now)
+            run.mem.append({"t": round(now - run.started, 1), "rss_mb": round(rss), "cpu_pct": run.cpu_now,
+                            "avail_pct": snap["available_pct"], "level": snap["level"],
+                            "thermal": snap.get("thermal", "unknown"), "temp_c": snap.get("temp_c")})
         self._sync_awake(bool(self.active()) and cfg["keep_awake"])
         trip = memory.LEVELS.index(cfg["guard_trip_level"])
         if cfg["guard_enabled"] and self.active() and memory.LEVELS.index(snap["level"]) >= trip:
@@ -354,6 +361,29 @@ class RunManager:
         if self._trip_count >= 2:  # sustained for 2 samples, ignores one-off spikes
             self._trip_count = 0
             self._trip(snap, cfg)
+        # thermal guard (optional): the Mac's own thermal state, sustained for 5 samples
+        tg = cfg.get("thermal_guard", "off")
+        hot = (tg in sensors.THERMAL_ORDER and snap.get("thermal") in sensors.THERMAL_ORDER
+               and sensors.THERMAL_ORDER.index(snap["thermal"]) >= sensors.THERMAL_ORDER.index(tg))
+        self._hot_count = self._hot_count + 1 if hot and self.active() else 0
+        if self._hot_count >= 5:
+            self._hot_count = 0
+            self._trip_thermal(snap)
+
+    def _trip_thermal(self, snap):
+        extra = f", {snap['temp_c']} C" if snap.get("temp_c") else ""
+        limit = f", CPU limited to {snap['speed_limit']}%" if snap.get("speed_limit") else ""
+        reason = f"thermal guard: Mac reports {snap['thermal']} thermal state{extra}{limit}"
+        names = []
+        for run in self.active():
+            self.stop(run.id, reason)
+            names.append(run.script)
+        msg = f"Thermal state {snap['thermal'].upper()}: stopped {', '.join(names)}"
+        self.events.append({"t": time.time(), "level": "orange", "msg": msg})
+        self.events[:] = self.events[-50:]
+        if sys.platform == "darwin":
+            subprocess.Popen(["osascript", "-e",
+                              f'display notification "{msg}" with title "AI Harness thermal guard"'])
 
     def _trip(self, snap, cfg):
         reason = (f"memory guard: {snap['level']} ({snap['available_pct']}% available, "
@@ -418,12 +448,16 @@ def report_markdown(d, app_version, lm, mem_snap):
         pass
     lines = [f"# Run report: {d['script']}", "",
              f"- Status: **{d['status']}** (exit code {d['exit_code']})",
-             f"- Duration: {d['duration']}s, peak script memory {d['peak_rss_mb']} MB",
+             f"- Duration: {d['duration']}s, peak script memory {d['peak_rss_mb']} MB, peak CPU {d.get('peak_cpu_pct', 0)}% "
+             f"of one core",
              f"- Run id: `{d['id']}`  |  AI Harness {app_version}",
              f"- LM Studio: {'online' if lm['ok'] else 'OFFLINE - ' + str(lm['error'])}; loaded models: "
              f"{', '.join(m['id'] for m in lm['models'] if m['loaded']) or 'none'}",
              f"- Memory now: {mem_snap['level']} ({mem_snap['available_pct']}% available of "
-             f"{mem_snap['total_gb']} GB, swap {mem_snap['swap_used_gb']} GB)"]
+             f"{mem_snap['total_gb']} GB, swap {mem_snap['swap_used_gb']} GB); CPU {mem_snap.get('cpu_pct', '?')}%, "
+             f"thermal {mem_snap.get('thermal', 'unknown')}"
+             + (f", {mem_snap['temp_c']} C" if mem_snap.get("temp_c") else "")
+             + (f", CPU limited to {mem_snap['speed_limit']}%" if mem_snap.get("speed_limit") else "")]
     if d.get("kill_reason"):
         lines.append(f"- Stop reason: {d['kill_reason']}")
     if d.get("hints"):
@@ -437,8 +471,10 @@ def report_markdown(d, app_version, lm, mem_snap):
         lines += ["", "## Files created/changed"] + [f"- {f['status']}: {f['path']} ({f['size']} bytes)" for f in d["files"][:40]]
     if d.get("mem"):
         step = max(1, len(d["mem"]) // 12)
-        lines += ["", "## Memory timeline", "| t (s) | script MB | system avail % | level |", "|---|---|---|---|"]
-        lines += [f"| {m['t']} | {m['rss_mb']} | {m['avail_pct']} | {m['level']} |" for m in d["mem"][::step]]
+        lines += ["", "## Resource timeline", "| t (s) | script MB | script CPU % | system avail % | memory | thermal | temp C |",
+                  "|---|---|---|---|---|---|---|"]
+        lines += [f"| {m['t']} | {m['rss_mb']} | {m.get('cpu_pct', '')} | {m['avail_pct']} | {m['level']} | "
+                  f"{m.get('thermal', '')} | {m.get('temp_c') or ''} |" for m in d["mem"][::step]]
     if src:
         lines += ["", "## Script", "```python", src, "```"]
     return "\n".join(lines)

@@ -62,6 +62,14 @@ The server only answers requests from this app itself (local Host names, plus a 
 - **☕ Keep awake** (top bar switch, on by default): while a script is running, the Mac is kept from sleeping using macOS's built-in `caffeinate` (idle and system sleep, plus the disk; the screen is still allowed to turn off). It's released the moment the last script finishes or you flip the switch off, and it can't outlive the app. Closing the lid on battery power will still put a Mac to sleep.
 - **Run timers:** running scripts show a live ⏱ timer next to their name in the script list, in the console header, and on the Memory page. There's no maximum runtime, so long jobs run until they finish or you stop them (the memory guard still protects you).
 
+## CPU and thermal monitoring
+
+The **System** tab (and the top bar) shows live CPU use, per-core load, load average, the Mac's thermal state, and how much CPU each running script is using (peak CPU is also saved in Reports and the failure report).
+
+- **Thermal state** (nominal / fair / serious / critical) comes from macOS itself, plus the CPU speed limit when the Mac is throttling. No installs or admin rights needed. Throttled periods are shaded red on the CPU chart.
+- **Exact temperatures** aren't available to apps on macOS without admin rights. If you install a free helper, AI Harness picks it up automatically within a few seconds and also shows GPU load and power: `brew install macmon` (Apple Silicon) or `brew install osx-cpu-temp` (Intel).
+- **Thermal guard** (Settings, off by default): stop running scripts if the Mac reports *serious* or *critical* for 5 seconds, like the memory guard.
+
 ## Failure diagnosis
 
 Failed runs are explained in plain English: LM Studio unreachable, model not loaded, context exceeded, timeouts, bad JSON from the model, killed by the OS, and missing Python packages (with a one-click `pip install`).

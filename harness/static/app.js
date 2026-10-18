@@ -19,7 +19,7 @@ $$('#rail button').forEach(b => b.onclick = () => {
   $$('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + b.dataset.page));
   if (b.dataset.page === 'models') loadModels();
   if (b.dataset.page === 'reports') loadRuns();
-  if (b.dataset.page === 'memory') drawChart();
+  if (b.dataset.page === 'memory') { drawChart(); drawCpuChart(); }
 });
 
 // ---- status / telemetry --------------------------------------------------
@@ -53,6 +53,7 @@ let lastSnap = null, history = [];
 function onTelemetry(d) {
   const m = d.memory; if (!m) return;
   lastSnap = m; history.push(m); if (history.length > 600) history.shift();
+  updateSystem(m, d);
   const pill = $('#mem-pill');
   pill.className = 'pill lvl-' + m.level;
   $('#mem-text').textContent = `${m.level} · ${m.available_gb} GB free (${m.available_pct}%)`;
@@ -71,14 +72,14 @@ function onTelemetry(d) {
   $('#m-pressure').textContent = m.pressure ? 'macOS pressure: ' + ({ 1: 'normal', 2: 'warn', 4: 'critical' }[m.pressure] || m.pressure) : '';
   const act = $('#active-runs'); act.replaceChildren();
   if (!d.active.length) act.textContent = 'Nothing running.';
-  d.active.forEach(r => act.append(el('div', { textContent: `${r.script} — running ${fmtTime(r.elapsed)} · ${r.rss_mb} MB now, peak ${r.peak_mb} MB` })));
+  d.active.forEach(r => act.append(el('div', { textContent: `${r.script} — running ${fmtTime(r.elapsed)} · ${r.rss_mb} MB now, peak ${r.peak_mb} MB · CPU ${r.cpu_pct}% (≈${(r.cpu_pct / 100).toFixed(1)} cores)` })));
   updateTimers(d);
   $('#guard-state').textContent = state.settings.guard_enabled ? `Armed: stops scripts at ${state.settings.guard_trip_level}.` : 'Guard is disabled.';
   const ev = $('#guard-events'); ev.replaceChildren();
   d.events.slice().reverse().forEach(e => ev.append(el('li', { textContent: new Date(e.t * 1000).toLocaleTimeString() + ' — ' + e.msg })));
   const cur = d.active.find(r => state.run && r.id === state.run.id);
-  $('#run-mem').textContent = cur ? `script: ${cur.rss_mb} MB (peak ${cur.peak_mb}) · system: ${m.available_pct}% free` : '';
-  if ($('#page-memory').classList.contains('active')) drawChart();
+  $('#run-mem').textContent = cur ? `script: ${cur.rss_mb} MB (peak ${cur.peak_mb}) · CPU ${cur.cpu_pct}% · system: ${m.available_pct}% free${m.thermal && m.thermal !== 'unknown' ? ' · ' + m.thermal : ''}` : '';
+  if ($('#page-memory').classList.contains('active')) { drawChart(); drawCpuChart(); }
 }
 function updateTimers(d) {
   const by = Object.fromEntries(d.active.map(r => [r.script, r]));
@@ -90,6 +91,43 @@ function updateTimers(d) {
   $('#run-timer').textContent = cur ? '⏱ ' + fmtTime(cur.elapsed) : $('#run-timer').textContent;
   $('#awake-switch').classList.toggle('live', !!d.awake);
   $('#awake-switch').title = (d.awake ? 'Mac is being kept awake right now. ' : '') + 'Keep your Mac awake while a script is running (uses macOS caffeinate). Closing the lid on battery power will still sleep it.';
+}
+const THERM_COLOR = { nominal: '#3ecf8e', fair: '#f2c94c', serious: '#f2994a', critical: '#eb5757' };
+function updateSystem(m, d) {
+  if (m.cpu_pct === undefined) return;
+  $('#cpu-text').textContent = `${Math.round(m.cpu_pct)}%`;
+  $('#c-cpu').textContent = Math.round(m.cpu_pct) + '%'; $('#c-cpu-sub').textContent = `${m.cpu_count} logical cores`;
+  $('#c-load').textContent = (m.load || []).join(' / ') || '–';
+  const th = m.thermal && m.thermal !== 'unknown' ? m.thermal : null;
+  $('#therm-pill').classList.toggle('hidden', !th);
+  if (th) { $('#therm-pill').className = 'pill lvl-' + th; $('#therm-text').textContent = th + (m.temp_c ? ` · ${m.temp_c}°C` : '') + (m.speed_limit && m.speed_limit < 100 ? ` · ${m.speed_limit}% speed` : ''); $('#therm-pill').title = m.speed_limit && m.speed_limit < 100 ? `macOS is limiting the CPU to ${m.speed_limit}% to shed heat` : 'macOS thermal state'; }
+  const tv = $('#c-therm'); tv.textContent = th || 'unknown'; tv.style.color = th ? THERM_COLOR[th] : '';
+  $('#c-therm-sub').textContent = !th ? 'not available on this system' : m.speed_limit && m.speed_limit < 100 ? `CPU throttled to ${m.speed_limit}%` : th === 'nominal' ? 'not throttled' : 'macOS is managing heat';
+  $('#c-temp').textContent = m.temp_c ? m.temp_c + ' °C' : '–';
+  $('#c-temp-sub').textContent = m.temp_c ? 'CPU average · via ' + m.temp_source + (m.gpu_temp_c ? ` · GPU ${m.gpu_temp_c} °C` : '') + (m.power_w ? ` · ${m.power_w} W` : '') : 'needs a free helper tool (see below)';
+  $('#gpu-card').classList.toggle('hidden', m.gpu_pct === undefined);
+  if (m.gpu_pct !== undefined) { $('#c-gpu').textContent = m.gpu_pct + '%'; $('#c-gpu-sub').textContent = m.gpu_temp_c ? m.gpu_temp_c + ' °C' : ''; }
+  const cores = $('#cores');
+  if (cores.children.length !== m.cores.length) { cores.replaceChildren(...m.cores.map(() => el('div', {}, el('i')))); }
+  m.cores.forEach((c, i) => { const b = cores.children[i]; $('i', b).style.height = c + '%'; b.classList.toggle('hot', c >= 90); b.title = `core ${i}: ${c}%`; });
+  const tools = state.status && state.status.sensor_tools;
+  $('#temp-hint').textContent = m.temp_c ? '' : (tools && tools.darwin)
+    ? (tools.macmon || tools.osx_cpu_temp ? 'A temperature tool was found but returned nothing yet. Give it a few seconds.' : 'macOS only shares its thermal state with apps. For exact chip temperatures, GPU load and power, run  brew install macmon  (Apple Silicon)  or  brew install osx-cpu-temp  (Intel). AI Harness picks it up automatically.')
+    : '';
+}
+function drawCpuChart() {
+  const c = $('#cpu-chart'), dpr = devicePixelRatio || 1, w = c.clientWidth, h = 160;
+  c.width = w * dpr; c.height = h * dpr; const g = c.getContext('2d'); g.scale(dpr, dpr);
+  const y = p => h - 16 - (p / 100) * (h - 26), step = w / 599, off = 600 - history.length;
+  g.strokeStyle = '#2d2d34'; g.fillStyle = '#8b8b96'; g.font = '10px sans-serif'; g.lineWidth = 1;
+  [0, 50, 100].forEach(p => { g.beginPath(); g.moveTo(0, y(p)); g.lineTo(w, y(p)); g.stroke(); g.fillText(p + '%', 4, y(p) - 2); });
+  const hasT = history.some(s => s.temp_c);
+  history.forEach((s, i) => { if (s.thermal === 'serious' || s.thermal === 'critical' || (s.speed_limit && s.speed_limit < 100)) { g.fillStyle = '#eb575733'; g.fillRect((off + i) * step, 0, Math.max(step, 1), h - 16); } });
+  if (history.length < 2) return;
+  const line = (val, color, scale) => { g.strokeStyle = color; g.lineWidth = 2; g.beginPath(); let started = false;
+    history.forEach((s, i) => { const v = val(s); if (v === undefined || v === null) return; const px = (off + i) * step, py = y(scale(v)); started ? g.lineTo(px, py) : g.moveTo(px, py); started = true; }); g.stroke(); };
+  line(s => s.cpu_pct, '#6ea8fe', v => v);
+  if (hasT) { line(s => s.temp_c, '#f2994a', v => Math.min(100, v)); $('#cpu-chart-note').textContent = '(temperature drawn on the same 0–100 scale, in °C)'; }
 }
 function drawChart() {
   const c = $('#chart'), dpr = devicePixelRatio || 1, w = c.clientWidth, h = 220;
@@ -416,7 +454,7 @@ async function showReport(id) {
   const rerun = el('button', { className: 'ghost', textContent: 'Open script' });
   rerun.onclick = () => { $('#rail button[data-page=run]').click(); openScript(d.script); };
   v.append(el('h2', { textContent: `${d.script} — ${d.status}` }),
-    el('div', { className: 'muted', textContent: `${new Date(d.started * 1000).toLocaleString()} · ${d.duration}s · exit ${d.exit_code} · peak ${d.peak_rss_mb} MB${d.kill_reason ? ' · ' + d.kill_reason : ''}` }),
+    el('div', { className: 'muted', textContent: `${new Date(d.started * 1000).toLocaleString()} · ${d.duration}s · exit ${d.exit_code} · peak ${d.peak_rss_mb} MB · peak CPU ${d.peak_cpu_pct || 0}%${d.kill_reason ? ' · ' + d.kill_reason : ''}` }),
     el('div', {}, copy, ' ', rerun));
   const dg = el('div', { className: 'panel' }); showDiagnosis(d.hints, dg); if (d.hints?.length) v.append(dg);
   if (d.files && d.files.length) { const fb = el('div', { className: 'panel' }); showFiles(id, d.files, fb, d.files_total); fb.classList.remove('hidden'); v.append(fb); }

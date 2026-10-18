@@ -19,6 +19,7 @@ DEFAULTS = {
     "red_below_pct": 8,
     "unload_models_on_trip": False,
     "use_pty": True,  # run scripts in a pseudo-terminal so they behave exactly like in Terminal (isatty, spinners)
+    "thermal_guard": "off",  # off | serious | critical: stop scripts when the Mac reports this thermal state
     "keep_awake": True,  # macOS: stop the Mac sleeping while a script runs (caffeinate)
     "python": "",  # interpreter for scripts; empty = harness venv
     "auto_update": True,
