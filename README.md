@@ -49,6 +49,10 @@ Memory is classified green / yellow / orange / red from % available (defaults: y
 
 Scripts run inside a pseudo-terminal, so `sys.stdout.isatty()` is true and they behave exactly as they do in Terminal: live spinners and progress bars, `now: … 47s` timers, terminal-width-aware output. (Programs that don't see a terminal usually go quiet between results, which looks like a stall.) The live line is pinned above the input row while finished lines scroll above it. Colors are stripped. Output from a script's stdout and stderr is shown together, as in a terminal. Turn it off in Settings → Python if you ever need plain pipes.
 
+## Running several scripts at once
+
+Every script has its own console, Run/Stop button, timer and status, so you can start one script, click another and start that too (a green dot and timer in the list show what's running). Click between them to see each one's output; each has its own input line and Stop button. If you reload the page or reopen the window while scripts are running, they re-attach and replay their output. The memory and thermal guards watch the whole machine and stop *all* running scripts when they trip. Very long consoles keep the latest 20,000 lines in view (the full log is in Reports).
+
 ## Typing into the console
 
 The input line under the console works in two modes:

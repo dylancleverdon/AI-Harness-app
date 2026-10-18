@@ -83,7 +83,7 @@ function onTelemetry(d) {
   $('#guard-state').textContent = state.settings.guard_enabled ? `Armed: stops scripts at ${state.settings.guard_trip_level}.` : 'Guard is disabled.';
   const ev = $('#guard-events'); ev.replaceChildren();
   d.events.slice().reverse().forEach(e => ev.append(el('li', { textContent: new Date(e.t * 1000).toLocaleTimeString() + ' — ' + e.msg })));
-  const cur = d.active.find(r => state.run && r.id === state.run.id);
+  const cur = d.active.find(r => curView() && curView().run && r.id === curView().run.id);
   $('#run-mem').textContent = cur ? `script: ${cur.rss_mb} MB (peak ${cur.peak_mb}) · CPU ${cur.cpu_pct}% · system: ${m.available_pct}% free${m.thermal && m.thermal !== 'unknown' ? ' · ' + m.thermal : ''}` : '';
   if ($('#page-memory').classList.contains('active')) { drawChart(); drawCpuChart(); }
 }
@@ -93,8 +93,14 @@ function updateTimers(d) {
     const r = by[li.dataset.name]; li.classList.toggle('running', !!r);
     $('.timer', li).textContent = r ? '⏱ ' + fmtTime(r.elapsed) : '';
   });
-  const cur = state.run && d.active.find(r => r.id === state.run.id);
-  $('#run-timer').textContent = cur ? '⏱ ' + fmtTime(cur.elapsed) : $('#run-timer').textContent;
+  d.active.forEach(r => {
+    if (r.script.startsWith('$')) return;  // console shell commands live in the console they were typed in
+    const v = viewFor(r.script);
+    if (!v.run || v.run.id !== r.id) {  // a run this page doesn't know yet (page reloaded, or started elsewhere): re-attach, replaying its output
+      v.box.replaceChildren(); v.run = { id: r.id, script: r.script }; v.status = 'running'; v.hints = []; v.files = []; watchRun(v, r.id);
+    }
+    v.timer = '⏱ ' + fmtTime(r.elapsed); if (isVisible(v)) { $('#run-timer').textContent = v.timer; if (!$('#stop-btn').offsetParent) paintStatus(v); }
+  });
   $('#awake-switch').classList.toggle('live', !!d.awake);
   $('#awake-switch').title = (d.awake ? 'Mac is being kept awake right now. ' : '') + 'Keep your Mac awake while a script is running (uses macOS caffeinate). Closing the lid on battery power will still sleep it.';
 }
@@ -174,7 +180,7 @@ async function loadScripts(select) {
 }
 async function openScript(n) {
   state.script = n; $('#script-name').textContent = n;
-  $('#editor').value = (await api('/scripts/' + n)).content; loadRunSettings(n);
+  showView(); $('#editor').value = (await api('/scripts/' + n)).content; loadRunSettings(n);
   $$('#script-list li').forEach(li => li.classList.toggle('sel', li.firstChild.textContent === n));
 }
 async function saveScript() { if (state.script) { await api('/scripts/' + state.script, { method: 'PUT', body: { content: $('#editor').value } }); loadRunSettings(state.script); } }
@@ -216,10 +222,31 @@ async function importFiles(files) {
   if (last) { await loadScripts(last); $('#rail button[data-page=run]').click(); }
 }
 
+// ---- one console per script, so several scripts can run at once ---------------
+const views = {};  // script name -> { name, box, run, es, status, timer, live, hints, files, total }
+const viewFor = name => views[name] || (views[name] = { name, box: el('div'), run: null, es: null, status: '', timer: '', live: '', hints: [], files: [], total: 0 });
+const curView = () => state.script ? viewFor(state.script) : null;
+const isVisible = v => v.name === state.script;
+function showView() {
+  const v = curView(), c = $('#console'); if (!v) return;
+  c.replaceChildren(v.box); c.scrollTop = c.scrollHeight; paintStatus(v);
+}
+function paintStatus(v) {  // draws one script's state into the shared header, buttons and panels (if it's the one on screen)
+  if (!isVisible(v)) return;
+  const b = $('#run-state'), running = v.status === 'running';
+  b.textContent = v.status; b.className = 'badge ' + v.status;
+  $('#run-btn').classList.toggle('hidden', running); $('#stop-btn').classList.toggle('hidden', !running);
+  $('#report-btn').classList.toggle('hidden', running || !v.run);
+  $('#run-timer').textContent = v.timer; $('#live').textContent = v.live; $('#live').classList.toggle('hidden', !v.live);
+  showDiagnosis(v.hints, $('#diagnosis')); showFiles(v.run && v.run.id, v.files, $('#files'), v.total);
+  if (!running) $('#run-mem').textContent = '';
+  setTimeout(updateTermUI, 0);
+}
+
 // ---- console input: type into a running script, or run a shell command --------
 const term = { hist: [], i: 0 };
 try { term.hist = JSON.parse(localStorage.getItem('termHist') || '[]'); } catch { }
-const isRunning = () => $('#run-state').classList.contains('running');
+const isRunning = () => { const v = curView(); return !!v && v.status === 'running'; };
 function updateTermUI() {
   $('#eof-btn').classList.toggle('hidden', !isRunning());
   $('#term-input').placeholder = isRunning() ? 'Type here to answer the running script (Enter to send)…' : 'Type a shell command (cd, ls, python, pip…)';
@@ -230,13 +257,14 @@ $('#term-form').onsubmit = async e => {
   $('#term-input').value = '';
   if (t.trim()) { term.hist = [...term.hist.filter(x => x !== t), t].slice(-100); term.i = term.hist.length; try { localStorage.setItem('termHist', JSON.stringify(term.hist)); } catch { } }
   try {
-    if (isRunning()) { await api(`/runs/${state.run.id}/input`, { method: 'POST', body: { text: t } }); return; }
+    const v = curView(); if (!v) return;
+    if (isRunning()) { await api(`/runs/${v.run.id}/input`, { method: 'POST', body: { text: t } }); return; }
     const r = await api('/terminal', { method: 'POST', body: { command: t } });
     if (r.run) {
-      state.run = r.run; $('#files').classList.add('hidden'); $('#diagnosis').replaceChildren();
-      appendLine({ s: 'sys', x: '' }); setRunState('running'); watchRun(r.run.id); $('#run-timer').textContent = '⏱ 0:00';
+      v.run = r.run; v.hints = []; v.files = []; v.total = 0; v.timer = '⏱ 0:00'; v.live = '';
+      appendLine({ s: 'sys', x: '' }, v); v.status = 'running'; paintStatus(v); watchRun(v, r.run.id);
     } else {
-      appendLine({ s: r.cd ? 'sys' : 'err', x: r.cd ? '$ ' + t + '\n' + r.message : r.message }); if (state.status) state.status.term_cwd = r.cwd; updateTermUI();
+      appendLine({ s: r.cd ? 'sys' : 'err', x: r.cd ? '$ ' + t + '\n' + r.message : r.message }, v); if (state.status) state.status.term_cwd = r.cwd; updateTermUI();
     }
   } catch (err) { appendLine({ s: 'err', x: err.message }); }
 };
@@ -245,7 +273,7 @@ $('#term-input').onkeydown = e => {
   if (e.key === 'ArrowDown') { e.preventDefault(); term.i = Math.min(term.i + 1, term.hist.length); $('#term-input').value = term.hist[term.i] || ''; }
   if (e.key === 'd' && e.ctrlKey && isRunning() && !$('#term-input').value) { e.preventDefault(); $('#eof-btn').click(); }
 };
-$('#eof-btn').onclick = () => state.run && api(`/runs/${state.run.id}/input`, { method: 'POST', body: { eof: true } });
+$('#eof-btn').onclick = () => { const v = curView(); v && v.run && api(`/runs/${v.run.id}/input`, { method: 'POST', body: { eof: true } }); };
 
 // ---- model dropdowns for options that ask for an LM Studio model ----------------
 const isModelParam = p => p.kind === 'str' && !p.choices && !p.path && /(^|_)models?(_name|_id|_key)?$/.test(p.dest);
@@ -422,35 +450,34 @@ $('#ai-apply').onclick = async () => {
   if (aiResult == null) return;
   const r = await api('/ai-edit/apply', { method: 'POST', body: { name: state.script, content: aiResult } });
   $('#editor').value = aiResult; aim.classList.add('hidden');
-  const c = $('#console'); c.replaceChildren(el('div', { className: 'sys', textContent: 'AI edit applied.' + (r.backup ? ' Previous version backed up to ' + r.backup : '') }));
+  const v = curView(); v.box.replaceChildren(el('div', { className: 'sys', textContent: 'AI edit applied.' + (r.backup ? ' Previous version backed up to ' + r.backup : '') }));
 };
 
-function appendLine(l) {
-  const c = $('#console'), stick = c.scrollTop + c.clientHeight > c.scrollHeight - 40;
-  c.append(el('div', { className: l.s, textContent: l.x })); if (stick) c.scrollTop = c.scrollHeight;
-}
-function setRunState(s) {
-  const b = $('#run-state'); b.textContent = s; b.className = 'badge ' + s;
-  const running = s === 'running';
-  $('#run-btn').classList.toggle('hidden', running); $('#stop-btn').classList.toggle('hidden', !running);
-  $('#report-btn').classList.toggle('hidden', running || !state.run);
-  setTimeout(() => { updateTermUI(); if (running === false) $('#term-input').focus(); }, 0);
+function appendLine(l, v = curView()) {
+  if (!v) return;
+  const c = $('#console'), vis = isVisible(v), stick = !vis || c.scrollTop + c.clientHeight > c.scrollHeight - 40;
+  v.box.append(el('div', { className: l.s, textContent: l.x }));
+  if (v.box.childElementCount > 20000) {  // keep the page fast on multi-day runs; the full log stays in Reports
+    for (let i = 0; i < 2000; i++) v.box.firstChild.remove();
+    v.box.prepend(el('div', { className: 'sys', textContent: '… older lines trimmed from this view (the full log is in Reports) …' }));
+  }
+  if (vis && stick) c.scrollTop = c.scrollHeight;
 }
 $('#run-btn').onclick = async () => {
-  if (!state.script) return; await saveScript();
-  $('#console').replaceChildren(); $('#live').classList.add('hidden'); $('#diagnosis').replaceChildren(); $('#files').classList.add('hidden');
-  state.run = await api('/runs', { method: 'POST', body: runBody() }); $('#run-timer').textContent = '⏱ 0:00';
-  setRunState('running'); watchRun(state.run.id);
+  const v = curView(); if (!v || v.status === 'running') return; await saveScript();
+  v.box.replaceChildren(); v.live = ''; v.hints = []; v.files = []; v.total = 0; v.timer = '⏱ 0:00';
+  v.run = await api('/runs', { method: 'POST', body: runBody() }); v.status = 'running'; paintStatus(v); watchRun(v, v.run.id);
 };
-$('#stop-btn').onclick = () => state.run && api(`/runs/${state.run.id}/stop`, { method: 'POST' });
-function watchRun(id) {
-  state.es && state.es.close();
-  const es = state.es = new EventSource(`/api/runs/${id}/stream`);
-  es.onmessage = e => appendLine(JSON.parse(e.data));
-  es.addEventListener('live', e => { const x = JSON.parse(e.data).x; $('#live').textContent = x; $('#live').classList.toggle('hidden', !x); });
+$('#stop-btn').onclick = () => { const v = curView(); v && v.run && api(`/runs/${v.run.id}/stop`, { method: 'POST' }); };
+function watchRun(v, id) {
+  v.es && v.es.close();
+  const es = v.es = new EventSource(`/api/runs/${id}/stream`);
+  es.onmessage = e => appendLine(JSON.parse(e.data), v);
+  es.addEventListener('live', e => { v.live = JSON.parse(e.data).x; if (isVisible(v)) { $('#live').textContent = v.live; $('#live').classList.toggle('hidden', !v.live); } });
   es.addEventListener('done', async e => {
-    es.close(); $('#live').classList.add('hidden'); const s = JSON.parse(e.data); setRunState(s.status); $('#run-timer').textContent = '⏱ ' + fmtTime(Math.round(s.duration)) + ' total';
-    const d = await api('/runs/' + id); showDiagnosis(d.hints, $('#diagnosis')); showFiles(id, d.files, $('#files'), d.files_total);
+    es.close(); const s = JSON.parse(e.data); v.live = ''; v.status = s.status; v.timer = '⏱ ' + fmtTime(Math.round(s.duration)) + ' total';
+    const d = await api('/runs/' + id); v.hints = d.hints; v.files = d.files; v.total = d.files_total;
+    paintStatus(v); if (isVisible(v)) $('#term-input').focus();
   });
   es.onerror = () => es.close();
 }
@@ -467,7 +494,7 @@ function showDiagnosis(hints, box) {
   });
 }
 $('#report-btn').onclick = async () => {
-  const md = await api(`/runs/${state.run.id}/report`);
+  const md = await api(`/runs/${curView().run.id}/report`);
   try { await navigator.clipboard.writeText(md); $('#report-btn').textContent = 'Copied ✓'; } catch { prompt('Copy report:', md); }
   setTimeout(() => $('#report-btn').textContent = 'Copy failure report', 2000);
 };
