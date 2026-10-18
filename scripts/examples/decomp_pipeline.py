@@ -638,8 +638,10 @@ def work_pool(workers: int, items: list, fn, every=0, checkpoint=None) -> None:
 
 
 def ask_model(model, messages, ctx, max_out=None, temperature=0.2):
-    """The rewrite stage's model call (exits with advice if the server is gone)."""
-    return CLIENT["c"].chat(model, messages, max_out, temperature, ctx)
+    """The rewrite stage's model call (exits with advice if the server is gone).
+    The answer may use all the room the context leaves (see answer_room)."""
+    room = answer_room(ctx, sum(len(m["content"]) for m in messages))
+    return CLIENT["c"].chat(model, messages, max(max_out or 0, room), temperature, ctx)
 
 
 # ============================================================================
@@ -2418,6 +2420,23 @@ def run_export(P: Paths, args, redo: set) -> dict:
 
 # ---------------------------------------------------------------- rewrite stage
 
+MIN_PIECE_CHARS = 600    # smallest piece a cut-off function is split into
+
+
+def answer_room(ctx: int, prompt_chars: int) -> int:
+    """Tokens the answer may use: everything the prompt leaves (a thinking model
+    needs room to think before it writes the code)."""
+    return max(300, int(ctx - prompt_chars / CHARS_PER_TOKEN - 200))
+
+
+def piece_chars(ctx: int, overhead_chars: int) -> int:
+    """How big a piece may be so its prompt and its answer (about 1.5x the piece,
+    plus room to think) both fit in the context. The same rule for every split;
+    after a cut-off the recorded smaller size is used instead."""
+    budget = (ctx - overhead_chars / CHARS_PER_TOKEN - 300) / 2.5
+    return max(MIN_PIECE_CHARS * 2, int(budget * CHARS_PER_TOKEN))
+
+
 def _pseudo_sha(code: Optional[str]) -> str:
     return hashlib.sha1((code or "").encode()).hexdigest()[:16]
 
@@ -2633,6 +2652,10 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                           kind="copied without the model (--tiny)")
         in_tokens = int((len(shown) + len(system)) / CHARS_PER_TOKEN) + 200
         room = args.ctx - in_tokens
+        split_chars = (done.get(key) or {}).get("split_chars")
+        if split_chars and not args.no_split:
+            # an earlier answer was cut off at the token limit: do it in pieces
+            return work_in_pieces(gname, key, shown, names, psha, split_chars)
         if room < 1500:
             if not args.no_split:
                 return work_in_pieces(gname, key, shown, names, psha)
@@ -2641,7 +2664,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
             return finish(key, {"ghidra": gname, "status": "too big"},
                           f"  {gname}: too big for --ctx {args.ctx} (needs about "
                           f"{in_tokens * 2 // 1000 + 1}k), left for later")
-        max_out = min(room - 200, max(1500, int(in_tokens * 1.5)))
+        max_out = answer_room(args.ctx, len(shown) + len(system) + 640)
         called = sorted({n for n in names.values()
                          if re.search(rf"\b{re.escape(n)}\s*\(", shown)})
         msg = (f"Function: {gname}"
@@ -2660,6 +2683,13 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         if code is None:
             no_code_why.append(why_no_code(reply))
             raws = [last_reply().get("raw", reply)]
+            if no_code_why[-1].startswith("cut off") and not args.no_split:
+                # too long to answer in one go: do it again now, in pieces of half
+                # the size (pieces that are still cut off are split further)
+                prog.set_phase(key, "cut off at the token limit — splitting it")
+                return work_in_pieces(gname, key, shown, names, psha,
+                                      max(MIN_PIECE_CHARS, len(shown) // 2),
+                                      cut_whole=len(shown))
             if not args.no_retry:
                 # once more, with all the room left, and without thinking if thinking
                 # is what used it up (/no_think switches it off for Qwen3-style models)
@@ -2670,11 +2700,16 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                     {"role": "user", "content": msg + "\n\nReply with the code first: ONE "
                      "```cpp code block with the whole function, then the NAME: line. Keep "
                      "any explanation out." + (" /no_think" if thinking else "")}],
-                    args.ctx, max(max_out, room - 200))
+                    args.ctx, max_out)
                 code, new_name = parse_reply(reply)
                 if code is None:
                     no_code_why.append(why_no_code(reply))
                     raws.append(last_reply().get("raw", reply))
+                    if no_code_why[-1].startswith("cut off") and not args.no_split:
+                        prog.set_phase(key, "cut off at the token limit — splitting it")
+                        return work_in_pieces(gname, key, shown, names, psha,
+                                              max(MIN_PIECE_CHARS, len(shown) // 2),
+                                              cut_whole=len(shown))
             if code is None:
                 d = P.rewrite / "no_code"
                 d.mkdir(exist_ok=True)
@@ -2716,10 +2751,17 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                     code, new_name, ok = code2, new_name2 or new_name, ok2
         if not code:
             why = no_code_why[-1] if no_code_why else "no code block in the reply"
-            return finish(key, {"ghidra": gname, "status": "skipped",
-                                "reason": f"model returned no code ({why})"},
-                          f"  {gname}: no code from the model — {why}; skipped, tried again "
-                          f"next run (reply saved in rewrite/no_code/{key}.txt)")
+            entry = {"ghidra": gname, "status": "skipped",
+                     "reason": f"model returned no code ({why})"}
+            then = "tried again next run"
+            if why.startswith("cut off") and not args.no_split:
+                # too long to answer in one go: next run splits it into pieces of half
+                # its size (and halves again if a piece is still cut off)
+                entry["split_chars"] = max(MIN_PIECE_CHARS, len(shown) // 2)
+                then = "marked as big — split into pieces next run"
+            return finish(key, entry,
+                          f"  {gname}: no code from the model — {why}; skipped, {then} "
+                          f"(reply saved in rewrite/no_code/{key}.txt)")
 
         # Compile it; if that fails, repair it incrementally (minimal edits to the
         # failing lines) rather than regenerating the whole function.
@@ -2819,7 +2861,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     piece_system = PIECE_PROMPT.replace("{comments}",
                                         WITH_COMMENTS if args.comments else NO_COMMENTS)
 
-    def work_in_pieces(gname, key, shown, names, psha):
+    def work_in_pieces(gname, key, shown, names, psha, split_chars=None, cut_whole=None):
         parts = split_function(shown)
         if not parts:
             return finish(key, {"ghidra": gname, "status": "too big"},
@@ -2829,8 +2871,9 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         if len(decl_text) > 2000:
             decl_text = decl_text[:2000].rsplit("\n", 1)[0] + "\n..."
         overhead = len(piece_system) + len(header) + len(decl_text) + 900
-        budget = (args.ctx - overhead / CHARS_PER_TOKEN - 300) / 2.3   # input + reply
-        max_chars = max(1200, int(budget * CHARS_PER_TOKEN))
+        max_chars = piece_chars(args.ctx, overhead)
+        if split_chars:                       # cut off before: start at the size recorded
+            max_chars = min(max_chars, split_chars)
         pieces = chunk_lines(lines, max_chars)
         n = len(pieces)
         pdir = P.rewritten_dir / f"{key}.parts"
@@ -2841,9 +2884,67 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         reuse = not gen_file.exists() or gen_file.read_text().strip() == redo_gen
         gen_file.write_text(redo_gen)
         placeholder = PLACEHOLDER.match(gname)
-        state_ = {"done": 0, "fallback": 0, "name": None, "reused": 0}
+        state_ = {"done": 0, "fallback": 0, "name": None, "reused": 0,
+                  "cut": [], "stuck": 0}      # sizes that were cut off; cut-offs at the smallest size
         lock_ = threading.Lock()
         prog.set_phase(key, f"big: 0/{n} parts")
+
+        def try_piece(piece, label, prev_tail, ask_name):
+            """One piece, one answer (plus one more for a badly formatted answer).
+            (code or None, chosen name, whether the answer was cut off)."""
+            ctx_text = ""
+            if prev_tail:
+                ctx_text = (f"Its local variables:\n```c\n{decl_text}\n```\n"
+                            f"The piece before this one ends with:\n```c\n{prev_tail}\n```\n")
+            msg = (f"Function: {gname}, piece {label}\n"
+                   f"Function header: {header}\n{ctx_text}\n"
+                   f"Piece {label} to rewrite:\n```c\n{piece}\n```"
+                   + ("\n\nAfter the code block, also write one line NAME: followed by "
+                      "a meaningful lowerCamelCase name for the whole function, "
+                      "judging from this first piece." if ask_name else ""))
+            max_out = answer_room(args.ctx, len(piece_system) + len(msg))
+            reply = ask_model(args.model_in_use,
+                              [{"role": "system", "content": piece_system},
+                               {"role": "user", "content": msg}], args.ctx, max_out)
+            code, new_name = parse_reply(reply)
+            got = clean_piece(code or "", piece, set(names.values()) | {gname})
+            if got is None and why_no_code(reply).startswith("cut off"):
+                return None, new_name, True   # same size again would fail the same way
+            if got is None and not args.no_retry:
+                reply = ask_model(args.model_in_use, [
+                    {"role": "system", "content": piece_system},
+                    {"role": "user", "content": msg + "\n\nRewrite ONLY these lines, "
+                     "keeping every unmatched { and } where it is. No function header."}],
+                    args.ctx, max_out, temperature=0.4)
+                code, new_name2 = parse_reply(reply)
+                got = clean_piece(code or "", piece, set(names.values()) | {gname})
+                new_name = new_name or new_name2
+                return got, new_name, got is None and why_no_code(reply).startswith("cut off")
+            return got, new_name, False
+
+        def do_piece(piece, label, prev_tail, ask_name, depth=0):
+            """A piece; if the answer is cut off at the token limit, split the piece in
+            half and do the halves (and so on, down to the smallest size)."""
+            got, name, cut = try_piece(piece, label, prev_tail, ask_name)
+            if got is not None or not cut:
+                return got, name
+            with lock_:
+                state_["cut"].append(len(piece))
+            subs = chunk_lines(piece.split("\n"), max(MIN_PIECE_CHARS, len(piece) // 2)) \
+                if len(piece) > MIN_PIECE_CHARS and depth < 5 else [piece]
+            if len(subs) < 2:
+                with lock_:
+                    state_["stuck"] += 1      # can't split any further
+                return None, name
+            prog.set_phase(key, f"piece {label} was cut off — splitting it in {len(subs)}")
+            outs, tail = [], prev_tail
+            for j, sp in enumerate(subs):
+                g2, n2 = do_piece(sp, f"{label}.{j + 1}", tail, ask_name and j == 0, depth + 1)
+                outs.append(g2 if g2 is not None
+                            else "// [left as Ghidra wrote it]\n" + tidy_types(sp))
+                name = name or n2
+                tail = "\n".join(sp.split("\n")[-8:])
+            return "\n".join(outs), name
 
         def one(i):
             piece = pieces[i]
@@ -2856,34 +2957,9 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                 if i == 0 and (pdir / "name.txt").exists():
                     state_["name"] = (pdir / "name.txt").read_text().strip() or None
             else:
-                ctx_text = ""
-                if i > 0:
-                    tail = "\n".join(pieces[i - 1].split("\n")[-8:])
-                    ctx_text = (f"Its local variables:\n```c\n{decl_text}\n```\n"
-                                f"The piece before this one ends with:\n```c\n{tail}\n```\n")
+                prev_tail = "\n".join(pieces[i - 1].split("\n")[-8:]) if i > 0 else ""
                 ask_name = i == 0 and placeholder
-                msg = (f"Function: {gname}, piece {i + 1} of {n}\n"
-                       f"Function header: {header}\n{ctx_text}\n"
-                       f"Piece {i + 1} to rewrite:\n```c\n{piece}\n```"
-                       + ("\n\nAfter the code block, also write one line NAME: followed by "
-                          "a meaningful lowerCamelCase name for the whole function, "
-                          "judging from this first piece." if ask_name else ""))
-                tok = len(piece) / CHARS_PER_TOKEN
-                max_out = int(tok * 1.5) + 300
-                reply = ask_model(args.model_in_use,
-                                  [{"role": "system", "content": piece_system},
-                                   {"role": "user", "content": msg}], args.ctx, max_out)
-                code, new_name = parse_reply(reply)
-                got = clean_piece(code or "", piece, set(names.values()) | {gname})
-                if got is None and not args.no_retry:
-                    reply = ask_model(args.model_in_use, [
-                        {"role": "system", "content": piece_system},
-                        {"role": "user", "content": msg + "\n\nRewrite ONLY these lines, "
-                         "keeping every unmatched { and } where it is. No function header."}],
-                        args.ctx, max_out, temperature=0.4)
-                    code, new_name2 = parse_reply(reply)
-                    got = clean_piece(code or "", piece, set(names.values()) | {gname})
-                    new_name = new_name or new_name2
+                got, new_name = do_piece(piece, f"{i + 1} of {n}", prev_tail, ask_name)
                 if got is None:                 # doesn't fit: keep Ghidra's version
                     got = "// [left as Ghidra wrote it]\n" + tidy_types(piece)
                 pdir.mkdir(parents=True, exist_ok=True)
@@ -2893,7 +2969,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                 f.write_text(got)
             with lock_:
                 state_["done"] += 1
-                if got.startswith("// [left as Ghidra wrote it]"):
+                if "// [left as Ghidra wrote it]" in got:
                     state_["fallback"] += 1
                 prog.set_phase(key, f"big: {state_['done']}/{n} parts")
             return got
@@ -2942,6 +3018,17 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         shutil.rmtree(pdir, ignore_errors=True)    # scratch pieces, now joined above
         entry = {"ghidra": gname, "name": name, "status": "done", "pieces": n,
                  "pseudo_sha": psha}
+        if split_chars:
+            entry["split_chars"] = split_chars
+        if cut_whole:
+            state_["cut"].append(cut_whole)      # the whole function was cut off first
+        if state_["cut"]:
+            # what happened, so the next run starts below the smallest size that was
+            # cut off instead of trying a size that already failed
+            entry["cut_off_sizes"] = sorted(set(state_["cut"]), reverse=True)
+            entry["split_chars"] = max(MIN_PIECE_CHARS, min(state_["cut"]) // 2)
+            if state_["stuck"]:
+                entry["cut_off_at_smallest"] = state_["stuck"]
         if compiled is not None:
             entry["compiled"] = compiled
         # the pieces keep Ghidra's variable names on purpose, so don't flag those
@@ -3132,6 +3219,7 @@ class Config:
     # where files about to be replaced are copied first (None: don't)
     snapshot_dir: object = field(default_factory=lambda: (lambda: None))
     workers: int = 1                  # functions worked on at once (CPU side)
+    ctx: int = 16384                  # the model's context (--ctx), for answer room
 
     @property
     def funcs_dir(self) -> Path: return self.workdir / "funcs"
@@ -4738,7 +4826,8 @@ def _fix_chat(cfg: Config, system: str, user: str, max_tokens: int) -> Optional[
     return cfg.client.chat(cfg.fix_model_used,
                            [{"role": "system", "content": system},
                             {"role": "user", "content": user}],
-                           max_out=max_tokens, temperature=cfg.model_temperature,
+                           max_out=max(max_tokens, answer_room(cfg.ctx, len(system) + len(user))),
+                           temperature=cfg.model_temperature,
                            timeout=cfg.model_timeout_s, fatal=False)
 
 
@@ -6483,6 +6572,9 @@ class ImproveCtx:
     def ask(self, system: str, user: str, max_out=300) -> Optional[str]:
         if not self.model:
             return None
+        # every task gets the room the context leaves: a thinking model capped at a
+        # few hundred tokens is cut off before it writes anything, every time
+        max_out = max(max_out, answer_room(self.cfg.ctx, len(system) + len(user)))
         return self.cfg.client.chat(self.model, [{"role": "system", "content": system},
                                                  {"role": "user", "content": user}],
                                     max_out=max_out, temperature=0.2,
@@ -8716,7 +8808,7 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
         force=args.force, stub_all=args.stub_all, export_path=P.export,
         index_path=P.index, no_pseudo=args.no_pseudo,
         retry_quarantined=args.retry_quarantined, model_ctx_chars=args.model_ctx_chars,
-        workers=args.workers, model_timeout_s=1800)
+        workers=args.workers, model_timeout_s=1800, ctx=args.ctx)
     cfg.client = client
     cfg.wanted_model = None                   # always the model loaded in LM Studio
     cfg.snapshot_dir = snapshot_dir

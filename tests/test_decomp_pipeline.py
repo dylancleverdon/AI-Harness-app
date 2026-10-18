@@ -114,6 +114,8 @@ class FakeModel:
         self.think_only = set()       # ... or only "thinks" about, with no reply
         self.think_unless_told = set()  # ... thinks only, unless asked with /no_think
         self.cut_fence = set()        # ... answers with the closing ``` missing
+        self.too_long = set()         # ... whose whole-function answer hits the token limit
+        self.piece_limit = 0          # pieces longer than this get a cut-off answer
         self.seen_no_think = 0
         fake = self
 
@@ -144,12 +146,18 @@ class FakeModel:
                 self.send_response(200)
                 self.send_header("Content-Type", "text/event-stream")
                 self.end_headers()
+                finish = None
+                if text.startswith("<cut>"):        # an answer that hit the token limit
+                    text, finish = text[5:], "length"
                 if text == "<think-only>":     # LM Studio's separate reasoning stream
                     chunk = {"choices": [{"delta": {"reasoning_content": "hmm " * 50}}]}
                     self.wfile.write(f"data: {json.dumps(chunk)}\n\n".encode())
                     text = ""
                 for i in range(0, len(text), 40):
                     chunk = {"choices": [{"delta": {"content": text[i:i + 40]}}]}
+                    self.wfile.write(f"data: {json.dumps(chunk)}\n\n".encode())
+                if finish:
+                    chunk = {"choices": [{"delta": {}, "finish_reason": finish}]}
                     self.wfile.write(f"data: {json.dumps(chunk)}\n\n".encode())
                 self.wfile.write(b"data: [DONE]\n\n")
 
@@ -170,11 +178,19 @@ class FakeModel:
                 if "/no_think" not in user:
                     return "<think-only>"
                 self.seen_no_think += 1
+            if g in self.too_long:
+                return "<cut>```cpp\nint startedWriting(int a) {\n    if (a) {"
             if g in self.cut_fence:
                 code, name = REWRITES[g]
                 return f"```cpp\n{code}"
             code, name = self.rewrite_override.get(g) or REWRITES[g]
             return f"```cpp\n{code}\n```\nNAME: {name}"
+        if system.startswith("You turn part of a Ghidra"):
+            self.calls["piece"] = self.calls.get("piece", 0) + 1
+            piece = user.split("to rewrite:\n```c\n", 1)[1].rsplit("\n```", 1)[0]
+            if self.piece_limit and len(piece) > self.piece_limit:
+                return "<cut>```cpp\n" + piece[:len(piece) // 3]
+            return f"```cpp\n{piece}\n```"
         if system.startswith("In 1-2 sentences"):
             self.calls["goal"] += 1
             return "It does a small calculation and returns the result."
@@ -689,3 +705,33 @@ def test_no_code_is_explained_salvaged_and_retried(tmp_path, model):
     assert prog["1020"]["reason"] == "model returned no code (no code block in the reply)"
     saved = (tmp_path / "rewrite" / "no_code" / "1020.txt").read_text()
     assert "===== reply 2 =====" in saved and "Sorry" in saved
+
+
+def test_cut_off_function_is_split_right_away(tmp_path, model):
+    write_export(tmp_path)
+    model.too_long = {"FUN_00001010"}
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    e = json.loads((tmp_path / "rewrite" / "progress.json").read_text())["functions"]["1010"]
+    assert e["status"] == "done" and e["pieces"] >= 1      # split in the same run
+    assert e["cut_off_sizes"] and e["split_chars"] >= 600
+    assert "//@ghidra 1010" in (tmp_path / "rewrite" / "rewritten.cpp").read_text()
+
+
+def test_cut_off_pieces_are_split_further(tmp_path, model):
+    body = "\n".join(f"  iVar1 = iVar1 + 0x{k:x} * param_1;" for k in range(1, 90))
+    big = {"3000": ("FUN_00003000", "int FUN_00003000(int param_1)\n\n{\n  int iVar1;\n"
+                                    f"  iVar1 = 0;\n{body}\n  return iVar1;\n}}\n")}
+    REWRITES["FUN_00003000"] = ("int x(int a) {", "x")
+    try:
+        write_export(tmp_path, big)
+        model.too_long = {"FUN_00003000"}
+        model.piece_limit = 700
+        assert run(tmp_path, model, "--to", "rewrite") == 0
+        e = json.loads((tmp_path / "rewrite" / "progress.json").read_text())["functions"]["3000"]
+        assert e["status"] == "done"
+        assert len(e["cut_off_sizes"]) >= 2                  # whole function, then pieces
+        assert e["split_chars"] < max(e["cut_off_sizes"])   # next time: start smaller
+        code = (tmp_path / "rewrite" / ".rewritten" / "3000.cpp").read_text()
+        assert "left as Ghidra" not in code and code.count("0x59") == 1
+    finally:
+        REWRITES.pop("FUN_00003000", None)
