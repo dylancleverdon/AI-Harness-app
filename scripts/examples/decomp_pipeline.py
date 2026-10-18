@@ -16,6 +16,25 @@ Stages, in order:
             deterministic fixes, then the model, then quarantine
   recover   quarantined functions are rebuilt from their Ghidra pseudocode
   link      build the whole program, stub what's missing, report what's left
+  improve   rounds of checks and small fixes, worst functions first (see below)
+  organize  modules + classes, a final privacy check, then PROJ/final/: the code as a
+            normal C++ project that builds on its own
+
+The improve stage: the model never writes a whole function again. Each check finds
+one small problem; a rule fixes it, or the model plans one edit and rewrites only the
+few lines involved (or just picks a name). A change is kept only if the function still
+compiles, still makes the calls Ghidra's version makes, and — for functions that only
+compute from their arguments — still returns the same as Ghidra's version on thousands
+of inputs. Each function has a notes file (build/improve/notes/) with its goal and what
+was tried, which the model reads on its next task; every version is kept in
+build/improve/history/. Rejected tasks are parked until a different model is loaded.
+Checks: privacy (identifying strings/comments, blocklisted words in names), Ghidra
+helpers (CONCAT/ZEXT/SUB), divide-by-multiply, stack-protector code, pointer arithmetic
+that is a struct member, casts that change nothing, hand-written strlen/memcpy-style
+functions, clang-tidy clean-ups, compiler warnings, decompiler names (param_1, uVar3),
+calls with the wrong arguments, behaviour against Ghidra's version (missing calls,
+side-by-side tests, sanitizers), goto. Across files: duplicate functions, structs with
+the same layout, field / global / function names, repeated magic numbers.
 
 Usage:
   python3 decomp_pipeline.py --workdir PROJ                    everything, or carry on
@@ -28,10 +47,10 @@ Usage:
 Running the same command again carries on where it stopped, in any stage. Ctrl+C
 pauses. Each stage skips work that's already done.
 
-Models: whatever model is loaded in LM Studio is used, checked again at the start of
+Models: always whatever model is loaded in LM Studio, checked again at the start of
 each stage, so you can swap models between stages (--pause-between-stages waits for
-you at each stage that uses the model). --rewrite-model / --fix-model / --model pick
-one by name; --backend ollama uses Ollama instead.
+you at each stage that uses the model). Tasks the loaded model couldn't do are tried
+again when a different model is loaded. --backend ollama uses Ollama instead.
 
 Redoing work never deletes anything:
   --redo rewrite    rewrite every function again (--functions A B for just those).
@@ -46,6 +65,7 @@ Redoing work never deletes anything:
                     replaced), then compiled and fixed again
   --redo recover    give the quarantined functions another recovery pass
   --redo link       relink from scratch (placeholders regenerated)
+  --redo improve    try every parked improve task again
   Before a redo replaces anything, the current files are copied to
   PROJ/snapshots/<time>-<what>/ (--no-snapshot to skip). Nothing is ever removed from
   snapshots/; delete old ones yourself when you no longer need them.
@@ -60,6 +80,10 @@ Folder layout (--workdir PROJ):
   rewrite/                 rewritten.cpp, names.txt, function_index.json, progress.json
   build/                   shared.h, globals.cpp, funcs/, quarantine/, stubs.cpp,
                            manifest.json, worklist.log and the *_report.txt files
+  build/improve/           notes/ and history/ per function, state.json
+  final/                   the finished project (the previous one goes to snapshots/)
+  privacy_blocklist.txt    words that identify the original program (yours to edit)
+  privacy_report.txt       what the final privacy check found
   snapshots/               copies taken before a redo replaced anything
 
 Carrying on from the old scripts (files are copied, never moved):
@@ -94,7 +118,7 @@ from pathlib import Path
 from typing import Optional
 
 PIPELINE_VERSION = "2026-10-18.1"
-STAGES = ["export", "rewrite", "split", "fix", "recover", "link"]
+STAGES = ["export", "rewrite", "split", "fix", "recover", "link", "improve", "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
 
 
@@ -147,6 +171,11 @@ STAGE_INFO = {
     "recover": "quarantined functions are rebuilt from their Ghidra pseudocode",
     "link": "the whole program is compiled and linked; anything still missing gets "
             "a placeholder and is listed in link_report.txt",
+    "improve": "checks find small problems, worst functions first; each is fixed by a "
+               "rule or one small planned edit, and kept only if it still compiles and "
+               "behaves like Ghidra's version",
+    "organize": "the improved code is arranged into modules and classes, checked for "
+                "anything identifying, and written to final/ as a project that builds",
 }
 
 
@@ -1141,7 +1170,8 @@ public class GhidraExport extends GhidraScript {
         File tmp = new File(out.getParentFile(), out.getName() + ".tmp");
         Writer w = new BufferedWriter(
             new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8));
-        w.write("{\"version\":2,\"ghidra\":\"headless-java\",\"functions\":[");
+        w.write("{\"version\":2,\"ghidra\":\"headless-java\",\"program\":\""
+                + esc(currentProgram.getName()) + "\",\"functions\":[");
         boolean first = true;
         for (String[] fn : funcs) {
             if (!first) w.write(",");
@@ -2381,7 +2411,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         write_outputs(P, progress, order, args.comments)
         return _rewrite_summary(progress, order, stop=False)
 
-    model = client.resolve(args.rewrite_model or args.model)
+    model = client.resolve(None)             # whatever is loaded in LM Studio
     args.model_in_use = model
     plog(P, f"  checking that '{model}' really answers ...")
     took = client.ping(model)
@@ -2974,6 +3004,9 @@ typedef unsigned int   uint;
 typedef unsigned short ushort;
 typedef unsigned char  uchar;
 typedef unsigned long  ulong;
+typedef long long          longlong;
+typedef unsigned long long ulonglong;
+typedef signed char        sbyte;
 
 // --- CONCAT / SUB / ZEXT / SEXT family (common Ghidra pseudo-intrinsics) ---
 // CONCATxy: concatenate an x-byte high part and a y-byte low part.
@@ -3055,6 +3088,8 @@ class FuncRecord:
     recovery_tried: bool = False  # pseudocode recovery attempted and failed
     src_sha: str = ""       # hash of the function's code in the rewrite, at split time:
                             # tells a resume whether the rewrite changed this function
+    recovery_model: str = ""  # the model the last recovery attempt used
+    duplicate_of: str = ""  # merged into this identical function by the improve stage
 
 
 def _load_libclang(cfg: Config):
@@ -4422,16 +4457,7 @@ def templated_fix(cfg: Config, rel_path: str, stderr: str) -> bool:
 # LM Studio slice repair
 # ----------------------------------------------------------------------------
 
-REPAIR_SYSTEM = (
-    "You are a C++ repair tool for decompiled code. You receive ONE function that "
-    "fails to compile, the exact compiler errors, and the declarations of the "
-    "types and functions the errors reference. Fix ONLY the compile errors. "
-    "Preserve the function's logic and signature exactly. Do not invent new "
-    "behavior, do not add includes, do not rename the function. Return ONLY the "
-    "corrected function body as a single C++ code block, nothing else."
-)
-
-MODEL_STATS = {"calls": 0, "no_answer": 0, "rejected": 0}
+MODEL_STATS = {"calls": 0, "no_answer": 0, "rejected": 0}   # the fix stage's small edits
 
 
 def model_check(cfg: Config) -> bool:
@@ -4446,7 +4472,7 @@ def model_check(cfg: Config) -> bool:
     except ModelError as e:
         log(cfg, f"  {e}")
         return False
-    log(cfg, f"  {cfg.client.name} OK — repairing with {cfg.fix_model_used}")
+    log(cfg, f"  {cfg.client.name} OK — using the loaded model {cfg.fix_model_used}")
     return True
 
 
@@ -4478,40 +4504,6 @@ def _accept_model_fix(name: str, original: str, fixed: str) -> Optional[str]:
     if orig_len > 300 and new_len < 0.4 * orig_len:
         return f"model output is {new_len * 100 // max(orig_len, 1)}% of the original size (gutted)"
     return None
-
-
-def model_repair(cfg: Config, func_src: str, stderr: str, decls: str,
-                 name: str = "") -> Optional[str]:
-    user = (
-        f"// Compiler errors:\n{stderr[-2500:]}\n\n"
-        f"// Relevant declarations (for reference, do not redefine):\n{decls}\n\n"
-        f"// Function to fix:\n{func_src}"
-    )
-    MODEL_STATS["calls"] += 1
-    content = _fix_chat(cfg, REPAIR_SYSTEM, user, cfg.model_max_tokens)
-    if content is None:
-        MODEL_STATS["no_answer"] += 1
-        return None
-    # extract the code block (also when the closing fence got cut off)
-    m = re.search(r"```(?:cpp|c\+\+|c)?\s*(.*?)```", content, re.DOTALL)
-    if m:
-        code = m.group(1)
-    elif "```" in content:
-        code = re.sub(r"^.*?```(?:cpp|c\+\+|c)?\s*", "", content, count=1, flags=re.DOTALL)
-    else:
-        code = content
-    # the header already provides includes; keep the TU consistent
-    code = "\n".join(l for l in code.splitlines()
-                     if not l.lstrip().startswith("#include")).strip()
-    if not code:
-        MODEL_STATS["no_answer"] += 1
-        return None
-    why = _accept_model_fix(name, func_src, code)
-    if why:
-        MODEL_STATS["rejected"] += 1
-        log(cfg, f"      rejected model fix for {name or '?'}: {why}")
-        return None
-    return code
 
 
 # ----------------------------------------------------------------------------
@@ -4548,6 +4540,43 @@ def quarantine(cfg: Config, rec: FuncRecord) -> None:
     src.write_text(stub)
     rec.quarantined = True
     log(cfg, f"  QUARANTINE {rec.name}: {rec.last_error.splitlines()[-1] if rec.last_error else '?'}")
+
+
+_FIXCTX: dict = {"plan": ""}
+
+
+def _first_error(err: str, rel: str) -> tuple[int, str]:
+    name = Path(rel).name
+    for l in err.splitlines():
+        m = DIAG_RE.match(l.strip())
+        if m and "error" in m.group("sev") and Path(m.group("file")).name == name:
+            return int(m.group("line")), m.group("msg")
+    return 0, (next((l for l in err.splitlines() if "error" in l), "") or err[:200]).strip()
+
+
+def compile_fix_edit(cfg: Config, rec: FuncRecord, src: str, err: str) -> Optional[str]:
+    """Plan and make one small edit to the lines with the first compile error."""
+    line, msg = _first_error(err, rec.file)
+    _FIXCTX["plan"] = ""
+    if not line:
+        return None
+    if not cfg.fix_model_used and not model_check(cfg):
+        return None
+    ctx = _FIXCTX.get("ctx")
+    if ctx is None or ctx.cfg is not cfg:
+        ctx = ImproveCtx(cfg, {rec.mangled: rec})
+        _FIXCTX["ctx"] = ctx
+    ctx.model = cfg.fix_model_used
+    decls = gather_declarations(cfg, extract_error_symbols(err))
+    new = ctx.line_edit(rec, src, line, f"The compiler says: {msg}. Fix it without changing "
+                        f"what the code does; don't rename the function.",
+                        context=(f"Declarations the program already has (use them, don't "
+                                 f"redefine them):\n{decls}" if decls else ""))
+    _FIXCTX["plan"] = ctx.last_plan
+    MODEL_STATS["calls"] += 1
+    if new is None:
+        MODEL_STATS["no_answer"] += 1
+    return new
 
 
 def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
@@ -4587,19 +4616,21 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
                 rec.compiles = True
                 return True
 
-        # 3) model slice repair
+        # 3) the model: ONE small edit to the line the compiler flags (planned
+        #    first, with the notes from earlier tries), never a whole new function
         if attempt >= cfg.max_model_attempts:
             break
-        # keep only the function body (strip the #include line we prepended)
-        body = re.sub(r'^\s*#include\s+"shared.h"\s*', "", src, count=1).strip()
-        decls = gather_declarations(cfg, extract_error_symbols(err))
-        phase(f"asking the model ({attempt + 1}/{cfg.max_model_attempts})")
-        fixed = model_repair(cfg, body, err, decls, rec.name)
+        phase(f"small edit by the model ({attempt + 1}/{cfg.max_model_attempts})")
+        new_text = compile_fix_edit(cfg, rec, src, err)
         rec.attempts += 1
-        if fixed:
-            (cfg.workdir / rel).write_text('#include "shared.h"\n\n' + fixed + "\n")
-            phase("compiling the model's fix")
+        if new_text:
+            (cfg.workdir / rel).write_text(new_text)
+            phase("compiling the model's edit")
             ok3, err3, _ = compile_tu(cfg, rel)
+            write_note(cfg, rel, f"[compile] {_first_error(err, rel)[1][:120]} — plan: "
+                                 f"{_FIXCTX['plan'][:160]} — "
+                                 + ("compiles now." if ok3 else
+                                    "still fails: " + _first_error(err3, rel)[1][:100]))
             if ok3:
                 cache[key] = (cfg.workdir / rel).read_text()
                 save_cache(cfg, cache)
@@ -4638,9 +4669,8 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
         prog.close()
     save_cache(cfg, cache)
     if MODEL_STATS["calls"]:
-        log(cfg, f"  model: {MODEL_STATS['calls']} call(s), {MODEL_STATS['no_answer']} "
-                 f"without a usable answer, {MODEL_STATS['rejected']} rejected as "
-                 f"unsafe (dropped/gutted the function)")
+        log(cfg, f"  model: {MODEL_STATS['calls']} small edit(s) asked for, "
+                 f"{MODEL_STATS['no_answer']} without a usable edit")
     done = sum(1 for r in records.values() if r.compiles)
     q = sum(1 for r in records.values() if r.quarantined)
     log(cfg, f"  fixer loop done: {done} compiling, {q} quarantined")
@@ -4883,7 +4913,7 @@ def _recover_window_patch(cfg: Config, rec: FuncRecord, pseudo: str,
                 f"// The function's Ghidra pseudocode (reference):\n{pseudo_slice}\n\n"
                 f"// Fix ONLY these lines (return the same lines, corrected, nothing "
                 f"else):\n```cpp\n{window}\n```")
-        fixed = _post_chat(cfg, PSEUDO_SYSTEM, user,
+        fixed = _post_chat(cfg, FIX_EDIT_SYS, user,
                            min(cfg.model_max_tokens, max(400, (hi - lo) * 24)))
         if not fixed or fixed.count("{") - fixed.count("}") != \
                 window.count("{") - window.count("}"):
@@ -4915,16 +4945,10 @@ def recover_one(cfg: Config, rec: FuncRecord, export: dict, index: dict) -> bool
     orig_body = re.sub(r'^\s*#include\s+"shared.h"\s*', "", orig_text, count=1).strip()
 
     big = len(pseudo) + len(orig_text) > cfg.model_ctx_chars
-    # (a) full rewrite when it fits
-    if proto and not big:
-        phase("rewriting from pseudocode against shared.h")
-        fixed = _recover_full_rewrite(cfg, rec, pseudo, proto, orig_body)
-        if fixed is not None:
-            rec.recovery = "rewrite"
-            return _finish_recovery(cfg, rec)
-
-    # (b) error-window patching: start from the original decompiled body, which is
-    # closer to correct than the stub
+    rec.recovery_model = cfg.fix_model_used or ""
+    # Small steps first; the improve stage then improves whatever comes through.
+    # (a) error-window patching: start from the original decompiled body, which is
+    # closer to correct than the stub, and fix only the lines around each error
     (cfg.workdir / rec.file).write_text(orig_text)
     phase("patching the lines around each error")
     if _recover_window_patch(cfg, rec, pseudo):
@@ -4934,11 +4958,19 @@ def recover_one(cfg: Config, rec: FuncRecord, export: dict, index: dict) -> bool
             rec.recovery = "window-patch"
             return _finish_recovery(cfg, rec)
 
-    # (c) faithful fallback
+    # (b) faithful: Ghidra's own pseudocode, made to compile (no model)
     phase("faithful fallback (Ghidra's own pseudocode)")
     if _recover_faithful(cfg, rec, pseudo):
         rec.recovery = "faithful-pseudocode"
         return _finish_recovery(cfg, rec)
+
+    # (c) last resort: the model writes the function again from the pseudocode
+    if proto and not big:
+        phase("rewriting from pseudocode against shared.h (last resort)")
+        fixed = _recover_full_rewrite(cfg, rec, pseudo, proto, orig_body)
+        if fixed is not None:
+            rec.recovery = "rewrite"
+            return _finish_recovery(cfg, rec)
 
     (cfg.workdir / rec.file).write_text(saved)   # restore the stub; stays quarantined
     rec.recovery_tried = True
@@ -4959,8 +4991,11 @@ def pseudocode_recovery(cfg: Config, records: dict[str, FuncRecord]) -> None:
     if not export:
         log(cfg, f"  pseudocode recovery: no pseudocode in {cfg.export_path} — skipping")
         return
+    model_check(cfg)
+    current = cfg.fix_model_used or ""
     targets = [m for m, r in records.items() if r.quarantined
-               and (cfg.retry_quarantined or not r.recovery_tried)]
+               and (cfg.retry_quarantined or not r.recovery_tried
+                    or (current and r.recovery_model != current))]
     if not targets:
         already = sum(1 for r in records.values() if r.quarantined and r.recovery_tried)
         if already:
@@ -4973,7 +5008,7 @@ def pseudocode_recovery(cfg: Config, records: dict[str, FuncRecord]) -> None:
              f"pseudocode to rebuild from")
     if not have:
         return
-    if not model_check(cfg):
+    if not current:
         cfg.fix_model_used = ""
         log(cfg, "  (model not available — only the faithful fallback will run)")
     fixed_n, faithful_n, t0 = 0, 0, time.time()
@@ -5414,6 +5449,2552 @@ def _sweep_all(cfg: Config, records: dict[str, FuncRecord]) -> None:
     save_state(cfg, sweep_done=True)
 
 
+# ============================================================================
+# Small-edit machinery (used by the fix, improve and organize stages)
+# ============================================================================
+#
+# The model never rewrites a whole function here. Every change is one small,
+# checked step: a check finds one problem; a rule, or the model, makes one small
+# edit (a few lines, or a name); the change is kept only if the function still
+# compiles and still behaves like Ghidra's version. Each function has a notes
+# file (its goal, what was tried, what happened) that the model reads on its
+# next task, and every version of every function is kept in improve/history/.
+
+CPP_KEYWORDS = set("""alignas alignof and asm auto bool break case catch char char16_t
+char32_t class const constexpr const_cast continue decltype default delete do double
+dynamic_cast else enum explicit export extern false float for friend goto if inline int
+long mutable namespace new noexcept not nullptr operator or private protected public
+register reinterpret_cast return short signed sizeof static static_assert static_cast
+struct switch template this thread_local throw true try typedef typeid typename union
+unsigned using virtual void volatile wchar_t while xor""".split())
+
+_TOK = re.compile(r"""
+    (?P<comment>//[^\n]*|/\*.*?\*/)
+  | (?P<string>(?:u8|u|U|L)?"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')
+  | (?P<number>0[xX][0-9a-fA-F]+[uUlL]*|(?:\d+\.\d*|\.\d+)(?:[eE][-+]?\d+)?[fFlL]?
+               |\d+(?:[eE][-+]?\d+)?[uUlLfF]*)
+  | (?P<ident>[A-Za-z_]\w*)
+  | (?P<punct>->|::|<<|>>|\S)
+""", re.S | re.X)
+
+INCLUDE_LINE = '#include "shared.h"'
+
+
+def tokens(text: str) -> list[tuple[str, str, int, int]]:
+    """(kind, text, start, end) for every token; whitespace is skipped."""
+    return [(m.lastgroup, m.group(), m.start(), m.end()) for m in _TOK.finditer(text)]
+
+
+def is_ident(s: str) -> bool:
+    return bool(s) and re.fullmatch(r"[A-Za-z_]\w*", s) is not None and s not in CPP_KEYWORDS
+
+
+def ident_set(text: str) -> set[str]:
+    return {t for k, t, _, _ in tokens(text) if k == "ident"}
+
+
+def rename_idents(text: str, mapping: dict[str, str], skip_members=True) -> tuple[str, int]:
+    """Rename identifier tokens (never inside strings or comments). skip_members:
+    leave `x.name` / `p->name` alone (those are struct fields, not variables)."""
+    toks = tokens(text)
+    out, last, n = [], 0, 0
+    for i, (k, t, s, e) in enumerate(toks):
+        if k != "ident" or t not in mapping:
+            continue
+        if skip_members and i and toks[i - 1][1] in (".", "->"):
+            continue
+        out += [text[last:s], mapping[t]]
+        last, n = e, n + 1
+    out.append(text[last:])
+    return "".join(out), n
+
+
+def alpha_equivalent(old: str, new: str, mapping: dict[str, str]) -> bool:
+    """True if `new` is `old` with only these identifiers renamed (token for token)."""
+    a = [(k, t) for k, t, _, _ in tokens(old) if k != "comment"]
+    b = [(k, t) for k, t, _, _ in tokens(new) if k != "comment"]
+    if len(a) != len(b):
+        return False
+    for (ka, ta), (kb, tb) in zip(a, b):
+        if ka != kb:
+            return False
+        if ta != tb and not (ka == "ident" and mapping.get(ta) == tb):
+            return False
+    return True
+
+
+def matching_close(text: str, i: int) -> int:
+    """Index of the bracket closing the one at text[i], or -1."""
+    pairs = {"(": ")", "[": "]", "{": "}"}
+    stack: list[str] = []
+    for m in _TOK.finditer(text, i):
+        if m.lastgroup != "punct":
+            continue
+        c = m.group()
+        if c in pairs:
+            stack.append(pairs[c])
+        elif c in (")", "]", "}"):
+            if not stack or stack.pop() != c:
+                return -1
+            if not stack:
+                return m.start()
+    return -1
+
+
+def split_args(s: str) -> list[str]:
+    """Top-level comma-separated parts of an argument / parameter list."""
+    if not s.strip():
+        return []
+    parts, depth, last = [], 0, 0
+    for m in _TOK.finditer(s):
+        if m.lastgroup != "punct":
+            continue
+        c = m.group()
+        if c in "([{":
+            depth += 1
+        elif c in ")]}":
+            depth -= 1
+        elif c == "," and depth == 0:
+            parts.append(s[last:m.start()])
+            last = m.end()
+    parts.append(s[last:])
+    return [p.strip() for p in parts]
+
+
+def replace_calls(text: str, want, fn, limit=500) -> tuple[str, int]:
+    """Replace calls `name(args)` where want(name) is true with fn(name, args) (a
+    string, or None to leave that call). Innermost / last calls first."""
+    n = 0
+    skip: set[int] = set()
+    for _ in range(limit):
+        toks = tokens(text)
+        cands = [(s, toks[i + 1][2], t) for i, (k, t, s, e) in enumerate(toks)
+                 if k == "ident" and i + 1 < len(toks) and toks[i + 1][1] == "("
+                 and want(t) and s not in skip
+                 and not (i and toks[i - 1][1] in (".", "->"))]
+        done = False
+        for s, op, name in reversed(cands):
+            close = matching_close(text, op)
+            if close < 0:
+                skip.add(s)
+                continue
+            rep = fn(name, split_args(text[op + 1:close]))
+            if rep is None:
+                skip.add(s)
+                continue
+            text = text[:s] + rep + text[close + 1:]
+            n += 1
+            done = True
+            break
+        if not done:
+            break
+    return text, n
+
+
+def tu_split(text: str) -> tuple[str, str]:
+    """(header, rest) of a one-function file: the text before the body's first '{'
+    (after the include line), and everything from that '{' on."""
+    body = text.split("\n", 1)[1] if text.startswith(INCLUDE_LINE) else text
+    i = body.find("{")
+    return (body[:i], body[i:]) if i >= 0 else (body, "")
+
+
+def parse_header(header: str):
+    """(return type, name, [(type, param name)]) from `ret name(params)`, or None."""
+    h = " ".join(strip_comments(header).split())
+    h = re.sub(r'^extern\s+"C"\s+', "", h)
+    m = re.match(r"(.*?)\b([A-Za-z_~][\w:]*)\s*\((.*)\)\s*(const\s*)?$", h)
+    if not m:
+        return None
+    params = []
+    for p in split_args(m.group(3)):
+        if p in ("", "void"):
+            continue
+        pm = re.match(r"(.*?)([A-Za-z_]\w*)\s*(\[[^\]]*\])?$", p)
+        if pm and pm.group(1).strip() and pm.group(2) not in CPP_KEYWORDS:
+            params.append((pm.group(1).strip() + (pm.group(3) or ""), pm.group(2)))
+        else:
+            params.append((p, ""))
+    return m.group(1).strip(), m.group(2), params
+
+
+def numbered(lines: list[str], lo: int, hi: int, mark=None) -> str:
+    """Lines lo..hi-1 (0-based) with 1-based numbers; marked ones get '>>'."""
+    out = []
+    for i in range(max(0, lo), min(len(lines), hi)):
+        tag = ">>" if mark and mark[0] <= i < mark[1] else "  "
+        out.append(f"{tag}{i + 1:4d} | {lines[i]}")
+    return "\n".join(out)
+
+
+def text_sha(text: str) -> str:
+    return hashlib.sha1(text.encode()).hexdigest()[:16]
+
+
+# ---------------------------------------------------------------- notes, history, state
+
+class ImproveState:
+    """build/improve/state.json: per-function findings and parked tasks, the list
+    of header-level changes to replay after a re-split, names chosen so far."""
+
+    def __init__(self, cfg: "Config"):
+        self.dir = cfg.workdir / "improve"
+        (self.dir / "history").mkdir(parents=True, exist_ok=True)
+        (self.dir / "notes").mkdir(parents=True, exist_ok=True)
+        self.path = self.dir / "state.json"
+        self.data = {"funcs": {}, "overlay": [], "rounds": [], "global": {}}
+        if self.path.exists():
+            try:
+                self.data.update(json.loads(self.path.read_text()))
+            except Exception as e:
+                set_aside(self.path, str(e))
+
+    def f(self, m: str) -> dict:
+        return self.data["funcs"].setdefault(m, {"findings": [], "parked": {}, "cache": {},
+                                                 "changes": 0})
+
+    def g(self, key: str, default):
+        return self.data["global"].setdefault(key, default)
+
+    def save(self):
+        write_atomic(self.path, json.dumps(self.data, indent=1))
+
+
+def _note_file(cfg: "Config", rel: str) -> Path:
+    return cfg.workdir / "improve" / "notes" / (Path(rel).stem + ".md")
+
+
+def read_notes(cfg: "Config", rel: str, last=5) -> tuple[str, list[str]]:
+    """(goal, the last few notes) for a function."""
+    p = _note_file(cfg, rel)
+    if not p.exists():
+        return "", []
+    lines = p.read_text(errors="replace").splitlines()
+    goal = next((l[6:] for l in lines if l.startswith("goal: ")), "")
+    notes = [l[2:] for l in lines if l.startswith("- ")]
+    return goal, notes[-last:]
+
+
+def write_note(cfg: "Config", rel: str, text: str = "", goal: str = "") -> None:
+    p = _note_file(cfg, rel)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    old = p.read_text(errors="replace") if p.exists() else f"# {Path(rel).stem}\n"
+    if goal and "\ngoal: " not in old:
+        old = old.rstrip("\n") + f"\ngoal: {' '.join(goal.split())}\n"
+    if text:
+        old = old.rstrip("\n") + f"\n- {time.strftime('%m-%d %H:%M')} {' '.join(text.split())}\n"
+    p.write_text(old)
+
+
+def record_version(cfg: "Config", rel: str, old: Optional[str], new: str, tag: str) -> None:
+    """Keep every version: the first time, the original too. Never deleted."""
+    d = cfg.workdir / "improve" / "history" / Path(rel).name
+    d.mkdir(parents=True, exist_ok=True)
+    n = len(list(d.iterdir()))
+    suffix = Path(rel).suffix or ".txt"
+    if n == 0 and old is not None:
+        (d / f"0000-original{suffix}").write_text(old)
+        n = 1
+    safe = re.sub(r"[^\w.-]", "_", tag)[:40]
+    (d / f"{n:04d}-{safe}{suffix}").write_text(new)
+
+
+class Txn:
+    """A change touching several files: kept together or undone together."""
+
+    def __init__(self, cfg: "Config"):
+        self.cfg = cfg
+        self.old: dict[Path, Optional[str]] = {}
+
+    def write(self, path: Path, text: str) -> None:
+        if path not in self.old:
+            self.old[path] = path.read_text() if path.exists() else None
+        path.write_text(text)
+
+    def rollback(self) -> None:
+        for p, t in self.old.items():
+            if t is not None:
+                p.write_text(t)
+
+    def commit(self, tag: str) -> None:
+        for p, t in self.old.items():
+            if p.exists():
+                record_version(self.cfg, str(p.relative_to(self.cfg.workdir)), t,
+                               p.read_text(), tag)
+
+# ---------------------------------------------------------------- shared.h edits
+
+def _max_uid(lines: list[str]) -> int:
+    return max([int(m.group(1)) for l in lines if (m := UNIT_RE.match(l))] or [0])
+
+
+def disable_units(text: str, label: str, why: str, kinds=None) -> tuple[str, int]:
+    """Switch off shared.h declarations with this label (#if 0), like the header
+    repair does. Returns (text, how many)."""
+    lines = text.split("\n")
+    n = 0
+    for u in sorted(_parse_units(lines), key=lambda u: -u["start"]):
+        if u["label"] != label or (kinds and u["kind"] not in kinds):
+            continue
+        s, e = u["start"], u["end"]
+        if s + 1 < len(lines) and lines[s + 1].startswith("#if 0"):
+            continue
+        lines.insert(e, "#endif")
+        lines.insert(s + 1, f"#if 0 // [{why}]")
+        n += 1
+    return "\n".join(lines), n
+
+
+def add_const_unit(text: str, name: str, spelling: str) -> str:
+    if re.search(rf"\bconstexpr auto {re.escape(name)}\b", text):
+        return text
+    lines = text.split("\n")
+    uid = _max_uid(lines) + 1
+    unit = [f"//@unit {uid} const {name}", f"constexpr auto {name} = {spelling};"]
+    if "// ==== named constants ====" in lines:
+        i = lines.index("// ==== named constants ====") + 1
+    else:
+        i = next((k for k, l in enumerate(lines) if l.startswith("// ==== forward")), len(lines))
+        lines[i:i] = ["// ==== named constants ====", ""]
+        i += 1
+    lines[i:i] = unit
+    return "\n".join(lines)
+
+
+def strip_disabled(text: str) -> str:
+    """shared.h without the #if 0 ... #endif blocks the repairs switched off."""
+    out, skip = [], 0
+    for l in text.split("\n"):
+        if l.startswith("#if 0"):
+            skip += 1
+            continue
+        if skip and l.startswith("#endif"):
+            skip -= 1
+            continue
+        if not skip:
+            out.append(l)
+    return "\n".join(out)
+
+
+_LAYOUTS: dict = {}
+
+
+def struct_layouts(cfg: "Config") -> dict:
+    """{struct name: {"size", "fields": [(byte offset, name, type, size)], "label"}}
+    for the structs defined (and switched on) in shared.h, from libclang."""
+    try:
+        key = (str(cfg.shared_h), cfg.shared_h.stat().st_mtime_ns)
+    except OSError:
+        return {}
+    if _LAYOUTS.get("key") == key:
+        return _LAYOUTS["data"]
+    out: dict = {}
+    try:
+        cx = _load_libclang(cfg)
+        tu = cx.Index.create().parse(str(cfg.shared_h),
+                                     args=_libclang_args(cfg) + ["-x", "c++-header", "-w"])
+        for c in tu.cursor.get_children():
+            if c.location.file is None or c.location.file.name != str(cfg.shared_h):
+                continue
+            rec, name = None, None
+            if c.kind.name in RECORD_KIND_NAMES and c.is_definition() and not _anon(c):
+                rec, name = c, c.spelling
+            elif c.kind.name == "TYPEDEF_DECL":
+                d = c.underlying_typedef_type.get_canonical().get_declaration()
+                if d.kind.name in RECORD_KIND_NAMES and _anon(d) and d.is_definition():
+                    rec, name = d, c.spelling
+            if rec is None or name in out:
+                continue
+            fields = []
+            for f in rec.get_children():
+                if f.kind.name == "FIELD_DECL":
+                    off = f.get_field_offsetof()
+                    fields.append((off // 8 if off >= 0 else -1, f.spelling,
+                                   f.type.get_canonical().spelling, f.type.get_size()))
+            out[name] = {"size": rec.type.get_size(), "fields": fields,
+                         "union": rec.kind.name == "UNION_DECL"}
+    except Exception:
+        out = {}
+    _LAYOUTS.update(key=key, data=out)
+    return out
+
+
+# ---------------------------------------------------------------- behaviour signature
+
+_SIG_SKIP = re.compile(r"^(CONCAT\d+|SUB\d+|ZEXT\d+|SEXT\d+|CARRY\d*|SCARRY\d*|SBORROW\d*|"
+                       r"NEON_\w+|u?int\d+_t|size_t|undefined\d*|u?long|u?char|u?short|uint|"
+                       r"byte|sbyte|longlong|ulonglong|code|word|dword|qword|"
+                       r"_*stack_chk_\w*|__security_\w+|_mcount)$")
+
+
+def call_counts(code: str, own: set[str], rename: Optional[dict] = None) -> dict[str, int]:
+    """How often each function is called (library names without leading _)."""
+    toks = tokens(code)
+    out: dict[str, int] = {}
+    for i, (k, t, s, e) in enumerate(toks):
+        if k != "ident" or i + 1 >= len(toks) or toks[i + 1][1] != "(":
+            continue
+        if t in CPP_KEYWORDS or t in own or _SIG_SKIP.match(t):
+            continue
+        if i and toks[i - 1][1] in (".", "->"):
+            continue
+        if i and toks[i - 1][1] == ")" and False:
+            continue
+        name = (rename or {}).get(t, t).lstrip("_")
+        out[name] = out.get(name, 0) + 1
+    return out
+
+
+def missing_calls(pseudo_calls: dict, code_calls: dict) -> dict[str, tuple[int, int]]:
+    return {n: (c, code_calls.get(n, 0)) for n, c in pseudo_calls.items()
+            if code_calls.get(n, 0) < c}
+
+
+# ---------------------------------------------------------------- side-by-side tests
+
+_SCALARS = {
+    "int": "i32", "int32_t": "i32", "signed int": "i32", "signed": "i32",
+    "uint": "u32", "unsigned int": "u32", "unsigned": "u32", "uint32_t": "u32",
+    "undefined4": "u32", "dword": "u32",
+    "short": "i16", "int16_t": "i16", "ushort": "u16", "unsigned short": "u16",
+    "uint16_t": "u16", "undefined2": "u16", "word": "u16",
+    "char": "i8", "signed char": "i8", "int8_t": "i8", "sbyte": "i8",
+    "uchar": "u8", "unsigned char": "u8", "uint8_t": "u8", "byte": "u8",
+    "undefined1": "u8", "undefined": "u8", "bool": "b",
+    "long": "i64", "long long": "i64", "longlong": "i64", "int64_t": "i64",
+    "ulong": "u64", "unsigned long": "u64", "unsigned long long": "u64",
+    "ulonglong": "u64", "uint64_t": "u64", "undefined8": "u64", "size_t": "u64",
+    "qword": "u64", "float": "f32", "double": "f64",
+}
+
+
+def scalar_kind(t: str) -> Optional[str]:
+    return _SCALARS.get(" ".join(t.replace("const", " ").split()))
+
+
+_SAN: dict = {}
+
+
+def sanitizer_flags(cfg: "Config") -> list[str]:
+    """-fsanitize flags this compiler can build and run, or [] if none work."""
+    if "flags" in _SAN:
+        return _SAN["flags"]
+    _SAN["flags"] = []
+    d = cfg.workdir / "improve" / "tmp"
+    d.mkdir(parents=True, exist_ok=True)
+    src = d / "san_probe.cpp"
+    src.write_text("int main(){return 0;}\n")
+    for flags in (["-fsanitize=address,undefined"], ["-fsanitize=undefined"]):
+        try:
+            r = subprocess.run([cfg.cxx, *flags, str(src), "-o", str(d / "san_probe")],
+                               capture_output=True, text=True, timeout=120)
+            if r.returncode == 0 and subprocess.run([str(d / "san_probe")],
+                                                    timeout=30).returncode == 0:
+                _SAN["flags"] = flags
+                break
+        except Exception:
+            pass
+    return _SAN["flags"]
+
+
+_GEN_CPP = r"""
+namespace dp_test {
+uint64_t s = 88172645463325252ull;
+uint64_t rnd() { s ^= s << 13; s ^= s >> 7; s ^= s << 17; return s; }
+const uint64_t EDGE[] = {0, 1, ~0ull, 2, 3, 10, 100, 0x7f, 0x80, 0xff, 0x100, 0x7fff,
+                         0x8000, 0xffff, 0x7fffffffull, 0x80000000ull, 0xffffffffull,
+                         0x7fffffffffffffffull, 0x8000000000000000ull, 0xfffffffeull};
+const double FEDGE[] = {0.0, -0.0, 1.0, -1.0, 0.5, -2.5, 100.0, 1e10, -1e-10, 3.14159};
+const int NE = sizeof(EDGE) / sizeof(EDGE[0]), NF = sizeof(FEDGE) / sizeof(FEDGE[0]);
+uint64_t ival(int i, int j) { return i < 400 ? EDGE[(i * 7 + j * 13 + i / NE) % NE] : rnd(); }
+double fval(int i, int j) {
+    return i < 400 ? FEDGE[(i * 7 + j * 3 + i / NF) % NF]
+                   : ((double)(rnd() % 2000000) / 1000.0 - 1000.0);
+}
+template <class T> bool same(T a, T b) { return a == b; }
+bool same(double a, double b) {
+    return a == b || (a != a && b != b) || std::fabs(a - b) <= 1e-6 * std::fmax(1.0, std::fabs(b));
+}
+bool same(float a, float b) { return same((double)a, (double)b); }
+}
+"""
+
+
+def _gen_expr(kind: str, j: int) -> str:
+    if kind in ("f32", "f64"):
+        return f"dp_test::fval(i, {j})"
+    if kind == "b":
+        return f"(dp_test::ival(i, {j}) & 1)"
+    return f"dp_test::ival(i, {j})"
+
+
+def _print_expr(kind: str, v: str) -> tuple[str, str]:
+    if kind in ("f32", "f64"):
+        return "%g", f"(double)({v})"
+    return "%lld", f"(long long)({v})"
+
+
+def run_harness(cfg: "Config", tag: str, code: str, timeout=30) -> tuple[str, str]:
+    """Compile and run a test program. ('ok'|'fail'|'nobuild'|'timeout'|'ub', output)."""
+    d = cfg.workdir / "improve" / "tmp"
+    d.mkdir(parents=True, exist_ok=True)
+    src, exe = d / f"{tag}.cpp", d / f"{tag}.bin"
+    src.write_text(code)
+    san = sanitizer_flags(cfg)
+    cmd = [cfg.cxx, f"-std={cfg.std}", "-O1", "-w", f"-I{cfg.workdir}", *san,
+           *[f for f in cfg.extra_flags if f.startswith(("-I", "-D", "-isysroot"))],
+           str(src), "-o", str(exe)]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    except subprocess.TimeoutExpired:
+        return "nobuild", "compile timed out"
+    if r.returncode != 0:
+        return "nobuild", r.stderr[-2000:]
+    env = {**os.environ, "UBSAN_OPTIONS": "print_stacktrace=0",
+           "ASAN_OPTIONS": "detect_leaks=0"}
+    try:
+        r = subprocess.run([str(exe)], capture_output=True, text=True, timeout=timeout,
+                           env=env)
+    except subprocess.TimeoutExpired:
+        return "timeout", ""
+    out = (r.stdout + r.stderr)[-3000:]
+    if "current.cpp:" in out and ("runtime error" in out or "AddressSanitizer" in out):
+        return "ub", out
+    return ("ok" if r.returncode == 0 else "fail"), out
+
+
+def pure_pseudo(pseudo: str) -> bool:
+    """Ghidra's version only computes from its arguments: no calls, globals,
+    pointers or memory."""
+    body = strip_comments(pseudo)
+    i = body.find("{")
+    if i < 0:
+        return False
+    inner = body[i:]
+    if re.search(r"\b(DAT|PTR|_DAT|s_|u_)\w*|->|\[|&|\*\s*\(|\*\s*[A-Za-z_]", inner):
+        return False
+    return not call_counts(inner, set())
+
+
+def difftest(cfg: "Config", rec: "FuncRecord", text: str, pseudo: Optional[str]) -> dict:
+    """Run this function and Ghidra's own version side by side on many inputs.
+    {"status": pass | fail | ub | untestable, "detail": ...}"""
+    if not pseudo or not pure_pseudo(pseudo):
+        return {"status": "untestable", "detail": "not a pure function"}
+    ph = parse_header(pseudo[:pseudo.find("{")])
+    ch = parse_header(tu_split(text)[0])
+    if not ph or not ch or len(ph[2]) != len(ch[2]):
+        return {"status": "untestable", "detail": "signatures don't line up"}
+    pk = [scalar_kind(t) for t, _ in ph[2]]
+    ck = [scalar_kind(t) for t, _ in ch[2]]
+    rk, crk = scalar_kind(ph[0]), scalar_kind(ch[0])
+    if None in pk or None in ck or not rk or not crk:
+        return {"status": "untestable", "detail": "not scalar"}
+    lines = text.split("\n")
+    if lines and lines[0].startswith(INCLUDE_LINE):
+        lines[0] = "// " + lines[0]
+    args = [f"a{j}" for j in range(len(pk))]
+    decl = "".join(f"        auto a{j} = {_gen_expr(k, j)};\n" for j, k in enumerate(pk))
+    fmt, vals = [], []
+    for a, k in zip(args, pk):
+        f_, v = _print_expr(k, a)
+        fmt.append(f_)
+        vals.append(v)
+    gf, gv = _print_expr(crk, "got")
+    wf, wv = _print_expr(rk, "want")
+    ref = deghidra_text(pseudo)
+    code = (f'{INCLUDE_LINE}\n#include <cmath>\n#include <cstdio>\n{_GEN_CPP}\n'
+            f'#line 1 "current.cpp"\n' + "\n".join(lines) + "\n"
+            f'#line 1 "ghidra.cpp"\nnamespace ghidra_ref {{\n{ref}\n}}\n'
+            f'#line 1 "harness.cpp"\nint main() {{\n    for (int i = 0; i < 3000; i++) {{\n'
+            f"{decl}"
+            f"        auto got = ::{ch[1]}({', '.join(f'({t}){a}' for (t, _), a in zip(ch[2], args))});\n"
+            f"        auto want = ghidra_ref::{ph[1]}({', '.join(f'({t}){a}' for (t, _), a in zip(ph[2], args))});\n"
+            f"        if (!dp_test::same(got, (decltype(got))want)) {{\n"
+            f'            std::printf("MISMATCH args({", ".join(fmt)}) got {gf} want {wf}\\n", '
+            f"{', '.join(vals + [gv, wv])});\n            return 3;\n        }}\n    }}\n"
+            f"    return 0;\n}}\n")
+    status, out = run_harness(cfg, "diff_" + Path(rec.file).stem, code)
+    if status == "ok":
+        return {"status": "pass", "detail": ""}
+    if status == "fail" and "MISMATCH" in out:
+        return {"status": "fail", "detail": out[out.find("MISMATCH"):].split("\n")[0]}
+    if status == "ub":
+        m = re.search(r"current\.cpp:(\d+):\d+: runtime error: ([^\n]*)", out)
+        return {"status": "ub", "detail": m.group(0) if m else out[:300],
+                "line": int(m.group(1)) if m else 0}
+    return {"status": "untestable", "detail": status}
+
+
+# Hand-written copies of standard functions, found by behaviour: the function is
+# run against the real one on many inputs and replaced only if it always agrees.
+_STD_TESTS = {
+    "strlen": ("P", "for (int t = 0; t < 2000; t++) { int n = rnd() % 64; char b[80];"
+                    " for (int k = 0; k < 80; k++) b[k] = (char)(1 + rnd() % 250); b[n] = 0;"
+                    " auto got = CALL(b); if ((unsigned long long)got != (unsigned long long)strlen(b)) return 3; }",
+               "return (RET)strlen((const char *)A0);"),
+    "strcmp": ("PP", "for (int t = 0; t < 3000; t++) { char x[8], y[8]; int n = rnd() % 7, m = rnd() % 7;"
+                     " for (int k = 0; k < 8; k++) { x[k] = 'a' + rnd() % 2; y[k] = 'a' + rnd() % 2; }"
+                     " x[n] = 0; y[m] = 0; auto got = CALL(x, y);"
+                     " if ((long long)got != (long long)strcmp(x, y)) return 3; }",
+               "return (RET)strcmp((const char *)A0, (const char *)A1);"),
+    "memcmp": ("PPN", "for (int t = 0; t < 3000; t++) { unsigned char x[8], y[8]; size_t n = rnd() % 9;"
+                      " for (int k = 0; k < 8; k++) { x[k] = 'a' + rnd() % 2; y[k] = 'a' + rnd() % 2; }"
+                      " auto got = CALL(x, y, n);"
+                      " if ((long long)got != (long long)memcmp(x, y, n)) return 3; }",
+               "return (RET)memcmp((const void *)A0, (const void *)A1, (size_t)A2);"),
+    "memset": ("PNN", "for (int t = 0; t < 2000; t++) { unsigned char x[64], y[64];"
+                      " for (int k = 0; k < 64; k++) x[k] = y[k] = (unsigned char)rnd();"
+                      " size_t n = rnd() % 40; int v = (int)(rnd() % 600);"
+                      " RETCHK(CALL(x, v, n), x); memset(y, v, n); if (memcmp(x, y, 64)) return 3; }",
+               "memset((void *)A0, (int)A1, (size_t)A2);"),
+    "memmove": ("PPN", "for (int t = 0; t < 3000; t++) { unsigned char x[128], y[128];"
+                       " for (int k = 0; k < 128; k++) x[k] = y[k] = (unsigned char)rnd();"
+                       " size_t n = rnd() % 48, d = rnd() % 64, s = rnd() % 64;"
+                       " RETCHK(CALL(x + d, x + s, n), x + d); memmove(y + d, y + s, n);"
+                       " if (memcmp(x, y, 128)) return 3; }",
+                "memmove((void *)A0, (const void *)A1, (size_t)A2);"),
+    "strcpy": ("PP", "for (int t = 0; t < 2000; t++) { char s[40], x[64], y[64]; int n = rnd() % 32;"
+                     " for (int k = 0; k < 40; k++) s[k] = (char)(1 + rnd() % 250); s[n] = 0;"
+                     " for (int k = 0; k < 64; k++) x[k] = y[k] = (char)rnd();"
+                     " RETCHK(CALL(x, s), x); strcpy(y, s); if (memcmp(x, y, 64)) return 3; }",
+               "strcpy((char *)A0, (const char *)A1);"),
+}
+
+
+def _shape(params) -> str:
+    out = ""
+    for t, _ in params:
+        if "*" in t or "[" in t:
+            out += "P"
+        elif scalar_kind(t) and scalar_kind(t)[0] in "iu":
+            out += "N"
+        else:
+            return "?"
+    return out
+
+
+def stdlib_match(cfg: "Config", rec: "FuncRecord", text: str) -> Optional[tuple[str, str]]:
+    """(standard function, new body line) if this function behaves exactly like one."""
+    h = parse_header(tu_split(text)[0])
+    if not h or not all(n for _, n in h[2]):
+        return None
+    ret, name, params = h
+    shape = _shape(params)
+    void_ret = ret.strip() == "void"
+    ptr_ret = "*" in ret
+    lines = text.split("\n")
+    if lines and lines[0].startswith(INCLUDE_LINE):
+        lines[0] = "// " + lines[0]
+    for std, (want, test, body) in _STD_TESTS.items():
+        if shape != want:
+            continue
+        returns_value = std in ("strlen", "strcmp", "memcmp")
+        if returns_value and (void_ret or ptr_ret):
+            continue
+        if not returns_value and not (void_ret or ptr_ret):
+            continue
+        call = f"[&](auto... a) {{ return ::{name}(a...); }}"
+        t = test.replace("CALL(", "dp_call(")
+        t = t.replace("RETCHK(", "dp_ret(")
+        code = (f"{INCLUDE_LINE}\n#include <cstring>\n#include <cstdint>\n"
+                f"namespace {{ uint64_t s_ = 88172645463325252ull;\n"
+                f"uint64_t rnd() {{ s_ ^= s_ << 13; s_ ^= s_ >> 7; s_ ^= s_ << 17; return s_; }} }}\n"
+                f'#line 1 "current.cpp"\n' + "\n".join(lines) + "\n"
+                f'#line 1 "harness.cpp"\n'
+                f"template <class... A> auto dp_call(A... A_) {{ "
+                f"auto t_ = std::make_tuple(A_...); (void)t_; return {call}("
+                + ", ".join(f"({pt})std::get<{j}>(t_)" for j, (pt, _) in enumerate(params))
+                + f"); }}\n"
+                + ("template <class R, class D> bool dp_ret_ok(R r, D d) { return (void *)r == (void *)d; }\n"
+                   if ptr_ret else "")
+                + "int main() {\n"
+                + ("#define dp_ret(EXPR, DEST) do { if (!dp_ret_ok((EXPR), (DEST))) return 4; } while (0)\n"
+                   if ptr_ret else "#define dp_ret(EXPR, DEST) do { EXPR; } while (0)\n")
+                + f"    {t}\n    return 0;\n}}\n")
+        code = code.replace("#include <cstdint>\n", "#include <cstdint>\n#include <tuple>\n", 1)
+        status, _ = run_harness(cfg, f"std_{std}_" + Path(rec.file).stem, code)
+        if status == "ok":
+            b = body
+            for j, (_, pn) in enumerate(params):
+                b = b.replace(f"A{j}", pn)
+            b = b.replace("(RET)", f"({ret})")
+            if ptr_ret:
+                b += f" return ({ret}){params[0][1]};"
+            return std, b
+    return None
+
+# ---------------------------------------------------------------- the model's small tasks
+
+PLAN_SYS = ("You plan ONE small edit to a C++ function. You get the function's goal, "
+            "notes from earlier attempts, the task, and the lines to change (marked >>). "
+            "In ONE sentence say exactly what to change on those lines. Do not repeat an "
+            "approach the notes say failed. Output no code.")
+LOCATE_SYS = ("You find the line in a C++ function where a problem is. Reply with ONLY "
+              "the line number, then one short sentence saying why.")
+NAMES_SYS = ("You choose names for things in C++ code that was decompiled. Reply with "
+             "ONLY lines of the form: old -> new. One line per item, nothing else. Names "
+             "say what the thing is or does; never use product, company or person names.")
+NAME_STYLE = {"variable": "lowerCamelCase", "field": "lowerCamelCase",
+              "global": "lowerCamelCase", "function": "lowerCamelCase, starting with a verb",
+              "constant": "SCREAMING_SNAKE_CASE (or NONE if it isn't a meaningful constant)",
+              "module": "short snake_case (one or two words)"}
+
+
+class ImproveCtx:
+    def __init__(self, cfg: "Config", records: dict, P: Optional["Paths"] = None,
+                 checks: Optional[set] = None):
+        self.cfg, self.records, self.P = cfg, records, P
+        self.state = ImproveState(cfg)
+        self.export, self.index = _load_pseudocode(cfg)
+        self.ghidra_to_final = {v.get("ghidra"): k for k, v in self.index.items()}
+        self.model = cfg.fix_model_used or None
+        self.checks = checks
+        self.blocklist = load_blocklist(P) if P else []
+        self.last_plan = ""
+        self._arity = None
+        self.stats: dict[str, dict[str, int]] = {}
+
+    # -- bookkeeping
+    def count(self, check: str, what: str, n=1):
+        d = self.stats.setdefault(check, {})
+        d[what] = d.get(what, 0) + n
+
+    def text(self, rec) -> str:
+        return (self.cfg.workdir / rec.file).read_text()
+
+    def pseudo(self, rec) -> Optional[str]:
+        return _pseudo_for(rec, self.export, self.index)
+
+    def pseudo_calls(self, rec) -> Optional[dict]:
+        p = self.pseudo(rec)
+        if not p:
+            return None
+        i = p.find("{")
+        return call_counts(p[i:] if i >= 0 else p, {rec.name}, self.ghidra_to_final)
+
+    def code_calls(self, rec, text) -> dict:
+        _, body = tu_split(text)
+        return call_counts(body, {rec.name, re.sub(r"__dup\d+$", "", rec.name)})
+
+    def compiling(self):
+        return [(m, r) for m, r in self.records.items()
+                if r.compiles and not r.quarantined and not getattr(r, "duplicate_of", "")]
+
+    # -- the model
+    def ask(self, system: str, user: str, max_out=300) -> Optional[str]:
+        if not self.model:
+            return None
+        return self.cfg.client.chat(self.model, [{"role": "system", "content": system},
+                                                 {"role": "user", "content": user}],
+                                    max_out=max_out, temperature=0.2,
+                                    timeout=self.cfg.model_timeout_s, fatal=False)
+
+    def goal(self, rec, text) -> str:
+        g, _ = read_notes(self.cfg, rec.file)
+        if g or not self.model:
+            return g
+        _, body = tu_split(text)
+        g = self.ask(FIX_GOAL_SYS, f"Function {rec.name}:\n```cpp\n{body[:6000]}\n```", 160) or ""
+        g = " ".join(g.split())[:400]
+        if g:
+            write_note(self.cfg, rec.file, goal=g)
+        return g
+
+    def line_edit(self, rec, text: str, line_no: int, task: str, span=None,
+                  context: str = "") -> Optional[str]:
+        """Plan one small edit, then rewrite only the lines it covers (1-based)."""
+        lines = text.split("\n")
+        if span is None:
+            span = _edit_span(lines, line_no)
+        if not span:
+            return None
+        lo, hi = span
+        window = "\n".join(lines[lo:hi])
+        goal = self.goal(rec, text)
+        _, notes = read_notes(self.cfg, rec.file)
+        shown = numbered(lines, lo - 3, hi + 3, (lo, hi))
+        info = (f"Function goal: {goal or '(unknown)'}\n"
+                + (f"Notes from earlier attempts:\n" + "\n".join(f"- {n}" for n in notes) + "\n"
+                   if notes else "")
+                + f"Task: {task}\n" + (f"{context}\n" if context else ""))
+        plan = self.ask(PLAN_SYS, info + f"\nLines:\n{shown}", 160) or ""
+        self.last_plan = " ".join(plan.split())[:300]
+        reply = self.ask(FIX_EDIT_SYS, info + f"Plan: {self.last_plan}\n\n"
+                         f"Replace ONLY these line(s):\n```cpp\n{window}\n```",
+                         min(900, max(200, (hi - lo) * 60)))
+        if not reply:
+            return None
+        new, _ = parse_reply(reply)
+        if new is None:
+            new = reply.strip()
+        new = "\n".join(l for l in new.split("\n")
+                        if not l.lstrip().startswith("#include")).rstrip()
+        if not new.strip() or new.strip() == window.strip():
+            return None
+        if brace_balance(new) != brace_balance(window):
+            return None
+        indent = re.match(r"[ \t]*", lines[lo]).group(0)
+        nl = new.split("\n")
+        if indent and nl and not nl[0][:1].isspace():
+            nl = [indent + x if x.strip() else x for x in nl]
+        lines[lo:hi] = nl
+        return "\n".join(lines)
+
+    def locate(self, rec, text: str, issue: str, context: str = "") -> Optional[int]:
+        lines = text.split("\n")
+        shown = numbered(lines, 0, min(len(lines), 400))
+        reply = self.ask(LOCATE_SYS, f"Problem: {issue}\n{context}\n\nFunction:\n{shown}", 80)
+        m = re.search(r"\d+", reply or "")
+        if m and 2 <= int(m.group()) <= len(lines):
+            return int(m.group())
+        return None
+
+    def names(self, kind: str, items: list[tuple[str, list[str]]], extra="") -> dict:
+        """Ask for names: items = [(current name, [lines where it's used])]."""
+        if not items or not self.model:
+            return {}
+        body = "\n".join(f"- {old}\n" + "\n".join(f"    {u.strip()[:160]}" for u in uses[:4])
+                         for old, uses in items)
+        reply = self.ask(NAMES_SYS, f"Name these {kind}s. Style: {NAME_STYLE[kind]}.\n"
+                         f"{extra}\n{body}", 40 + 30 * len(items)) or ""
+        out = {}
+        want = {o for o, _ in items}
+        for line in reply.splitlines():
+            m = re.match(r"\s*[-*]?\s*`?([\w:]+)`?\s*(?:->|=>|:)\s*`?([A-Za-z_]\w*)`?", line)
+            if m and m.group(1) in want and m.group(2).upper() != "NONE":
+                out[m.group(1)] = m.group(2)
+        return out
+
+
+# ---------------------------------------------------------------- the gate
+
+def gate_change(ctx: ImproveCtx, rec, old: str, new: str, behaviour=True,
+                allow_shrink=False) -> tuple[bool, str]:
+    """Write `new`; keep it only if it compiles and still behaves like before.
+    On failure the old text is back on disk."""
+    path = ctx.cfg.workdir / rec.file
+    if new == old:
+        return False, "no change"
+    if not allow_shrink and len(re.sub(r"\s+", "", new)) < 0.5 * len(re.sub(r"\s+", "", old)) \
+            and len(old) > 300:
+        return False, "removes too much of the function"
+    path.write_text(new)
+    ok, err, _ = compile_tu(ctx.cfg, rec.file)
+    why = ""
+    if not ok:
+        first = next((l for l in err.splitlines() if "error" in l), err[:200])
+        why = "doesn't compile: " + first.split("error:", 1)[-1].strip()[:160]
+    elif behaviour:
+        pc = ctx.pseudo_calls(rec)
+        if pc:
+            before = sum(c - h for c, h in missing_calls(pc, ctx.code_calls(rec, old)).values())
+            after = sum(c - h for c, h in missing_calls(pc, ctx.code_calls(rec, new)).values())
+            if after > before:
+                why = "drops a call Ghidra's version makes"
+        if not why:
+            t_old = cached_difftest(ctx, rec, old)
+            if t_old["status"] == "pass":
+                t_new = cached_difftest(ctx, rec, new)
+                if t_new["status"] != "pass":
+                    why = "behaves differently from Ghidra's version: " + t_new.get("detail", "")
+    if why:
+        path.write_text(old)
+        return False, why
+    return True, ""
+
+
+def cached_difftest(ctx: ImproveCtx, rec, text: str) -> dict:
+    cache = ctx.state.g("difftest", {})
+    key = f"{rec.mangled}:{text_sha(text)}"
+    if key not in cache:
+        cache[key] = difftest(ctx.cfg, rec, text, ctx.pseudo(rec))
+    return cache[key]
+
+
+# ---------------------------------------------------------------- per-function checks
+#
+# Each check: detect(ctx, rec, text) -> findings; fix(ctx, rec, text, finding) ->
+# new text or None. "model": the fix needs the model; "behaviour": the fix is
+# gated on behaving like Ghidra's version (renames / pure rewrites are too).
+
+def _finding(check, line, msg, weight, key="", **data):
+    return {"check": check, "line": line, "msg": msg, "weight": weight,
+            "key": f"{check}:{key or msg}", "data": data}
+
+
+def _line_of(text: str, pos: int) -> int:
+    return text.count("\n", 0, pos) + 1
+
+
+# -- leftover decompiler names (param_1, local_28, uVar3 ...)
+LOCAL_LEFTOVER = re.compile(r"^(param_\d+|local_[0-9a-fA-F]+|[a-z]{1,3}Var\d+|in_\w+|"
+                            r"extraout_\w+|unaff_\w+|stack0x\w+|auStack_\w+|abStack_\w+)$")
+
+
+def detect_names(ctx, rec, text):
+    _, body = tu_split(text)
+    left = sorted({t for k, t, _, _ in tokens(body) if k == "ident" and LOCAL_LEFTOVER.match(t)})
+    return [_finding("names", 0, f"decompiler names left: {', '.join(left[:12])}",
+                     1 + len(left) * 0.5, key="names", names=left)] if left else []
+
+
+def fix_names(ctx, rec, text, f):
+    lines = text.split("\n")
+    items = []
+    for n in f["data"]["names"][:12]:
+        uses = [l for l in lines if re.search(rf"\b{re.escape(n)}\b", l)]
+        items.append((n, uses))
+    goal = ctx.goal(rec, text)
+    mapping = ctx.names("variable", items, f"They're local variables / parameters of a "
+                                           f"function whose goal is: {goal}")
+    taken = ident_set(text) | header_idents(ctx.cfg)
+    clean, used = {}, set()
+    for old, new in mapping.items():
+        if is_ident(new) and new not in taken and new not in used and not LOCAL_LEFTOVER.match(new):
+            clean[old] = new
+            used.add(new)
+    if not clean:
+        return None
+    new_text, _ = rename_idents(text, clean)
+    if not alpha_equivalent(text, new_text, clean):
+        return None
+    ctx.last_plan = "rename " + ", ".join(f"{a}->{b}" for a, b in clean.items())
+    return new_text
+
+
+_HDR_IDENTS: dict = {}
+
+
+def header_idents(cfg) -> set:
+    try:
+        key = cfg.shared_h.stat().st_mtime_ns
+    except OSError:
+        return set()
+    if _HDR_IDENTS.get("key") != key:
+        _HDR_IDENTS.update(key=key, ids=ident_set(cfg.shared_h.read_text()))
+    return _HDR_IDENTS["ids"]
+
+
+# -- Ghidra helper notation left in the code (CONCAT44, ZEXT48, SUB84 ...)
+HELPER_CALL = re.compile(r"^(CONCAT|ZEXT|SEXT|SUB)(\d)(\d)$")
+
+
+def _helper_rewrite(name, args):
+    m = HELPER_CALL.match(name)
+    if not m:
+        return None
+    kind, a, b = m.group(1), int(m.group(2)), int(m.group(3))
+    sizes = {1, 2, 4, 8}
+    if kind == "ZEXT" and len(args) == 1 and a in sizes and b in sizes:
+        return f"((uint{8 * b}_t)(uint{8 * a}_t)({args[0]}))"
+    if kind == "SEXT" and len(args) == 1 and a in sizes and b in sizes:
+        return f"((int{8 * b}_t)(int{8 * a}_t)({args[0]}))"
+    if kind == "CONCAT" and len(args) == 2 and (a + b) in (2, 4, 8) and a in sizes and b in sizes:
+        t = f"uint{8 * (a + b)}_t"
+        return (f"(({t})(({t})(uint{8 * a}_t)({args[0]}) << {8 * b}) | "
+                f"({t})(uint{8 * b}_t)({args[1]}))")
+    if kind == "SUB" and len(args) == 2 and a in sizes and b in sizes:
+        try:
+            off = int(args[1], 0)
+        except ValueError:
+            return None
+        return f"((uint{8 * b}_t)((uint{8 * a}_t)({args[0]}) >> {8 * off}))"
+    return None
+
+
+def detect_helpers(ctx, rec, text):
+    _, body = tu_split(text)
+    found = sorted({t for k, t, _, _ in tokens(body) if k == "ident" and HELPER_CALL.match(t)})
+    return [_finding("helpers", 0, f"Ghidra helper notation left: {', '.join(found)}", 2,
+                     key="helpers")] if found else []
+
+
+def fix_helpers(ctx, rec, text, f):
+    head, body = tu_split(text)
+    new_body, n = replace_calls(body, lambda t: bool(HELPER_CALL.match(t)), _helper_rewrite)
+    return text.replace(body, new_body, 1) if n else None
+
+
+# -- divide-by-multiplying: (uint64_t)x * 0xaaaaaaab >> 0x21  ->  x / 3
+MAGIC_DIV = re.compile(r"\(\s*\(\s*(?:uint64_t|ulong|ulonglong|unsigned long(?: long)?)\s*\)\s*"
+                       r"([A-Za-z_]\w*)\s*\*\s*(0x[0-9a-fA-F]+|\d+)(?:[uUlL]*)\s*\)\s*>>\s*"
+                       r"(0x[0-9a-fA-F]+|\d+)")
+
+
+def _divisor(mult: int, shift: int) -> Optional[int]:
+    import random
+    if not (0 < mult < 2 ** 33 and 32 <= shift < 64):
+        return None
+    d = round(2 ** shift / mult)
+    if d < 2:
+        return None
+    rng = random.Random(mult ^ shift)
+    xs = [0, 1, d - 1, d, d + 1, 2 ** 32 - 1, 2 ** 31, 2 ** 31 - 1] + \
+         [rng.randrange(2 ** 32) for _ in range(20000)] + \
+         [k * d + o for k in (rng.randrange(2 ** 32 // d) for _ in range(2000)) for o in (-1, 0, 1)]
+    for x in xs:
+        if 0 <= x < 2 ** 32 and (x * mult) >> shift != x // d:
+            return None
+    return d
+
+
+def _unsigned32_vars(text: str) -> set:
+    return set(re.findall(r"\b(?:uint32_t|uint|unsigned int|unsigned|undefined4|dword)\s+"
+                          r"\**\s*([A-Za-z_]\w*)", text))
+
+
+def detect_magic_div(ctx, rec, text):
+    u32 = _unsigned32_vars(text)
+    out = []
+    for m in MAGIC_DIV.finditer(text):
+        if m.group(1) in u32 and _divisor(int(m.group(2), 0), int(m.group(3), 0)):
+            out.append(_finding("magic_div", _line_of(text, m.start()),
+                                "division written as multiply-and-shift", 2,
+                                key=m.group(0)))
+    return out
+
+
+def fix_magic_div(ctx, rec, text, f):
+    u32 = _unsigned32_vars(text)
+
+    def rep(m):
+        d = _divisor(int(m.group(2), 0), int(m.group(3), 0))
+        return f"((uint64_t)({m.group(1)}) / {d})" if d and m.group(1) in u32 else m.group(0)
+    new = MAGIC_DIV.sub(rep, text)
+    return new if new != text else None
+
+
+# -- stack protector / compiler-inserted code
+STACK_GUARD = re.compile(r"__?stack_chk_guard|___stack_chk_guard|__security_cookie")
+STACK_FAIL = re.compile(r"\b_*stack_chk_fail\s*\(|\b__security_check_cookie\s*\(|\b_mcount\s*\(")
+
+
+def detect_stack(ctx, rec, text):
+    return [_finding("stack_guard", 0, "compiler-inserted stack protector code", 2,
+                     key="stack")] if STACK_GUARD.search(text) or STACK_FAIL.search(text) else []
+
+
+def fix_stack(ctx, rec, text, f):
+    lines = text.split("\n")
+    guard_vars = set()
+    for l in lines:
+        m = re.match(r"\s*([A-Za-z_]\w*)\s*=.*(?:stack_chk_guard|security_cookie)", l)
+        if m:
+            guard_vars.add(m.group(1))
+    out, i = [], 0
+    while i < len(lines):
+        l = lines[i]
+        s = l.strip()
+        if STACK_GUARD.search(l) and re.match(r"[\w\s\*]*=.*;\s*$", s):
+            i += 1
+            continue                                  # local = guard;
+        if re.match(r"(if|else\s+if)\s*\(", s) and (
+                any(re.search(rf"\b{re.escape(v)}\b", s) for v in guard_vars)
+                or STACK_GUARD.search(s)):
+            j, depth = i, 0                           # the whole if-block
+            block = []
+            while j < len(lines):
+                block.append(lines[j])
+                depth += brace_balance(lines[j])
+                if depth <= 0 and ("{" in "".join(block) or lines[j].rstrip().endswith(";")):
+                    break
+                j += 1
+            if STACK_FAIL.search("\n".join(block)):
+                i = j + 1
+                continue
+        if STACK_FAIL.search(l) and re.match(r"_*\w+\s*\([^;]*\)\s*;\s*$", s):
+            i += 1
+            continue
+        if any(re.match(rf"(?:[\w\s\*]+\s)?\**{re.escape(v)}\s*;\s*$", s) for v in guard_vars):
+            i += 1
+            continue                                  # its declaration
+        out.append(l)
+        i += 1
+    new = "\n".join(out)
+    return new if new != text else None
+
+
+# -- compiler warnings
+WARN_FLAGS_CLANG = ["-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-sign-compare",
+                    "-Wno-missing-field-initializers", "-Wconditional-uninitialized",
+                    "-Wshorten-64-to-32", "-Wno-unused-function"]
+WARN_FLAGS_GCC = ["-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-sign-compare",
+                  "-Wno-missing-field-initializers", "-Wno-unused-function"]
+
+
+def detect_warnings(ctx, rec, text):
+    cfg = ctx.cfg
+    flags = WARN_FLAGS_CLANG if "clang" in Path(cfg.cxx).name else WARN_FLAGS_GCC
+    cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}", "-fsyntax-only", *flags,
+           *PIC_FLAGS, *_pch_flags(cfg), *cfg.extra_flags, str(cfg.workdir / rec.file)]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    out = []
+    name = Path(rec.file).name
+    for l in r.stderr.splitlines():
+        m = DIAG_RE.match(l.strip())
+        if m and m.group("sev") == "warning" and Path(m.group("file")).name == name:
+            msg = re.sub(r"\s*\[-W[\w-]+\]$", "", m.group("msg"))
+            line = int(m.group("line"))
+            src = text.split("\n")[line - 1].strip() if line <= text.count("\n") + 1 else ""
+            out.append(_finding("warnings", line, f"warning: {msg}", 2, key=msg + "|" + src))
+    return out
+
+
+def fix_warnings(ctx, rec, text, f):
+    lines = text.split("\n")
+    ln = f["line"]
+    m = re.match(r"warning: unused variable '(\w+)'", f["msg"])
+    if m and 0 < ln <= len(lines):
+        s = lines[ln - 1].strip()
+        if re.fullmatch(rf"[\w\s\*:<>,]+\b{re.escape(m.group(1))}\s*(=\s*[^;()]*)?;", s):
+            del lines[ln - 1]                         # nothing else on the line
+            ctx.last_plan = f"remove the unused variable {m.group(1)}"
+            return "\n".join(lines)
+    return ctx.line_edit(rec, text, ln, f"The compiler warns: {f['msg'][9:]}. Fix the "
+                                        f"cause without changing what the code does.")
+
+
+# -- casts that change nothing (from libclang's types)
+def _noop_casts(ctx, rec, text) -> list[tuple[int, int]]:
+    if not re.search(r"\(\s*[\w\s\*:]+\)\s*[\w(]", text):
+        return []
+    cfg = ctx.cfg
+    try:
+        cx = _load_libclang(cfg)
+        path = str(cfg.workdir / rec.file)
+        tu = cx.Index.create().parse(path, args=_libclang_args(cfg) + ["-w"])
+    except Exception:
+        return []
+    spans = []
+    for c in tu.cursor.walk_preorder():
+        if c.kind.name != "CSTYLE_CAST_EXPR" or c.location.file is None \
+                or c.location.file.name != path:
+            continue
+        kids = [k for k in c.get_children() if k.kind.is_expression()]
+        if not kids:
+            continue
+        k = kids[-1]
+        if c.type.get_canonical().spelling != k.type.get_canonical().spelling:
+            continue
+        if c.type.kind.name in ("VOID", "TYPEDEF") and c.type.spelling != k.type.spelling:
+            continue
+        s, e = c.extent.start.offset, k.extent.start.offset
+        if 0 <= s < e and re.fullmatch(r"\(\s*[^()]*\)\s*", text[s:e]):
+            spans.append((s, e))
+    return spans
+
+
+def detect_casts(ctx, rec, text):
+    spans = _noop_casts(ctx, rec, text)
+    return [_finding("casts", _line_of(text, spans[0][0]),
+                     f"{len(spans)} cast(s) that change nothing", 0.5 * len(spans),
+                     key="casts")] if spans else []
+
+
+def fix_casts(ctx, rec, text, f):
+    spans = _noop_casts(ctx, rec, text)
+    for s, e in sorted(spans, reverse=True):
+        text = text[:s] + text[e:]
+    return text if spans else None
+
+
+# -- pointer arithmetic that is really a struct member
+PTR_ARITH = re.compile(r"\*\s*\(\s*(?P<ty>[\w\s]+?)\s*\*\s*\)\s*\(\s*\(\s*(?:char|uchar|byte|"
+                       r"uint8_t|int8_t|long|ulong|longlong|ulonglong|uint64_t|int64_t|"
+                       r"intptr_t|uintptr_t|size_t|undefined)\s*\**\s*\)\s*(?P<var>[A-Za-z_]\w*)"
+                       r"\s*\+\s*(?P<off>0x[0-9a-fA-F]+|\d+)\s*\)")
+
+
+def _var_struct(text: str, var: str) -> Optional[str]:
+    m = re.search(rf"\b(?:struct\s+)?([A-Za-z_]\w*)\s*\*\s*{re.escape(var)}\b", text)
+    return m.group(1) if m else None
+
+
+def _member_for(ctx, text, m) -> Optional[str]:
+    s = _var_struct(text, m.group("var"))
+    lay = struct_layouts(ctx.cfg).get(s or "")
+    if not lay or lay.get("union"):
+        return None
+    off = int(m.group("off"), 0)
+    ty = " ".join(m.group("ty").split())
+    for foff, fname, ftype, fsize in lay["fields"]:
+        if foff == off and (ftype == ty or scalar_kind(ftype) == scalar_kind(ty) != None):
+            return f"{m.group('var')}->{fname}"
+    return None
+
+
+def detect_ptr_arith(ctx, rec, text):
+    out = []
+    for m in PTR_ARITH.finditer(text):
+        known = _member_for(ctx, text, m) is not None
+        out.append(_finding("ptr_arith", _line_of(text, m.start()),
+                            "pointer arithmetic for a struct member" + ("" if known else
+                            " (no matching field yet)"), 1.5 if known else 0.5,
+                            key=m.group(0), known=known))
+    return out
+
+
+def fix_ptr_arith(ctx, rec, text, f):
+    if not f["data"].get("known"):
+        return None
+
+    def rep(m):
+        return _member_for(ctx, text, m) or m.group(0)
+    new = PTR_ARITH.sub(rep, text)
+    return new if new != text else None
+
+
+# -- goto
+def detect_goto(ctx, rec, text):
+    out = []
+    lines = text.split("\n")
+    for i, l in enumerate(lines):
+        m = re.search(r"\bgoto\s+(\w+)\s*;", l)
+        if m:
+            lab = next((j for j, x in enumerate(lines) if re.match(rf"\s*{m.group(1)}\s*:", x)), None)
+            out.append(_finding("goto", i + 1, f"goto {m.group(1)}", 1.5,
+                                key=f"{m.group(1)}|{l.strip()}", label=lab))
+    return out
+
+
+def fix_goto(ctx, rec, text, f):
+    lab = f["data"].get("label")
+    if lab is None:
+        return None
+    lo, hi = sorted((f["line"] - 1, lab))
+    lines = text.split("\n")
+    while lo > 0 and brace_balance("\n".join(lines[lo:hi + 1])) < 0:
+        lo -= 1
+    while hi + 1 < len(lines) and brace_balance("\n".join(lines[lo:hi + 1])) > 0:
+        hi += 1
+    if hi - lo > 30:
+        return None
+    return ctx.line_edit(rec, text, f["line"], f"Replace '{f['msg']};' and its label with "
+                         f"structured code (if/else, a loop, break or continue). Keep exactly "
+                         f"the same behaviour.", span=(lo, hi + 1))
+
+
+# -- behaviour against Ghidra's version
+def detect_behaviour(ctx, rec, text):
+    out = []
+    pc = ctx.pseudo_calls(rec)
+    if pc:
+        miss = missing_calls(pc, ctx.code_calls(rec, text))
+        if miss:
+            desc = ", ".join(f"{n} ({c}x in Ghidra's version, {h}x here)" for n, (c, h) in miss.items())
+            out.append(_finding("calls", 0, f"calls missing compared with Ghidra's version: {desc}",
+                                3, key="calls:" + ",".join(sorted(miss)), missing=sorted(miss)))
+    t = cached_difftest(ctx, rec, text)
+    if t["status"] == "fail":
+        out.append(_finding("difftest", 0, f"behaves differently from Ghidra's version: "
+                                           f"{t['detail']}", 5, key="difftest"))
+    elif t["status"] == "ub":
+        out.append(_finding("sanitizer", t.get("line", 0),
+                            f"undefined behaviour: {t['detail']}", 4, key=t["detail"]))
+    return out
+
+
+def fix_behaviour(ctx, rec, text, f):
+    if f["check"] == "calls":
+        p = ctx.pseudo(rec) or ""
+        name = f["data"]["missing"][0]
+        ctxt = "\n".join(l for l in p.split("\n") if name in l)[:600]
+        task = (f"Ghidra's version of this function calls {name} here:\n{ctxt}\n"
+                f"This version doesn't (or calls it fewer times). Add the missing call back.")
+        line = ctx.locate(rec, text, task)
+        return ctx.line_edit(rec, text, line, task) if line else None
+    line = f["line"] or ctx.locate(rec, text, f["msg"])
+    if not line:
+        return None
+    return ctx.line_edit(rec, text, line, f"{f['msg']}. Fix this line so the function "
+                                          f"behaves exactly like Ghidra's version.",
+                         context="Ghidra's version:\n" + (ctx.pseudo(rec) or "")[:1500])
+
+
+# -- hand-written copies of standard library functions
+def detect_stdlib(ctx, rec, text):
+    cache = ctx.state.g("stdlib", {})
+    key = f"{rec.mangled}:{text_sha(text)}"
+    if key not in cache:
+        r = stdlib_match(ctx.cfg, rec, text)
+        cache[key] = list(r) if r else None
+    r = cache[key]
+    if not r or re.search(rf"\b{r[0]}\s*\(", tu_split(text)[1]) and \
+            len(tu_split(text)[1]) < 200:
+        return []
+    return [_finding("stdlib", 0, f"does exactly what {r[0]} does", 3, key=r[0],
+                     std=r[0], body=r[1])]
+
+
+def fix_stdlib(ctx, rec, text, f):
+    head, body = tu_split(text)
+    new = text[:len(text) - len(body)] + "{\n    " + f["data"]["body"] + "\n}\n"
+    ctx.last_plan = f"replace the body with a call to {f['data']['std']}"
+    return new
+
+
+# -- privacy: strings and comments that identify the original program
+PRIVACY_STR = re.compile(r"[/\\][A-Za-z0-9._-]+[/\\]|https?://|www\.|@[\w-]+\.\w|\b\d+\.\d+\.\d+|"
+                         r"(?i:copyright|\(c\)|©|\b(?:inc|ltd|llc|gmbh|corp|corporation)\b)")
+
+
+def privacy_hits(text: str, terms: list[str]) -> list[tuple[str, str, int]]:
+    """(kind, token text, position) for strings/comments/identifiers that identify."""
+    out = []
+    low_terms = [t.lower() for t in terms]
+    for k, t, s, e in tokens(text):
+        if k == "string" and len(t) > 3 and not _FORMAT_STR.search(t):
+            if PRIVACY_STR.search(t[1:-1]) or any(x in t.lower() for x in low_terms):
+                out.append(("string", t, s))
+        elif k == "comment" and (PRIVACY_STR.search(t) or any(x in t.lower() for x in low_terms)):
+            out.append(("comment", t, s))
+        elif k == "ident" and any(x in t.lower() for x in low_terms):
+            out.append(("ident", t, s))
+    return out
+
+
+def detect_privacy(ctx, rec, text):
+    hits = [h for h in privacy_hits(text, ctx.blocklist) if h[0] != "ident"]
+    return [_finding("privacy", _line_of(text, hits[0][2]),
+                     f"{len(hits)} string(s)/comment(s) that may identify the original program",
+                     6, key="privacy")] if hits else []
+
+
+def scrub_privacy(text: str, terms: list[str]) -> str:
+    for kind, t, s in sorted(privacy_hits(text, terms), key=lambda h: -h[2]):
+        if kind == "string":
+            q = t[-1]
+            pre = t[:t.index(q)]
+            text = text[:s] + pre + q + q + text[s + len(t):]
+        elif kind == "comment":
+            text = text[:s] + ("" if t.startswith("//") else "/* */") + text[s + len(t):]
+    return text
+
+
+def fix_privacy(ctx, rec, text, f):
+    new = scrub_privacy(text, ctx.blocklist)
+    ctx.last_plan = "blank identifying strings and remove identifying comments"
+    return new if new != text else None
+
+
+# -- clang-tidy's automatic fixes
+TIDY_CHECKS = ("-*,modernize-use-nullptr,modernize-use-bool-literals,"
+               "readability-braces-around-statements,readability-redundant-control-flow,"
+               "readability-simplify-boolean-expr,readability-else-after-return")
+
+
+def _tidy_result(ctx, rec, text) -> Optional[str]:
+    exe = shutil.which("clang-tidy")
+    if not exe:
+        return None
+    cache = ctx.state.g("tidy", {})
+    key = f"{rec.mangled}:{text_sha(text)}"
+    if key in cache:
+        return cache[key]
+    d = ctx.cfg.workdir / "improve" / "tmp"
+    d.mkdir(parents=True, exist_ok=True)
+    tmp = d / ("tidy_" + Path(rec.file).name)
+    tmp.write_text(text)
+    try:
+        subprocess.run([exe, str(tmp), f"--checks={TIDY_CHECKS}", "--fix", "--quiet", "--",
+                        f"-std={ctx.cfg.std}", f"-I{ctx.cfg.workdir}", "-w", "-x", "c++",
+                        *ctx.cfg.extra_flags], capture_output=True, text=True, timeout=300)
+        new = tmp.read_text()
+    except Exception:
+        new = text
+    cache[key] = new if new != text else None
+    return cache[key]
+
+
+def detect_tidy(ctx, rec, text):
+    return [_finding("tidy", 0, "clang-tidy has automatic clean-ups", 1, key="tidy")] \
+        if _tidy_result(ctx, rec, text) else []
+
+
+def fix_tidy(ctx, rec, text, f):
+    return _tidy_result(ctx, rec, text)
+
+
+# -- calls that use a prototype nobody defines (wrong number of arguments)
+def _arity_table(ctx) -> dict:
+    defined: dict[str, set] = {}
+    for r in ctx.records.values():
+        if r.quarantined:
+            continue
+        try:
+            h = parse_header(tu_split((ctx.cfg.workdir / r.file).read_text())[0])
+        except OSError:
+            continue
+        if h:
+            defined.setdefault(re.sub(r"__dup\d+$", "", r.name), set()).add(len(h[2]))
+    protos: dict[str, list[tuple[int, str]]] = {}
+    for kind, label, line in _enabled_header_lines(ctx.cfg):
+        if kind == "proto":
+            h = parse_header(line.rstrip(";"))
+            if h:
+                protos.setdefault(label, []).append((len(h[2]), line))
+    return {"defined": defined, "protos": protos}
+
+
+def detect_signatures(ctx, rec, text):
+    tab = ctx._arity or _arity_table(ctx)
+    ctx._arity = tab
+    out = []
+    _, body = tu_split(text)
+    base = len(text) - len(body)
+    for i, (k, t, s, e) in enumerate(toks := tokens(body)):
+        if k != "ident" or t not in tab["defined"] or i + 1 >= len(toks) or toks[i + 1][1] != "(":
+            continue
+        close = matching_close(body, toks[i + 1][2])
+        n = len(split_args(body[toks[i + 1][2] + 1:close])) if close > 0 else -1
+        if n >= 0 and n not in tab["defined"][t]:
+            good = next((l for a, l in tab["protos"].get(t, []) if a in tab["defined"][t]), "")
+            out.append(_finding("signatures", _line_of(text, base + s),
+                                f"calls {t} with {n} argument(s), but it's defined as: {good}",
+                                3, key=f"{t}:{n}:{body[s:close + 1][:80]}"))
+    return out
+
+
+def fix_signatures(ctx, rec, text, f):
+    return ctx.line_edit(rec, text, f["line"], f"This line {f['msg']}. Change the call so "
+                         f"it matches that definition and does the same thing.")
+
+
+CHECKS = [
+    # name, detect, fix, needs the model, gate on behaviour, expensive (cached)
+    ("privacy", detect_privacy, fix_privacy, False, False, False),
+    ("helpers", detect_helpers, fix_helpers, False, True, False),
+    ("magic_div", detect_magic_div, fix_magic_div, False, True, False),
+    ("stack_guard", detect_stack, fix_stack, False, False, False),
+    ("ptr_arith", detect_ptr_arith, fix_ptr_arith, False, True, False),
+    ("casts", detect_casts, fix_casts, False, True, True),
+    ("stdlib", detect_stdlib, fix_stdlib, False, False, True),
+    ("tidy", detect_tidy, fix_tidy, False, True, True),
+    ("warnings", detect_warnings, fix_warnings, True, True, True),
+    ("names", detect_names, fix_names, True, True, False),
+    ("signatures", detect_signatures, fix_signatures, True, True, False),
+    ("behaviour", detect_behaviour, fix_behaviour, True, True, True),
+    ("goto", detect_goto, fix_goto, True, True, False),
+]
+CHECK_NAMES = [c[0] for c in CHECKS] + ["duplicates", "structs", "fields", "globals",
+                                        "constants", "functions", "privacy_names", "format"]
+_CHECK = {c[0]: c for c in CHECKS}
+_CHECK_OF = {"calls": "behaviour", "difftest": "behaviour", "sanitizer": "behaviour"}
+
+
+def detect_all(ctx: ImproveCtx, m: str, rec) -> list[dict]:
+    text = ctx.text(rec)
+    sha = text_sha(text)
+    fs = ctx.state.f(m)
+    cache = fs.setdefault("cache", {})
+    out = []
+    for name, detect, _, _, _, expensive in CHECKS:
+        if ctx.checks and name not in ctx.checks:
+            continue
+        if expensive and cache.get(name, {}).get("sha") == sha:
+            out += cache[name]["findings"]
+            continue
+        phase(f"check: {name}")
+        try:
+            found = detect(ctx, rec, text)
+        except Exception as e:
+            found = []
+            ctx.count(name, f"check failed ({type(e).__name__})")
+        if expensive:
+            cache[name] = {"sha": sha, "findings": found}
+        out += found
+    fs["findings"] = out
+    fs["score"] = round(sum(f["weight"] for f in out), 2)
+    return out
+
+
+def attempt_fix(ctx: ImproveCtx, m: str, rec, f: dict, round_log: list) -> bool:
+    name = _CHECK_OF.get(f["check"], f["check"])
+    _, _, fix, needs_model, behaviour, _ = _CHECK[name]
+    fs = ctx.state.f(m)
+    parked = fs["parked"].get(f["key"])
+    if parked and (not ctx.model or ctx.model in parked.get("models", [])):
+        return False
+    if needs_model and not ctx.model:
+        return False
+    text = ctx.text(rec)
+    ctx.last_plan = ""
+    phase(f"{f['check']}: {f['msg'][:60]}")
+    try:
+        new = fix(ctx, rec, text, f)
+    except Exception as e:
+        new = None
+        ctx.last_plan = f"fix failed ({type(e).__name__}: {e})"[:200]
+    ok, why = (False, "no usable edit") if not new else gate_change(
+        ctx, rec, text, new, behaviour=behaviour, allow_shrink=name in ("stdlib", "stack_guard"))
+    plan = f" plan: {ctx.last_plan.rstrip('.')}." if ctx.last_plan else ""
+    if ok:
+        record_version(ctx.cfg, rec.file, text, new, f["check"])
+        round_log.append({"files": {rec.file: text}, "what": f"{rec.name}: {f['check']}"})
+        fs["changes"] = fs.get("changes", 0) + 1
+        fs["parked"].pop(f["key"], None)
+        write_note(ctx.cfg, rec.file, f"[{f['check']}] {f['msg'][:140]} —{plan} kept.")
+        ctx.count(f["check"], "kept")
+        return True
+    p = fs["parked"].setdefault(f["key"], {"tries": 0, "models": []})
+    p["tries"] += 1
+    if needs_model and p["tries"] >= 2 and ctx.model and ctx.model not in p["models"]:
+        p["models"].append(ctx.model)        # parked until a different model is loaded
+    elif not needs_model:
+        p["models"].append(ctx.model or "-")
+    write_note(ctx.cfg, rec.file, f"[{f['check']}] {f['msg'][:140]} —{plan} rejected: {why}.")
+    ctx.count(f["check"], "rejected")
+    return False
+
+# ---------------------------------------------------------------- changes across files
+
+GENERIC_FIELD = re.compile(r"^(field\d*_0x[0-9a-fA-F]+|field_?\d+|unk\w*|_?unknown\w*|"
+                           r"f_?[0-9a-fA-F]{1,4}|undefined\w*|member_?\d+)$")
+GENERIC_STRUCT = re.compile(r"^(astruct\w*|struct_?\w*\d\w*|Struct\d+\w*|anon\w*|S\d+|"
+                            r"_?struct\d+\w*)$", re.I)
+GLOBAL_LEFTOVER = re.compile(r"^(DAT|PTR|_DAT|g_DAT|BYTE|WORD|DWORD|QWORD)_[0-9a-fA-F]+$")
+PLACEHOLDER_FN = re.compile(r"^(?:thunk_)?(?:FUN|SUB|LAB)_[0-9a-fA-F]+(?:__dup\d+)?$")
+
+
+def load_blocklist(P: "Paths") -> list[str]:
+    """Words that identify the original program (privacy_blocklist.txt, yours to
+    edit; started with the program's name from the Ghidra export)."""
+    f = P.root / "privacy_blocklist.txt"
+    if not f.exists():
+        prog = ""
+        try:
+            prog = json.loads(P.export.read_text()).get("program") or ""
+        except Exception:
+            pass
+        stem = re.sub(r"\.(exe|dll|dylib|so|app|bin)$", "", prog, flags=re.I)
+        parts = [w for w in re.findall(r"[A-Z]?[a-z]+|[A-Z]+(?![a-z])|\d+", stem) if len(w) >= 4]
+        f.write_text(
+            "# Words that identify the original program: product, company and people's\n"
+            "# names. One per line; case doesn't matter. The improve stage removes strings\n"
+            "# and comments containing them and renames identifiers that contain them;\n"
+            "# the organize stage won't write the final code while any are left.\n"
+            + (f"# The program's name, from the Ghidra export:\n{stem}\n" if len(stem) >= 3 else "")
+            + ("# Parts of it (remove the # to use one):\n" + "".join(f"# {w}\n" for w in parts)
+               if len(parts) > 1 else ""))
+    terms = []
+    for line in f.read_text(errors="replace").splitlines():
+        t = line.strip()
+        if t and not t.startswith("#") and len(t) >= 3:
+            terms.append(t)
+    return terms
+
+
+def _all_files(ctx) -> list[Path]:
+    cfg = ctx.cfg
+    files = [cfg.shared_h, cfg.globals_cpp]
+    files += [cfg.workdir / r.file for r in ctx.records.values()]
+    return [p for p in files if p.exists()]
+
+
+def _gate_files(ctx, paths: list[Path]) -> tuple[bool, str]:
+    cfg = ctx.cfg
+    if cfg.shared_h in paths:
+        ok, err = _compile_header_human(cfg, "shared.h")
+        if not ok:
+            return False, "shared.h: " + next((l for l in err.splitlines() if "error" in l), "")[:200]
+    for p in paths:
+        if p.suffix != ".cpp":
+            continue
+        rel = str(p.relative_to(cfg.workdir))
+        rec = next((r for r in ctx.records.values() if r.file == rel), None)
+        if rec is not None and (rec.quarantined or not rec.compiles):
+            continue
+        ok, err, _ = compile_tu(cfg, rel)
+        if not ok:
+            return False, f"{p.name}: " + next((l for l in err.splitlines() if "error" in l), "")[:200]
+    return True, ""
+
+
+def global_change(ctx, edits: dict[Path, str], tag: str, round_log: list,
+                  ops: Optional[list] = None) -> tuple[bool, str]:
+    """Apply edits to several files; keep them only if everything still compiles."""
+    txn = Txn(ctx.cfg)
+    for p, t in edits.items():
+        if t != p.read_text():
+            txn.write(p, t)
+    if not txn.old:
+        return False, "no change"
+    ok, why = _gate_files(ctx, list(txn.old))
+    if not ok:
+        txn.rollback()
+        return False, why
+    txn.commit(tag)
+    idx = []
+    for op in ops or []:
+        ctx.state.data["overlay"].append(op)
+        idx.append(len(ctx.state.data["overlay"]) - 1)
+    round_log.append({"files": {str(p.relative_to(ctx.cfg.workdir)): t for p, t in txn.old.items()},
+                      "what": tag, "overlay": idx})
+    ctx._arity = None
+    return True, ""
+
+
+def global_rename(ctx, mapping: dict[str, str], tag: str, round_log: list,
+                  skip_members=True) -> tuple[bool, str]:
+    edits = {}
+    for p in _all_files(ctx):
+        t = p.read_text()
+        if any(o in t for o in mapping):
+            new, n = rename_idents(t, mapping, skip_members)
+            if n:
+                edits[p] = new
+    ok, why = global_change(ctx, edits, tag, round_log,
+                            [{"op": "rename", "old": o, "new": n, "skip_members": skip_members}
+                             for o, n in mapping.items()])
+    if ok:
+        for r in ctx.records.values():
+            if r.name in mapping:
+                r.name = mapping[r.name]
+    return ok, why
+
+
+def _usage_lines(ctx, name: str, limit=4) -> list[str]:
+    out = []
+    rx = re.compile(rf"\b{re.escape(name)}\b")
+    for r in ctx.records.values():
+        if len(out) >= limit:
+            break
+        p = ctx.cfg.workdir / r.file
+        t = p.read_text() if p.exists() else ""
+        if name in t:
+            out += [l for l in t.split("\n")[1:] if rx.search(l)][:2]
+    return out[:limit]
+
+
+def _taken_names(ctx) -> set:
+    names = set(header_idents(ctx.cfg)) | {r.name for r in ctx.records.values()}
+    return names
+
+
+def pass_duplicates(ctx, round_log):
+    """Functions with identical code: an unused copy (foo__dup1) is switched off,
+    a used one becomes a one-line call to the first."""
+    groups: dict[str, list] = {}
+    for m, r in ctx.compiling():
+        t = ctx.text(r)
+        head, body = tu_split(t)
+        h = parse_header(head)
+        if not h or len(body) < 40:
+            continue
+        norm = re.sub(r"\s+", " ", strip_comments(rename_idents(head + body, {r.name: "@"})[0]))
+        groups.setdefault(norm, []).append((m, r, h))
+    n = 0
+    for members in groups.values():
+        if len(members) < 2:
+            continue
+        members.sort(key=lambda x: ("__dup" in x[1].name, len(x[1].name), x[1].name))
+        km, keep, kh = members[0]
+        for m, r, h in members[1:]:
+            used = any(r.name in ctx.text(o) for o in ctx.records.values() if o is not r) \
+                or r.name in ctx.cfg.globals_cpp.read_text()
+            path = ctx.cfg.workdir / r.file
+            if not used and r.name.startswith(keep.name + "__dup"):
+                hdr, _ = disable_units(ctx.cfg.shared_h.read_text(), r.name,
+                                       f"identical to {keep.name}", kinds={"proto"})
+                ok, _ = global_change(ctx, {ctx.cfg.shared_h: hdr, path: f"{INCLUDE_LINE}\n\n"
+                                            f"// {r.name}: identical to {keep.name}, merged "
+                                            f"(earlier versions in improve/history/)\n"},
+                                      f"merged into {keep.name}", round_log)
+                if ok:
+                    r.duplicate_of = keep.name
+                    n += 1
+            elif all(pn for _, pn in h[2]):
+                call = f"{keep.name}({', '.join(pn for _, pn in h[2])})"
+                body = f"{{\n    {'return ' if h[0].strip() != 'void' else ''}{call};\n}}\n"
+                head, _ = tu_split(ctx.text(r))
+                ok, _ = global_change(ctx, {path: f"{INCLUDE_LINE}\n\n{head.strip()} {body}"},
+                                      f"calls identical {keep.name}", round_log)
+                n += ok
+    if n:
+        log(ctx.cfg, f"    duplicates: {n} identical function(s) merged or turned into a call")
+    ctx.count("duplicates", "kept", n)
+
+
+def pass_structs(ctx, round_log):
+    """Structs with the same layout (same field types at the same offsets, same or
+    placeholder field names) become one type."""
+    lay = struct_layouts(ctx.cfg)
+    by: dict = {}
+    for name, l in lay.items():
+        if l["union"] or len(l["fields"]) < 2 or any(o < 0 for o, *_ in l["fields"]):
+            continue
+        key = (l["size"], tuple((o, t, s) for o, _, t, s in l["fields"]))
+        by.setdefault(key, []).append(name)
+    n = 0
+    for names in by.values():
+        if len(names) < 2:
+            continue
+        uses = {nm: sum(nm in ctx.text(r) for r in ctx.records.values()) for nm in names}
+        names.sort(key=lambda nm: (bool(GENERIC_STRUCT.match(nm)), -uses[nm], nm))
+        keep = names[0]
+        kf = [f for _, f, _, _ in lay[keep]["fields"]]
+        for other in names[1:]:
+            of = [f for _, f, _, _ in lay[other]["fields"]]
+            if any(a != b and not (GENERIC_FIELD.match(a) or GENERIC_FIELD.match(b))
+                   for a, b in zip(kf, of)):
+                continue                       # same shape, different meaning: leave
+            hdr, k = disable_units(ctx.cfg.shared_h.read_text(), other, f"same as {keep}",
+                                   kinds={"record", "fwd", "typedef"})
+            edits = {ctx.cfg.shared_h: hdr}
+            for p in _all_files(ctx):
+                t = edits.get(p, p.read_text())
+                if other in t:
+                    edits[p] = rename_idents(t, {other: keep})[0]
+            ok, why = global_change(ctx, edits, f"struct {other} -> {keep}", round_log,
+                                    [{"op": "disable_unit", "label": other, "why": f"same as {keep}",
+                                      "kinds": ["record", "fwd", "typedef"]},
+                                     {"op": "rename", "old": other, "new": keep}])
+            n += ok
+    if n:
+        log(ctx.cfg, f"    structs: {n} duplicate struct type(s) merged")
+    ctx.count("structs", "kept", n)
+
+
+def member_refs(cfg, path: Path, struct: str, fields: set) -> list[tuple[int, str]]:
+    """Where this struct's fields are used in a file (libclang, so a field with the
+    same name in another struct is left alone)."""
+    try:
+        cx = _load_libclang(cfg)
+        tu = cx.Index.create().parse(str(path), args=_libclang_args(cfg) + ["-w"])
+    except Exception:
+        return []
+    text = path.read_text()
+    out = []
+    for c in tu.cursor.walk_preorder():
+        if c.kind.name not in ("MEMBER_REF_EXPR", "MEMBER_REF") or c.location.file is None \
+                or c.location.file.name != str(path):
+            continue
+        ref = c.referenced
+        if ref is None or ref.kind.name != "FIELD_DECL" or ref.spelling not in fields:
+            continue
+        par = ref.semantic_parent
+        if (par.spelling or "") != struct and par.type.spelling != struct:
+            continue
+        off = c.location.offset
+        k = text.find(ref.spelling, off)
+        if k >= 0 and k - off < 200:
+            out.append((k, ref.spelling))
+    return sorted(set(out))
+
+
+def rename_fields(ctx_cfg, text_by_path: dict, struct: str, mapping: dict) -> dict:
+    """New texts for a field rename: in the struct's own declaration in shared.h,
+    and at every use of that struct's fields."""
+    cfg = ctx_cfg
+    out = {}
+    hdr = text_by_path.get(cfg.shared_h, cfg.shared_h.read_text())
+    lines = hdr.split("\n")
+    for u in _parse_units(lines):
+        if u["kind"] == "record" and u["label"] == struct:
+            seg = "\n".join(lines[u["start"] + 1:u["end"]])
+            lines[u["start"] + 1:u["end"]] = rename_idents(seg, mapping, skip_members=False)[0].split("\n")
+    out[cfg.shared_h] = "\n".join(lines)
+    for p, t in text_by_path.items():
+        if p == cfg.shared_h or not any(o in t for o in mapping):
+            continue
+        refs = member_refs(cfg, p, struct, set(mapping))
+        for k, old in sorted(refs, reverse=True):
+            if t[k:k + len(old)] == old:
+                t = t[:k] + mapping[old] + t[k + len(old):]
+        if refs:
+            out[p] = t
+    return out
+
+
+def pass_fields(ctx, round_log, limit=6):
+    """Placeholder field names (field_0x18) get names from how they're used."""
+    if not ctx.model:
+        return
+    lay = struct_layouts(ctx.cfg)
+    done = ctx.state.g("fields_tried", [])
+    n = 0
+    for struct, l in lay.items():
+        if n >= limit or struct in done:
+            continue
+        generic = [f for _, f, _, _ in l["fields"] if GENERIC_FIELD.match(f)]
+        if not generic:
+            continue
+        done.append(struct)
+        phase(f"naming fields of {struct}")
+        files = [p for p in _all_files(ctx) if p.suffix == ".cpp" and any(g in p.read_text() for g in generic)]
+        uses: dict[str, list[str]] = {g: [] for g in generic}
+        for p in files[:30]:
+            t = p.read_text()
+            for k, fld in member_refs(ctx.cfg, p, struct, set(generic)):
+                if len(uses[fld]) < 4:
+                    uses[fld].append(t[t.rfind("\n", 0, k) + 1:t.find("\n", k)])
+        types = {f: ty for _, f, ty, _ in l["fields"]}
+        items = [(g, [f"(type {types[g]})"] + uses[g]) for g in generic[:10]]
+        mapping = ctx.names("field", items, f"They're fields of struct {struct}.")
+        existing = {f for _, f, _, _ in l["fields"]}
+        clean = {o: v for o, v in mapping.items()
+                 if is_ident(v) and v not in existing and not GENERIC_FIELD.match(v)}
+        if len(set(clean.values())) != len(clean) or not clean:
+            continue
+        texts = {p: p.read_text() for p in files}
+        edits = rename_fields(ctx.cfg, texts, struct, clean)
+        ok, why = global_change(ctx, edits, f"fields of {struct}", round_log,
+                                [{"op": "field_rename", "struct": struct, "old": o, "new": v}
+                                 for o, v in clean.items()])
+        n += ok
+        ctx.count("fields", "kept" if ok else "rejected")
+    if n:
+        log(ctx.cfg, f"    fields: named the fields of {n} struct(s)")
+
+
+def pass_globals(ctx, round_log, limit=24):
+    if not ctx.model:
+        return
+    tried = set(ctx.state.g("globals_tried", []))
+    cands = [label for kind, label, _ in _enabled_header_lines(ctx.cfg)
+             if kind == "global" and GLOBAL_LEFTOVER.match(label) and label not in tried][:limit]
+    taken = _taken_names(ctx)
+    n = 0
+    for i in range(0, len(cands), 8):
+        batch = cands[i:i + 8]
+        ctx.state.data["global"]["globals_tried"] = sorted(tried | set(batch))
+        tried |= set(batch)
+        phase(f"naming global variables ({i + 1}-{i + len(batch)} of {len(cands)})")
+        mapping = ctx.names("global", [(g, _usage_lines(ctx, g)) for g in batch],
+                            "They're global variables of the program.")
+        clean = {o: v for o, v in mapping.items() if is_ident(v) and v not in taken
+                 and not GLOBAL_LEFTOVER.match(v)}
+        if len(set(clean.values())) == len(clean) and clean:
+            ok, _ = global_rename(ctx, clean, "global names", round_log)
+            n += len(clean) if ok else 0
+            taken |= set(clean.values())
+    if n:
+        log(ctx.cfg, f"    globals: named {n} global variable(s)")
+    ctx.count("globals", "kept", n)
+
+
+def pass_constants(ctx, round_log, limit=10):
+    """A number used in 3+ functions gets a name in shared.h."""
+    if not ctx.model:
+        return
+    seen: dict[str, set] = {}
+    lines_for: dict[str, list[str]] = {}
+    for m, r in ctx.compiling():
+        t = ctx.text(r)
+        for k, tok, s, e in tokens(tu_split(t)[1]):
+            if k != "number" or "." in tok:
+                continue
+            try:
+                v = int(re.sub(r"[uUlL]+$", "", tok), 0)
+            except ValueError:
+                continue
+            if v < 256 or (v & (v - 1)) == 0 or (v & (v + 1)) == 0 or RAW_ADDRESS.match(tok):
+                continue
+            seen.setdefault(tok, set()).add(r.file)
+            if len(lines_for.setdefault(tok, [])) < 4:
+                ln = next((l for l in t.split("\n") if tok in l), "")
+                lines_for[tok].append(ln)
+    tried = set(ctx.state.g("constants_tried", []))
+    cands = [tok for tok, fs in sorted(seen.items(), key=lambda kv: -len(kv[1]))
+             if len(fs) >= 3 and tok not in tried][:limit]
+    if not cands:
+        return
+    ctx.state.data["global"]["constants_tried"] = sorted(tried | set(cands))
+    phase(f"naming {len(cands)} repeated number(s)")
+    mapping = ctx.names("constant", [(c, lines_for[c]) for c in cands],
+                        "These numbers appear in several functions.")
+    taken = _taken_names(ctx)
+    n = 0
+    for tok, name in mapping.items():
+        if not re.fullmatch(r"[A-Z][A-Z0-9_]+", name) or name in taken:
+            continue
+        hdr = add_const_unit(ctx.cfg.shared_h.read_text(), name, tok)
+        edits = {ctx.cfg.shared_h: hdr}
+        for rel in seen[tok]:
+            p = ctx.cfg.workdir / rel
+            t = p.read_text()
+            head_len = len(t) - len(tu_split(t)[1])
+            out, last = [], 0
+            for k, tk, s, e in tokens(t):
+                if k == "number" and tk == tok and s >= head_len:
+                    out += [t[last:s], name]
+                    last = e
+            edits[p] = "".join(out) + t[last:]
+        ok, _ = global_change(ctx, edits, f"constant {name}", round_log,
+                              [{"op": "add_const", "name": name, "spelling": tok,
+                                "files": sorted(seen[tok])}])
+        n += ok
+        taken.add(name)
+    if n:
+        log(ctx.cfg, f"    constants: named {n} repeated number(s)")
+    ctx.count("constants", "kept", n)
+
+
+def pass_functions(ctx, round_log, limit=20):
+    """Functions still without a real name (FUN_..., a poor name, or a name the
+    rewrite suggested changing) are named from their goal and their calls."""
+    if not ctx.model:
+        return
+    sugg = {}
+    if ctx.P and ctx.P.progress.exists():
+        try:
+            for e in json.loads(ctx.P.progress.read_text()).get("functions", {}).values():
+                if e.get("suggested_name") and e.get("name"):
+                    sugg[e["name"]] = e["suggested_name"]
+        except Exception:
+            pass
+    tried = set(ctx.state.g("functions_tried", []))
+    callers: dict[str, list[str]] = {}
+    for m, r in ctx.records.items():
+        for d in r.deps:
+            if d in ctx.records:
+                callers.setdefault(ctx.records[d].name, []).append(r.name)
+    cands = [(m, r) for m, r in ctx.compiling()
+             if (PLACEHOLDER_FN.match(r.name) or BAD_NAME.match(r.name) or r.name in sugg)
+             and r.name not in tried][:limit]
+    taken = _taken_names(ctx)
+    n = 0
+    for m, r in cands:
+        tried.add(r.name)
+        ctx.state.data["global"]["functions_tried"] = sorted(tried)
+        phase(f"naming function {r.name}")
+        t = ctx.text(r)
+        goal = ctx.goal(r, t)
+        callees = [ctx.records[d].name for d in r.deps if d in ctx.records][:8]
+        info = [f"goal: {goal or '(unknown)'}", f"calls: {', '.join(callees) or 'nothing'}",
+                f"called by: {', '.join(callers.get(r.name, [])[:8]) or 'nothing'}"]
+        if r.name in sugg:
+            info.append(f"another suggestion was: {sugg[r.name]} (keep the current name if it's better)")
+        mapping = ctx.names("function", [(r.name, info)])
+        new = mapping.get(r.name)
+        if not new or new == r.name or not is_ident(new) or new in taken or not new[0].islower() \
+                or PLACEHOLDER_FN.match(new) or BAD_NAME.match(new):
+            continue
+        ok, why = global_rename(ctx, {r.name: new}, f"rename {r.name} -> {new}", round_log)
+        if ok:
+            taken.add(new)
+            n += 1
+            write_note(ctx.cfg, r.file, f"[functions] renamed to {new}.")
+    if n:
+        log(ctx.cfg, f"    functions: named {n} function(s)")
+    ctx.count("functions", "kept", n)
+
+
+def _privacy_rename(name: str, terms: list[str], taken: set) -> str:
+    new = name
+    for t in sorted(terms, key=len, reverse=True):
+        def rep(m):
+            s = m.group(0)
+            return "APP" if s.isupper() else "App" if s[0].isupper() else "app"
+        new = re.sub(re.escape(t), rep, new, flags=re.I)
+    if not is_ident(new) or new == name:
+        new = "renamed_" + text_sha(name)[:6]
+    base, k = new, 2
+    while new in taken:
+        new, k = f"{base}{k}", k + 1
+    return new
+
+
+def pass_privacy_names(ctx, round_log):
+    """Identifiers that contain a blocklisted word are renamed everywhere; strings
+    and comments in shared.h / globals.cpp are cleaned like the functions'."""
+    if not ctx.blocklist:
+        return
+    hits = set()
+    for p in _all_files(ctx):
+        hits |= {t for kind, t, _ in privacy_hits(p.read_text(), ctx.blocklist) if kind == "ident"}
+    taken = _taken_names(ctx)
+    mapping = {}
+    for h in sorted(hits):
+        mapping[h] = _privacy_rename(h, ctx.blocklist, taken | set(mapping.values()))
+    if mapping:
+        ok, why = global_rename(ctx, mapping, "privacy renames", round_log, skip_members=False)
+        log(ctx.cfg, f"    privacy: renamed {len(mapping)} identifier(s) containing a "
+                     f"blocklisted word" + ("" if ok else f" — undone: {why}"))
+        ctx.count("privacy_names", "kept" if ok else "rejected", len(mapping))
+    edits = {}
+    for p in (ctx.cfg.shared_h, ctx.cfg.globals_cpp):
+        if p.exists():
+            t = p.read_text()
+            new = scrub_privacy(t, ctx.blocklist)
+            if new != t:
+                edits[p] = new
+    if edits:
+        global_change(ctx, edits, "privacy strings", round_log)
+
+
+GLOBAL_PASSES = [("privacy_names", pass_privacy_names), ("duplicates", pass_duplicates),
+                 ("structs", pass_structs), ("fields", pass_fields), ("globals", pass_globals),
+                 ("constants", pass_constants), ("functions", pass_functions)]
+
+
+def replay_overlay(cfg: "Config", records: dict) -> None:
+    """After a (re-)split: re-apply the header-level changes the improve stage made
+    (renames, merged structs, named constants, field names), so files coming fresh
+    from the rewrite match the improved shared.h."""
+    st_path = cfg.workdir / "improve" / "state.json"
+    if not st_path.exists():
+        return
+    try:
+        ops = [o for o in json.loads(st_path.read_text()).get("overlay", [])
+               if not o.get("reverted")]
+    except Exception:
+        return
+    if not ops:
+        return
+    files = [cfg.shared_h, cfg.globals_cpp] + [cfg.workdir / r.file for r in records.values()]
+    texts = {p: p.read_text() for p in files if p.exists()}
+    for op in ops:
+        if op["op"] == "rename":
+            mp = {op["old"]: op["new"]}
+            for p, t in texts.items():
+                if op["old"] in t:
+                    texts[p] = rename_idents(t, mp, op.get("skip_members", True))[0]
+            for r in records.values():
+                if r.name == op["old"]:
+                    r.name = op["new"]
+        elif op["op"] == "disable_unit":
+            texts[cfg.shared_h] = disable_units(texts[cfg.shared_h], op["label"], op["why"],
+                                                set(op.get("kinds") or []) or None)[0]
+        elif op["op"] == "add_const":
+            texts[cfg.shared_h] = add_const_unit(texts[cfg.shared_h], op["name"], op["spelling"])
+            for rel in op.get("files", []):
+                p = cfg.workdir / rel
+                if p in texts:
+                    t = texts[p]
+                    out, last = [], 0
+                    for k, tk, s, e in tokens(t):
+                        if k == "number" and tk == op["spelling"]:
+                            out += [t[last:s], op["name"]]
+                            last = e
+                    texts[p] = "".join(out) + t[last:]
+        elif op["op"] == "field_rename":
+            for p, t in texts.items():
+                p.write_text(t)
+            texts.update(rename_fields(cfg, dict(texts), op["struct"], {op["old"]: op["new"]}))
+    changed = 0
+    for p, t in texts.items():
+        if p.read_text() != t:
+            p.write_text(t)
+            changed += 1
+    if changed:
+        log(cfg, f"  re-applied {len(ops)} improve-stage change(s) to {changed} file(s) "
+                 f"after the split")
+
+
+def format_code(text: str) -> Optional[str]:
+    exe = shutil.which("clang-format")
+    if not exe:
+        return None
+    try:
+        r = subprocess.run([exe, "--style={BasedOnStyle: LLVM, IndentWidth: 4, "
+                                 "ColumnLimit: 100, AllowShortFunctionsOnASingleLine: None}",
+                            "--assume-filename=x.cpp"], input=text, capture_output=True,
+                           text=True, timeout=60)
+        return r.stdout if r.returncode == 0 and r.stdout.strip() else None
+    except Exception:
+        return None
+
+
+# ---------------------------------------------------------------- the improve stage
+
+def _revert(ctx, change: dict, why: str) -> None:
+    for rel, old in change["files"].items():
+        p = ctx.cfg.workdir / rel
+        if old is None or not p.exists():
+            continue
+        cur = p.read_text()
+        p.write_text(old)
+        record_version(ctx.cfg, rel, cur, old, "reverted")
+        if rel.startswith("funcs/"):
+            write_note(ctx.cfg, rel, f"[{change['what']}] undone: {why}.")
+    for i in change.get("overlay", []):
+        ctx.state.data["overlay"][i]["reverted"] = True
+
+
+def run_improve(P: "Paths", cfg: "Config", records: dict, args) -> dict:
+    model_check(cfg)
+    checks = set(args.improve_checks.split(",")) if args.improve_checks else None
+    ctx = ImproveCtx(cfg, records, P, checks)
+    if "improve" in (args.redo or []):
+        n = 0
+        for fs in ctx.state.data["funcs"].values():
+            n += len(fs.get("parked", {}))
+            fs["parked"] = {}
+        for k in ("fields_tried", "globals_tried", "constants_tried", "functions_tried"):
+            ctx.state.data["global"].pop(k, None)
+        log(cfg, f"  --redo improve: {n} parked task(s) will be tried again")
+    if not ctx.model:
+        log(cfg, "  no model available — only the fixes that don't need it will run")
+    if not ctx.export:
+        log(cfg, "  (no Ghidra export: the checks against Ghidra's version are off)")
+    if not sanitizer_flags(cfg):
+        log(cfg, "  (sanitizers aren't available with this compiler — tests run without them)")
+    for tool in ("clang-tidy", "clang-format"):
+        if not shutil.which(tool):
+            log(cfg, f"  ({tool} not found — its clean-ups are skipped)")
+    build_dep_order(cfg, records)
+    deadline = time.time() + args.improve_minutes * 60 if args.improve_minutes else None
+    link_ok_before = bool(load_state(cfg).get("link_ok"))
+    first_score = None
+    kept_total = 0
+    for rnd in range(1, args.improve_rounds + 1):
+        round_log: list = []
+        log(cfg, f"  » round {rnd}: changes across the code (names, duplicates, types, "
+                 f"constants, privacy)")
+        for name, fn in GLOBAL_PASSES:
+            if checks and name not in checks:
+                continue
+            try:
+                fn(ctx, round_log)
+            except Exception as e:
+                log(cfg, f"    ({name} pass failed: {type(e).__name__}: {e})")
+            ctx.state.save()
+        funcs = ctx.compiling()
+        prog = Progress(len(funcs), 0, title=f"round {rnd}: checking every function")
+        try:
+            for m, r in funcs:
+                prog.begin(m, r.name)
+                detect_all(ctx, m, r)
+                prog.end(m)
+        finally:
+            prog.close()
+        ctx.state.save()
+        score = round(sum(ctx.state.f(m)["score"] for m, _ in funcs), 1)
+        if first_score is None:
+            first_score = score
+        queue = sorted((x for x in funcs if ctx.state.f(x[0])["score"] > 0),
+                       key=lambda x: -ctx.state.f(x[0])["score"])
+        log(cfg, f"  » round {rnd}: {len(queue)} function(s) have something to improve "
+                 f"(total score {score}; lower is better) — worst first")
+        kept = 0
+        prog = Progress(len(queue), 0, title=f"round {rnd}: small fixes, worst first")
+        prog.extra = lambda: f"{kept} kept"
+        try:
+            for m, r in queue:
+                if deadline and time.time() > deadline:
+                    break
+                prog.begin(m, r.name)
+                tried: set = set()
+                for _ in range(args.improve_per_function):
+                    fl = [f for f in ctx.state.f(m)["findings"] if f["key"] not in tried]
+                    fl.sort(key=lambda f: (_CHECK[_CHECK_OF.get(f["check"], f["check"])][3],
+                                           -f["weight"]))
+                    progressed = False
+                    for f in fl:
+                        tried.add(f["key"])
+                        if attempt_fix(ctx, m, r, f, round_log):
+                            kept += 1
+                            detect_all(ctx, m, r)
+                            progressed = True
+                            break
+                    if not progressed:
+                        break
+                prog.end(m)
+                if prog.done % 20 == 0:
+                    ctx.state.save()
+        finally:
+            prog.close()
+            ctx.state.save()
+        # tidy layout of everything changed this round
+        if shutil.which("clang-format"):
+            for rel in sorted({f for c in round_log for f in c["files"] if f.startswith("funcs/")}):
+                p = cfg.workdir / rel
+                t = p.read_text()
+                new = format_code(t)
+                if new and new != t and new.startswith(INCLUDE_LINE):
+                    p.write_text(new)
+                    if compile_tu(cfg, rel)[0]:
+                        record_version(cfg, rel, t, new, "format")
+                    else:
+                        p.write_text(t)
+        if round_log:
+            log(cfg, f"  » round {rnd}: {len(round_log)} change(s) kept — linking to check "
+                     f"the whole program")
+            ok = link_pass(cfg, records)
+            if not ok and link_ok_before:
+                for change in reversed(list(round_log)):
+                    _revert(ctx, change, "the program stopped linking")
+                    round_log.remove(change)
+                    if link_pass(cfg, records):
+                        ok = True
+                        break
+                log(cfg, f"    link: undid the change(s) that stopped the program linking")
+            link_ok_before = link_ok_before or ok
+            save_state(cfg, link_ok=ok)
+        kept_total += len(round_log)
+        ctx.state.data["rounds"].append({"at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                                         "changes": len(round_log), "score": score,
+                                         "model": ctx.model or ""})
+        ctx.state.save()
+        save_manifest(cfg, records)
+        if not round_log or (deadline and time.time() > deadline):
+            break
+    funcs = ctx.compiling()
+    for m, r in funcs:
+        if ctx.state.f(m).get("score") is None:
+            detect_all(ctx, m, r)
+    final_score = round(sum(ctx.state.f(m)["score"] or 0 for m, _ in funcs), 1)
+    open_by: dict[str, int] = {}
+    for m, _ in funcs:
+        for f in ctx.state.f(m)["findings"]:
+            open_by[f["check"]] = open_by.get(f["check"], 0) + 1
+    summary = {"rounds": len(ctx.state.data["rounds"]), "kept": kept_total,
+               "score_before": first_score, "score_after": final_score,
+               "open": dict(sorted(open_by.items(), key=lambda kv: -kv[1])),
+               "by_check": ctx.stats, "model": ctx.model or ""}
+    ctx.state.data["global"]["last_summary"] = summary
+    ctx.state.save()
+    rep = [f"improve stage — {time.strftime('%Y-%m-%d %H:%M:%S')}, model: {ctx.model or 'none'}",
+           f"score: {first_score} -> {final_score} (lower is better), {kept_total} change(s) kept",
+           "", "by check (kept / rejected):"]
+    rep += [f"  {c}: {d.get('kept', 0)} kept, {d.get('rejected', 0)} rejected"
+            for c, d in sorted(ctx.stats.items())]
+    rep += ["", "still open:"] + [f"  {c}: {n}" for c, n in open_by.items()]
+    (cfg.workdir / "improve_report.txt").write_text("\n".join(rep) + "\n")
+    log(cfg, f"  improve: score {first_score} -> {final_score}, {kept_total} change(s) kept "
+             f"(details in build/improve_report.txt, notes in build/improve/notes/)")
+    return summary
+
+# ---------------------------------------------------------------- the organize stage
+#
+# Writes PROJ/final/: the improved code arranged as a normal C++ project, with
+# modules (folders of related functions) and classes (structs whose functions
+# become their methods). The build/ folder is never changed by this stage; the
+# previous final/ is moved to snapshots/ first.
+
+def _cluster(nodes: list[str], adj: dict, max_size=40) -> list[list[str]]:
+    label = {n: i for i, n in enumerate(nodes)}
+    for _ in range(20):
+        changed = False
+        sizes: dict[int, int] = {}
+        for v in label.values():
+            sizes[v] = sizes.get(v, 0) + 1
+        for n in nodes:
+            score: dict[int, float] = {}
+            for nb, w in adj.get(n, {}).items():
+                score[label[nb]] = score.get(label[nb], 0) + w
+            if not score:
+                continue
+            best = max(score, key=lambda l: (score[l], -l))
+            if best != label[n] and sizes.get(best, 0) < max_size \
+                    and score[best] > score.get(label[n], 0):
+                sizes[label[n]] -= 1
+                sizes[best] = sizes.get(best, 0) + 1
+                label[n] = best
+                changed = True
+        if not changed:
+            break
+    groups: dict[int, list[str]] = {}
+    for n in nodes:
+        groups.setdefault(label[n], []).append(n)
+    big = [g for g in groups.values() if len(g) >= 3]
+    small = [n for g in groups.values() if len(g) < 3 for n in g]
+    for n in small:                    # a lone function joins the group it talks to most
+        best, bw = None, 0.0
+        for g in big:
+            w = sum(adj.get(n, {}).get(x, 0) for x in g)
+            if w > bw and len(g) < max_size:
+                best, bw = g, w
+        if best is not None:
+            best.append(n)
+        else:
+            if not big or len(big[-1]) >= max_size or not big[-1][0].startswith("\0misc"):
+                big.append(["\0misc"])
+            big[-1].append(n)
+    return [[n for n in g if not n.startswith("\0")] for g in big if any(not n.startswith("\0") for n in g)]
+
+
+def _module_names(ctx, groups: list[list[str]], recs: dict) -> list[str]:
+    cache = ctx.state.g("modules", {})
+    names, used = [], set()
+    ask = []
+    for i, g in enumerate(groups):
+        key = text_sha(",".join(sorted(recs[m].name for m in g)))
+        if key in cache:
+            names.append(cache[key])
+        else:
+            names.append(None)
+            ask.append((i, key))
+    if ask and ctx.model:
+        for j in range(0, len(ask), 6):
+            batch = ask[j:j + 6]
+            got = ctx.names("module", [(f"group{i + 1}", [", ".join(recs[m].name for m in groups[i][:15])])
+                                       for i, _ in batch],
+                            "Each group is a set of related functions (listed by name).")
+            for i, key in batch:
+                v = got.get(f"group{i + 1}")
+                if v:
+                    v = re.sub(r"[^a-z0-9]+", "_", v.lower()).strip("_")[:40]
+                    if v:
+                        cache[key] = v
+                        names[i] = v
+    out = []
+    for i, n in enumerate(names):
+        n = n or f"module_{i + 1}"
+        base, k = n, 2
+        while n in used or n in ("program", "types", "other", "globals", "stubs"):
+            n, k = f"{base}_{k}", k + 1
+        used.add(n)
+        out.append(n)
+    return out
+
+
+def _plan_methods(ctx, funcs: dict, texts: dict, lay: dict, header: str) -> dict:
+    """{struct: [mangled...]}: functions whose first parameter is a pointer to a
+    struct, at least two per struct, that can become its methods."""
+    record_units = {u["label"] for u in _parse_units(header.split("\n")) if u["kind"] == "record"}
+    all_text = "\n".join(texts.values())
+    toks = tokens(all_text)
+    as_value = {t for i, (k, t, _, _) in enumerate(toks)
+                if k == "ident" and (i + 1 >= len(toks) or toks[i + 1][1] != "(")}
+    plan: dict[str, list[str]] = {}
+    for m, r in funcs.items():
+        head, body = tu_split(texts[m])
+        if 'extern "C"' in head:
+            continue
+        h = parse_header(head)
+        if not h or not h[2]:
+            continue
+        t0, p0 = h[2][0]
+        mt = re.fullmatch(r"(?:struct\s+)?([A-Za-z_]\w*)\s*\*", " ".join(t0.split()))
+        if not mt or not p0 or mt.group(1) not in lay or mt.group(1) not in record_units:
+            continue
+        s = mt.group(1)
+        if re.search(rf"\b{p0}\s*(=[^=]|\+\+|--|\+=|-=)|(\+\+|--)\s*{p0}\b|&\s*{p0}\b", body):
+            continue                              # the pointer itself is changed / taken
+        if any(f == r.name for _, f, _, _ in lay[s]["fields"]):
+            continue
+        if r.name in as_value:
+            continue                              # used as a function pointer somewhere
+        plan.setdefault(s, []).append(m)
+    return {s: ms for s, ms in plan.items() if len(ms) >= 2}
+
+
+def _write_final(ctx, out: Path, funcs: dict, texts: dict, modules: list, mod_names: list,
+                 methods: dict) -> None:
+    cfg = ctx.cfg
+    (out / "include").mkdir(parents=True, exist_ok=True)
+    (out / "src").mkdir(parents=True, exist_ok=True)
+    header = strip_disabled(cfg.shared_h.read_text())
+    lines = header.split("\n")
+    units = _parse_units(lines)
+    proto_of = {}
+    for u in units:
+        if u["kind"] == "proto":
+            proto_of.setdefault(u["label"], []).extend(lines[u["start"] + 1:u["end"]])
+    method_of = {funcs[m].name: s for s, ms in methods.items() for m in ms}
+    # struct definitions get their method declarations
+    decls: dict[str, list[str]] = {}
+    for s, ms in methods.items():
+        for m in ms:
+            h = parse_header(tu_split(texts[m])[0])
+            decls.setdefault(s, []).append(
+                f"    {h[0]} {h[1]}({', '.join(f'{t} {n}'.strip() for t, n in h[2][1:])});")
+    keep = []
+    i = 0
+    by_start = {u["start"]: u for u in units}
+    while i < len(lines):
+        u = by_start.get(i)
+        if u and u["kind"] == "proto":
+            i = u["end"]
+            continue
+        if u and u["kind"] == "record" and u["label"] in decls:
+            body = lines[u["start"]:u["end"]]
+            keep += body[:-1] + decls[u["label"]] + body[-1:]
+            i = u["end"]
+            continue
+        l = lines[i]
+        if l.startswith("// ==== function prototypes"):
+            i += 1
+            continue
+        keep.append(l)
+        i += 1
+    types_h = "\n".join(l for l in keep if not l.startswith("//@unit "))
+    (out / "include" / "types.h").write_text(types_h.rstrip() + "\n")
+    (out / "include" / "ghidra_intrins.h").write_text(cfg.intrins_h.read_text())
+    used_protos = set()
+    for name, ms in zip(mod_names, modules):
+        protos = []
+        for m in ms:
+            nm = funcs[m].name
+            if nm in method_of:
+                continue
+            protos += proto_of.get(nm, [])
+            used_protos.add(nm)
+        (out / "include" / f"{name}.h").write_text(
+            "#pragma once\n#include \"types.h\"\n\n" + "\n".join(protos) + "\n")
+    other = [l for nm, ls in proto_of.items() if nm not in used_protos and nm not in method_of
+             for l in ls]
+    (out / "include" / "other.h").write_text(
+        "#pragma once\n#include \"types.h\"\n\n// declared but defined elsewhere (or a "
+        "placeholder in stubs.cpp)\n" + "\n".join(other) + "\n")
+    (out / "include" / "program.h").write_text(
+        "#pragma once\n#include \"types.h\"\n" + "".join(f'#include "{n}.h"\n' for n in mod_names)
+        + '#include "other.h"\n')
+
+    def convert_calls(t: str) -> str:
+        if not method_of:
+            return t
+
+        def rep(name, args):
+            if not args:
+                return None
+            a = args[0]
+            obj = a if re.fullmatch(r"[\w.]+(?:->[\w.]+)*", a) else f"({a})"
+            return f"{obj}->{name}({', '.join(args[1:])})"
+        return replace_calls(t, lambda n: n in method_of, rep)[0]
+
+    for name, ms in zip(mod_names, modules):
+        parts = []
+        for m in ms:
+            r = funcs[m]
+            head, body = tu_split(texts[m])
+            if r.name in method_of:
+                h = parse_header(head)
+                s = method_of[r.name]
+                body = rename_idents(body, {h[2][0][1]: "this"})[0]
+                head = f"{h[0]} {s}::{h[1]}({', '.join(f'{t} {n}'.strip() for t, n in h[2][1:])}) "
+            parts.append(convert_calls(head.strip() + " " + body.strip()))
+        src = '#include "program.h"\n\n' + "\n\n".join(parts) + "\n"
+        (out / "src" / f"{name}.cpp").write_text(src)
+    for extra in ("globals.cpp", "stubs.cpp"):
+        p = cfg.workdir / extra
+        if p.exists():
+            t = p.read_text().replace(INCLUDE_LINE, '#include "program.h"', 1)
+            (out / "src" / extra).write_text(convert_calls(t))
+    if shutil.which("clang-format"):
+        for p in list((out / "src").glob("*.cpp")) + list((out / "include").glob("*.h")):
+            if p.name == "ghidra_intrins.h":
+                continue
+            new = format_code(p.read_text())
+            if new:
+                p.write_text(new)
+    (out / "CMakeLists.txt").write_text(
+        "cmake_minimum_required(VERSION 3.16)\nproject(program CXX)\n"
+        f"set(CMAKE_CXX_STANDARD {re.sub(r'[^0-9]', '', cfg.std) or '17'})\n"
+        "file(GLOB SOURCES src/*.cpp)\nadd_library(program SHARED ${SOURCES})\n"
+        "target_include_directories(program PRIVATE include)\n")
+    readme = ["# Program", "", "Generated by decomp_pipeline.py (organize stage).", "",
+              "## Modules", ""]
+    for name, ms in zip(mod_names, modules):
+        readme.append(f"- **{name}** ({len(ms)}): " + ", ".join(funcs[m].name for m in ms[:20])
+                      + (" …" if len(ms) > 20 else ""))
+    if methods:
+        readme += ["", "## Classes", ""]
+        for s, ms in methods.items():
+            readme.append(f"- **{s}**: " + ", ".join(funcs[m].name for m in ms))
+    (out / "README.md").write_text("\n".join(readme) + "\n")
+
+
+def _build_final(cfg: "Config", out: Path) -> tuple[bool, bool, str]:
+    """(everything compiles, it links, first error)."""
+    obj = out / ".build"
+    obj.mkdir(exist_ok=True)
+    objs = []
+    for src in sorted((out / "src").glob("*.cpp")):
+        o = obj / (src.stem + ".o")
+        r = subprocess.run([cfg.cxx, f"-std={cfg.std}", f"-I{out / 'include'}", "-w", "-c",
+                            *PIC_FLAGS, *cfg.extra_flags, str(src), "-o", str(o)],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            return False, False, f"{src.name}: " + next((l for l in r.stderr.splitlines()
+                                                        if "error" in l), r.stderr[:200])
+        objs.append(str(o))
+    lib = ["-dynamiclib"] if sys.platform == "darwin" else ["-shared", "-Wl,--no-undefined"]
+    r = subprocess.run([cfg.cxx, *lib, *PIC_FLAGS, *cfg.extra_flags, *objs, "-o",
+                        str(obj / ("program.dylib" if sys.platform == "darwin" else "program.so"))],
+                       capture_output=True, text=True)
+    return True, r.returncode == 0, "" if r.returncode == 0 else r.stderr[:300]
+
+
+def run_organize(P: "Paths", cfg: "Config", records: dict, args) -> dict:
+    model_check(cfg)
+    ctx = ImproveCtx(cfg, records, P)
+    build_dep_order(cfg, records)
+    funcs = {m: r for m, r in records.items()
+             if r.compiles and not r.quarantined and not getattr(r, "duplicate_of", "")}
+    texts = {m: (cfg.workdir / r.file).read_text() for m, r in funcs.items()}
+    lay = struct_layouts(cfg)
+    # modules: functions that call each other or use the same structs belong together
+    adj: dict[str, dict[str, float]] = {}
+
+    def link(a, b, w):
+        if a != b:
+            adj.setdefault(a, {})[b] = adj.get(a, {}).get(b, 0) + w
+            adj.setdefault(b, {})[a] = adj.get(b, {}).get(a, 0) + w
+    uses: dict[str, list[str]] = {}
+    for m, r in funcs.items():
+        for d in r.deps:
+            if d in funcs:
+                link(m, d, 1.0)
+        for s in ident_set(texts[m]) & set(lay):
+            uses.setdefault(s, []).append(m)
+    for s, ms in uses.items():
+        if len(ms) <= 12:
+            for i, a in enumerate(ms):
+                for b in ms[i + 1:]:
+                    link(a, b, 0.5)
+    phase("grouping functions into modules")
+    modules = _cluster(sorted(funcs), adj)
+    mod_names = _module_names(ctx, modules, funcs)
+    ctx.state.save()                              # module names are asked for once
+    methods = _plan_methods(ctx, funcs, texts, lay, cfg.shared_h.read_text())
+    link_ok_before = bool(load_state(cfg).get("link_ok"))
+    tmp = P.root / "final.new"
+    result = {"modules": len(modules), "classes": 0, "built": False, "linked": False}
+    for attempt in ("with classes", "without classes"):
+        if attempt == "without classes":
+            if not methods:
+                break
+            methods = {}
+        if tmp.exists():
+            shutil.rmtree(tmp)                    # our own half-written output
+        _write_final(ctx, tmp, funcs, texts, modules, mod_names, methods)
+        built, linked, err = _build_final(cfg, tmp)
+        log(cfg, f"  final code {attempt}: {'compiles' if built else 'does not compile'}"
+                 + (f", {'links' if linked else 'does not link'}" if built else f" ({err})"))
+        if built and (linked or not link_ok_before):
+            result.update(classes=len(methods), built=True, linked=linked)
+            break
+    if not result["built"]:
+        log(cfg, f"  the final code doesn't build, so final/ was NOT updated — what was "
+                 f"written is in {tmp} for a look")
+        result["written"] = False
+        return result
+    hits = []
+    terms = ctx.blocklist
+    for p in sorted(tmp.rglob("*")):
+        if p.is_file() and p.suffix in (".h", ".cpp", ".md", ".txt") and p.name != "ghidra_intrins.h":
+            t = p.read_text(errors="replace")
+            for kind, tok, s in privacy_hits(t, terms):
+                hits.append(f"{p.relative_to(tmp)}:{_line_of(t, s)}: {kind} {tok[:80]}")
+            for m in RAW_ADDRESS.finditer(t):
+                hits.append(f"{p.relative_to(tmp)}:{_line_of(t, m.start())}: raw address {m.group()}")
+    report = P.root / "privacy_report.txt"
+    report.write_text(("Nothing found that identifies the original program.\n" if not hits else
+                       "Possible identifying text in the final code:\n" + "\n".join(hits) + "\n"))
+    result["privacy_hits"] = len(hits)
+    if hits and not args.allow_privacy_findings:
+        log(cfg, f"  privacy check: {len(hits)} possible identifying item(s) — final/ NOT "
+                 f"updated (see privacy_report.txt; run improve again, add words to "
+                 f"privacy_blocklist.txt, or --allow-privacy-findings)")
+        result["written"] = False
+        return result
+    final = P.root / "final"
+    if final.exists():
+        dest = (P.snapshots / f"{time.strftime('%Y%m%d-%H%M%S')}-final")
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(final), str(dest))
+        log(cfg, f"  previous final/ moved to {dest}")
+    shutil.move(str(tmp), str(final))
+    result["written"] = True
+    log(cfg, f"  final code written to {final}: {len(modules)} module(s), "
+             f"{result['classes']} class(es)")
+    return result
+
+
 # ----------------------------------------------------------------------------
 # Build stages (split / fix / recover / link)
 # ----------------------------------------------------------------------------
@@ -5462,6 +8043,7 @@ def build_split(cfg: Config, redo_split: bool) -> dict[str, FuncRecord]:
                      f"and merging with the work already done")
             records = reconcile_resume(cfg, records)
             _set_aside_unused(cfg, records)
+            replay_overlay(cfg, records)
             save_manifest(cfg, records)
             save_state(cfg, input_sha=sha, split_done=True, header_ok=False,
                        sweep_done=False)
@@ -5494,6 +8076,7 @@ def build_split(cfg: Config, redo_split: bool) -> dict[str, FuncRecord]:
                    header_ok=False, sweep_done=False)
         log(cfg, "  » de-ghidra text pass")
         apply_deghidra_pass(cfg, records)
+        replay_overlay(cfg, records)
         save_manifest(cfg, records)
         log(cfg, "  » validate/repair shared headers (gate — a broken "
                  "header fails every TU identically)")
@@ -5653,6 +8236,17 @@ def write_report(P: Paths) -> dict:
     else:
         data["build"] = {}
     data["link"] = {"ok": bstate.get("link_ok"), **_link_details(P)} if bstate else {}
+    try:
+        data["improve"] = json.loads((P.build / "improve" / "state.json").read_text()) \
+            .get("global", {}).get("last_summary", {})
+    except Exception:
+        data["improve"] = {}
+    org = load_pstate(P).get("stages", {}).get("organize", {})
+    pr = P.root / "privacy_report.txt"
+    data["organize"] = {"note": org.get("note"), "written": bool(org.get("done")),
+                        "privacy_hits": (len(pr.read_text().splitlines()) - 1
+                                         if pr.exists() and not pr.read_text().startswith("Nothing")
+                                         else 0) if pr.exists() else None}
     data["stages"] = st.get("stages", {})
     write_atomic(P.report_json, json.dumps(data, indent=2))
 
@@ -5693,6 +8287,19 @@ def write_report(P: Paths) -> dict:
            row("Quarantined", bd.get("quarantined"))]
     for r, n in (bd.get("rederived_by") or {}).items():
         md.append(row(f"&nbsp;&nbsp;re-derived: {r}", n))
+    im, og = data.get("improve") or {}, data.get("organize") or {}
+    md += ["", "## Improve", "", "| | |", "|---|---|",
+           row("Score (lower is better)", f"{im.get('score_before')} → {im.get('score_after')}"
+               if im else None),
+           row("Small changes kept", im.get("kept")),
+           row("Rounds run (all time)", im.get("rounds"))]
+    for c, d in sorted((im.get("by_check") or {}).items()):
+        md.append(row(f"&nbsp;&nbsp;{c}", f"{d.get('kept', 0)} kept, {d.get('rejected', 0)} rejected"))
+    for c, n in (im.get("open") or {}).items():
+        md.append(row(f"&nbsp;&nbsp;still open: {c}", n))
+    md += ["", "## Organize", "", "| | |", "|---|---|",
+           row("Final code (final/)", og.get("note") if og else None),
+           row("Privacy findings", og.get("privacy_hits"))]
     md += ["", "## Link", "", "| | |", "|---|---|",
            row("Linked", {True: "yes", False: "no"}.get(lk.get("ok"))),
            row("Placeholder definitions (stubs.cpp)", lk.get("stubs")),
@@ -5704,7 +8311,10 @@ def write_report(P: Paths) -> dict:
            "- `build/link_report.txt` placeholders and unresolved symbols",
            "- `build/split_report.txt`, `build/header_repair_report.txt` what the split "
            "renamed or switched off",
-           "- `rewrite/progress.json` per-function flags (`suspect`)", ""]
+           "- `rewrite/progress.json` per-function flags (`suspect`)",
+           "- `build/improve/notes/` what was tried on each function, and why it was kept or not",
+           "- `build/improve/history/` every version of every function",
+           "- `build/improve_report.txt`, `privacy_report.txt`, `final/README.md`", ""]
     write_atomic(P.report_md, "\n".join(md))
     return data
 
@@ -5755,7 +8365,7 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
         index_path=P.index, no_pseudo=args.no_pseudo,
         retry_quarantined=args.retry_quarantined, model_ctx_chars=args.model_ctx_chars)
     cfg.client = client
-    cfg.wanted_model = args.fix_model or args.model
+    cfg.wanted_model = None                   # always the model loaded in LM Studio
     cfg.snapshot_dir = snapshot_dir
     return cfg
 
@@ -5772,7 +8382,7 @@ def run_pipeline(args) -> int:
     if args.retry_quarantined or "recover" in redo:
         args.retry_quarantined = True
     first = args.from_stage or "export"
-    last = args.to_stage or ("export" if args.export_only else "link")
+    last = args.to_stage or ("export" if args.export_only else "organize")
     if STAGES.index(first) > STAGES.index(last):
         sys.exit(f"--from {first} comes after --to {last}")
     # a redo of an earlier stage starts the run there
@@ -5841,10 +8451,24 @@ def run_pipeline(args) -> int:
                 records = build_split(cfg, redo_split)
                 info = {"note": f"{sum(1 for r in records.values() if r.compiles)}/"
                                 f"{len(records)} compile after the sweep"}
-            elif stage in ("fix", "recover", "link"):
+            elif stage in ("fix", "recover", "link", "improve", "organize"):
                 if records is None:
                     records = load_manifest(cfg)
-                if stage == "fix":
+                if stage == "improve":
+                    s = run_improve(P, cfg, records, args)
+                    info = {"model": s.get("model", ""),
+                            "note": f"score {s['score_before']} → {s['score_after']}, "
+                                    f"{s['kept']} change(s)"}
+                elif stage == "organize":
+                    s = run_organize(P, cfg, records, args)
+                    info = {"model": cfg.fix_model_used or "",
+                            "note": (f"{s['modules']} modules, {s['classes']} classes"
+                                     if s.get("written") else "final/ not updated")}
+                    if not s.get("written"):
+                        mark_stage(P, stage, done=False, **info)
+                        ran_something = True
+                        continue
+                elif stage == "fix":
                     build_fix(cfg, records)
                     info = {"model": cfg.fix_model_used or ""}
                 elif stage == "recover":
@@ -5885,11 +8509,14 @@ def build_parser() -> argparse.ArgumentParser:
     g = ap.add_argument_group("pipeline")
     g.add_argument("--workdir", type=Path, default=Path("./decomp_project"),
                    help="project folder for everything this pipeline writes")
-    g.add_argument("--from", dest="from_stage", choices=["export", "rewrite", "split", "fix", "recover", "link"], default=None,
+    g.add_argument("--from", dest="from_stage", choices=["export", "rewrite", "split", "fix", "recover", "link", "improve",
+                            "organize"], default=None,
                    help="start at this stage (earlier stages must have run)")
-    g.add_argument("--to", dest="to_stage", choices=["export", "rewrite", "split", "fix", "recover", "link"], default=None,
+    g.add_argument("--to", dest="to_stage", choices=["export", "rewrite", "split", "fix", "recover", "link", "improve",
+                            "organize"], default=None,
                    help="stop after this stage")
-    g.add_argument("--redo", action="append", nargs="?", const="rewrite", choices=["export", "rewrite", "split", "fix", "recover", "link"],
+    g.add_argument("--redo", action="append", nargs="?", const="rewrite", choices=["export", "rewrite", "split", "fix", "recover", "link", "improve",
+                            "organize"],
                    help="do a stage's work again, replacing results in place (never "
                         "deletes; snapshots first). Bare --redo means --redo rewrite. "
                         "Repeatable")
@@ -5913,12 +8540,6 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--api", default=None,
                    help="server address if it isn't the usual one "
                         "(default: $OPENAI_BASE_URL or http://localhost:1234/v1)")
-    g.add_argument("--model", default=None,
-                   help="model for every stage (default: whatever is loaded)")
-    g.add_argument("--rewrite-model", default=None,
-                   help="model for the rewrite stage (default: --model, else the loaded one)")
-    g.add_argument("--fix-model", default=None,
-                   help="model for fix/recover (default: --model, else the loaded one)")
 
     g = ap.add_argument_group("export (Ghidra)")
     g.add_argument("--ghidra", default="http://127.0.0.1:8080/",
@@ -5978,7 +8599,8 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--libclang", default=None, help="path to libclang .dylib/.so")
     g.add_argument("--callgraph", type=Path, default=None,
                    help="call graph for dependency order (default ghidra/callgraph.json)")
-    g.add_argument("--fix-attempts", type=int, default=3, help="model attempts per function")
+    g.add_argument("--fix-attempts", type=int, default=6,
+                   help="small edits the model may try per function that doesn't compile")
     g.add_argument("--flag", action="append", default=[], dest="extra_flags",
                    help="extra compile flag (repeatable), e.g. --flag -I/path")
     g.add_argument("--stub-all-missing", action="store_true", dest="stub_all",
@@ -5991,6 +8613,19 @@ def build_parser() -> argparse.ArgumentParser:
                    help="prompt budget; bigger functions are recovered by error-window "
                         "patching instead of a full rewrite")
     g.add_argument("--resume", action="store_true", help=argparse.SUPPRESS)  # always on now
+
+    g = ap.add_argument_group("improve / organize")
+    g.add_argument("--improve-rounds", type=int, default=3,
+                   help="rounds of checks and small fixes (a round with nothing to fix ends "
+                        "the stage early)")
+    g.add_argument("--improve-minutes", type=float, default=0,
+                   help="stop improving after this many minutes (0: no limit)")
+    g.add_argument("--improve-per-function", type=int, default=6,
+                   help="most small fixes per function per round (spreads the work)")
+    g.add_argument("--improve-checks", default=None,
+                   help="only these checks, comma-separated: " + ", ".join(CHECK_NAMES))
+    g.add_argument("--allow-privacy-findings", action="store_true",
+                   help="write final/ even if the privacy check still finds something")
     return ap
 
 
@@ -6001,6 +8636,11 @@ def main(argv=None) -> int:
     if args.auto_parallel:
         args.max_parallel = max(args.parallel, args.max_parallel)
     args.model_in_use = None
+    if args.improve_checks:
+        bad = set(args.improve_checks.split(",")) - set(CHECK_NAMES)
+        if bad:
+            sys.exit(f"--improve-checks: unknown check(s) {', '.join(sorted(bad))}; "
+                     f"choose from {', '.join(CHECK_NAMES)}")
     # fresh module state (matters when called more than once in one process)
     GATE["gate"] = GATE["tuner"] = None
     MODEL_STATS.update(calls=0, no_answer=0, rejected=0)

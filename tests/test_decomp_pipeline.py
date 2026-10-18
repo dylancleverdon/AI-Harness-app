@@ -89,10 +89,11 @@ REWRITES = {
                      "bumpCounter"),
 }
 
-REPAIRS = {
-    "clampToZero": "int clampToZero(int x) {\n    return x < 0 ? 0 : x;\n}",
-    # a "fix" that drops the function: must be rejected
-    "squareIt": "int somethingElse(int n) {\n    return 0;\n}",
+# what the "model" writes when asked to replace a few lines containing this text
+EDITS = {
+    "clampHelper(x)": "    return x < 0 ? 0 : x;",
+    "v + v + 1": "    return v + v;",
+    "addNumbers(x, 1, 2)": "    return addNumbers(addNumbers(x, 1), 2);",
 }
 
 RECOVERIES = {"squareIt": "int squareIt(int n) {\n    return n * n;\n}"}
@@ -105,7 +106,9 @@ class FakeModel:
 
     def __init__(self, model_id="fake-model"):
         self.model_id = model_id
-        self.calls = {"rewrite": 0, "repair": 0, "recover": 0, "other": 0}
+        self.calls = {"rewrite": 0, "goal": 0, "plan": 0, "edit": 0, "locate": 0,
+                      "names": 0, "recover": 0, "other": 0}
+        self.named = 0
         self.rewrite_override = {}
         self.no_code = set()          # Ghidra names the "model" returns no code for
         self.think_only = set()       # ... or only "thinks" about, with no reply
@@ -162,13 +165,39 @@ class FakeModel:
                 return "<think-only>"
             code, name = self.rewrite_override.get(g) or REWRITES[g]
             return f"```cpp\n{code}\n```\nNAME: {name}"
-        if system.startswith("You are a C++ repair tool"):
-            self.calls["repair"] += 1
-            body = user.split("// Function to fix:")[-1]
-            for name, fixed in REPAIRS.items():
-                if re.search(rf"\b{name}\s*\(", body):
+        if system.startswith("In 1-2 sentences"):
+            self.calls["goal"] += 1
+            return "It does a small calculation and returns the result."
+        if system.startswith("You plan ONE small edit"):
+            self.calls["plan"] += 1
+            return "Change the marked line so it does what the task asks."
+        if system.startswith("Output the corrected replacement"):
+            self.calls["edit"] += 1
+            window = user.split("Replace ONLY these line(s):")[-1]
+            window = window.split("```cpp\n", 1)[-1].rsplit("```", 1)[0].rstrip("\n")
+            for pattern, fixed in EDITS.items():
+                if pattern in window:
                     return f"```cpp\n{fixed}\n```"
-            return "no idea"
+            return f"```cpp\n{window}\n```"             # no idea: same lines back
+        if system.startswith("You find the line"):
+            self.calls["locate"] += 1
+            for l in user.splitlines():
+                m = re.match(r"\s*(?:>>)?\s*(\d+) \| (.*)", l)
+                if m and any(p in m.group(2) for p in EDITS):
+                    return f"{m.group(1)} because that line looks wrong"
+            return "2"
+        if system.startswith("You choose names"):
+            self.calls["names"] += 1
+            kind = re.search(r"Name these (\w+)s", user).group(1)
+            out = []
+            for item in re.findall(r"^- (\S+)$", user, re.M):
+                self.named += 1
+                out.append(f"{item} -> " + {
+                    "variable": f"value{self.named}", "field": f"amount{self.named}",
+                    "global": f"globalValue{self.named}", "constant": f"MAGIC_{self.named}",
+                    "function": f"computeThing{self.named}",
+                    "module": f"part_{self.named}"}[kind])
+            return "\n".join(out)
         if system.startswith("You rewrite ONE function"):
             self.calls["recover"] += 1
             for name, fixed in RECOVERIES.items():
@@ -269,9 +298,10 @@ def test_end_to_end(tmp_path, model):
 
     recs = by_name(tmp_path)
     assert all(r["compiles"] for r in recs.values())
-    assert recs["squareIt"]["rederived"] and recs["squareIt"]["recovery"] == "rewrite"
+    assert recs["squareIt"]["rederived"] and recs["squareIt"]["recovery"] == "faithful-pseudocode"
     assert recs["clampToZero"]["attempts"] >= 1
-    assert "uVar1" in (tmp_path / "build" / recs["tripleValue"]["file"]).read_text()
+    trip = (tmp_path / "build" / recs["tripleValue"]["file"]).read_text()
+    assert "uVar1" not in trip and "value1" in trip           # renamed by improve
     assert (tmp_path / "build" / "quarantine").is_dir()      # original kept there
 
     report = json.loads((tmp_path / "report.json").read_text())
@@ -284,12 +314,13 @@ def test_end_to_end(tmp_path, model):
     assert all(st["stages"][s]["done"] for s in dp.STAGES)
     assert st["stages"]["rewrite"]["model"] == "fake-model"
     assert (tmp_path / "REPORT.md").read_text().startswith("# Decomp pipeline report")
-    assert model.calls["rewrite"] == 7 and model.calls["recover"] == 1
+    assert model.calls["rewrite"] == 7 and model.calls["recover"] == 0
 
 
 def test_second_run_is_a_noop(tmp_path, model):
     write_export(tmp_path)
     assert run(tmp_path, model) == 0
+    assert run(tmp_path, model) == 0     # (a task rejected once gets one more try here)
     before = dict(model.calls)
     files = {p: p.read_text() for p in (tmp_path / "build" / "funcs").glob("*.cpp")}
     assert run(tmp_path, model) == 0
@@ -328,18 +359,19 @@ def test_redo_rewrite_replaces_in_place_and_never_deletes(tmp_path, model):
     calls = model.calls["rewrite"]
     assert run(tmp_path, model) == 0
     assert model.calls["rewrite"] == calls + 6
+    by_addr = {r["ghidra_addr"]: r for r in manifest(tmp_path).values()}
+    assert "left + right" in (tmp_path / "build" / by_addr["1000"]["file"]).read_text()
     recs = by_name(tmp_path)
-    assert "left + right" in (tmp_path / "build" / recs["addNumbers"]["file"]).read_text()
     assert "x < 0 ? 0 : x" in (tmp_path / "build" / recs["clampToZero"]["file"]).read_text()
     assert json.loads((tmp_path / "report.json").read_text())["link"]["ok"] is True
 
 
 def test_redo_split_snapshots_the_fixed_build(tmp_path, model):
     write_export(tmp_path)
-    assert run(tmp_path, model) == 0
+    assert run(tmp_path, model, "--to", "link") == 0
     clamp = tmp_path / "build" / by_name(tmp_path)["clampToZero"]["file"]
     fixed = clamp.read_text()
-    assert run(tmp_path, model, "--redo", "split") == 0
+    assert run(tmp_path, model, "--redo", "split", "--to", "link") == 0
     snap = next(p for p in (tmp_path / "snapshots").iterdir() if "redo-build" in p.name)
     assert (snap / "build" / "funcs" / clamp.name).read_text() == fixed
     assert by_name(tmp_path)["clampToZero"]["compiles"]
@@ -357,19 +389,19 @@ def test_from_and_to(tmp_path, model):
     st = json.loads((tmp_path / "pipeline_state.json").read_text())
     assert st["stages"]["fix"]["done"] and "recover" not in st["stages"]
     calls = model.calls["rewrite"]
-    assert run(tmp_path, model, "--from", "recover") == 0
+    assert run(tmp_path, model, "--from", "recover", "--to", "link") == 0
     assert model.calls["rewrite"] == calls
     assert json.loads((tmp_path / "report.json").read_text())["link"]["ok"] is True
 
 
 def test_changed_pseudocode_rewrites_just_that_function(tmp_path, model):
     write_export(tmp_path)
-    assert run(tmp_path, model) == 0
+    assert run(tmp_path, model, "--to", "link") == 0
     pseudo = dict(PSEUDO)
     pseudo["1050"] = ("FUN_00001050", PSEUDO["1050"][1].replace("param_1[1]", "param_1[1] + 0"))
     write_export(tmp_path, pseudo)
     calls = model.calls["rewrite"]
-    assert run(tmp_path, model) == 0
+    assert run(tmp_path, model, "--to", "link") == 0
     assert model.calls["rewrite"] == calls + 1
 
 
@@ -392,7 +424,7 @@ def test_adopt_old_runs(tmp_path, model):
     proj = tmp_path / "proj"
     calls = dict(model.calls)
     assert run(proj, model, "--adopt-rewrite", str(old_out), "--adopt-build",
-               str(old_build)) == 0
+               str(old_build), "--to", "link") == 0
     assert model.calls["rewrite"] == calls["rewrite"]   # nothing rewritten again
     assert (proj / "build" / "build_state.json").exists()
     assert (old_out / "progress.json").exists()          # copied, not moved
@@ -469,7 +501,7 @@ def test_skipped_functions_are_marked_redo_and_tried_again(tmp_path, model):
 
     # the model behaves now: it's rewritten and the whole thing links
     model.no_code = set()
-    assert run(tmp_path, model) == 0
+    assert run(tmp_path, model, "--to", "link") == 0
     prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())
     assert prog["functions"]["1050"]["status"] == "done"
     assert json.loads((tmp_path / "report.json").read_text())["link"]["ok"] is True
@@ -501,3 +533,134 @@ def test_model_activity_is_visible(tmp_path, model, capsys):
     assert re.search(r"this run: \d+ function\(s\) done .* model answers", out)
     prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())
     assert prog["functions"]["1050"]["reason"] == "model returned no code"
+
+
+# ---------------------------------------------------------------- the improve stage
+
+def _p(addr, header, body):
+    name = f"FUN_{int(addr, 16):08x}"
+    return addr, (name, f"{header.replace('NAME', name)}\n\n{{\n{body}\n}}\n")
+
+
+EXTRA = dict([
+    _p("2000", "ulonglong NAME(uint param_1,uint param_2)",
+       "  return CONCAT44(param_1,param_2) + ZEXT48(param_2);"),
+    _p("2010", "uint NAME(uint param_1)", "  return (uint)((ulonglong)param_1 * 0xaaaaaaab >> 0x21);"),
+    _p("2020", "int NAME(byte *param_1,int param_2)", "  return param_1[0] + param_2;"),
+    _p("2030", "int NAME(int param_1)", "  return param_1 + 1;"),
+    _p("2040", "char * NAME(void)", "  return s_text_00004000;"),
+    _p("2050", "int NAME(int param_1)", "  return param_1 ^ 0x5a;"),
+    _p("2060", "int NAME(int param_1,int param_2)", "  return (param_1 * 0x1f ^ param_2) + (param_1 >> 2);"),
+    _p("2070", "int NAME(int param_1,int param_2)", "  return (param_1 * 0x1f ^ param_2) + (param_1 >> 2);"),
+    _p("2080", "ulong NAME(char *param_1)", "  ulong n = 0;\n  while (param_1[n] != 0) n++;\n  return n;"),
+    _p("2090", "int NAME(int *param_1)", "  return *param_1 - param_1[1];"),
+    _p("20a0", "float NAME(int *param_1)", "  return *(float *)(param_1 + 1) * (float)*param_1;"),
+    _p("20b0", "uint NAME(uint param_1)", "  return param_1 ^ 0x5f3759df;"),
+    _p("20c0", "uint NAME(uint param_1)", "  return param_1 + 0x5f3759df;"),
+    _p("20d0", "uint NAME(uint param_1)", "  return param_1 - 0x5f3759df;"),
+    _p("20e0", "int NAME(int param_1,int param_2)", "  return param_1 + param_2;"),
+    _p("20f0", "int NAME(int param_1)", "  int iVar1 = 0;\n  while (0 < param_1) { param_1--; iVar1++; }\n  return iVar1;"),
+    _p("2100", "int NAME(int *param_1)", "  return param_1[1];"),
+    _p("2110", "int NAME(int param_1)", "  return FUN_00001000(FUN_00001000(param_1,1),2);"),
+    _p("2120", "bool NAME(int param_1)", "  return 0 < param_1;"),
+    _p("2130", "int NAME(int param_1)", "  return param_1 * 2;"),
+    _p("2140", "int NAME(void)", "  return DAT_00003000;"),
+    _p("2150", "int NAME(int param_1)", "  return param_1 * 5 + 1;"),
+])
+
+EXTRA_REWRITES = {
+    "FUN_00002000": ("uint64_t joinHalves(uint32_t high, uint32_t low) {\n"
+                     "    return CONCAT44(high, low) + ZEXT48(low);\n}", "joinHalves"),
+    "FUN_00002010": ("uint32_t divideByThree(uint32_t n) {\n"
+                     "    return (uint32_t)(((uint64_t)n * 0xaaaaaaab) >> 0x21);\n}", "divideByThree"),
+    "FUN_00002020": ("long ___stack_chk_guard = 0;\nvoid __stack_chk_fail();\n\n"
+                     "int sumFirst(const unsigned char *data, int extra) {\n"
+                     "    long guard = ___stack_chk_guard;\n    int total = data[0] + extra;\n"
+                     "    if (___stack_chk_guard != guard) {\n        __stack_chk_fail();\n    }\n"
+                     "    return total;\n}", "sumFirst"),
+    "FUN_00002030": ("int addOne(int x) {\n    int unusedThing = 0;\n    return x + 1;\n}", "addOne"),
+    "FUN_00002040": ("const char *bannerText() {\n    // AcmeCorp internal build\n"
+                     "    return \"AcmeCorp Toolkit (c) 2021\";\n}", "bannerText"),
+    "FUN_00002050": ("int acmecorpChecksum(int v) {\n    return v ^ 0x5a;\n}", "acmecorpChecksum"),
+    "FUN_00002060": ("int mixValues(int a, int b) {\n    int t = a * 31;\n    t = t ^ b;\n"
+                     "    return t + (a >> 2);\n}", "mixValues"),
+    "FUN_00002070": ("int mixValuesCopy(int a, int b) {\n    int t = a * 31;\n    t = t ^ b;\n"
+                     "    return t + (a >> 2);\n}", "mixValuesCopy"),
+    "FUN_00002080": ("unsigned long textLength(const char *s) {\n    unsigned long n = 0;\n"
+                     "    while (s[n] != 0) {\n        n++;\n    }\n    return n;\n}", "textLength"),
+    "FUN_00002090": ("struct Couple {\n    int first;\n    int second;\n};\n\n"
+                     "int coupleDiff(Couple *c) {\n    return c->first - c->second;\n}", "coupleDiff"),
+    "FUN_000020a0": ("struct Blob {\n    int field_0x0;\n    float field_0x4;\n};\n\n"
+                     "float blobScale(Blob *b) {\n    return b->field_0x4 * (float)b->field_0x0;\n}",
+                     "blobScale"),
+    "FUN_000020b0": ("unsigned int hashA(unsigned int x) {\n    return x ^ 0x5f3759df;\n}", "hashA"),
+    "FUN_000020c0": ("unsigned int hashB(unsigned int x) {\n    return x + 0x5f3759df;\n}", "hashB"),
+    "FUN_000020d0": ("unsigned int hashC(unsigned int x) {\n    return x - 0x5f3759df;\n}", "hashC"),
+    "FUN_000020e0": ("int addCast(int a, int b) {\n    return (int)a + b;\n}", "addCast"),
+    "FUN_000020f0": ("int countDown(int n) {\n    int steps = 0;\ntop:\n    if (n > 0) {\n"
+                     "        n--;\n        steps++;\n        goto top;\n    }\n    return steps;\n}",
+                     "countDown"),
+    "FUN_00002100": ("int readSecond(Pair *p) {\n    return *(int *)((char *)p + 4);\n}", "readSecond"),
+    "FUN_00002110": ("int addNumbers(int a, int b, int c);\n\nint addThree(int x) {\n"
+                     "    return addNumbers(x, 1, 2);\n}", "addThree"),
+    "FUN_00002120": ("bool isPositive(int x) {\n    if (x > 0)\n        return true;\n    else\n"
+                     "        return false;\n}", "isPositive"),
+    "FUN_00002130": ("int doubleIt(int v) {\n    return v + v + 1;\n}", "doubleIt"),
+    "FUN_00002140": ("int DAT_00003000 = 7;\n\nint readSetting() {\n    return DAT_00003000;\n}",
+                     "readSetting"),
+    "FUN_00002150": ("int FUN_00002150(int x) {\n    return x * 5 + 1;\n}", "FUN_00002150"),
+}
+
+
+def test_improve_and_organize(tmp_path, model):
+    REWRITES.update(EXTRA_REWRITES)
+    write_export(tmp_path, {**PSEUDO, **EXTRA})
+    (tmp_path / "privacy_blocklist.txt").write_text("# test\nAcmeCorp\n")
+    assert run(tmp_path, model, "--improve-rounds", "4") == 0
+    recs = by_name(tmp_path)
+    b = tmp_path / "build"
+
+    def code(name):
+        return (b / recs[name]["file"]).read_text()
+
+    assert "CONCAT44" not in code("joinHalves") and "ZEXT48" not in code("joinHalves")
+    assert "/ 3" in code("divideByThree")
+    assert "stack_chk" not in code("sumFirst")
+    assert "unusedThing" not in code("addOne")
+    assert "AcmeCorp" not in code("bannerText")
+    assert "acmecorpChecksum" not in recs and "appChecksum" in recs
+    assert re.search(r"return mixValues\(a, b\)", code("mixValuesCopy"))
+    assert "strlen(" in code("textLength")
+    lay = dp.struct_layouts(dp.Config(input_file=tmp_path / "rewrite" / "rewritten.cpp",
+                                      workdir=b))
+    assert ("Pair" in lay) != ("Couple" in lay)                 # merged into one
+    assert not any(f.startswith("field_0x") for _, f, _, _ in lay["Blob"]["fields"])
+    assert re.search(r"constexpr auto MAGIC_\d+ = 0x5f3759df;", (b / "shared.h").read_text())
+    assert "0x5f3759df" not in code("hashA")
+    assert "(int)a" not in code("addCast")
+    assert "->second" in code("readSecond")
+    assert "addNumbers(addNumbers(x, 1), 2)" in code("addThree")
+    if shutil.which("clang-tidy"):
+        assert "return x > 0;" in code("isPositive")
+    assert "v + v;" in code("doubleIt") and "+ 1" not in code("doubleIt")
+    assert "DAT_00003000" not in code("readSetting")
+    assert "FUN_00002150" not in recs and any(n.startswith("computeThing") for n in recs)
+    assert "goto" in code("countDown")                           # the model couldn't: parked
+    notes = (b / "improve" / "notes" / (Path(recs["countDown"]["file"]).stem + ".md")).read_text()
+    assert "[goto]" in notes and "rejected" in notes
+    assert (b / "improve" / "history" / Path(recs["doubleIt"]["file"]).name).is_dir()
+
+    report = json.loads((tmp_path / "report.json").read_text())
+    assert report["improve"]["kept"] >= 15
+    assert report["improve"]["score_after"] < report["improve"]["score_before"]
+    assert (tmp_path / "privacy_report.txt").read_text().startswith("Nothing found")
+    readme = (tmp_path / "final" / "README.md").read_text()
+    assert "## Classes" in readme and "readSecond" in readme
+    assert (tmp_path / "final" / "include" / "program.h").exists()
+
+    # a re-split (e.g. after a rewrite redo) keeps the improvements to shared.h
+    assert run(tmp_path, model, "--redo", "split", "--to", "link") == 0
+    assert re.search(r"constexpr auto MAGIC_\d+", (b / "shared.h").read_text())
+    assert "appChecksum" in by_name(tmp_path)
+    for k in list(EXTRA_REWRITES):
+        REWRITES.pop(k, None)

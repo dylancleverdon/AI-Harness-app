@@ -64,18 +64,19 @@ Failed runs are explained in plain English: LM Studio unreachable, model not loa
 
 ## Decomp pipeline (`decomp_pipeline.py`)
 
-`scripts/examples/decomp_pipeline.py` combines `pseudo_to_cpp.py` and `DECOMP_FIXER.py` (kept unchanged in `scripts/legacy/`) into one resumable pipeline: **export** (Ghidra pseudocode) → **rewrite** (model writes readable C++) → **split** (libclang: `shared.h` + one file per function) → **fix** → **recover** (quarantined functions rebuilt from pseudocode) → **link**.
+`scripts/examples/decomp_pipeline.py` combines `pseudo_to_cpp.py` and `DECOMP_FIXER.py` (kept unchanged in `scripts/legacy/`) into one resumable pipeline: **export** (Ghidra pseudocode) → **rewrite** (model writes readable C++) → **split** (libclang: `shared.h` + one file per function) → **fix** → **recover** → **link** → **improve** → **organize** (modules, classes, privacy check, `final/`).
 
 ```bash
 python3 decomp_pipeline.py --workdir ~/decomp/MyApp                 # everything, or carry on
 python3 decomp_pipeline.py --workdir ~/decomp/MyApp --to rewrite    # stop after the rewrite
-python3 decomp_pipeline.py --workdir ~/decomp/MyApp --from fix      # e.g. after loading a bigger model
+python3 decomp_pipeline.py --workdir ~/decomp/MyApp --from improve  # another round of improving
 ```
 
-- Whatever model is loaded in LM Studio is used, checked again at each stage (`--pause-between-stages` waits for you to swap models). `--rewrite-model` / `--fix-model` pick one by name.
-- **`--redo` never deletes.** New results replace old ones in place as they finish; before a redo replaces anything the current files are copied to `snapshots/`. A function that's rewritten again keeps its name, so its callers still match.
-- Functions whose upstream code changed are refreshed in the build automatically; the rest keep the fixes they already have.
-- `REPORT.md` / `report.json` sum up every stage. `--adopt-rewrite DIR` / `--adopt-build DIR` copy in runs of the old scripts.
+- **Small steps, not rewrites.** After the first rewrite the model never writes a whole function again. Checks find one small problem at a time (decompiler names, Ghidra helper notation, stack-protector code, pointer arithmetic, warnings, goto, missing calls, behaviour that differs from Ghidra's version, privacy…). A rule fixes it, or the model plans one edit and rewrites only those few lines. A change is kept only if the function still compiles and still behaves like Ghidra's version. Each function's notes (`build/improve/notes/`) tell the model what was tried before; every version is kept in `build/improve/history/`.
+- **Always the model loaded in LM Studio**, checked at each stage. Tasks it couldn't do are retried when a different model is loaded.
+- **`--redo` never deletes.** Results are replaced in place; the current files are copied to `snapshots/` first.
+- **Privacy:** put product/company names in `privacy_blocklist.txt`. `final/` isn't written while the privacy check still finds something.
+- `REPORT.md` / `report.json` sum up every stage, including the improve score (lower is better).
 
 ## Dev
 
