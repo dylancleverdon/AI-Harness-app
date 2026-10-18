@@ -127,3 +127,5 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 .pill, .brand { white-space: nowrap; } .pills { flex-wrap: wrap; justify-content: flex-end; gap: 6px; } #topbar { gap: 10px; }
 #c-load { font-size: 17px; margin: 9px 0; } #cores div { max-width: 40px; }
 @media (max-width: 1100px) { .pill b { display: none; } }
+
+#screen-off { border-radius: 999px; padding: 3px 12px; white-space: nowrap; background: var(--panel); }

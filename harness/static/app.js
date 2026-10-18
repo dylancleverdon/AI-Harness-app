@@ -47,6 +47,12 @@ function showUpdate(u) {
     $('#s-update-msg').textContent = (u.changes || []).join(' · ');
   } else { b.classList.add('hidden'); a.classList.add('hidden'); $('#s-update-msg').textContent = u && u.error ? u.error : 'Up to date.'; }
 }
+$('#screen-off').onclick = async () => {
+  const b = $('#screen-off');
+  try { await api('/display-sleep', { method: 'POST' }); b.textContent = '🌙 Screen off ✓'; }
+  catch (e) { alert(e.message.includes('macOS') ? 'Turning the screen off only works on a Mac.' : 'Could not turn the screen off: ' + e.message); }
+  setTimeout(() => b.textContent = '🌙 Screen off', 2500);
+};
 $('#update-btn').onclick = () => $('#rail button[data-page=settings]').click();
 
 let lastSnap = null, history = [];

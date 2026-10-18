@@ -198,6 +198,18 @@ def pick_path(body: dict = Body(...)):
     return {"path": r.stdout.strip().rstrip("/") if r.returncode == 0 and kind == "folder" else r.stdout.strip()}
 
 
+@app.post("/api/display-sleep")
+def display_sleep():
+    """Turn the screen off right now (`pmset displaysleepnow`, no admin rights needed). The Mac itself keeps
+    running; if Keep awake is on it stays awake. Moving the mouse or pressing a key wakes the screen."""
+    if sys.platform != "darwin":
+        raise HTTPException(501, "Turning the screen off only works on macOS.")
+    r = subprocess.run(["pmset", "displaysleepnow"], capture_output=True, text=True, timeout=10)
+    if r.returncode != 0:
+        raise HTTPException(500, (r.stderr or r.stdout or "pmset failed").strip())
+    return {"ok": True}
+
+
 @app.post("/api/reveal")
 def reveal(body: dict = Body(...)):
     """Show a file a run produced in Finder (macOS) - only files listed on a run are allowed."""

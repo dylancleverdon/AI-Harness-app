@@ -466,3 +466,21 @@ def test_helper_tool_installed_while_running_is_noticed(monkeypatch):
     state["looked"] -= 21
     out = s.read_once(state)
     assert out["temp_c"] == 61.0 and out["temp_source"] == "macmon"
+
+
+def test_display_sleep_button(monkeypatch):
+    from harness import server
+    c = TestClient(server.app, headers={"x-harness": "1"})
+    assert c.post("/api/display-sleep").status_code == 501  # this test machine isn't a Mac
+    calls = []
+
+    class R:
+        returncode, stdout, stderr = 0, "", ""
+
+    monkeypatch.setattr(server.sys, "platform", "darwin")
+    monkeypatch.setattr(server.subprocess, "run", lambda cmd, **k: calls.append(cmd) or R())
+    assert c.post("/api/display-sleep").json() == {"ok": True} and calls == [["pmset", "displaysleepnow"]]
+    R.returncode, R.stderr = 1, "denied"
+    r = c.post("/api/display-sleep")
+    assert r.status_code == 500 and "denied" in r.text
+    assert TestClient(server.app).post("/api/display-sleep").status_code == 403  # needs the app's header
