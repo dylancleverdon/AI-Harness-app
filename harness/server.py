@@ -336,6 +336,12 @@ def events():
 
 
 # ---- models / chat --------------------------------------------------------
+@app.get("/api/models/downloaded")
+def models_downloaded():
+    """Downloaded LM Studio models (for the model dropdowns in Run settings)."""
+    return lmstudio.downloaded_models()
+
+
 @app.post("/api/models/unload")
 def unload():
     ok, out = lmstudio.unload_all()

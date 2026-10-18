@@ -484,3 +484,52 @@ def test_display_sleep_button(monkeypatch):
     r = c.post("/api/display-sleep")
     assert r.status_code == 500 and "denied" in r.text
     assert TestClient(server.app).post("/api/display-sleep").status_code == 403  # needs the app's header
+
+
+def test_downloaded_models_from_lms(monkeypatch, tmp_path):
+    from harness import lmstudio
+    js = ('[{"type":"llm","modelKey":"qwen/qwen3-4b-2507","displayName":"Qwen3 4B 2507","paramsString":"4B",'
+          '"architecture":"qwen3","format":"gguf","quantization":{"name":"Q4_K_M","bits":4},"sizeBytes":2500000000,'
+          '"maxContextLength":262144},{"type":"embedding","modelKey":"nomic-embed","sizeBytes":84000000},'
+          '{"type":"llm","modelKey":"google/gemma-3-12b"}]')
+    got = lmstudio.parse_lms_ls(js)
+    assert [m["id"] for m in got] == ["qwen/qwen3-4b-2507", "nomic-embed", "google/gemma-3-12b"]
+    assert got[0]["quant"] == "Q4_K_M" and got[0]["size_gb"] == 2.5 and got[0]["ctx"] == 262144
+    assert lmstudio.parse_lms_ls('{"models":[{"modelKey":"a/b"}]}')[0]["id"] == "a/b"
+    table = ("You have 2 models, taking up 7 GB of disk space.\n\nLLM                 PARAMS   ARCH     SIZE\n"
+             "qwen/qwen3-4b-2507  4B       qwen3    2.50 GB\ngoogle/gemma-3-12b  12B      gemma3   7.30 GB\n\n"
+             "EMBEDDING           PARAMS   ARCH     SIZE\nnomic-embed         137M     nomic    0.08 GB\n")
+    t = lmstudio.parse_lms_ls(table)
+    assert [(m["id"], m["type"]) for m in t] == [("qwen/qwen3-4b-2507", "llm"), ("google/gemma-3-12b", "llm"),
+                                                  ("nomic-embed", "embeddings")]
+
+    fake = tmp_path / "lms"
+    fake.write_text(f"#!/bin/sh\n[ \"$1 $2\" = \"ls --json\" ] && cat <<'EOF'\n{js}\nEOF\n")
+    fake.chmod(0o755)
+    monkeypatch.setattr(lmstudio, "find_lms", lambda: str(fake))
+    monkeypatch.setattr(lmstudio, "status", lambda: {"ok": True, "error": None, "models": [
+        {"id": "google/gemma-3-12b", "loaded": True, "type": "llm", "arch": "", "quant": "", "ctx": 4096}]})
+    r = lmstudio.downloaded_models()
+    assert r["source"] == "lms" and not r["error"]
+    assert [m["id"] for m in r["models"]] == ["google/gemma-3-12b", "qwen/qwen3-4b-2507", "nomic-embed"]  # loaded first, llms before embeddings
+    assert r["models"][0]["loaded"] and not r["models"][1]["loaded"]
+
+    # no lms: fall back to what the running server reports; nothing at all: a helpful message
+    monkeypatch.setattr(lmstudio, "find_lms", lambda: None)
+    assert lmstudio.downloaded_models()["source"] == "server"
+    monkeypatch.setattr(lmstudio, "status", lambda: {"ok": False, "error": "down", "models": []})
+    r = lmstudio.downloaded_models()
+    assert r["models"] == [] and "lms" in r["error"]
+    c = TestClient(__import__("harness.server", fromlist=["app"]).app)
+    assert c.get("/api/models/downloaded").json()["models"] == []
+
+
+def test_model_param_detection_for_dropdowns():
+    from harness import params
+    src = ("import argparse\nap = argparse.ArgumentParser()\nap.add_argument('models', nargs='*')\n"
+           "ap.add_argument('--ctx', type=int)\nap.add_argument('--lmstudio-model', default='local-model')\n"
+           "ap.add_argument('--model', default='qwen3:8b')\nap.add_argument('--model-temperature', type=float, default=0.1)\n")
+    ps = {p["dest"]: p for p in params.parse_params(src)}
+    assert ps["models"]["nargs"] == "*" and ps["models"]["positional"]
+    assert params.build_argv(list(ps.values()), {"models": 'qwen/qwen3-4b-2507 "my model"', "ctx": 32768}) == [
+        "qwen/qwen3-4b-2507", "my model", "--ctx", "32768"]

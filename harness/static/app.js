@@ -247,6 +247,55 @@ $('#term-input').onkeydown = e => {
 };
 $('#eof-btn').onclick = () => state.run && api(`/runs/${state.run.id}/input`, { method: 'POST', body: { eof: true } });
 
+// ---- model dropdowns for options that ask for an LM Studio model ----------------
+const isModelParam = p => p.kind === 'str' && !p.choices && !p.path && /(^|_)models?(_name|_id|_key)?$/.test(p.dest);
+const isMulti = p => p.nargs && p.nargs !== 1;
+let modelsPromise = null;
+const getModels = refresh => (refresh || !modelsPromise) ? (modelsPromise = api('/models/downloaded').catch(e => ({ models: [], error: e.message }))) : modelsPromise;
+const modelLabel = m => (m.loaded ? '● ' : '') + m.id + [m.params, m.quant, m.size_gb ? m.size_gb + ' GB' : ''].filter(Boolean).map(x => ' · ' + x).join('');
+const tokens = s => [...String(s || '').matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g)].map(m => m[1] ?? m[2] ?? m[3]);
+const quoteTok = t => /\s/.test(t) ? JSON.stringify(t) : t;
+function modelPicker(p, cur, save) {
+  const wrap = el('div', { className: 'modelpick' }), hint = el('small', { className: 'muted' });
+  const refresh = el('button', { type: 'button', className: 'ghost', textContent: '↻', title: 'Reload the list of models from LM Studio' });
+  const other = el('input', { placeholder: 'type a model name', className: 'hidden' });
+  let models = [];
+  const ctxHint = m => $$('#rs-form [data-dest]').forEach(i => { if (/^(ctx|context|context_length|ctx_size|num_ctx|max_ctx)$/.test(i.dataset.dest)) i.placeholder = m && m.ctx ? `max ${m.ctx.toLocaleString()} for this model` : ''; });
+  const note = m => { hint.textContent = m ? `${m.type === 'llm' ? '' : m.type + ' · '}${[m.format, m.arch, m.ctx ? 'max context ' + m.ctx.toLocaleString() : ''].filter(Boolean).join(' · ')}${m.loaded ? ' · loaded now' : ''}` : ''; ctxHint(m); };
+  if (isMulti(p)) {
+    const list = el('div', { className: 'multi' }), picked = new Set(tokens(cur));
+    const emit = () => save([...picked].map(quoteTok).join(' '));
+    other.classList.remove('hidden');
+    other.oninput = () => { const known = new Set(models.map(m => m.id)); const extra = tokens(other.value); [...picked].forEach(t => { if (!known.has(t)) picked.delete(t); }); extra.forEach(t => picked.add(t)); emit(); };
+    const render = r => {
+      models = r.models; list.replaceChildren(); const known = new Set(models.map(m => m.id));
+      models.forEach(m => { const cb = el('input', { type: 'checkbox', checked: picked.has(m.id) });
+        cb.onchange = () => { cb.checked ? picked.add(m.id) : picked.delete(m.id); emit(); note(cb.checked ? m : models.find(x => picked.has(x.id))); };
+        list.append(el('label', { className: 'check' }, cb, modelLabel(m))); });
+      other.value = [...picked].filter(t => !known.has(t)).map(quoteTok).join(' ');
+      if (!models.length) list.append(el('div', { className: 'muted', textContent: r.error || 'No models found.' }));
+      note(models.find(m => picked.has(m.id)));
+    };
+    refresh.onclick = async () => render(await getModels(true));
+    wrap.append(list, el('div', { className: 'pathrow' }, other, refresh), hint); getModels().then(render); return wrap;
+  }
+  const sel = el('select');
+  const render = r => {
+    models = r.models; sel.replaceChildren(el('option', { value: '', textContent: p.default ? `(script default: ${p.default})` : '— choose a model —' }));
+    const group = (label, ms) => { if (ms.length) sel.append(el('optgroup', { label }, ...ms.map(m => el('option', { value: m.id, textContent: modelLabel(m) })))); };
+    group('Loaded now', models.filter(m => m.loaded)); group('Downloaded', models.filter(m => !m.loaded));
+    sel.append(el('option', { value: '__other__', textContent: 'Other (type a name)…' }));
+    const known = models.some(m => m.id === cur);
+    sel.value = known ? cur : cur ? '__other__' : '';
+    other.classList.toggle('hidden', sel.value !== '__other__'); if (sel.value === '__other__') other.value = cur || '';
+    if (!models.length) { sel.value = '__other__'; other.classList.remove('hidden'); hint.textContent = r.error || ''; } else note(models.find(m => m.id === sel.value));
+  };
+  sel.onchange = () => { other.classList.toggle('hidden', sel.value !== '__other__'); if (sel.value === '__other__') { other.focus(); save(other.value); } else { save(sel.value); note(models.find(m => m.id === sel.value)); } };
+  other.oninput = () => save(other.value);
+  refresh.onclick = async () => { const keep = sel.value === '__other__' ? other.value : sel.value; cur = keep; render(await getModels(true)); };
+  wrap.append(el('div', { className: 'pathrow' }, sel, refresh), other, hint); getModels().then(render); return wrap;
+}
+
 // ---- run settings (discovered options, remembered between runs) -----------
 let rs = { params: [], values: {} }, rsTimer;
 const flagName = p => p.flags.find(f => f.startsWith('--')) || p.flags[0];
@@ -259,12 +308,18 @@ async function loadRunSettings(name) {
   d.params.forEach(p => {
     const cur = p.dest in rs.values ? rs.values[p.dest] : p.default;
     const label = el('label', { className: p.kind === 'bool' ? 'check' : '' });
+    if (isModelParam(p)) {  // dropdown of the models you have in LM Studio instead of a text box
+      label.append(p.dest.replace(/_/g, ' ') + (p.required ? ' *' : ''), modelPicker(p, cur, v => { rs.values[p.dest] = v; persistRunSettings(); }));
+      if (p.help) label.append(el('small', { textContent: p.help }));
+      form.append(label); return;
+    }
     let input;
     if (p.kind === 'bool') { input = el('input', { type: 'checkbox', checked: !!cur }); label.append(input, p.dest.replace(/_/g, ' ')); }
     else {
       if (p.kind === 'append') input = el('textarea', { rows: 2, value: Array.isArray(cur) ? cur.join('\n') : (cur ?? ''), placeholder: 'one value per line' });
       else if (p.choices) input = el('select', {}, ...p.choices.map(c => el('option', { value: c, textContent: c, selected: String(c) === String(cur) })));
       else input = el('input', { type: p.kind === 'int' || p.kind === 'float' || p.kind === 'count' ? 'number' : 'text', value: cur ?? '', placeholder: p.default == null ? (p.required ? 'required' : '') : '', step: p.kind === 'float' ? 'any' : undefined });
+      input.dataset.dest = p.dest;
       label.append(p.dest.replace(/_/g, ' ') + (p.required ? ' *' : ''), input);
     }
     if (p.path && p.kind === 'str' && !p.choices) {  // Browse… buttons for file/folder options

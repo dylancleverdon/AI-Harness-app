@@ -1,6 +1,9 @@
 """Thin client for the LM Studio local server (OpenAI-compatible + /api/v0 REST)."""
+import json
+import re
 import shutil
 import subprocess
+from pathlib import Path
 
 import httpx
 
@@ -41,9 +44,81 @@ def loaded_model():
     return ""
 
 
+def find_lms():
+    """The `lms` command-line tool that ships with LM Studio (PATH first, then its default install folder)."""
+    import os
+    extra = os.pathsep.join(["/opt/homebrew/bin", "/usr/local/bin", str(Path.home() / ".lmstudio" / "bin")])
+    return shutil.which("lms", path=os.environ.get("PATH", "") + os.pathsep + extra)
+
+
+def _model_from_json(it):
+    key = it.get("modelKey") or it.get("indexedModelIdentifier") or it.get("path") or it.get("id")
+    if not key:
+        return None
+    q = it.get("quantization")
+    q = q.get("name") if isinstance(q, dict) else q
+    size = it.get("sizeBytes")
+    return {"id": key, "name": it.get("displayName") or key, "type": it.get("type") or "llm",
+            "params": it.get("paramsString") or "", "quant": q or "", "arch": it.get("architecture") or "",
+            "format": it.get("format") or "", "size_gb": round(size / 1e9, 1) if isinstance(size, (int, float)) else None,
+            "ctx": it.get("maxContextLength")}
+
+
+def parse_lms_ls(text):
+    """Models from `lms ls --json` (a list, or {"models": [...]}); falls back to the plain table."""
+    try:
+        data = json.loads(text)
+        items = data if isinstance(data, list) else (data.get("models") or data.get("data") or [])
+        return [m for m in (_model_from_json(i) for i in items if isinstance(i, dict)) if m]
+    except ValueError:
+        pass
+    out, section = [], None
+    for line in text.splitlines():
+        s = line.strip()
+        if re.match(r"^(LLM|EMBEDDING)s?\b", s, re.I):
+            section = "embeddings" if s.upper().startswith("EMBEDDING") else "llm"
+        elif section and s and not s.lower().startswith("you have") and not s.startswith(("-", "=")):
+            cols = s.split()
+            out.append({"id": cols[0], "name": cols[0], "type": section, "params": cols[1] if len(cols) > 3 else "",
+                        "quant": "", "arch": cols[2] if len(cols) > 3 else "", "format": "",
+                        "size_gb": None, "ctx": None})
+    return out
+
+
+def downloaded_models():
+    """Every model downloaded in LM Studio, with which are loaded now. Works with the server off (uses `lms ls`);
+    falls back to the server's model list. Returns {models, source, error}."""
+    models, source, error = [], "none", ""
+    lms = find_lms()
+    if lms:
+        for args in (["ls", "--json"], ["ls"]):
+            try:
+                r = subprocess.run([lms, *args], capture_output=True, text=True, timeout=25)
+                models = parse_lms_ls(r.stdout) if r.returncode == 0 else []
+            except (OSError, subprocess.SubprocessError) as e:
+                error = str(e)
+                models = []
+            if models:
+                source = "lms"
+                break
+    live = status()
+    loaded = {m["id"] for m in live["models"] if m["loaded"]}
+    if not models and live["ok"]:  # no lms: at least list what the running server knows about
+        models = [{"id": m["id"], "name": m["id"], "type": m["type"] or "llm", "params": "", "quant": m["quant"] or "",
+                   "arch": m["arch"] or "", "format": "", "size_gb": None, "ctx": m["ctx"]} for m in live["models"]]
+        source = "server"
+    if not models:
+        error = error or ("LM Studio's `lms` tool wasn't found and the server isn't running. Open LM Studio once, or "
+                          "run  ~/.lmstudio/bin/lms bootstrap")
+    for m in models:
+        m["loaded"] = m["id"] in loaded
+    models.sort(key=lambda m: (not m["loaded"], m["type"] != "llm", m["id"].lower()))
+    return {"models": models, "source": source, "error": error if not models else ""}
+
+
 def unload_all():
     """Unload every model using the `lms` CLI that ships with LM Studio."""
-    lms = shutil.which("lms") or str(__import__("pathlib").Path("~/.lmstudio/bin/lms").expanduser())
+    lms = find_lms() or str(Path("~/.lmstudio/bin/lms").expanduser())
     try:
         out = subprocess.run([lms, "unload", "--all"], capture_output=True, text=True, timeout=30)
         return out.returncode == 0, (out.stdout + out.stderr).strip()

@@ -86,7 +86,7 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 #ai-diff { overflow: auto; background: #101013; border-radius: 8px; padding: 10px; margin: 10px 0 0; font: 12px/1.5 ui-monospace, Menlo, monospace; white-space: pre; min-height: 120px; }
 #ai-diff .add { color: var(--green); background: #3ecf8e14; display: block; } #ai-diff .del { color: var(--red); background: #eb575714; display: block; } #ai-diff .hunk { color: var(--accent); display: block; }
 
-#run-settings { border-bottom: 1px solid var(--border); background: var(--panel); max-height: 45%; overflow: auto; }
+#run-settings { border-bottom: 1px solid var(--border); background: var(--panel); max-height: 60%; overflow: auto; resize: vertical; }
 #run-settings summary { padding: 7px 12px; cursor: pointer; color: var(--muted); } #run-settings[open] summary { color: var(--text); }
 #rs-body { padding: 4px 12px 12px; } #rs-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 14px; }
 #rs-body label { display: block; font-size: 12px; } #rs-body label input:not([type=checkbox]), #rs-body label select, #rs-body label textarea { display: block; width: 100%; margin-top: 2px; }
@@ -129,3 +129,7 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 @media (max-width: 1100px) { .pill b { display: none; } }
 
 #screen-off { border-radius: 999px; padding: 3px 12px; white-space: nowrap; background: var(--panel); }
+
+.modelpick .multi { max-height: 150px; overflow: auto; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; background: #17171b; margin-top: 3px; }
+#rs-body .modelpick label.check { margin: 3px 0; align-items: flex-start; } #rs-body .modelpick label.check input { margin-top: 3px; }
+.modelpick .pathrow select { flex: 1; width: auto; } .modelpick > input { margin-top: 4px !important; }
