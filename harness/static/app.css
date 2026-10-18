@@ -98,7 +98,7 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 
 .pathrow { display: flex; gap: 4px; margin-top: 2px; } .pathrow input { margin-top: 0 !important; flex: 1; } .pathrow button { padding: 0 8px; }
 
-#live { padding: 6px 12px; background: #17171c; border-top: 1px solid var(--border); font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; white-space: pre; overflow: hidden; text-overflow: ellipsis; color: #cfd0ff; }
+#live { padding: 6px 12px; background: #17171c; border-top: 1px solid var(--border); font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; white-space: pre-wrap; word-break: break-word; max-height: 35%; overflow-y: auto; color: #cfd0ff; }
 
 .modal-foot { display: flex; gap: 8px; align-items: center; } .modal-foot .spacer { flex: 1; }
 .switch { display: flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 3px 12px 3px 6px; }

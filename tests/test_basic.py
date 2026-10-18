@@ -369,7 +369,7 @@ def test_scripts_get_a_terminal_so_live_progress_works():
     d = _wait_done(c, rid)
     assert d["status"] == "ok"
     first = [l["x"] for l in d["lines"] if l["s"] != "sys"][0]
-    assert first == "isatty True True True 200"
+    assert first == "isatty True True True 400"
     texts = [l["x"] for l in d["lines"] if l["s"] != "sys"]
     assert texts[-1] == "done" and not any("spinner" in t for t in texts)  # redraws never pile up as lines
 

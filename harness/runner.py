@@ -211,8 +211,8 @@ class RunManager:
                 attrs = termios.tcgetattr(slave)
                 attrs[3] &= ~termios.ECHO  # the console echoes typed text itself
                 termios.tcsetattr(slave, termios.TCSANOW, attrs)
-                fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 50, 200, 0, 0))
-                env = {**env, "TERM": env.get("TERM") or "xterm-256color", "COLUMNS": "200", "LINES": "50",
+                fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 50, 400, 0, 0))
+                env = {**env, "TERM": env.get("TERM") or "xterm-256color", "COLUMNS": "400", "LINES": "50",
                        "NO_COLOR": "1"}
             except Exception:
                 for fd in (master, slave):
