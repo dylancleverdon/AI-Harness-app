@@ -107,6 +107,7 @@ class FakeModel:
         self.model_id = model_id
         self.calls = {"rewrite": 0, "repair": 0, "recover": 0, "other": 0}
         self.rewrite_override = {}
+        self.no_code = set()          # Ghidra names the "model" returns no code for
         fake = self
 
         class H(BaseHTTPRequestHandler):
@@ -150,6 +151,8 @@ class FakeModel:
         if system.startswith("You turn Ghidra decompiler pseudocode"):
             self.calls["rewrite"] += 1
             g = re.search(r"Function: (\S+)", messages[1]["content"]).group(1)
+            if g in self.no_code:
+                return "Sorry, I can't help with that."
             code, name = self.rewrite_override.get(g) or REWRITES[g]
             return f"```cpp\n{code}\n```\nNAME: {name}"
         if system.startswith("You are a C++ repair tool"):
@@ -440,3 +443,41 @@ def test_options():
 def test_pause_without_input_carries_on(tmp_path, model):
     write_export(tmp_path)
     assert run(tmp_path, model, "--to", "rewrite", "--pause-between-stages") == 0
+
+
+def test_skipped_functions_are_marked_redo_and_tried_again(tmp_path, model):
+    write_export(tmp_path)
+    model.no_code = {"FUN_00001050"}
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())
+    assert prog["functions"]["1050"]["status"] == "skipped"
+    assert prog["functions"]["1050"]["reason"] == "model returned no code"
+
+    # next run: marked redo at start-up and tried again (still no code -> still listed)
+    calls = model.calls["rewrite"]
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    assert model.calls["rewrite"] == calls + 1
+    prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())
+    assert prog["functions"]["1050"]["retries"] == 1
+
+    # the model behaves now: it's rewritten and the whole thing links
+    model.no_code = set()
+    assert run(tmp_path, model) == 0
+    prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())
+    assert prog["functions"]["1050"]["status"] == "done"
+    assert json.loads((tmp_path / "report.json").read_text())["link"]["ok"] is True
+
+
+def test_failed_redo_keeps_old_version_and_retries(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    model.no_code = {"FUN_00001000"}
+    assert run(tmp_path, model, "--to", "rewrite", "--redo", "rewrite",
+               "--functions", "FUN_00001000") == 0
+    e = json.loads((tmp_path / "rewrite" / "progress.json").read_text())["functions"]["1000"]
+    assert e["status"] == "done" and e["stale"] and e["redo_failed"]
+    assert "addNumbers" in (tmp_path / "rewrite" / "rewritten.cpp").read_text()
+    model.no_code = set()
+    calls = model.calls["rewrite"]
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    assert model.calls["rewrite"] == calls + 1

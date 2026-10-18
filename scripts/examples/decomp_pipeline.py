@@ -131,10 +131,47 @@ class Paths:
             d.mkdir(parents=True, exist_ok=True)
 
 
+# The progress bar on screen now (one at a time), and the stage it belongs to,
+# e.g. "[3/6 split]". Every stage's long loop shows one; log lines scroll above it.
+BAR: dict = {"p": None, "stage": ""}
+
+STAGE_INFO = {
+    "export": "getting every function's pseudocode from Ghidra (once — after that "
+              "Ghidra can be closed)",
+    "rewrite": "the model rewrites each function as readable C++, gives placeholder "
+               "names real ones, and strips identifying strings",
+    "split": "libclang splits the rewrite into shared.h + one file per function, "
+             "repairs the header, then compiles every function on its own",
+    "fix": "functions that don't compile are repaired, callees first: quick "
+           "deterministic fixes, then the model; what can't be fixed is quarantined",
+    "recover": "quarantined functions are rebuilt from their Ghidra pseudocode",
+    "link": "the whole program is compiled and linked; anything still missing gets "
+            "a placeholder and is listed in link_report.txt",
+}
+
+
+def say(text: str) -> None:
+    """Print a line — above the live progress bar when one is showing."""
+    p = BAR["p"]
+    if p is not None and not p.stop_flag.is_set():
+        p.log(text)
+    else:
+        print(text, flush=True)
+
+
+def phase(text: str) -> None:
+    """Tell the bar what the item in progress is doing now (sequential loops)."""
+    p = BAR["p"]
+    if p is not None:
+        with p.lock:
+            for v in p.active.values():
+                v[1] = text
+
+
 def plog(P: Paths, msg: str) -> None:
     """A pipeline-level line: printed and appended to pipeline.log."""
     line = f"[{time.strftime('%H:%M:%S')}] {msg}"
-    print(line, flush=True)
+    say(line)
     try:
         with open(P.log, "a") as f:
             f.write(line + "\n")
@@ -744,21 +781,19 @@ class GhidraCache:
         progress_print(f"{'Refreshing' if refresh else 'Building'} {self.path.name}: fetching pseudocode for "
                        f"{len(missing)} function(s) from Ghidra (one-time; after this "
                        f"you can close Ghidra)...")
-        done = [0]
-        dlock = threading.Lock()
+        prog = Progress(len(missing), 0, title="fetching pseudocode from Ghidra")
 
         def fetch(item):
             n, a = item
+            prog.begin(a, n)
             self.pseudocode(n, a)
-            with dlock:
-                done[0] += 1
-                if done[0] % 100 == 0 or done[0] == len(missing):
-                    progress_print(f"  exported {done[0]}/{len(missing)}")
+            prog.end(a)
 
         try:
             with ThreadPoolExecutor(max_workers=max(1, parallel)) as pool:
                 list(pool.map(fetch, missing))
         finally:
+            prog.close()
             self._save(force=True)
         got = sum(1 for _, a in funcs if self.have_pseudocode(a))
         progress_print(f"Export complete: {got}/{len(funcs)} functions have pseudocode "
@@ -2020,16 +2055,23 @@ class Progress:
     Speed and time left are averaged over the whole session."""
     SPIN = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
 
-    def __init__(self, total, already):
+    def __init__(self, total, already=0, title=""):
         self.total, self.done = total, already
+        self.title = title                    # what this bar is counting
         self.finished_at = []                 # when each function finished, this run
         self.started = time.time()
         self.active = {}                      # key -> [label, phase, started]
         self.extra = None                     # optional callable: more text for the bar
-        self.live = sys.stdout.isatty()
+        # live (redrawn in place) in a terminal and in the AI Harness console, which
+        # shows a carriage-return line as one pinned, updating line
+        self.live = sys.stdout.isatty() or bool(os.environ.get("AIHARNESS_RUN_ID"))
         self.lock = threading.RLock()
         self.stop_flag = threading.Event()
         self.thread = None
+        self.every = max(10, total // 40)     # without a live bar: print it this often
+        if BAR["p"] is not None:
+            BAR["p"].close()
+        BAR["p"] = self
         if self.live:
             self.thread = threading.Thread(target=self._spin, daemon=True)
             self.thread.start()
@@ -2058,16 +2100,18 @@ class Progress:
         full = int(frac * width)
         bar = "█" * full + "░" * (width - full)
         running = fmt_duration(time.time() - self.started)
-        line = (f"{spin} {self.done}/{self.total} {bar} {frac * 100:4.1f}%  "
-                f"running {running} | {self.estimate()}")
-        if self.extra:
-            line += f" | {self.extra()}"
-        if self.active:
+        head = " ".join(x for x in (BAR["stage"], self.title) if x)
+        line = (f"{spin} {head + ': ' if head else ''}{self.done}/{self.total} {bar} "
+                f"{frac * 100:4.1f}%")
+        if self.active:      # what's being worked on matters most, so it comes first
             label, phase, t0 = min(self.active.values(), key=lambda v: v[2])
-            line += f"  | now: {label} {phase} {int(time.time() - t0)}s"
+            line += f" | now: {label}{' — ' + phase if phase else ''} {int(time.time() - t0)}s"
             if len(self.active) > 1:
                 line += f" (+{len(self.active) - 1} more)"
-        cols = shutil.get_terminal_size((100, 20)).columns
+        if self.extra:
+            line += f" | {self.extra()}"
+        line += f" | {self.estimate()} | running {running}"
+        cols = shutil.get_terminal_size((160, 20)).columns
         return line[:max(20, cols - 1)]
 
     def _draw(self, spin=""):
@@ -2099,16 +2143,19 @@ class Progress:
             if key in self.active:
                 self.active[key][1] = phase
 
-    def end(self, key, text):
+    def end(self, key, text=None):
         with self.lock:
             t0 = self.active.pop(key, [None, None, time.time()])[2]
             self.done += 1
             self.finished_at.append(time.time())
-            self.log(text.replace("{secs}", fmt_duration(time.time() - t0)))
-            if not self.live and (self.done % 10 == 0 or self.done == self.total):
+            if text:
+                self.log(text.replace("{secs}", fmt_duration(time.time() - t0)))
+            if not self.live and (self.done % self.every == 0 or self.done == self.total):
                 print(self.bar_line(), flush=True)
 
     def close(self):
+        if BAR["p"] is self:
+            BAR["p"] = None
         if self.stop_flag.is_set():
             return
         self.stop_flag.set()
@@ -2202,9 +2249,24 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
 
     # entries an older pseudo_to_cpp marked "redo" still have their code: keep it
     # in the output until the new rewrite replaces it
-    for e in done.values():
-        if e.get("status") == "redo":
+    for key, e in done.items():
+        if e.get("status") == "redo" and e.get("name") and not e.get("retry_reason") \
+                and (P.rewritten_dir / f"{key}.cpp").exists():
             e["status"], e["stale"] = "done", True
+
+    # Functions skipped last time (the model returned no code, Ghidra had no
+    # pseudocode) are marked redo, so every run tries them again.
+    retry: dict[str, int] = {}
+    for e in done.values():
+        if e.get("status") == "skipped":
+            e["status"] = "redo"
+            e["retry_reason"] = e.get("reason") or "skipped"
+            e["retries"] = e.get("retries", 0) + 1
+        if e.get("status") == "redo" and e.get("retry_reason"):
+            retry[e["retry_reason"]] = retry.get(e["retry_reason"], 0) + 1
+    if retry:
+        plog(P, f"  {sum(retry.values())} function(s) skipped last time are marked redo and "
+                f"will be tried again ({', '.join(f'{n} {r}' for r, n in retry.items())})")
 
     marked = 0
     if "rewrite" in redo:
@@ -2286,7 +2348,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     system = SYSTEM_PROMPT.replace("{comments}",
                                    WITH_COMMENTS if args.comments else NO_COMMENTS)
     t_start, last_write = time.time(), time.time()
-    prog = Progress(len(selected), len(selected) - len(todo))
+    prog = Progress(len(selected), len(selected) - len(todo), title="rewriting functions")
     GATE["gate"] = ModelGate(args.parallel)
     GATE["tuner"] = None
     if args.auto_parallel:
@@ -2304,11 +2366,13 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         with state:
             old = done.get(key) or {}
             if entry["status"] != "done" and old.get("status") == "done":
-                # a redo that came back empty-handed: keep the previous rewrite
-                old.pop("stale", None)
-                old["redo_failed"] = entry["status"]
+                # a redo that came back empty-handed: keep the previous rewrite, and
+                # leave it marked so the next run tries again
+                old["redo_failed"] = entry.get("reason") or entry["status"]
                 entry = old
-                text += "  (kept the previous version)"
+                text += "  (kept the previous version; tried again next run)"
+            elif entry["status"] == "skipped" and old.get("retries"):
+                entry["retries"] = old["retries"]
             done[key] = entry
             save_progress(P, progress)
             if entry["status"] == "done":
@@ -2326,8 +2390,10 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
             prog.log(ghidra.notice)
             ghidra.notice = None
         if not pseudo:
-            return finish(key, {"ghidra": gname, "status": "skipped"},
-                          f"  {gname}: no pseudocode from Ghidra, skipped")
+            return finish(key, {"ghidra": gname, "status": "skipped",
+                                "reason": "no pseudocode from Ghidra"},
+                          f"  {gname}: no pseudocode from Ghidra, skipped (tried again "
+                          f"next run)")
         safe = re.sub(r"[^\w.-]", "_", gname)
         (P.pseudocode / f"{safe}.c").write_text(pseudo + "\n")
         psha = _pseudo_sha(pseudo)
@@ -2398,8 +2464,10 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                 if better or not code:
                     code, new_name, ok = code2, new_name2 or new_name, ok2
         if not code:
-            return finish(key, {"ghidra": gname, "status": "skipped"},
-                          f"  {gname}: the model didn't return code, skipped")
+            return finish(key, {"ghidra": gname, "status": "skipped",
+                                "reason": "model returned no code"},
+                          f"  {gname}: the model didn't return code, skipped (tried again "
+                          f"next run)")
 
         # Compile it; if that fails, repair it incrementally (minimal edits to the
         # failing lines) rather than regenerating the whole function.
@@ -2710,7 +2778,7 @@ def _rewrite_summary(progress, order, stop=False, model=None) -> dict:
             reasons[r] = reasons.get(r, 0) + 1
     out = {"functions": len(order), "done": len(done),
            "stale": sum(1 for e in done if e.get("stale")),
-           "skipped": sum(1 for e in es if e.get("status") == "skipped"),
+           "skipped": sum(1 for e in es if e.get("status") in ("skipped", "redo")),
            "too_big": sum(1 for e in es if e.get("status") == "too big"),
            "not_started": len(order) - len(es),
            "renamed": sum(1 for e in done if e.get("name") and e["name"] != e.get("ghidra")),
@@ -2796,8 +2864,7 @@ class Config:
 
 def log(cfg: Config, msg: str) -> None:
     line = f"[{time.strftime('%H:%M:%S')}] {msg}"
-    print(line, flush=True)
-    sys.stdout.flush()
+    say(line)
     with open(cfg.log_path, "a") as f:
         f.write(line + "\n")
         f.flush()
@@ -4041,20 +4108,21 @@ def compile_sweep(cfg: Config, records: dict[str, FuncRecord]) -> None:
     workers = max(1, (os.cpu_count() or 2) - 1)
     log(cfg, f"  compiling with {workers} parallel worker(s)")
     recs = list(records.values())
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        results = pool.map(lambda r: compile_tu(cfg, r.file), recs)
-        paired = zip(recs, results)
-        for i, (rec, (ok, err, _)) in enumerate(paired, 1):
-            _sweep_record(rec, ok, err)
-            if ok:
-                ok_n += 1
-            if i % 100 == 0 or i == total:
-                rate = i / max(time.time() - t0, 0.001)
-                eta = (total - i) / max(rate, 0.001)
-                log(cfg, f"    compiled {i}/{total} ({ok_n} pass) "
-                         f"~{rate:.0f}/s, eta {eta:.0f}s")
+    prog = Progress(total, 0, title="compiling each function on its own")
+    prog.extra = lambda: f"{ok_n} pass"
+    try:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            results = pool.map(lambda r: compile_tu(cfg, r.file), recs)
+            paired = zip(recs, results)
+            for i, (rec, (ok, err, _)) in enumerate(paired, 1):
+                _sweep_record(rec, ok, err)
+                if ok:
+                    ok_n += 1
+                prog.end(rec.mangled)
+    finally:
+        prog.close()
     log(cfg, f"  isolated compile: {ok_n}/{len(records)} TUs pass, "
-             f"{len(records)-ok_n} need repair")
+             f"{len(records)-ok_n} need repair ({time.time() - t0:.0f}s)")
 
 
 def _sweep_record(rec: FuncRecord, ok: bool, err: str) -> None:
@@ -4407,6 +4475,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
     rel = rec.file
     header_fix_tries = 0
     for attempt in range(cfg.max_model_attempts + 1):
+        phase("compiling")
         ok, err, _ = compile_tu(cfg, rel)
         if ok:
             rec.compiles = True
@@ -4419,10 +4488,12 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             header_fix_tries += 1
             log(cfg, f"      {rec.name}: failure originates in a shared header — "
                      f"repairing header, not the function")
+            phase("repairing shared.h")
             repair_header(cfg, "shared.h")
             continue
 
         # 1) templated / deterministic
+        phase("quick deterministic fixes")
         if templated_fix(cfg, rel, err):
             continue
 
@@ -4442,10 +4513,12 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
         # keep only the function body (strip the #include line we prepended)
         body = re.sub(r'^\s*#include\s+"shared.h"\s*', "", src, count=1).strip()
         decls = gather_declarations(cfg, extract_error_symbols(err))
+        phase(f"asking the model ({attempt + 1}/{cfg.max_model_attempts})")
         fixed = model_repair(cfg, body, err, decls, rec.name)
         rec.attempts += 1
         if fixed:
             (cfg.workdir / rel).write_text('#include "shared.h"\n\n' + fixed + "\n")
+            phase("compiling the model's fix")
             ok3, err3, _ = compile_tu(cfg, rel)
             if ok3:
                 cache[key] = (cfg.workdir / rel).read_text()
@@ -4464,23 +4537,25 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
                and not records[m].quarantined]
     total = len(failing)
     log(cfg, f"  fixer loop over {total} failing TU(s), dependency-ordered")
-    t0 = time.time()
     fixed_n = 0
-    for i, m in enumerate(failing, 1):
-        rec = records[m]
-        log(cfg, f"    [{i}/{total}] {rec.name} ...")   # heartbeat before each (model calls are slow)
-        ok = repair_tu(cfg, rec, cache)
-        if ok:
-            fixed_n += 1
-        elapsed = time.time() - t0
-        rate = i / max(elapsed, 0.001)
-        eta = (total - i) / max(rate, 0.001)
-        log(cfg, f"    [{i}/{total}] {rec.name} -> "
-                 f"{'fixed' if ok else 'quarantined'} "
-                 f"({fixed_n} fixed so far, eta {eta:.0f}s)")
-        if i % 25 == 0:
-            # this loop can run for hours; save so --resume picks up from here
-            save_manifest(cfg, records)
+    prog = Progress(total, 0, title="repairing functions (callees first)")
+    prog.extra = lambda: f"{fixed_n} fixed"
+    try:
+        for i, m in enumerate(failing, 1):
+            rec = records[m]
+            t1 = time.time()
+            prog.begin(m, rec.name)
+            ok = repair_tu(cfg, rec, cache)
+            if ok:
+                fixed_n += 1
+            log(cfg, f"    [{i}/{total}] {rec.name} -> "
+                     f"{'fixed' if ok else 'quarantined'} ({fmt_duration(time.time() - t1)})")
+            prog.end(m)
+            if i % 25 == 0:
+                # this loop can run for hours; save so a rerun picks up from here
+                save_manifest(cfg, records)
+    finally:
+        prog.close()
     save_cache(cfg, cache)
     if MODEL_STATS["calls"]:
         log(cfg, f"  model: {MODEL_STATS['calls']} call(s), {MODEL_STATS['no_answer']} "
@@ -4762,6 +4837,7 @@ def recover_one(cfg: Config, rec: FuncRecord, export: dict, index: dict) -> bool
     big = len(pseudo) + len(orig_text) > cfg.model_ctx_chars
     # (a) full rewrite when it fits
     if proto and not big:
+        phase("rewriting from pseudocode against shared.h")
         fixed = _recover_full_rewrite(cfg, rec, pseudo, proto, orig_body)
         if fixed is not None:
             rec.recovery = "rewrite"
@@ -4770,6 +4846,7 @@ def recover_one(cfg: Config, rec: FuncRecord, export: dict, index: dict) -> bool
     # (b) error-window patching: start from the original decompiled body, which is
     # closer to correct than the stub
     (cfg.workdir / rec.file).write_text(orig_text)
+    phase("patching the lines around each error")
     if _recover_window_patch(cfg, rec, pseudo):
         body = (cfg.workdir / rec.file).read_text()
         body = re.sub(r'^\s*#include\s+"shared.h"\s*', "", body, count=1).strip()
@@ -4778,6 +4855,7 @@ def recover_one(cfg: Config, rec: FuncRecord, export: dict, index: dict) -> bool
             return _finish_recovery(cfg, rec)
 
     # (c) faithful fallback
+    phase("faithful fallback (Ghidra's own pseudocode)")
     if _recover_faithful(cfg, rec, pseudo):
         rec.recovery = "faithful-pseudocode"
         return _finish_recovery(cfg, rec)
@@ -4819,18 +4897,27 @@ def pseudocode_recovery(cfg: Config, records: dict[str, FuncRecord]) -> None:
         cfg.fix_model_used = ""
         log(cfg, "  (model not available — only the faithful fallback will run)")
     fixed_n, faithful_n, t0 = 0, 0, time.time()
-    for i, m in enumerate(targets, 1):
-        rec = records[m]
-        if not _pseudo_for(rec, export, index):
-            continue
-        log(cfg, f"    [{i}/{len(targets)}] recovering {rec.name} from pseudocode ...")
-        if recover_one(cfg, rec, export, index):
-            fixed_n += 1
-            if rec.recovery == "faithful-pseudocode":
-                faithful_n += 1
-            log(cfg, f"    [{i}/{len(targets)}] {rec.name} -> re-derived ({rec.recovery})")
-        if i % 20 == 0:
-            save_manifest(cfg, records)
+    prog = Progress(len(targets), 0, title="rebuilding quarantined functions")
+    prog.extra = lambda: f"{fixed_n} re-derived"
+    try:
+        for i, m in enumerate(targets, 1):
+            rec = records[m]
+            if not _pseudo_for(rec, export, index):
+                prog.end(m)
+                continue
+            prog.begin(m, rec.name)
+            if recover_one(cfg, rec, export, index):
+                fixed_n += 1
+                if rec.recovery == "faithful-pseudocode":
+                    faithful_n += 1
+                log(cfg, f"    [{i}/{len(targets)}] {rec.name} -> re-derived ({rec.recovery})")
+            else:
+                log(cfg, f"    [{i}/{len(targets)}] {rec.name} -> still quarantined")
+            prog.end(m)
+            if i % 20 == 0:
+                save_manifest(cfg, records)
+    finally:
+        prog.close()
     save_manifest(cfg, records)
     log(cfg, f"  pseudocode recovery: {fixed_n} re-derived "
              f"({faithful_n} as faithful pseudocode — review these), "
@@ -4907,8 +4994,15 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
         sources = [cfg.workdir / r.file for r in records.values()] + [cfg.globals_cpp]
         if stubs_cpp.exists():
             sources.append(stubs_cpp)
-        with ThreadPoolExecutor(max_workers=workers) as pool:
-            built = list(pool.map(_obj, sources))
+        prog = Progress(len(sources), 0, title=f"round {round_no}: compiling objects")
+        try:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                built = []
+                for b in pool.map(_obj, sources):
+                    built.append(b)
+                    prog.end(b[0].name)
+        finally:
+            prog.close()
         failed = [(src, e) for src, o, e in built if e]
 
         if failed:
@@ -4939,6 +5033,7 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
             continue
 
         objs = [str(o) for _, o, _ in built]
+        log(cfg, f"  link round {round_no}: linking {len(objs)} objects ...")
         cmd = [cfg.cxx, *lib_flags, *PIC_FLAGS, *cfg.extra_flags, *objs, "-o", str(out)]
         proc = subprocess.run(cmd, capture_output=True, text=True)
         if proc.returncode == 0:
@@ -5224,7 +5319,7 @@ def _gate_header(cfg: Config, records: dict[str, FuncRecord]) -> None:
 
 
 def _sweep_all(cfg: Config, records: dict[str, FuncRecord]) -> None:
-    log(cfg, f"Stage 2c: preflight diagnose (surface any systemic cause before "
+    log(cfg, f"  » preflight diagnose (surface any systemic cause before "
              f"spending model time on {len(records)} functions)")
     if preflight_diagnose(cfg, records):
         save_manifest(cfg, records)
@@ -5232,7 +5327,7 @@ def _sweep_all(cfg: Config, records: dict[str, FuncRecord]) -> None:
             log(cfg, "STOPPED: every sampled function fails for a shared reason "
                      "(see first_error.txt). Fix that first. (--force to continue anyway)")
             sys.exit(2)
-    log(cfg, "Stage 3: isolated compile sweep")
+    log(cfg, "  » isolated compile sweep")
     live = {m: r for m, r in records.items() if not r.quarantined}
     compile_sweep(cfg, live)
     save_manifest(cfg, records)
@@ -5296,7 +5391,7 @@ def build_split(cfg: Config, redo_split: bool) -> dict[str, FuncRecord]:
 
         if not state.get("header_ok") or not _compile_header_human(cfg, "shared.h")[0]:
             log(cfg, "  [redo] header check")
-            log(cfg, "Stage 2b: validate/repair shared headers")
+            log(cfg, "  » validate/repair shared headers")
             _gate_header(cfg, records)
         else:
             log(cfg, "  [ok]   header compiles")
@@ -5311,16 +5406,16 @@ def build_split(cfg: Config, redo_split: bool) -> dict[str, FuncRecord]:
         # ---------------- fresh split (first time, or --redo split/fix) -------
         # function files are overwritten in place; anything the earlier build had
         # was copied to a snapshot first (see run_pipeline)
-        log(cfg, "Stage 1: split (parsing the whole file with libclang — "
+        log(cfg, "  » split (parsing the whole file with libclang — "
                  "this can take a minute on a large monolith with no output; not stalled)")
         records = split_monolith(cfg)
         _set_aside_unused(cfg, records)
         save_state(cfg, input_sha=_input_sha(cfg), split_done=True,
                    header_ok=False, sweep_done=False)
-        log(cfg, "Stage 2: de-ghidra text pass")
+        log(cfg, "  » de-ghidra text pass")
         apply_deghidra_pass(cfg, records)
         save_manifest(cfg, records)
-        log(cfg, "Stage 2b: validate/repair shared headers (gate — a broken "
+        log(cfg, "  » validate/repair shared headers (gate — a broken "
                  "header fails every TU identically)")
         _gate_header(cfg, records)
         _sweep_all(cfg, records)
@@ -5346,20 +5441,18 @@ def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
                      f"the deterministic fixes can't handle.")
             sys.exit(2)
         log(cfg, "  --force: continuing without the model")
-    log(cfg, "Stage 4: dependency order + fixer loop")
+    log(cfg, "  » dependency order + fixer loop")
     order = build_dep_order(cfg, records)
     fixer_loop(cfg, records, order)
     save_manifest(cfg, records)
 
 
 def build_recover(cfg: Config, records: dict[str, FuncRecord]) -> None:
-    log(cfg, "Stage 4b: recover quarantined functions from Ghidra pseudocode")
     pseudocode_recovery(cfg, records)
     save_manifest(cfg, records)
 
 
 def build_link(cfg: Config, records: dict[str, FuncRecord]) -> bool:
-    log(cfg, "Stage 5: link pass")
     linked = link_pass(cfg, records)
     save_manifest(cfg, records)
     save_state(cfg, link_ok=linked)
@@ -5504,7 +5597,7 @@ def write_report(P: Paths) -> dict:
            row("Rewritten", f"{rw.get('done')}/{rw.get('functions')}" if rw else None),
            row("Waiting to be rewritten again", rw.get("stale")),
            row("Renamed from placeholders", rw.get("renamed")),
-           row("Skipped / too big / not started",
+           row("Skipped, tried again next run / too big / not started",
                f"{rw.get('skipped')} / {rw.get('too_big')} / {rw.get('not_started')}" if rw else None),
            row("Copied without the model (--tiny)", rw.get("tiny")),
            row("Done in pieces", rw.get("in_pieces")),
@@ -5634,7 +5727,9 @@ def run_pipeline(args) -> int:
         for stage in run_stages:
             if args.pause_between_stages and ran_something and stage in MODEL_STAGES:
                 _pause_for_model(P, client, stage)
-            plog(P, f"== {stage} ==")
+            n = STAGES.index(stage) + 1
+            BAR["stage"] = f"[{n}/{len(STAGES)} {stage}]"
+            plog(P, f"━━━━ Stage {n}/{len(STAGES)} · {stage} ━━━━ {STAGE_INFO[stage]}")
             t0 = time.time()
             mark_stage(P, stage, done=False, started=time.strftime("%Y-%m-%d %H:%M:%S"))
             info: dict = {}
