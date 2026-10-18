@@ -387,6 +387,22 @@ def calls_on_this_thread() -> int:
     return getattr(_TL, "calls", 0)
 
 
+def last_reply() -> dict:
+    """How this thread's last model reply ended (finish reason, thinking, size)."""
+    return getattr(_TL, "last", {}) or {}
+
+
+def why_no_code(reply: str) -> str:
+    info = last_reply()
+    thought = info.get("thought", 0)
+    if info.get("finish") == "length":
+        return ("cut off at the token limit while thinking" if thought > info.get("chars", 0)
+                else "cut off at the token limit")
+    if not (reply or "").strip():
+        return "only thinking, no answer" if thought else "empty reply"
+    return "no code block in the reply"
+
+
 class ModelClient:
     """Talks to LM Studio's local server (OpenAI-style) or Ollama. Requests are
     streamed, so a long answer never trips a timeout while it's still arriving."""
@@ -438,6 +454,20 @@ class ModelClient:
             return running + [t for t in tags if t not in running]
         except Exception:
             return None
+
+    def loaded_context(self, model: str) -> Optional[int]:
+        """The context length LM Studio loaded this model with, if it says."""
+        if self.kind != "lmstudio":
+            return None
+        try:
+            for m in self._get(self.base[:-len("v1/")] + "api/v0/models").get("data", []):
+                if m.get("id") == model:
+                    for k in ("loaded_context_length", "context_length"):
+                        if isinstance(m.get(k), int):
+                            return m[k]
+        except Exception:
+            pass
+        return None
 
     def resolve(self, wanted: Optional[str]) -> str:
         """The model to use: the one asked for if it's there, else the loaded one."""
@@ -491,7 +521,7 @@ class ModelClient:
                 url = self.base + "api/chat"
             req = urllib.request.Request(url, data=json.dumps(body).encode(),
                                          headers={"Content-Type": "application/json"})
-            text, first_word, thought = _read_stream(req, self.kind, timeout)
+            text, first_word, thought, finish = _read_stream(req, self.kind, timeout)
         except urllib.error.HTTPError as e:
             detail = e.read().decode(errors="replace")[:300]
             if fatal:
@@ -509,7 +539,16 @@ class ModelClient:
         MODEL_ACTIVITY["answered"] += 1
         if tuner:
             tuner.record(sent, sum(len(m["content"]) for m in messages), first_word, len(text))
-        out = re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
+        out = re.sub(r"<think>.*?</think>", "", text, flags=re.S)
+        inline = len(text) - len(out)
+        if "<think>" in out:                  # thinking that never finished (cut off)
+            i = out.index("<think>")
+            inline += len(out) - i
+            out = out[:i]
+        out = out.strip()
+        thought += inline
+        _TL.last = {"finish": finish, "thought": thought, "chars": len(out),
+                    "max_out": max_out, "raw": text}
         if not out and thought:
             MODEL_ACTIVITY["thinking_only"] += 1
             if MODEL_ACTIVITY["thinking_only"] in (1, 10, 100):
@@ -531,9 +570,10 @@ class ModelClient:
 
 def _read_stream(req, kind, timeout=1800):
     """Reads a streamed reply. Returns (text, seconds until the first word, characters
-    of separate thinking). Thinking (LM Studio's reasoning_content) is not part of
-    the reply, but it shows the model is working."""
-    t0, first, parts, thought = time.time(), None, [], 0
+    of separate thinking, why it ended: "stop" / "length" / ...). Thinking (LM
+    Studio's reasoning_content) is not part of the reply, but it shows the model
+    is working."""
+    t0, first, parts, thought, finish = time.time(), None, [], 0, None
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         for raw in resp:
             line = raw.decode(errors="replace").strip()
@@ -547,6 +587,7 @@ def _read_stream(req, kind, timeout=1800):
                     break
                 j = json.loads(data)
                 ch = (j.get("choices") or [{}])[0]
+                finish = ch.get("finish_reason") or finish
                 d = ch.get("delta") or ch.get("message") or {}
                 piece = d.get("content") or ""
                 think = d.get("reasoning_content") or d.get("reasoning") or ""
@@ -561,6 +602,7 @@ def _read_stream(req, kind, timeout=1800):
                 piece = (j.get("message") or {}).get("content") or ""
                 think = (j.get("message") or {}).get("thinking") or ""
                 thought += len(think)
+                finish = j.get("done_reason") or finish
             MODEL_ACTIVITY["last"] = time.time()
             if piece:
                 if first is None:
@@ -568,7 +610,7 @@ def _read_stream(req, kind, timeout=1800):
                 parts.append(piece)
             if kind == "ollama" and j.get("done"):
                 break
-    return "".join(parts), (first if first is not None else time.time() - t0), thought
+    return "".join(parts), (first if first is not None else time.time() - t0), thought, finish
 
 
 CLIENT: dict = {"c": None}
@@ -1812,6 +1854,14 @@ def keep_one_function(code, wanted):
 def parse_reply(reply):
     blocks = re.findall(r"```[\w+\-]*[ \t]*\n(.*?)```", reply, flags=re.S)
     code = max(blocks, key=len).strip() if blocks else None
+    if code is None:
+        # the closing ``` is missing (often a reply that ran out of room right at the
+        # end): keep the code if the function in it is complete
+        m = re.search(r"```[\w+\-]*[ \t]*\n(.*)$", reply, flags=re.S)
+        if m:
+            tail = re.split(r"^\s*NAME:", m.group(1), flags=re.M)[0].strip()
+            if "{" in tail and tail.rstrip().endswith("}") and brace_balance(tail) == 0:
+                code = tail
     m = re.search(r"^\s*NAME:\s*`?([A-Za-z_][\w:~]*)`?\s*$", reply, flags=re.M)
     return code, (m.group(1) if m else None)
 
@@ -2484,6 +2534,15 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     plog(P, f"  checking that '{model}' really answers ...")
     took = client.ping(model)
     plog(P, f"  {client.name} model '{model}' answered a test request in {took:.1f}s")
+    loaded = client.loaded_context(model)
+    if loaded and loaded < args.ctx:
+        plog(P, f"  !! LM Studio loaded '{model}' with {loaded} tokens of context, but --ctx "
+                f"is {args.ctx}: bigger functions will be cut off. Load it with at least "
+                f"{args.ctx}, or run with --ctx {loaded}.")
+    elif loaded:
+        plog(P, f"  LM Studio context: {loaded} tokens (--ctx {args.ctx})"
+                + (f"; with --parallel {args.parallel}, check LM Studio isn't splitting it "
+                   f"between requests (`lms ps`)" if args.parallel > 1 else ""))
     plog(P, f"  rewriting with {client.name} model '{model}'"
             + (f", compile check with {COMPILER['cmd']}" if COMPILER["cmd"] else
                " (compile check off: the build stages compile against shared.h)"))
@@ -2597,6 +2656,33 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                                               {"role": "user", "content": msg}],
                           args.ctx, max_out)
         code, new_name = parse_reply(reply)
+        no_code_why = []
+        if code is None:
+            no_code_why.append(why_no_code(reply))
+            raws = [last_reply().get("raw", reply)]
+            if not args.no_retry:
+                # once more, with all the room left, and without thinking if thinking
+                # is what used it up (/no_think switches it off for Qwen3-style models)
+                thinking = "thinking" in no_code_why[-1] or last_reply().get("thought", 0) > 0
+                prog.set_phase(key, "no code in the reply — asking once more")
+                reply = ask_model(args.model_in_use, [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": msg + "\n\nReply with the code first: ONE "
+                     "```cpp code block with the whole function, then the NAME: line. Keep "
+                     "any explanation out." + (" /no_think" if thinking else "")}],
+                    args.ctx, max(max_out, room - 200))
+                code, new_name = parse_reply(reply)
+                if code is None:
+                    no_code_why.append(why_no_code(reply))
+                    raws.append(last_reply().get("raw", reply))
+            if code is None:
+                d = P.rewrite / "no_code"
+                d.mkdir(exist_ok=True)
+                (d / f"{key}.txt").write_text(
+                    f"{gname}: no usable code. Why: {'; then '.join(no_code_why)}\n"
+                    f"prompt ~{in_tokens} tokens, answer room {max_out} tokens (--ctx "
+                    f"{args.ctx})\n" + "".join(f"\n===== reply {i + 1} =====\n{r}\n"
+                                              for i, r in enumerate(raws)))
         ok = False
         if code:
             code, ok = keep_one_function(code, {new_name, gname})
@@ -2629,10 +2715,11 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                 if better or not code:
                     code, new_name, ok = code2, new_name2 or new_name, ok2
         if not code:
+            why = no_code_why[-1] if no_code_why else "no code block in the reply"
             return finish(key, {"ghidra": gname, "status": "skipped",
-                                "reason": "model returned no code"},
-                          f"  {gname}: the model didn't return code, skipped (tried again "
-                          f"next run)")
+                                "reason": f"model returned no code ({why})"},
+                          f"  {gname}: no code from the model — {why}; skipped, tried again "
+                          f"next run (reply saved in rewrite/no_code/{key}.txt)")
 
         # Compile it; if that fails, repair it incrementally (minimal edits to the
         # failing lines) rather than regenerating the whole function.

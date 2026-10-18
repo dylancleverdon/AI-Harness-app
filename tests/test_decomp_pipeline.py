@@ -112,6 +112,9 @@ class FakeModel:
         self.rewrite_override = {}
         self.no_code = set()          # Ghidra names the "model" returns no code for
         self.think_only = set()       # ... or only "thinks" about, with no reply
+        self.think_unless_told = set()  # ... thinks only, unless asked with /no_think
+        self.cut_fence = set()        # ... answers with the closing ``` missing
+        self.seen_no_think = 0
         fake = self
 
         class H(BaseHTTPRequestHandler):
@@ -163,6 +166,13 @@ class FakeModel:
                 return "Sorry, I can't help with that."
             if g in self.think_only:
                 return "<think-only>"
+            if g in self.think_unless_told:
+                if "/no_think" not in user:
+                    return "<think-only>"
+                self.seen_no_think += 1
+            if g in self.cut_fence:
+                code, name = REWRITES[g]
+                return f"```cpp\n{code}"
             code, name = self.rewrite_override.get(g) or REWRITES[g]
             return f"```cpp\n{code}\n```\nNAME: {name}"
         if system.startswith("In 1-2 sentences"):
@@ -490,12 +500,12 @@ def test_skipped_functions_are_marked_redo_and_tried_again(tmp_path, model):
     assert run(tmp_path, model, "--to", "rewrite") == 0
     prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())
     assert prog["functions"]["1050"]["status"] == "skipped"
-    assert prog["functions"]["1050"]["reason"] == "model returned no code"
+    assert prog["functions"]["1050"]["reason"].startswith("model returned no code")
 
     # next run: marked redo at start-up and tried again (still no code -> still listed)
     calls = model.calls["rewrite"]
     assert run(tmp_path, model, "--to", "rewrite") == 0
-    assert model.calls["rewrite"] == calls + 1
+    assert model.calls["rewrite"] == calls + 2         # the try and its automatic retry
     prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())
     assert prog["functions"]["1050"]["retries"] == 1
 
@@ -532,7 +542,7 @@ def test_model_activity_is_visible(tmp_path, model, capsys):
     assert "spent its whole answer thinking" in out           # thinking-only warning
     assert re.search(r"this run: \d+ function\(s\) done .* model answers", out)
     prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())
-    assert prog["functions"]["1050"]["reason"] == "model returned no code"
+    assert prog["functions"]["1050"]["reason"].startswith("model returned no code")
 
 
 # ---------------------------------------------------------------- the improve stage
@@ -664,3 +674,18 @@ def test_improve_and_organize(tmp_path, model):
     assert "appChecksum" in by_name(tmp_path)
     for k in list(EXTRA_REWRITES):
         REWRITES.pop(k, None)
+
+
+def test_no_code_is_explained_salvaged_and_retried(tmp_path, model):
+    write_export(tmp_path)
+    model.think_unless_told = {"FUN_00001000"}       # thinks until told /no_think
+    model.cut_fence = {"FUN_00001010"}               # complete code, closing ``` missing
+    model.no_code = {"FUN_00001020"}                 # never gives code
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())["functions"]
+    assert prog["1000"]["status"] == "done" and model.seen_no_think == 1
+    assert prog["1010"]["status"] == "done"
+    assert prog["1020"]["status"] == "skipped"
+    assert prog["1020"]["reason"] == "model returned no code (no code block in the reply)"
+    saved = (tmp_path / "rewrite" / "no_code" / "1020.txt").read_text()
+    assert "===== reply 2 =====" in saved and "Sorry" in saved
