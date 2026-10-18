@@ -44,6 +44,10 @@ The install is a git checkout, so updating is just a pull:
 
 Memory is classified green / yellow / orange / red from % available (defaults: yellow < 30%, orange < 15%, red < 8%) and macOS memory pressure. If the level stays at or above your trip level (default **orange**) for 2 consecutive seconds, running scripts get SIGTERM (SIGKILL after 4s), a macOS notification fires, and the run is marked `killed` with the memory numbers. Optionally it also unloads LM Studio models via the `lms` CLI. Try it with `memory_stress.py`.
 
+## Scripts run in a real terminal
+
+Scripts run inside a pseudo-terminal, so `sys.stdout.isatty()` is true and they behave exactly as they do in Terminal: live spinners and progress bars, `now: … 47s` timers, terminal-width-aware output. (Programs that don't see a terminal usually go quiet between results, which looks like a stall.) The live line is pinned above the input row while finished lines scroll above it. Colors are stripped. Output from a script's stdout and stderr is shown together, as in a terminal. Turn it off in Settings → Python if you ever need plain pipes.
+
 ## Typing into the console
 
 The input line under the console works in two modes:

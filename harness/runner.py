@@ -74,6 +74,7 @@ class Run:
         self.mem = []  # {t, rss_mb, avail_pct, level}
         self.peak_rss_mb = 0
         self.proc = None
+        self.master = None  # pseudo-terminal master fd, when the script runs in a terminal
         self.live = {}  # stream -> in-place line (progress bar) shown pinned at the bottom
         self.files = []
         self.watch = []
@@ -114,14 +115,18 @@ class RunManager:
     # ---- typing into a running program -------------------------------------
     def send_input(self, run_id, text, eof=False):
         run = self.runs.get(run_id)
-        if not run or run.status != "running" or not run.proc or not run.proc.stdin:
+        if not run or run.status != "running" or not run.proc or not (run.master is not None or run.proc.stdin):
             return False
         try:
             if text is not None and not eof:
-                run.proc.stdin.write((text + "\n").encode())
+                data = (text + "\n").encode()
+                os.write(run.master, data) if run.master is not None else run.proc.stdin.write(data)
                 run.add("in", text)
             if eof:
-                run.proc.stdin.close()
+                if run.master is not None:
+                    os.write(run.master, b"\x04")  # Ctrl-D at the start of a line = end of input
+                else:
+                    run.proc.stdin.close()
                 run.add("sys", "[stdin closed (Ctrl-D)]")
         except (BrokenPipeError, ValueError, OSError):
             return False
@@ -189,10 +194,43 @@ class RunManager:
     def _launch(self, run, cmd, cwd, env, watch, shown=None):
         run.watch = watch
         run.before = snapshot(run.watch)
+        master = slave = None
+        if settings.get("use_pty") and sys.platform != "win32":
+            # Give the program a real terminal: programs check isatty() to decide whether to draw live
+            # spinners/progress bars or go quiet, so without one a script behaves differently than in Terminal.
+            try:
+                import fcntl
+                import pty
+                import struct
+                import termios
+                master, slave = pty.openpty()
+                attrs = termios.tcgetattr(slave)
+                attrs[3] &= ~termios.ECHO  # the console echoes typed text itself
+                termios.tcsetattr(slave, termios.TCSANOW, attrs)
+                fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 50, 200, 0, 0))
+                env = {**env, "TERM": env.get("TERM") or "xterm-256color", "COLUMNS": "200", "LINES": "50",
+                       "NO_COLOR": "1"}
+            except Exception:
+                for fd in (master, slave):
+                    if fd is not None:
+                        os.close(fd)
+                master = slave = None
         try:
-            run.proc = subprocess.Popen(cmd, cwd=cwd, env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE, bufsize=0, start_new_session=True)
+            if master is not None:
+                run.proc = subprocess.Popen(cmd, cwd=cwd, env=env, stdin=slave, stdout=slave, stderr=slave,
+                                            close_fds=True, start_new_session=True)
+                os.close(slave)
+                run.master = master
+            else:
+                run.proc = subprocess.Popen(cmd, cwd=cwd, env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                            stderr=subprocess.PIPE, bufsize=0, start_new_session=True)
         except OSError as e:
+            for fd in (master, slave):
+                if fd is not None:
+                    try:
+                        os.close(fd)
+                    except OSError:
+                        pass
             run.add("sys", f"Could not start: {e}")
             run.status, run.ended = "failed", time.time()
             self._finalize(run)
@@ -201,7 +239,16 @@ class RunManager:
         self.runs[run.id] = run
         run.add("sys", f"$ {shown or ' '.join(cmd)}")
         run.pumps = []
-        for stream, pipe in (("out", run.proc.stdout), ("err", run.proc.stderr)):
+        class _FD:  # lets the pump read the pseudo-terminal like a pipe
+            def __init__(self, fd):
+                self.fd = fd
+
+            def fileno(self):
+                return self.fd
+
+        streams = ((("out", _FD(run.master)),) if run.master is not None
+                   else (("out", run.proc.stdout), ("err", run.proc.stderr)))
+        for stream, pipe in streams:
             t = threading.Thread(target=self._pump, args=(run, stream, pipe), daemon=True)
             t.start()
             run.pumps.append(t)
@@ -246,6 +293,11 @@ class RunManager:
         code = run.proc.wait()
         for t in getattr(run, "pumps", []):
             t.join(timeout=3)  # let output drain (a stray grandchild holding the pipe can't block us)
+        if run.master is not None:
+            try:
+                os.close(run.master)
+            except OSError:
+                pass
         run.exit_code, run.ended = code, time.time()
         if run.kill_reason:
             final = "killed" if run.kill_reason.startswith("memory guard") else "stopped"

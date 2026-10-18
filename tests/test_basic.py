@@ -339,3 +339,45 @@ def test_origin_alternative_and_static_not_cached():
         assert r.status_code == 403 and "Reload the page" in r.text
     assert bare.post("/api/terminal", json={"command": "cd ."}).status_code == 403  # no header, no origin
     assert bare.get("/static/app.js").headers["cache-control"] == "no-cache"
+
+
+def test_scripts_get_a_terminal_so_live_progress_works():
+    from harness import config
+    from harness.server import app, runs
+    c = TestClient(app, headers={"x-harness": "1"})
+    (SCRIPTS_DIR / "tty.py").write_text(
+        "import sys, threading, time, shutil\n"
+        "print('isatty', sys.stdout.isatty(), sys.stdin.isatty(), sys.stderr.isatty(), shutil.get_terminal_size().columns, flush=True)\n"
+        "live = sys.stdout.isatty()\n"
+        "stop = threading.Event()\n"
+        "def spin():\n"
+        "    i = 0\n"
+        "    while not stop.wait(0.1):\n"
+        "        i += 1; sys.stdout.write(f'\\r\\x1b[K spinner {i} | now: work'); sys.stdout.flush()\n"
+        "if live: threading.Thread(target=spin, daemon=True).start()\n"
+        "time.sleep(1.0)\n"
+        "stop.set(); print('\\r\\x1b[Kdone', flush=True)\n")
+    rid = c.post("/api/runs", json={"script": "tty.py"}).json()["id"]
+    seen = ""
+    for _ in range(30):  # while it runs, the pinned live line must be moving (a quiet script shows nothing)
+        run = runs.runs[rid]
+        seen = run.live.get("out") or seen
+        if "spinner" in seen:
+            break
+        time.sleep(0.05)
+    assert "spinner" in seen
+    d = _wait_done(c, rid)
+    assert d["status"] == "ok"
+    first = [l["x"] for l in d["lines"] if l["s"] != "sys"][0]
+    assert first == "isatty True True True 200"
+    texts = [l["x"] for l in d["lines"] if l["s"] != "sys"]
+    assert texts[-1] == "done" and not any("spinner" in t for t in texts)  # redraws never pile up as lines
+
+    # switching it off restores plain pipes: the script then sees no terminal (and stays quiet)
+    config.settings.update({"use_pty": False})
+    try:
+        rid = c.post("/api/runs", json={"script": "tty.py"}).json()["id"]
+        d = _wait_done(c, rid)
+        assert [l["x"] for l in d["lines"] if l["s"] != "sys"][0].startswith("isatty False False False")
+    finally:
+        config.settings.update({"use_pty": True})

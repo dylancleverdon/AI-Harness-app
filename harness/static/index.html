@@ -143,6 +143,7 @@
         </div>
         <div class="panel">
           <h3>Python</h3>
+          <label class="check"><input type="checkbox" data-setting="use_pty"> Run scripts in a terminal (recommended: progress bars, spinners and live timers work exactly like in Terminal)</label>
           <label>Interpreter for scripts (blank = AI Harness's own private environment, which already has <code>openai</code>) <input data-setting="python"></label>
           <p class="muted">Scripts are running with: <code id="s-python"></code><br>Install packages by hand with: <code id="s-pip"></code></p>
           <p class="muted">Scripts live in <code id="scripts-dir"></code>. They get <code>OPENAI_BASE_URL</code>, <code>OPENAI_API_KEY</code>, <code>LMSTUDIO_BASE_URL</code> and <code>AIHARNESS_MODEL</code> set automatically.</p>
