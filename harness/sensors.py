@@ -52,9 +52,20 @@ def parse_macmon(text):
         out["temp_c"] = round(temp["cpu_temp_avg"], 1)
     if isinstance(temp.get("gpu_temp_avg"), (int, float)):
         out["gpu_temp_c"] = round(temp["gpu_temp_avg"], 1)
-    gpu = j.get("gpu_usage")
-    if isinstance(gpu, (list, tuple)) and len(gpu) == 2 and isinstance(gpu[1], (int, float)):
-        out["gpu_pct"] = round(gpu[1] * 100)
+    # GPU load: current macmon reports *_ratio fields (0-1); older versions had gpu_usage: [freq_mhz, ratio]
+    ratio = next((j[k] for k in ("gpu_active_ratio", "gpu_scaled_ratio") if isinstance(j.get(k), (int, float))), None)
+    legacy = j.get("gpu_usage")
+    if ratio is None and isinstance(legacy, (list, tuple)) and len(legacy) == 2 and isinstance(legacy[1], (int, float)):
+        ratio = legacy[1]
+    if ratio is not None:
+        out["gpu_pct"] = round(ratio * 100)
+    if isinstance(j.get("gpu_freq_mhz"), (int, float)) and j["gpu_freq_mhz"] > 0:
+        out["gpu_mhz"] = round(j["gpu_freq_mhz"])
+    fans = [f for f in (j.get("fans") or []) if isinstance(f, dict) and isinstance(f.get("rpm"), (int, float))]
+    if fans:
+        out["fans"] = [{"name": str(f.get("name", "fan")), "rpm": round(f["rpm"]),
+                        "max_rpm": round(f["max_rpm"]) if isinstance(f.get("max_rpm"), (int, float)) else None}
+                       for f in fans]
     for key, field in (("all_power", "power_w"), ("sys_power", "sys_power_w")):
         if isinstance(j.get(key), (int, float)):
             out[field] = round(j[key], 1)
@@ -83,9 +94,12 @@ def read_once(state=None):
             ["osascript", "-l", "JavaScript", "-e",
              'ObjC.import("Foundation"); $.NSProcessInfo.processInfo.thermalState']))
         out["speed_limit"] = parse_pmset(_run(["pmset", "-g", "therm"]))
-        if "macmon" not in state:
+        # look for the helper tools at startup and, until one is found, every 20s, so installing one while
+        # the app is open is picked up without a restart
+        if "macmon" not in state or (not (state["macmon"] or state["osx"]) and time.time() - state["looked"] > 20):
             state["macmon"] = find_tool("macmon")
             state["osx"] = find_tool("osx-cpu-temp")
+            state["looked"] = time.time()
         got = {}
         if state["macmon"]:
             got = parse_macmon(_run([state["macmon"], "pipe", "-s", "1"], timeout=8))

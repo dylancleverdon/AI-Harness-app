@@ -106,7 +106,9 @@ function updateSystem(m, d) {
   $('#c-temp').textContent = m.temp_c ? m.temp_c + ' °C' : '–';
   $('#c-temp-sub').textContent = m.temp_c ? 'CPU average · via ' + m.temp_source + (m.gpu_temp_c ? ` · GPU ${m.gpu_temp_c} °C` : '') + (m.power_w ? ` · ${m.power_w} W` : '') : 'needs a free helper tool (see below)';
   $('#gpu-card').classList.toggle('hidden', m.gpu_pct === undefined);
-  if (m.gpu_pct !== undefined) { $('#c-gpu').textContent = m.gpu_pct + '%'; $('#c-gpu-sub').textContent = m.gpu_temp_c ? m.gpu_temp_c + ' °C' : ''; }
+  if (m.gpu_pct !== undefined) { $('#c-gpu').textContent = m.gpu_pct + '%'; $('#c-gpu-sub').textContent = [m.gpu_mhz ? m.gpu_mhz + ' MHz' : '', m.gpu_temp_c ? m.gpu_temp_c + ' °C' : ''].filter(Boolean).join(' · '); }
+  $('#fan-card').classList.toggle('hidden', !(m.fans && m.fans.length));
+  if (m.fans && m.fans.length) { $('#c-fan').textContent = m.fans.map(f => f.rpm).join(' / ') + ' rpm'; $('#c-fan-sub').textContent = m.fans.map(f => f.max_rpm ? Math.round(f.rpm / f.max_rpm * 100) + '% of max' : f.name).join(' · '); }
   const cores = $('#cores');
   if (cores.children.length !== m.cores.length) { cores.replaceChildren(...m.cores.map(() => el('div', {}, el('i')))); }
   m.cores.forEach((c, i) => { const b = cores.children[i]; $('i', b).style.height = c + '%'; b.classList.toggle('hot', c >= 90); b.title = `core ${i}: ${c}%`; });

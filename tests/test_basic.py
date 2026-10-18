@@ -389,8 +389,17 @@ def test_sensor_parsers():
         "nominal", "fair", "serious", "critical", "unknown", "unknown"]
     assert s.parse_pmset("CPU_Scheduler_Limit = 100\nCPU_Available_CPUs = 8\nCPU_Speed_Limit = 75\n") == 75
     assert s.parse_pmset("Note: No thermal warning level has been recorded\n") is None
-    got = s.parse_macmon('{"temp":{"cpu_temp_avg":51.26,"gpu_temp_avg":44.0},"gpu_usage":[444,0.37],"all_power":12.34}\n')
-    assert got == {"temp_c": 51.3, "gpu_temp_c": 44.0, "gpu_pct": 37, "power_w": 12.3}
+    modern = ('{"timestamp":"2026-10-18T10:00:00Z","temp":{"cpu_temp_avg":51.26,"gpu_temp_avg":44.0},'
+              '"fans":[{"name":"Fan 1","rpm":2310,"max_rpm":6000}],"cpu_active_ratio":0.4,'
+              '"gpu_freq_mhz":444.0,"gpu_scaled_ratio":0.2,"gpu_active_ratio":0.37,"all_power":12.34,"sys_power":20.1}\n')
+    assert s.parse_macmon(modern) == {
+        "temp_c": 51.3, "gpu_temp_c": 44.0, "gpu_pct": 37, "gpu_mhz": 444, "power_w": 12.3, "sys_power_w": 20.1,
+        "fans": [{"name": "Fan 1", "rpm": 2310, "max_rpm": 6000}]}
+    legacy = '{"temp":{"cpu_temp_avg":51.26,"gpu_temp_avg":44.0},"gpu_usage":[444,0.37],"all_power":12.34}\n'
+    assert s.parse_macmon(legacy)["gpu_pct"] == 37 and s.parse_macmon(legacy)["temp_c"] == 51.3
+    # sensors with no valid reading are null (and a VM reports zeros / no fans): never invent values
+    vm = '{"temp":{"cpu_temp_avg":null,"gpu_temp_avg":null},"fans":[],"gpu_freq_mhz":0,"gpu_active_ratio":0.0}'
+    assert s.parse_macmon(vm) == {"gpu_pct": 0}
     assert s.parse_macmon("not json") == {} and s.parse_macmon('{"temp":{}}') == {}
     assert s.parse_osx_cpu_temp("61.2°C") == {"temp_c": 61.2} and s.parse_osx_cpu_temp("0.0°C") == {}
     r = s.read_once({})  # never raises, whatever the platform
@@ -441,3 +450,19 @@ def test_thermal_guard_stops_runs_only_when_enabled():
         assert any("thermal guard" in h["title"].lower() for h in d["hints"])
     finally:
         config.settings.update({"thermal_guard": "off"})
+
+
+def test_helper_tool_installed_while_running_is_noticed(monkeypatch):
+    from harness import sensors as s
+    monkeypatch.setattr(s.sys, "platform", "darwin")
+    monkeypatch.setattr(s, "_run", lambda cmd, timeout=4: (
+        '{"temp":{"cpu_temp_avg":61.0}}' if cmd[:2] == ["/opt/homebrew/bin/macmon", "pipe"] else ""))
+    installed = {"macmon": None}
+    monkeypatch.setattr(s, "find_tool", lambda n: installed.get(n))
+    state = {}
+    assert s.read_once(state).get("temp_c") is None  # not installed yet
+    installed["macmon"] = "/opt/homebrew/bin/macmon"  # the user runs `brew install macmon`
+    assert s.read_once(state).get("temp_c") is None  # within 20s: still not rechecked
+    state["looked"] -= 21
+    out = s.read_once(state)
+    assert out["temp_c"] == 61.0 and out["temp_source"] == "macmon"
