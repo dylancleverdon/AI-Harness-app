@@ -735,3 +735,13 @@ def test_cut_off_pieces_are_split_further(tmp_path, model):
         assert "left as Ghidra" not in code and code.count("0x59") == 1
     finally:
         REWRITES.pop("FUN_00003000", None)
+
+
+def test_context_sizes_follow_ctx(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "export", "--ctx", "8192") == 0
+    log = (tmp_path / "pipeline.log").read_text()
+    assert f"recover stage up to {dp.recovery_chars(8192)}" in log
+    assert dp.recovery_chars(4096) < dp.recovery_chars(8192) < dp.recovery_chars(16384)
+    assert run(tmp_path, model, "--to", "export", "--model-ctx-chars", "5000") == 0
+    assert "recover stage up to 5000 (set by --model-ctx-chars)" in (tmp_path / "pipeline.log").read_text()

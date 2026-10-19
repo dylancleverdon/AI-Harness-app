@@ -2429,6 +2429,19 @@ def answer_room(ctx: int, prompt_chars: int) -> int:
     return max(300, int(ctx - prompt_chars / CHARS_PER_TOKEN - 200))
 
 
+def prompt_chars(ctx: int) -> int:
+    """How much text a prompt with a SHORT answer (a goal, a line number, names)
+    may carry."""
+    return max(4000, int((ctx - 1500) * CHARS_PER_TOKEN))
+
+
+def recovery_chars(ctx: int) -> int:
+    """The recover stage's budget (pseudocode + the original function): bigger
+    functions are patched a few lines at a time instead of rewritten whole. Same
+    rule as the pieces: the prompt and an answer of the same size must fit."""
+    return 2 * piece_chars(ctx, 2500)
+
+
 def piece_chars(ctx: int, overhead_chars: int) -> int:
     """How big a piece may be so its prompt and its answer (about 1.5x the piece,
     plus room to think) both fit in the context. The same rule for every split;
@@ -6585,7 +6598,8 @@ class ImproveCtx:
         if g or not self.model:
             return g
         _, body = tu_split(text)
-        g = self.ask(FIX_GOAL_SYS, f"Function {rec.name}:\n```cpp\n{body[:6000]}\n```", 160) or ""
+        cap = min(6000, prompt_chars(self.cfg.ctx) - 500)
+        g = self.ask(FIX_GOAL_SYS, f"Function {rec.name}:\n```cpp\n{body[:cap]}\n```", 160) or ""
         g = " ".join(g.split())[:400]
         if g:
             write_note(self.cfg, rec.file, goal=g)
@@ -6633,7 +6647,12 @@ class ImproveCtx:
 
     def locate(self, rec, text: str, issue: str, context: str = "") -> Optional[int]:
         lines = text.split("\n")
-        shown = numbered(lines, 0, min(len(lines), 400))
+        # as much of the function as fits the context (it reads, it doesn't write)
+        budget, hi = prompt_chars(self.cfg.ctx) - len(issue) - len(context) - 300, 0
+        while hi < len(lines) and budget - len(lines[hi]) - 9 > 0:
+            budget -= len(lines[hi]) + 9
+            hi += 1
+        shown = numbered(lines, 0, max(1, hi))
         reply = self.ask(LOCATE_SYS, f"Problem: {issue}\n{context}\n\nFunction:\n{shown}", 80)
         m = re.search(r"\d+", reply or "")
         if m and 2 <= int(m.group()) <= len(lines):
@@ -8807,7 +8826,8 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
         callgraph_path=args.callgraph or (P.callgraph if P.callgraph.exists() else None),
         force=args.force, stub_all=args.stub_all, export_path=P.export,
         index_path=P.index, no_pseudo=args.no_pseudo,
-        retry_quarantined=args.retry_quarantined, model_ctx_chars=args.model_ctx_chars,
+        retry_quarantined=args.retry_quarantined,
+        model_ctx_chars=args.model_ctx_chars or recovery_chars(args.ctx),
         workers=args.workers, model_timeout_s=1800, ctx=args.ctx)
     cfg.client = client
     cfg.wanted_model = None                   # always the model loaded in LM Studio
@@ -8857,6 +8877,9 @@ def run_pipeline(args) -> int:
             f"{run_stages[0]} → {run_stages[-1]}"
             + (f" (redo: {', '.join(sorted(redo))})" if redo else ""))
     cfg = make_build_config(P, args, client, cxx or "clang++")
+    plog(P, f"  --ctx {args.ctx}: pieces up to {piece_chars(args.ctx, 3000)} characters, recover "
+            f"stage up to {cfg.model_ctx_chars}"
+            + (" (set by --model-ctx-chars)" if args.model_ctx_chars else ""))
     records = None
     ran_something = False
     try:
@@ -9072,9 +9095,10 @@ def build_parser() -> argparse.ArgumentParser:
                    help="skip rebuilding quarantined functions from pseudocode")
     g.add_argument("--retry-quarantined", action="store_true",
                    help="retry recovery on functions already tried (same as --redo recover)")
-    g.add_argument("--model-ctx-chars", type=int, default=24000,
-                   help="prompt budget; bigger functions are recovered by error-window "
-                        "patching instead of a full rewrite")
+    g.add_argument("--model-ctx-chars", type=int, default=None,
+                   help="recover stage's prompt budget in characters; bigger functions are "
+                        "patched a few lines at a time instead of rewritten (default: worked "
+                        "out from --ctx)")
     g.add_argument("--resume", action="store_true", help=argparse.SUPPRESS)  # always on now
 
     g = ap.add_argument_group("improve / organize")
