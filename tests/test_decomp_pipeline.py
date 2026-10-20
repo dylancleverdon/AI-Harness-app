@@ -850,7 +850,8 @@ def test_stop_button_prints_errors_and_stops_cleanly(tmp_path, model):
     out, _ = proc.communicate(timeout=30)
     assert time.time() - t0 < 4, "must finish before the app's 4-second kill"
     text = log.read_text()
-    assert "errors so far" in text and "Paused." in text
+    assert "what the script struggled with" in text and "Paused." in text
+    assert "what the script struggled with" in out          # printed, not just logged
     # nothing was quarantined just because the compilers were killed
     for r in manifest(tmp_path).values():
         if r["quarantined"]:
@@ -885,3 +886,42 @@ def test_rejected_prompt_teaches_the_size_estimate(tmp_path, model):
     learned = json.loads((tmp_path / "pipeline_state.json").read_text())["chars_per_token"]
     assert learned["value"] < 3.2 and learned["ctx"] == 16384
     assert dp.CHARS_PER_TOKEN == learned["value"]
+
+
+def test_copied_example_names_are_renamed_everywhere(tmp_path, model):
+    # an older run let the model name a function after the prompt's example
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "split") == 0
+    prog = tmp_path / "rewrite" / "progress.json"
+    data = json.loads(prog.read_text())
+    data["functions"]["1000"]["name"] = "applyLowpassFilter839"
+    prog.write_text(json.dumps(data))
+    for f in [*(tmp_path / "rewrite" / ".rewritten").glob("*.cpp"),
+              *(tmp_path / "build" / "funcs").glob("*.cpp")]:
+        f.write_text(f.read_text().replace("addNumbers", "applyLowpassFilter839"))
+    assert run(tmp_path, model, "--to", "split") == 0
+    assert "applyLowpassFilter839" not in (tmp_path / "rewrite" / "rewritten.cpp").read_text()
+    for f in (tmp_path / "build" / "funcs").glob("*.cpp"):
+        assert "applyLowpassFilter839" not in f.read_text()
+    e = json.loads(prog.read_text())["functions"]["1000"]
+    assert e["name"] == "FUN_00001000" and e["renamed_from"] == "applyLowpassFilter839"
+    assert len(manifest(tmp_path)) == 7
+    assert any((tmp_path / "snapshots").glob("*rename-copied-names*"))
+
+
+def test_console_shows_only_what_needs_attention(tmp_path, model, capsys):
+    model.no_code = {"FUN_00001040"}
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "fix") == 0
+    out = capsys.readouterr().out
+    log = (tmp_path / "pipeline.log").read_text() + (tmp_path / "build" / "worklist.log").read_text()
+    assert "fixer loop over" in log and "fixer loop over" not in out   # detail: file only
+    assert "━━━━ Stage 4/8" in out and "fixer loop done" in out         # headers and results
+    assert "couldn't handle:" in out and "no usable rewrite" in out
+    assert "run(s)]" not in out
+    # the same problem next run is flagged as repeating
+    assert run(tmp_path, model, "--to", "fix") == 0
+    assert "[also in the last 1 run(s)]" in capsys.readouterr().out
+    # --verbose prints everything again
+    assert run(tmp_path, model, "--to", "fix", "--verbose", "--redo", "fix") == 0
+    assert "fixer loop over" in capsys.readouterr().out

@@ -206,10 +206,41 @@ def phase(text: str) -> None:
                     v[1] = text
 
 
-def plog(P: Paths, msg: str) -> None:
-    """A pipeline-level line: printed and appended to pipeline.log."""
+# The console shows what needs attention: stage headers, one result line per
+# stage, warnings (!!) and, at the end, what the script struggled with. Every
+# other line only goes to pipeline.log / build/worklist.log (--verbose shows all).
+SHOW_ALL = {"on": False}
+_SHOWN_START = ("━━━━", "STOPPED", "SUMMARY", "Paused", "Report:", "=====")
+
+
+def _shown(msg: str, show: bool) -> bool:
+    m = msg.lstrip()
+    return show or SHOW_ALL["on"] or m.startswith(_SHOWN_START) or m.startswith("!!")
+
+
+# What the script couldn't handle (or had to work around) this run, for the
+# report at the end: (area, kind) -> count, examples, hint
+STRUGGLES: dict = {}
+_STRUGGLE_LOCK = threading.Lock()
+
+
+def struggle(area: str, kind: str, example=None, n: int = 1, hint: str = "",
+             handled: bool = False) -> None:
+    """Note something the script struggled with. handled=True: it was worked around
+    (it cost time, but nothing was lost)."""
+    with _STRUGGLE_LOCK:
+        e = STRUGGLES.setdefault((area, kind), {"n": 0, "ex": [], "hint": hint,
+                                                "handled": handled})
+        e["n"] += n
+        if example and len(e["ex"]) < 3 and str(example) not in e["ex"]:
+            e["ex"].append(str(example))
+
+
+def plog(P: Paths, msg: str, show: bool = False) -> None:
+    """A pipeline-level line: appended to pipeline.log, printed if it matters."""
     line = f"[{time.strftime('%H:%M:%S')}] {msg}"
-    say(line)
+    if _shown(msg, show):
+        say(line)
     try:
         with open(P.log, "a") as f:
             f.write(line + "\n")
@@ -270,7 +301,7 @@ def snapshot(P: Paths, reason: str, items: list[Path]) -> Optional[Path]:
             shutil.copytree(p, target)
         else:
             shutil.copy2(p, target)
-    plog(P, f"  snapshot of the current files before '{reason}': {dest}")
+    plog(P, show=True, msg=f"  snapshot of the current files before '{reason}': {dest}")
     return dest
 
 
@@ -594,7 +625,13 @@ class ModelClient:
                         "max_out": max_out, "raw": ""}
             if TOO_LONG.search(detail):
                 learn_from_rejection(sum(len(m["content"]) for m in messages))
-            if MODEL_ACTIVITY.setdefault("errors", 0) < 3 or "context" in detail.lower():
+                struggle("model", f"{self.name} turned down prompts too long for its context "
+                         f"(split and retried automatically)", handled=True,
+                         hint="if this is frequent, LM Studio gives each request less context "
+                              "than --ctx (parallel slots share it): lower --ctx to match")
+            else:
+                struggle("model", f"{self.name} turned a request down: {detail[:120]}")
+            if MODEL_ACTIVITY.setdefault("errors", 0) < 3:
                 say(f"  !! {self.name} turned a request down: {detail}")
             MODEL_ACTIVITY["errors"] += 1
             return "" if fatal else None
@@ -622,6 +659,8 @@ class ModelClient:
                     "max_out": max_out, "raw": text}
         if not out and thought:
             MODEL_ACTIVITY["thinking_only"] += 1
+            struggle("model", "answers that were only thinking, no reply",
+                     hint="turn thinking off for this model in LM Studio")
             if MODEL_ACTIVITY["thinking_only"] in (1, 10, 100):
                 say(f"  !! the model spent its whole answer thinking ({thought} characters) "
                     f"and wrote no reply. Turn thinking off for this model in LM Studio, "
@@ -2590,7 +2629,7 @@ def run_export(P: Paths, args, redo: set) -> dict:
     except Exception as e:
         plog(P, f"  (could not write callgraph.json: {e})")
     info = export_info(P)
-    plog(P, f"  export: {info.get('with_pseudocode', 0)}/{info.get('functions', 0)} functions "
+    plog(P, show=True, msg=f"  export: {info.get('with_pseudocode', 0)}/{info.get('functions', 0)} functions "
             f"have pseudocode"
             + (f", {info['datatypes']} data types, {info['signatures']} signatures"
                if info.get("datatypes") or info.get("signatures") else ""))
@@ -2633,6 +2672,43 @@ def _pseudo_sha(code: Optional[str]) -> str:
     return hashlib.sha1((code or "").encode()).hexdigest()[:16]
 
 
+def rename_copied_names(P: Paths, progress) -> int:
+    """Functions an older run named after an example the model copied (like
+    applyLowpassFilter839) go back to Ghidra's name everywhere: their drafts, the
+    build and its headers. The improve stage then names them properly. Before
+    this, the copies also collided with each other in the build."""
+    fns = progress.get("functions", {})
+    ren = {e["name"]: e["ghidra"] for e in fns.values()
+           if e.get("name") and e.get("ghidra") and e["name"] != e["ghidra"]
+           and BAD_NAME.match(e["name"])}
+    if not ren:
+        return 0
+    files = [*P.rewritten_dir.glob("*.cpp"), *(P.build / "funcs").glob("*.cpp"),
+             P.build / "shared.h", P.build / "globals.cpp"]
+    files = [f for f in files if f.exists()]
+    snapshot(P, "rename-copied-names", [P.rewritten_dir, P.build / "funcs",
+                                        P.build / "shared.h", P.build / "globals.cpp"])
+    rx = re.compile(r"\b(" + "|".join(re.escape(k) for k in
+                                       sorted(ren, key=len, reverse=True)) + r")\b")
+    for f in files:
+        try:
+            t = f.read_text()
+        except (OSError, UnicodeDecodeError):
+            continue
+        new = rx.sub(lambda m: ren[m.group(1)], t)
+        if new != t:
+            write_atomic(f, new)
+    for e in fns.values():
+        if e.get("name") in ren:
+            e["renamed_from"] = e["name"]
+            e["name"] = e["ghidra"]
+    save_progress(P, progress)
+    plog(P, show=True, msg=f"  renamed {len(ren)} function(s) an earlier run named after a "
+                           f"copied example (e.g. {', '.join(list(ren)[:3])}) back to "
+                           f"Ghidra's name; the improve stage gives them real names")
+    return len(ren)
+
+
 def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     """Rewrite every function that isn't done yet. Returns a summary; summary["stop"]
     is True when the run should stop here (--max reached, or nothing to build)."""
@@ -2646,6 +2722,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     sel_keys = {f"{a:x}" for _, a in selected}
 
     progress = load_progress(P)
+    rename_copied_names(P, progress)
     done = progress.setdefault("functions", {})
     # every function stays in the output, in program order, whatever is selected
     order = [f"{a:x}" for _, a in funcs]
@@ -2679,12 +2756,12 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
             if e.get("stale") in ("rewrite", "suspect", True):
                 e.pop("stale")
                 n += 1
-        plog(P, f"  --cancel-redo: {n} function(s) are no longer marked to be rewritten again "
+        plog(P, show=True, msg=f"  --cancel-redo: {n} function(s) are no longer marked to be rewritten again "
                 f"(they keep their current version)")
         asked = {"rewrite": False, "suspect": False}
     unfinished = sum(1 for k in sel_keys if (done.get(k) or {}).get("stale") in ("rewrite", True))
     if asked["rewrite"] and unfinished:
-        plog(P, f"  --redo rewrite: carrying on with the {unfinished} function(s) the last one "
+        plog(P, show=True, msg=f"  --redo rewrite: carrying on with the {unfinished} function(s) the last one "
                 f"didn't get to")
     elif asked["rewrite"]:
         snapshot(P, "redo-rewrite", [P.progress, P.rewritten, P.rewritten_dir, P.names,
@@ -2697,7 +2774,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                 marked += 1
             elif e:
                 e["status"] = "todo"
-        plog(P, f"  --redo rewrite: {marked} function(s) will be rewritten again; each "
+        plog(P, show=True, msg=f"  --redo rewrite: {marked} function(s) will be rewritten again; each "
                 f"replaces its old version as it finishes")
 
     # pseudocode that changed since a function was rewritten (e.g. --redo export
@@ -2741,11 +2818,11 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                 n_sus += 1
         if n_sus:
             snapshot(P, "redo-suspect", [P.progress, P.rewritten, P.rewritten_dir])
-        plog(P, f"  {n_sus} function(s) flagged for a second look will be rewritten again "
+        plog(P, show=True, msg=f"  {n_sus} function(s) flagged for a second look will be rewritten again "
                 f"(their current version stays until then)")
     elif args.redo_suspect:
         left = sum(1 for e in done.values() if e.get("stale") == "suspect")
-        plog(P, f"  --redo-suspect: carrying on with the {left} flagged function(s) not "
+        plog(P, show=True, msg=f"  --redo-suspect: carrying on with the {left} flagged function(s) not "
                 f"rewritten again yet")
     save_progress(P, progress)
 
@@ -2768,12 +2845,12 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     waiting = sum(1 for n, a in selected if done.get(f"{a:x}", {}).get("status") == "done"
                   and done[f"{a:x}"].get("stale") and not redo_now(done[f"{a:x}"]))
     if waiting:
-        plog(P, f"  {waiting} function(s) are still marked to be rewritten again from an "
+        plog(P, show=True, msg=f"  {waiting} function(s) are still marked to be rewritten again from an "
                 f"earlier --redo-suspect / --redo rewrite; they keep their current version. "
                 f"Turn that option on again to carry on, or use --cancel-redo to drop the marks.")
     have = len(selected) - len(new_todo)
     if len(todo) < len(selected):
-        plog(P, f"  {have} already have a rewrite, {len(new_todo)} to go"
+        plog(P, show=True, msg=f"  {have} already have a rewrite, {len(new_todo)} to go"
                 + (f", {len(again)} being rewritten again (each keeps its current version "
                    f"until the new one replaces it)" if again else ""))
     if not todo:
@@ -2784,7 +2861,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     args.model_in_use = model
     plog(P, f"  checking that '{model}' really answers ...")
     took = client.ping(model)
-    plog(P, f"  {client.name} model '{model}' answered a test request in {took:.1f}s")
+    plog(P, show=True, msg=f"  {client.name} model '{model}' answered a test request in {took:.1f}s")
     loaded = client.loaded_context(model)
     if loaded and loaded < args.ctx:
         plog(P, f"  !! LM Studio loaded '{model}' with {loaded} tokens of context, but --ctx "
@@ -2794,7 +2871,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         plog(P, f"  LM Studio context: {loaded} tokens (--ctx {args.ctx})"
                 + (f"; with --parallel {args.parallel}, check LM Studio isn't splitting it "
                    f"between requests (`lms ps`)" if args.parallel > 1 else ""))
-    plog(P, f"  rewriting with {client.name} model '{model}'"
+    plog(P, show=True, msg=f"  rewriting with {client.name} model '{model}'"
             + (f", compile check with {COMPILER['cmd']}" if COMPILER["cmd"] else
                " (compile check off: the build stages compile against shared.h)"))
     print("Working through functions in program order. Press Ctrl+C to pause; run the "
@@ -3057,8 +3134,12 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
             prev_name = done.get(key, {}).get("name")
             if not PLACEHOLDER.match(gname):
                 name = gname                              # Ghidra already had a real name
-            elif prev_name and prev_name != gname:
+            elif prev_name and prev_name != gname and not BAD_NAME.match(prev_name):
                 name = prev_name      # rewritten again: keep the name its callers use
+            elif new_name and BAD_NAME.match(new_name):
+                struggle("rewrite", "the model gave a copied or meaningless name (refused; "
+                         "named later in improve)", new_name)
+                name = gname
             elif new_name and new_name != gname and not PLACEHOLDER.match(new_name) \
                     and not BAD_NAME.match(new_name):
                 name = unique_name(new_name, taken - {done.get(key, {}).get("name")})
@@ -3220,8 +3301,12 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
             prev_name = done.get(key, {}).get("name")
             if not placeholder:
                 name = gname
-            elif prev_name and prev_name != gname:
+            elif prev_name and prev_name != gname and not BAD_NAME.match(prev_name):
                 name = prev_name      # rewritten again: keep the name its callers use
+            elif new_name and BAD_NAME.match(new_name):
+                struggle("rewrite", "the model gave a copied or meaningless name (refused; "
+                         "named later in improve)", new_name)
+                name = gname
             elif new_name and not PLACEHOLDER.match(new_name) and not BAD_NAME.match(new_name):
                 name = unique_name(new_name, taken - {done.get(key, {}).get("name")})
                 taken.add(name)
@@ -3259,6 +3344,12 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         if cut_whole:
             state_["cut"].append(cut_whole)      # the whole function was cut off first
         if state_["cut"]:
+            struggle("rewrite", "answers cut off at the token limit (split into pieces)",
+                     name, handled=True,
+                     hint="raise --ctx (and LM Studio's context) if there are many")
+            if state_["stuck"]:
+                struggle("rewrite", "pieces still cut off at the smallest size", name,
+                         hint="the function needs a larger --ctx")
             # what happened, so the next run starts below the smallest size that was
             # cut off instead of trying a size that already failed
             entry["cut_off_sizes"] = sorted(set(state_["cut"]), reverse=True)
@@ -3357,7 +3448,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         prog.close()
         save_now()
         try:
-            error_summary(P)
+            struggle_report(P)
         except Exception:
             pass
         with state:
@@ -3379,11 +3470,11 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     except Exception:
         pass
     mins = (time.time() - t_start) / 60
-    plog(P, f"  this run: {counts['done']} function(s) done in {fmt_duration(mins * 60)}, "
+    plog(P, show=True, msg=f"  this run: {counts['done']} function(s) done in {fmt_duration(mins * 60)}, "
             f"{MODEL_ACTIVITY['answered'] - answered0} model answers"
             + (": " + ", ".join(f"{n} {k}" for k, n in how.items()) if how else ""))
     if reached_max:
-        plog(P, f"  reached --max {args.max}; stopping here. Run the same command to continue.")
+        plog(P, show=True, msg=f"  reached --max {args.max}; stopping here. Run the same command to continue.")
     return _rewrite_summary(progress, order, stop=reached_max, model=model)
 
 
@@ -3484,9 +3575,11 @@ class Config:
 # Logging
 # ----------------------------------------------------------------------------
 
-def log(cfg: Config, msg: str) -> None:
+def log(cfg: Config, msg: str, show: bool = False) -> None:
+    """A build line: appended to build/worklist.log, printed if it matters."""
     line = f"[{time.strftime('%H:%M:%S')}] {msg}"
-    say(line)
+    if _shown(msg, show):
+        say(line)
     with open(cfg.log_path, "a") as f:
         f.write(line + "\n")
         f.flush()
@@ -4338,6 +4431,7 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
         last_end = e
 
     if overlaps:
+        struggle("split", "overlapping functions dropped", n=overlaps)
         log(cfg, f"  reconciliation: {overlaps} overlapping span(s) dropped to manual bucket")
 
     # ---- Emit per-function TUs ----
@@ -4408,6 +4502,9 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
             ghidra_addr=addr, src_sha=hashlib.sha1(raw[pos:end]).hexdigest()[:16])
         have.add(addr)
     if carved:
+        for why, n in carved.items():
+            struggle("split", f"functions libclang didn't list ({why}), cut out by marker",
+                     n=n, handled=True)
         log(cfg, f"  {sum(carved.values())} function(s) libclang didn't list were cut out "
                  f"by their marker instead (" + ", ".join(
                      f"{n} {k}" for k, n in sorted(carved.items(), key=lambda t: -t[1]))
@@ -4439,6 +4536,7 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
         first_lost = after[0] if after else None
         text = raw.decode("utf-8", "replace")
         line_no = text.count("\n", 0, first_lost) + 1 if first_lost is not None else 0
+        struggle("split", "functions missing from the build (libclang lost them)", n=len(markers) - len(records), hint="send me split_report.txt")
         log(cfg, f"  !! the split found {len(records)} functions, but the rewrite has "
                  f"{len(markers)}. " + (
                      f"libclang loses track of the file around line {line_no} of "
@@ -4460,13 +4558,14 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
     (cfg.workdir / "split_report.txt").write_text("\n".join(rep) + "\n")
 
     n_types = sum(1 for u in types)
-    log(cfg, f"  split -> {len(records)} function TUs, {n_types} types "
+    log(cfg, show=True, msg=f"  split -> {len(records)} function TUs, {n_types} types "
              f"(+{len(fwd)} forward decls), {len(protos)} prototypes, {len(globs)} globals")
     if stats.unresolved_fields or stats.skipped:
         sk = ", ".join(f"{n} {k}s" for k, n in sorted(stats.skipped.items())) or "nothing"
         log(cfg, f"  {stats.unresolved_fields} struct field(s) with unknown types left as "
                  f"comments; skipped {sk} — details in split_report.txt")
     if renames:
+        struggle("split", "functions sharing a name with another (renamed __dupN)", n=len(renames), handled=True, hint="the model gave different functions the same name")
         log(cfg, f"  renamed {len(renames)} duplicate function definition(s) to unique "
                  f"names (e.g. theFunctionName__dup1) — listed in split_report.txt")
     if namespaces:
@@ -4734,6 +4833,7 @@ def _repair_header(cfg: Config, header_rel: str, max_iter: int = 60) -> bool:
         if ok:
             if report:
                 report_path.write_text("\n".join(report) + "\n")
+                struggle("split", f"declarations in {hname} that didn't compile (switched off)", n=disabled_units, hint=f"list in {report_path.name}; functions using them fail in fix")
                 log(cfg, f"  {hname}: repaired — disabled {disabled_units} "
                          f"declaration(s), dropped {dropped_fields} struct field(s) "
                          f"(list in {report_path.name})")
@@ -4798,15 +4898,15 @@ def _repair_header(cfg: Config, header_rel: str, max_iter: int = 60) -> bool:
     if report:
         report_path.write_text("\n".join(report) + "\n")
     (cfg.workdir / "header_errors.txt").write_text(last_err)
-    log(cfg, f"  header {hname}: could not be made to compile.")
+    log(cfg, show=True, msg=f"  header {hname}: could not be made to compile.")
     shown = 0
     for ln in last_err.splitlines():
         if "error" in ln:
-            log(cfg, f"    | {ln[:200]}")
+            log(cfg, show=True, msg=f"    | {ln[:200]}")
             shown += 1
             if shown >= 8:
                 break
-    log(cfg, f"  (full compiler output saved to header_errors.txt)")
+    log(cfg, show=True, msg=f"  (full compiler output saved to header_errors.txt)")
     return False
 
 
@@ -4816,10 +4916,10 @@ def validate_headers(cfg: Config) -> bool:
     ok_intr, err = _compile_header_human(cfg, "ghidra_intrins.h")
     if not ok_intr:
         (cfg.workdir / "header_errors.txt").write_text(err)
-        log(cfg, "  ghidra_intrins.h itself does not compile — this is the script's "
+        log(cfg, show=True, msg="  ghidra_intrins.h itself does not compile — this is the script's "
                  "own header, so it's a toolchain/flag problem. First lines:")
         for ln in err.strip().splitlines()[:6]:
-            log(cfg, f"    | {ln[:200]}")
+            log(cfg, show=True, msg=f"    | {ln[:200]}")
         return False
     if not repair_header(cfg, "shared.h"):
         return False
@@ -4866,16 +4966,16 @@ def preflight_diagnose(cfg: Config, records: dict[str, FuncRecord]) -> bool:
     if n_fail == len(sample) and first_fail_err:
         rec, err = first_fail_err
         (cfg.workdir / "first_error.txt").write_text(err)
-        log(cfg, "  " + "!"*58)
-        log(cfg, f"  SYSTEMIC FAILURE: all {len(sample)} sampled TUs fail.")
-        log(cfg, "  This is a shared cause (header / include / flag), NOT per-function.")
-        log(cfg, "  The fixer loop canNOT fix this by rewriting bodies. Real error below:")
-        log(cfg, "  " + "-"*58)
+        log(cfg, show=True, msg="  " + "!"*58)
+        log(cfg, show=True, msg=f"  SYSTEMIC FAILURE: all {len(sample)} sampled TUs fail.")
+        log(cfg, show=True, msg="  This is a shared cause (header / include / flag), NOT per-function.")
+        log(cfg, show=True, msg="  The fixer loop canNOT fix this by rewriting bodies. Real error below:")
+        log(cfg, show=True, msg="  " + "-"*58)
         for ln in err.strip().splitlines()[:18]:
-            log(cfg, "  | " + ln[:200])
-        log(cfg, "  " + "-"*58)
-        log(cfg, f"  (full text saved to {cfg.workdir/'first_error.txt'})")
-        log(cfg, "  " + "!"*58)
+            log(cfg, show=True, msg="  | " + ln[:200])
+        log(cfg, show=True, msg="  " + "-"*58)
+        log(cfg, show=True, msg=f"  (full text saved to {cfg.workdir/'first_error.txt'})")
+        log(cfg, show=True, msg="  " + "!"*58)
         return True
     elif n_fail:
         log(cfg, f"  preflight: {n_fail}/{len(sample)} sampled TUs fail — looks "
@@ -4907,7 +5007,7 @@ def compile_sweep(cfg: Config, records: dict[str, FuncRecord]) -> None:
                 prog.end(rec.mangled)
     finally:
         prog.close()
-    log(cfg, f"  isolated compile: {ok_n}/{len(records)} TUs pass, "
+    log(cfg, show=True, msg=f"  isolated compile: {ok_n}/{len(records)} TUs pass, "
              f"{len(records)-ok_n} need repair ({time.time() - t0:.0f}s)")
 
 
@@ -5307,6 +5407,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
         #    body — otherwise we rewrite a fine function that can never pass.
         if header_implicated(err) and header_fix_tries < 2:
             header_fix_tries += 1
+            struggle("fix", "functions failing because of shared.h, not their own code", rec.name)
             log(cfg, f"      {rec.name}: failure originates in a shared header — "
                      f"repairing header, not the function")
             phase("repairing shared.h")
@@ -5379,12 +5480,20 @@ def error_kinds(cfg: Config, records: dict) -> list[tuple[int, str, list[str]]]:
     return sorted(((len(v), k, v[:3]) for k, v in kinds.items()), reverse=True)
 
 
-def error_summary(P: "Paths", records: Optional[dict] = None, cfg: Optional[Config] = None,
-                  limit=15) -> None:
-    """Every kind of error so far, grouped, into the log: printed when the run is
-    stopped and when it finishes. Fast (no compiling), so it fits in the few seconds
-    the Stop button allows."""
-    out = ["", "━━━━ errors so far ━━━━"]
+REPORTED = {"done": False}       # the struggle report is printed once per run
+
+
+def struggle_report(P: "Paths", records: Optional[dict] = None, cfg: Optional[Config] = None,
+                    limit=12) -> None:
+    """What the script couldn't handle, then what it had to work around, at the end
+    of the log: printed when the run finishes or is stopped. Errors the script fixed
+    on its own are left out. Each kind says whether it also came up in the last runs
+    (those are the ones worth changing the script for). Fast (no compiling), so it
+    fits in the few seconds the Stop button allows."""
+    if REPORTED["done"]:
+        return
+    REPORTED["done"] = True
+    stuck: list[tuple[str, int, str, list, str]] = []    # (area, n, kind, examples, hint)
     try:
         fns = load_progress(P).get("functions", {})
     except Exception:
@@ -5394,11 +5503,9 @@ def error_summary(P: "Paths", records: Optional[dict] = None, cfg: Optional[Conf
         if e.get("status") in ("skipped", "redo", "too big") or e.get("redo_failed"):
             why = e.get("reason") or e.get("retry_reason") or e.get("redo_failed") or e["status"]
             rw.setdefault(why, []).append(e.get("name") or e.get("ghidra", "?"))
-    if rw:
-        out.append(f"rewrite — {sum(map(len, rw.values()))} function(s) without a usable "
-                   f"rewrite (tried again next run):")
-        for why, names in sorted(rw.items(), key=lambda kv: -len(kv[1]))[:limit]:
-            out.append(f"  {len(names):6d} × {why}   e.g. {', '.join(names[:3])}")
+    for why, names in rw.items():
+        stuck.append(("rewrite", len(names), f"no usable rewrite: {why}", names[:3],
+                      "tried again next run"))
     if records is None and P.manifest.exists():
         try:
             cfg = cfg or Config(input_file=P.rewritten, workdir=P.build)
@@ -5407,25 +5514,60 @@ def error_summary(P: "Paths", records: Optional[dict] = None, cfg: Optional[Conf
             records = None
     if records:
         cfg = cfg or Config(input_file=P.rewritten, workdir=P.build)
-        kinds = error_kinds(cfg, records)
+        for n, k, ex in error_kinds(cfg, records):
+            stuck.append(("fix", n, f"quarantined: {k}", list(ex), ""))
         failing = [r for r in records.values() if not r.compiles and not r.quarantined]
-        if kinds:
-            out.append(f"build — {sum(n for n, _, _ in kinds)} function(s) quarantined, by "
-                       f"first compile error:")
-            out += [f"  {n:6d} × {k}   e.g. {', '.join(ex)}" for n, k, ex in kinds[:limit]]
-            if len(kinds) > limit:
-                out.append(f"  ... and {len(kinds) - limit} more kinds (build/fix_report.txt)")
         if failing:
-            out.append(f"build — {len(failing)} function(s) not compiling yet (not tried, or "
-                       f"stopped before they were)")
-    if MODEL_ACTIVITY.get("errors"):
-        out.append(f"model — LM Studio turned down {MODEL_ACTIVITY['errors']} request(s) this run")
-    if MODEL_ACTIVITY.get("thinking_only"):
-        out.append(f"model — {MODEL_ACTIVITY['thinking_only']} answer(s) were only thinking")
-    if len(out) == 2:
-        out.append("  none")
+            stuck.append(("fix", len(failing), "not compiling yet (not reached before the "
+                          "run ended)", [r.name for r in failing[:3]], ""))
+    handled = []
+    with _STRUGGLE_LOCK:
+        events = list(STRUGGLES.items())
+    for (area, kind), e in events:
+        (handled if e["handled"] else stuck).append((area, e["n"], kind, e["ex"], e["hint"]))
+
+    # how often each kind came up in earlier runs
+    st = load_pstate(P)
+    history = st.get("struggles", [])
+    def key(area, kind):
+        return re.sub(r"\d+", "N", f"{area}|{kind}")[:200]
+    def repeats(area, kind):
+        k, n = key(area, kind), 0
+        for run in reversed(history):
+            if k not in run.get("keys", {}):
+                break
+            n += 1
+        return f"   [also in the last {n} run(s)]" if n else ""
+
+    out = ["", "━━━━ what the script struggled with this run ━━━━",
+           "(errors it fixed on its own are left out; [also in the last N runs] marks the "
+           "ones worth changing the script for)"]
+    def lines(items):
+        res = []
+        for area, n, kind, ex, hint in sorted(items, key=lambda t: (t[0], -t[1]))[:limit * 4]:
+            res.append(f"  {area:8} {n:6d} × {kind}"
+                       + (f"   e.g. {', '.join(map(str, ex))}" if ex else "")
+                       + repeats(area, kind))
+            if hint:
+                res.append(f"  {'':8} {'':6}   → {hint}")
+        return res
+    if stuck:
+        out.append("couldn't handle:")
+        out += lines(stuck)
+    if handled:
+        out.append("worked around (cost time, nothing lost):")
+        out += lines(handled)
+    if not stuck and not handled:
+        out.append("  nothing — everything this run was handled")
     for line in out:
-        plog(P, line)
+        plog(P, line, show=True)
+    history.append({"at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "keys": {key(a, k): n for a, n, k, _, _ in stuck + handled}})
+    st["struggles"] = history[-5:]
+    try:
+        write_atomic(P.state, json.dumps(st, indent=2))
+    except OSError:
+        pass
 
 
 def write_fix_report(cfg: Config, records: dict) -> None:
@@ -5474,12 +5616,15 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
     finally:
         prog.close()
     save_cache(cfg, cache)
+    if MODEL_STATS["no_answer"]:
+        struggle("fix", "small edits the model couldn't give a usable answer for",
+                 n=MODEL_STATS["no_answer"], handled=True)
     if MODEL_STATS["calls"]:
         log(cfg, f"  model: {MODEL_STATS['calls']} small edit(s) asked for, "
                  f"{MODEL_STATS['no_answer']} without a usable edit")
     done = sum(1 for r in records.values() if r.compiles)
     q = sum(1 for r in records.values() if r.quarantined)
-    log(cfg, f"  fixer loop done: {done} compiling, {q} quarantined")
+    log(cfg, show=True, msg=f"  fixer loop done: {done} compiling, {q} quarantined")
     write_fix_report(cfg, records)
 
 
@@ -5849,7 +5994,7 @@ def pseudocode_recovery(cfg: Config, records: dict[str, FuncRecord]) -> None:
         prog.close()
     fixed_n, faithful_n = counts["fixed"], counts["faithful"]
     save_manifest(cfg, records)
-    log(cfg, f"  pseudocode recovery: {fixed_n} re-derived "
+    log(cfg, show=True, msg=f"  pseudocode recovery: {fixed_n} re-derived "
              f"({faithful_n} as faithful pseudocode — review these), "
              f"{len(targets) - fixed_n} still quarantined. Took {time.time()-t0:.0f}s")
     rederived = [r.name for r in records.values() if r.rederived]
@@ -5942,6 +6087,7 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
                     rel = src.name
                     if not repair_header(cfg, rel):
                         (cfg.workdir / "link_errors.txt").write_text(e)
+                        struggle("link", "files that compiled alone but not in the link build", rel)
                         log(cfg, f"  {rel} can't be repaired — see link_errors.txt")
                         return False
                     if src == stubs_cpp:   # forget stubs that were switched off
@@ -5968,10 +6114,11 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
         proc = subprocess.run(cmd, capture_output=True, text=True)
         if proc.returncode == 0:
             if stubs:
+                struggle("link", "functions replaced by placeholders to link", n=len(stubs), handled=True)
                 log(cfg, f"  {len(stubs)} placeholder definition(s) in stubs.cpp "
                          f"(listed in link_report.txt)")
             (cfg.workdir / "link_report.txt").write_text("\n".join(report) + "\n")
-            log(cfg, f"  LINK OK (round {round_no}) -> {out}")
+            log(cfg, show=True, msg=f"  LINK OK (round {round_no}) -> {out}")
             return True
 
         err = proc.stderr
@@ -6034,20 +6181,23 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
         report += [f"  {x}" for x in external]
         (cfg.workdir / "link_report.txt").write_text("\n".join(report) + "\n")
         if external:
-            log(cfg, f"  link: {len(external)} undefined symbol(s) come from outside this "
+            struggle("link", "undefined symbols from outside the code (frameworks/libraries)", external[0], n=len(external), hint="add them with --flag")
+            log(cfg, show=True, msg=f"  link: {len(external)} undefined symbol(s) come from outside this "
                      f"code (system frameworks / libraries), e.g. {', '.join(external[:4])}")
             if sys.platform == "darwin":
-                log(cfg, "  -> add the frameworks with --flag=-framework --flag=<Name>, or "
+                log(cfg, show=True, msg="  -> add the frameworks with --flag=-framework --flag=<Name>, or "
                          "let the dylib resolve them at load time with "
                          "--flag=-Wl,-undefined,dynamic_lookup")
             else:
-                log(cfg, "  -> add the libraries with --flag=-l<name>")
-            log(cfg, "     (or --stub-all-missing to stub anything that has a prototype)")
+                log(cfg, show=True, msg="  -> add the libraries with --flag=-l<name>")
+            log(cfg, show=True, msg="     (or --stub-all-missing to stub anything that has a prototype)")
         else:
-            log(cfg, "  link errors not handled automatically — see link_errors.txt")
+            struggle("link", "link errors the script can't handle", hint="see build/link_errors.txt")
+            log(cfg, show=True, msg="  link errors not handled automatically — see link_errors.txt")
         return False
     (cfg.workdir / "link_errors.txt").write_text(err)
-    log(cfg, "  link pass hit round cap — see link_errors.txt")
+    struggle("link", "link didn't finish within its rounds", hint="see build/link_errors.txt")
+    log(cfg, show=True, msg="  link pass hit round cap — see link_errors.txt")
     return False
 
 
@@ -8447,6 +8597,7 @@ def run_improve(P: "Paths", cfg: "Config", records: dict, args) -> dict:
             try:
                 fn(ctx, round_log)
             except Exception as e:
+                struggle("improve", f"the {name} pass crashed: {type(e).__name__}: {str(e)[:80]}", hint="a script bug: send me the log")
                 log(cfg, f"    ({name} pass failed: {type(e).__name__}: {e})")
             ctx.state.save()
         funcs = ctx.compiling()
@@ -8527,6 +8678,7 @@ def run_improve(P: "Paths", cfg: "Config", records: dict, args) -> dict:
                     if link_pass(cfg, records):
                         ok = True
                         break
+                struggle("improve", "changes undone because the program stopped linking", handled=True)
                 log(cfg, f"    link: undid the change(s) that stopped the program linking")
             link_ok_before = link_ok_before or ok
             save_state(cfg, link_ok=ok)
@@ -8560,7 +8712,7 @@ def run_improve(P: "Paths", cfg: "Config", records: dict, args) -> dict:
             for c, d in sorted(ctx.stats.items())]
     rep += ["", "still open:"] + [f"  {c}: {n}" for c, n in open_by.items()]
     (cfg.workdir / "improve_report.txt").write_text("\n".join(rep) + "\n")
-    log(cfg, f"  improve: score {first_score} -> {final_score}, {kept_total} change(s) kept "
+    log(cfg, show=True, msg=f"  improve: score {first_score} -> {final_score}, {kept_total} change(s) kept "
              f"(details in build/improve_report.txt, notes in build/improve/notes/)")
     return summary
 
@@ -8860,13 +9012,14 @@ def run_organize(P: "Paths", cfg: "Config", records: dict, args) -> dict:
             shutil.rmtree(tmp)                    # our own half-written output
         _write_final(ctx, tmp, funcs, texts, modules, mod_names, methods)
         built, linked, err = _build_final(cfg, tmp)
-        log(cfg, f"  final code {attempt}: {'compiles' if built else 'does not compile'}"
+        log(cfg, show=True, msg=f"  final code {attempt}: {'compiles' if built else 'does not compile'}"
                  + (f", {'links' if linked else 'does not link'}" if built else f" ({err})"))
         if built and (linked or not link_ok_before):
             result.update(classes=len(methods), built=True, linked=linked)
             break
     if not result["built"]:
-        log(cfg, f"  the final code doesn't build, so final/ was NOT updated — what was "
+        struggle("organize", "the final code doesn't build, so final/ wasn't written")
+        log(cfg, show=True, msg=f"  the final code doesn't build, so final/ was NOT updated — what was "
                  f"written is in {tmp} for a look")
         result["written"] = False
         return result
@@ -8884,7 +9037,8 @@ def run_organize(P: "Paths", cfg: "Config", records: dict, args) -> dict:
                        "Possible identifying text in the final code:\n" + "\n".join(hits) + "\n"))
     result["privacy_hits"] = len(hits)
     if hits and not args.allow_privacy_findings:
-        log(cfg, f"  privacy check: {len(hits)} possible identifying item(s) — final/ NOT "
+        struggle("organize", "possible identifying items left (final/ not written)", n=len(hits), hint="see the privacy report; add names to privacy_blocklist.txt")
+        log(cfg, show=True, msg=f"  privacy check: {len(hits)} possible identifying item(s) — final/ NOT "
                  f"updated (see privacy_report.txt; run improve again, add words to "
                  f"privacy_blocklist.txt, or --allow-privacy-findings)")
         result["written"] = False
@@ -8897,7 +9051,7 @@ def run_organize(P: "Paths", cfg: "Config", records: dict, args) -> dict:
         log(cfg, f"  previous final/ moved to {dest}")
     shutil.move(str(tmp), str(final))
     result["written"] = True
-    log(cfg, f"  final code written to {final}: {len(modules)} module(s), "
+    log(cfg, show=True, msg=f"  final code written to {final}: {len(modules)} module(s), "
              f"{result['classes']} class(es)")
     return result
 
@@ -8993,14 +9147,14 @@ def build_split(cfg: Config, redo_split: bool) -> dict[str, FuncRecord]:
     done = sum(1 for r in records.values() if r.compiles)
     quar = sum(1 for r in records.values() if r.quarantined)
     todo = sum(1 for r in records.values() if not r.compiles and not r.quarantined)
-    log(cfg, f"  status: {done} compile, {todo} still to fix, {quar} quarantined")
+    log(cfg, show=True, msg=f"  status: {done} compile, {todo} still to fix, {quar} quarantined")
     return records
 
 
 def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
     n_failing = sum(1 for r in records.values() if not r.compiles and not r.quarantined)
     if not n_failing:
-        log(cfg, "  nothing to fix")
+        log(cfg, show=True, msg="  nothing to fix")
         return
     if not model_check(cfg):
         save_manifest(cfg, records)
@@ -9083,7 +9237,7 @@ def adopt_rewrite(P: Paths, old: Path) -> None:
     if not (P.progress.exists() or P.export.exists()):
         sys.exit(f"--adopt-rewrite: {old} has no progress.json or ghidra_export.json — is "
                  f"it a pseudo_to_cpp.py output folder?")
-    plog(P, f"adopted {old}: {counts['copied']} file(s) copied, {counts['kept']} already "
+    plog(P, show=True, msg=f"adopted {old}: {counts['copied']} file(s) copied, {counts['kept']} already "
             f"here and left alone")
 
 
@@ -9099,7 +9253,7 @@ def adopt_build(P: Paths, old: Path) -> None:
         _copy_missing(p, P.build / p.name, counts)
     if (old / "pipeline_state.json").exists():
         _copy_missing(old / "pipeline_state.json", P.build / "build_state.json", counts)
-    plog(P, f"adopted {old}: {counts['copied']} file(s) copied, {counts['kept']} already "
+    plog(P, show=True, msg=f"adopted {old}: {counts['copied']} file(s) copied, {counts['kept']} already "
             f"here and left alone")
 
 
@@ -9232,7 +9386,7 @@ def write_report(P: Paths) -> dict:
 
 def _pause_for_model(P: Paths, client: ModelClient, stage: str) -> None:
     current = client.models()
-    plog(P, f"  next: '{stage}' uses the model. Loaded in {client.name} now: "
+    plog(P, show=True, msg=f"  next: '{stage}' uses the model. Loaded in {client.name} now: "
             f"{', '.join(current[:3]) if current else 'nothing / not reachable'}")
     print(f"Load the model you want for '{stage}' in {client.name}, then press Enter "
           f"(Ctrl+C to stop here; the same command resumes).", flush=True)
@@ -9327,7 +9481,7 @@ def run_pipeline(args) -> int:
         COMPILER["cmd"] = None
 
     run_stages = STAGES[STAGES.index(first):STAGES.index(last) + 1]
-    plog(P, f"decomp_pipeline {PIPELINE_VERSION}: {P.root} — stages "
+    plog(P, show=True, msg=f"decomp_pipeline {PIPELINE_VERSION}: {P.root} — stages "
             f"{run_stages[0]} → {run_stages[-1]}"
             + (f" (redo: {', '.join(sorted(redo))})" if redo else ""))
     cfg = make_build_config(P, args, client, cxx or "clang++")
@@ -9364,7 +9518,7 @@ def run_pipeline(args) -> int:
                     mark_stage(P, stage, done=False, **info)
                     break
                 if not s["done"]:
-                    plog(P, "  nothing has been rewritten yet, so there's nothing to build")
+                    plog(P, show=True, msg="  nothing has been rewritten yet, so there's nothing to build")
                     mark_stage(P, stage, done=False, **info)
                     break
             elif stage == "split":
@@ -9405,7 +9559,7 @@ def run_pipeline(args) -> int:
             ran_something = True
             if client.calls > calls0:
                 share = use.share()
-                plog(P, f"  {stage}: {client.calls - calls0} model request(s); the model was "
+                plog(P, show=True, msg=f"  {stage}: {client.calls - calls0} model request(s); the model was "
                         f"busy {share * 100:.0f}% of the stage's {fmt_duration(time.time() - t0)}"
                         if share is not None else "")
                 info["model_busy"] = round(share * 100) if share is not None else None
@@ -9417,7 +9571,7 @@ def run_pipeline(args) -> int:
         if records is not None:
             save_manifest(cfg, records)
         try:
-            error_summary(P, records, cfg)
+            struggle_report(P, records, cfg)
         except Exception:
             pass
         plog(P, "Paused. Run the same command to carry on from here.")
@@ -9432,7 +9586,6 @@ def run_pipeline(args) -> int:
         write_report(P)
         raise
     data = write_report(P)
-    error_summary(P, records, cfg)
     bd, lk = data.get("build") or {}, data.get("link") or {}
     plog(P, "=" * 60)
     if bd:
@@ -9440,6 +9593,7 @@ def run_pipeline(args) -> int:
                 f"{bd['quarantined']} quarantined, {bd['rederived']} re-derived, "
                 f"link={'OK' if lk.get('ok') else 'INCOMPLETE' if lk else 'not run'}")
     plog(P, f"Report: {P.report_md}")
+    struggle_report(P, records, cfg)
     return 0
 
 
@@ -9469,6 +9623,9 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--cancel-redo", action="store_true",
                    help="drop the 'rewrite again' marks left by an unfinished --redo-suspect "
                         "or --redo rewrite (functions keep their current version)")
+    g.add_argument("--verbose", action="store_true",
+                   help="print every line, not just what needs attention (everything always "
+                        "goes to pipeline.log and build/worklist.log)")
     g.add_argument("--no-snapshot", action="store_true",
                    help="don't copy current files to snapshots/ before a redo replaces them")
     g.add_argument("--pause-between-stages", action="store_true",
@@ -9599,6 +9756,9 @@ def main(argv=None) -> int:
     GATE["gate"] = GATE["tuner"] = None
     MODEL_STATS.update(calls=0, no_answer=0, rejected=0)
     MODEL_ACTIVITY.update(errors=0, thinking_only=0)
+    STRUGGLES.clear()
+    SHOW_ALL["on"] = bool(getattr(args, "verbose", False))
+    REPORTED["done"] = False
     _PSEUDO_CACHE.clear()
 
     if args.emit_ghidra_script is not None:
