@@ -1449,7 +1449,8 @@ def run_headless_export(P: Paths, args, refresh=False):
 # Names a model writes when it hasn't really chosen one
 BAD_NAME = re.compile(r"(?i)^(the|some|my|a|new)?_?(function|func|method)(_?name)?\d*$|"
                       r"^(the|some|my)[A-Z_]\w*$|^placeholder\w*$|^fun_?[0-9a-f]+$|"
-                      r"^unknown\w*$|^name\d*$")
+                      r"^unknown\w*$|^name\d*$|"
+                      r"^applyLowpassFilter\w*$|^yourName\w*$|^theName\w*$")   # copied examples
 PLACEHOLDER = re.compile(r"^(?:thunk_)?(?:FUN|SUB|LAB)_[0-9a-fA-F]+$")
 CHARS_PER_TOKEN = 3.2      # rough size of a "token" (what the model's limit is counted in)
 GHIDRA_HELPERS = re.compile(r"^(CONCAT\d+|SUB\d+|ZEXT\d+|SEXT\d+|CARRY\d*|SCARRY\d*|SBORROW\d*|"
@@ -1496,8 +1497,9 @@ You get ONE function. Rewrite it as the C++ a person would plausibly have writte
   other functions it calls.
 - Never add printing, logging, messages or text strings that aren't in the pseudocode.
 {comments}
-Reply with ONE ```cpp code block, then one final line with the name you chose, e.g.:
-NAME: applyLowpassFilter"""
+- Do not use #if, #ifdef, #define, #pragma or platform headers (windows.h and the like).
+Reply with ONE ```cpp code block, then one final line: NAME: followed by the name you
+chose for this function (a name that describes what THIS function does)."""
 
 NO_COMMENTS = "- Do not write any comments in the code."
 WITH_COMMENTS = "- Add short comments where the purpose of a step isn't obvious."
@@ -2205,6 +2207,43 @@ def mark_function(code, ghidra_name, addr_hex):
     return "\n\n".join(items)
 
 
+STD_HEADERS = set("""cstdint cstddef cstdlib cstring cstdio cmath climits cfloat cctype
+cwchar cassert cerrno ctime cstdarg csetjmp csignal clocale string vector map set list
+deque array memory functional algorithm utility iostream ostream istream sstream fstream
+iomanip stdexcept exception new typeinfo locale mutex atomic thread chrono tuple
+unordered_map unordered_set queue stack bitset limits numeric iterator type_traits
+initializer_list optional variant cinttypes stdint.h stddef.h stdlib.h string.h stdio.h
+math.h limits.h float.h ctype.h wchar.h assert.h errno.h time.h stdarg.h stdbool.h
+pthread.h""".split())
+PREPROC = re.compile(r"^\s*#\s*(if|ifdef|ifndef|elif|else|endif|define|undef|pragma|error|"
+                     r"warning|line|import)\b")
+
+
+def clean_for_monolith(code: str) -> str:
+    """A function's rewrite as it goes into rewritten.cpp. Everything goes into ONE
+    file, so one function's #ifdef _WIN32 without its #endif, or an extra '}',
+    would hide every function after it from the split. Preprocessor lines and
+    includes other than the standard library's are dropped; extra closing braces
+    at the end are removed."""
+    out = []
+    for line in code.split("\n"):
+        if PREPROC.match(line):
+            continue
+        m = re.match(r'\s*#\s*include\s*[<"]([^>"]+)[>"]', line)
+        if m and m.group(1) not in STD_HEADERS:
+            continue
+        out.append(line)
+    code = "\n".join(out)
+    while brace_balance(code) < 0:
+        i = code.rstrip().rfind("}")
+        if i < 0:
+            break
+        code = code[:i] + code[i + 1:]
+    if brace_balance(code) > 0:
+        code = code.rstrip() + "\n" + "}" * brace_balance(code)
+    return code
+
+
 def write_outputs(P: Paths, progress, order, keep_comments):
     """rewritten.cpp from every finished function (including ones waiting to be
     rewritten again: their current version stays until the new one replaces it)."""
@@ -2219,6 +2258,7 @@ def write_outputs(P: Paths, progress, order, keep_comments):
                 code = f.read_text()
                 code, _ = keep_one_function(code if keep_comments else strip_comments(code),
                                             {e.get("name"), e.get("ghidra")})
+                code = clean_for_monolith(code)
                 # apply names FIRST, then add the marker, so the marker's literal
                 # Ghidra name/address are never rewritten by apply_names
                 code = mark_function(apply_names(code, names), e["ghidra"], key)
@@ -3855,7 +3895,16 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
         neutralized.append(inc)
         return m.group(1) + b"//nclude" + m.group(0)[len(m.group(1)) + len(b"#include"):]
 
+    def _fix_sys_inc(m: re.Match) -> bytes:
+        # <windows.h> and other non-standard system headers (not on this machine)
+        inc = m.group(2).decode("utf-8", "replace")
+        if inc in STD_HEADERS:
+            return m.group(0)
+        neutralized.append(inc)
+        return m.group(1) + b"//nclude" + m.group(0)[len(m.group(1)) + len(b"#include"):]
+
     parse_raw = re.sub(rb'(?m)^([ \t]*)#include[ \t]*"([^"\n]+)"', _fix_inc, raw)
+    parse_raw = re.sub(rb'(?m)^([ \t]*)#include[ \t]*<([^>\n]+)>', _fix_sys_inc, parse_raw)
     assert len(parse_raw) == len(raw)
     if neutralized:
         log(cfg, f"  ignored {len(neutralized)} #include line(s) for files that don't "
@@ -4167,12 +4216,30 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
                 glob_lines.append(text)
     cfg.globals_cpp.write_text("\n".join(glob_lines) + "\n")
 
+    # ---- did we find every function? (each one in the rewrite has a //@ghidra marker)
+    lost_note = []
+    if len(markers) > 20 and len(records) < 0.9 * len(markers):
+        last = max((e for _, e, _, _ in clean_spans), default=0)
+        after = [p for p in marker_offs if p > last]
+        first_lost = after[0] if after else None
+        text = raw.decode("utf-8", "replace")
+        line_no = text.count("\n", 0, first_lost) + 1 if first_lost is not None else 0
+        log(cfg, f"  !! the split found {len(records)} functions, but the rewrite has "
+                 f"{len(markers)}. libclang loses track of the file around line {line_no} "
+                 f"of {cfg.input_file.name}: everything after that is missing from the build. "
+                 f"The code just before it is in split_report.txt.")
+        if first_lost is not None:
+            start = text.rfind("\n", 0, max(0, text.rfind("//@ghidra", 0, first_lost) - 1))
+            lost_note = ["", f"== where the split lost track (line {line_no}) — the code before it:",
+                         text[max(0, start - 3000):first_lost]]
+
     # ---- report ----
     rep = [f"unresolved struct fields (unknown type, left as comments): {stats.unresolved_fields}"]
     for kind, n in sorted(stats.skipped.items()):
         rep.append(f"skipped {kind}s: {n}")
     rep.append("")
     rep += stats.notes
+    rep += lost_note
     (cfg.workdir / "split_report.txt").write_text("\n".join(rep) + "\n")
 
     n_types = sum(1 for u in types)

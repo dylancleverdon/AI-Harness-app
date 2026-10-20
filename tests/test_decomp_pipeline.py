@@ -788,3 +788,18 @@ def test_prompt_too_long_for_lm_studio_is_split_not_fatal(tmp_path, model):
         assert prog[k]["status"] == "done" and prog[k]["pieces"] >= 1, k
         assert prog[k]["cut_off_sizes"]
     assert prog["1000"]["status"] == "done"
+
+
+def test_platform_code_in_one_function_doesnt_hide_the_rest(tmp_path, model):
+    # one rewrite with a Windows header and an #ifdef that's never closed: before,
+    # the split lost every function after it
+    model.rewrite_override["FUN_00001010"] = (
+        "#include <windows.h>\n#ifdef _WIN32\nint addNumbers(int a, int b);\n\n"
+        "int sumThree(int a, int b, int c) {\n    return addNumbers(addNumbers(a, b), c);\n}",
+        "applyLowpassFilter")                       # and the copied example name
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "split") == 0
+    cpp = (tmp_path / "rewrite" / "rewritten.cpp").read_text()
+    assert "windows.h" not in cpp and "#ifdef" not in cpp
+    assert len(manifest(tmp_path)) == 7                 # every function made it
+    assert "applyLowpassFilter" not in by_name(tmp_path)  # the copied name was refused
