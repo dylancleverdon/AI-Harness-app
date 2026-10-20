@@ -94,6 +94,8 @@ EDITS = {
     "clampHelper(x)": "    return x < 0 ? 0 : x;",
     "v + v + 1": "    return v + v;",
     "addNumbers(x, 1, 2)": "    return addNumbers(addNumbers(x, 1), 2);",
+    # an edit that makes things worse: must be undone
+    "notDeclaredAnywhere(n, n)": "    return n * notDeclaredAnywhere(n, n) + alsoMissing(n);",
 }
 
 RECOVERIES = {"squareIt": "int squareIt(int n) {\n    return n * n;\n}"}
@@ -745,3 +747,22 @@ def test_context_sizes_follow_ctx(tmp_path, model):
     assert dp.recovery_chars(4096) < dp.recovery_chars(8192) < dp.recovery_chars(16384)
     assert run(tmp_path, model, "--to", "export", "--model-ctx-chars", "5000") == 0
     assert "recover stage up to 5000 (set by --model-ctx-chars)" in (tmp_path / "pipeline.log").read_text()
+
+
+def test_fix_stage_sees_whole_types_and_undoes_bad_edits(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "fix") == 0
+    b = tmp_path / "build"
+    cfg = dp.Config(input_file=tmp_path / "rewrite" / "rewritten.cpp", workdir=b)
+    decls = dp.gather_declarations(cfg, ["first", "Pair", "NoSuchType"])
+    assert "int first;" in decls and "int second;" in decls       # the whole struct
+    assert "NoSuchType: not declared anywhere" in decls
+    # squareIt couldn't be fixed: its quarantined copy is the code from before the
+    # attempts, not the model's (worse) edit
+    rec = by_name(tmp_path)["squareIt"]
+    q = (b / "quarantine" / Path(rec["file"]).name).read_text()
+    assert "alsoMissing" not in q and "notDeclaredAnywhere(n, n)" in q
+    assert "notDeclaredAnywhere" in (b / "fix_report.txt").read_text() or \
+        "undeclared" in (b / "fix_report.txt").read_text()
+    notes = (b / "improve" / "notes" / (Path(rec["file"]).stem + ".md")).read_text()
+    assert "undone" in notes

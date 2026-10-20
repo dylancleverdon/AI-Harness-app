@@ -4757,19 +4757,42 @@ def extract_error_symbols(stderr: str) -> list[str]:
     return syms[:20]
 
 
-def gather_declarations(cfg: Config, symbols: list[str]) -> str:
-    """Pull just the declaration lines for named symbols from shared.h."""
-    header = cfg.shared_h.read_text().splitlines()
-    picked: list[str] = []
+def gather_declarations(cfg: Config, symbols: list[str], limit=4000) -> str:
+    """What shared.h says about the names an error mentions: the WHOLE definition of
+    a struct / enum / typedef (so the model can see which fields really exist), the
+    prototype of a function, the extern of a global — or that it was switched off
+    by the header repair, or isn't declared anywhere."""
+    lines = cfg.shared_h.read_text().splitlines()
+    units = _parse_units(lines)
+    by_label: dict[str, list[dict]] = {}
+    for u in units:
+        by_label.setdefault(u["label"], []).append(u)
+    out: list[str] = []
+    seen: set[str] = set()
     for sym in symbols:
-        base = re.split(r"[:<]", sym)[0].strip()
-        if not base:
-            continue
-        for line in header:
-            if re.search(rf"\b{re.escape(base)}\b", line) and line.strip().endswith(";"):
-                if line not in picked:
-                    picked.append(line.strip())
-    return "\n".join(picked[:60])
+        for part in re.split(r"::|[<>,\s*&]+", sym):
+            base = part.strip()
+            if not base or base in seen or base in CPP_KEYWORDS:
+                continue
+            seen.add(base)
+            us = [u for u in by_label.get(base, []) if u["kind"] != "fwd"]
+            if us:
+                for u in us:
+                    body = lines[u["start"] + 1:u["end"]]
+                    if body and body[0].startswith("#if 0"):
+                        why = body[0].split("[", 1)[-1].rstrip("]")
+                        out.append(f"// {base}: switched off in shared.h (it didn't compile: "
+                                   f"{why[:120]}) — it can't be used")
+                    else:
+                        out.append("\n".join(body))
+            elif any(re.search(rf"\b{re.escape(base)}\b", l) for l in lines
+                     if l.strip().endswith(";")):
+                out += [l.strip() for l in lines if re.search(rf"\b{re.escape(base)}\b", l)
+                        and l.strip().endswith(";")][:3]
+            elif re.match(r"^[A-Z_a-z]\w*$", base) and len(base) > 2:
+                out.append(f"// {base}: not declared anywhere in the program")
+    text = "\n".join(dict.fromkeys(out))       # no repeats, order kept
+    return text[:limit].rsplit("\n", 1)[0] if len(text) > limit else text
 
 
 # ----------------------------------------------------------------------------
@@ -4890,18 +4913,23 @@ def cache_key(src: str, err: str) -> str:
 # Stage 4 — Fixer loop
 # ----------------------------------------------------------------------------
 
-def quarantine(cfg: Config, rec: FuncRecord) -> None:
+def quarantine(cfg: Config, rec: FuncRecord, original: Optional[str] = None) -> None:
+    """original: the code before any fix attempts (kept, rather than whatever the
+    attempts left behind), so the recover stage starts from the real thing."""
     cfg.quarantine_dir.mkdir(parents=True, exist_ok=True)
     src = cfg.workdir / rec.file
     dst = cfg.quarantine_dir / Path(rec.file).name
-    shutil.copy(src, dst)
+    if original is not None:
+        dst.write_text(original)
+    else:
+        shutil.copy(src, dst)
     # replace the TU with a compilable stub so the build can progress
     stub = (f'#include "shared.h"\n\n'
             f'// QUARANTINED: {rec.name} — could not be repaired automatically.\n'
             f'// Original saved at quarantine/{Path(rec.file).name}\n')
     src.write_text(stub)
     rec.quarantined = True
-    log(cfg, f"  QUARANTINE {rec.name}: {rec.last_error.splitlines()[-1] if rec.last_error else '?'}")
+    log(cfg, f"  QUARANTINE {rec.name}: {_first_error(rec.last_error, rec.file)[1][:160] if rec.last_error else '?'}")
 
 
 _FIXCTX: dict = {}
@@ -4946,6 +4974,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
     """Drive one TU to compile. Returns True if it compiles, False if quarantined."""
     rel = rec.file
     header_fix_tries = 0
+    original = (cfg.workdir / rel).read_text()
     for attempt in range(cfg.max_model_attempts + 1):
         phase("compiling")
         ok, err, _ = compile_tu(cfg, rel)
@@ -4999,10 +5028,43 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
                 save_cache(cfg, cache)
                 rec.compiles = True
                 return True
-            rec.last_error = err3[-4000:]
+            # keep the edit only if it got somewhere: fewer errors, or the error it
+            # was for is gone without adding more. Otherwise undo it, so the next
+            # try starts from the same code instead of from a broken edit.
+            before, after = _first_error(err, rel), _first_error(err3, rel)
+            if n_errors(err3) < n_errors(err) or (after != before and n_errors(err3) <= n_errors(err)):
+                rec.last_error = err3[-4000:]
+            else:
+                (cfg.workdir / rel).write_text(src)
+                write_note(cfg, rel, "[compile] that edit didn't help — undone.")
 
-    quarantine(cfg, rec)
+    quarantine(cfg, rec, original)
     return False
+
+
+def error_kinds(cfg: Config, records: dict) -> list[tuple[int, str, list[str]]]:
+    """Why functions are quarantined, grouped: (how many, kind of error, examples).
+    Names in quotes are replaced by X so the same kind of error groups together."""
+    kinds: dict[str, list[str]] = {}
+    for r in records.values():
+        if r.quarantined and r.last_error:
+            msg = _first_error(r.last_error, r.file)[1]
+            msg = re.sub(r"'[^']*'", "'X'", msg)
+            msg = re.sub(r"\b\d+\b", "N", msg)[:120]
+            kinds.setdefault(msg, []).append(r.name)
+    return sorted(((len(v), k, v[:3]) for k, v in kinds.items()), reverse=True)
+
+
+def write_fix_report(cfg: Config, records: dict) -> None:
+    kinds = error_kinds(cfg, records)
+    total = sum(n for n, _, _ in kinds)
+    lines = [f"why {total} function(s) are quarantined (first compile error, grouped):", ""]
+    lines += [f"{n:6d}  {k}\n        e.g. {', '.join(ex)}" for n, k, ex in kinds]
+    (cfg.workdir / "fix_report.txt").write_text("\n".join(lines) + "\n")
+    if kinds:
+        log(cfg, f"  why functions are quarantined (most common first; all in fix_report.txt):")
+        for n, k, ex in kinds[:8]:
+            log(cfg, f"    {n:5d} × {k}  (e.g. {ex[0]})")
 
 
 def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) -> None:
@@ -5045,6 +5107,7 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
     done = sum(1 for r in records.values() if r.compiles)
     q = sum(1 for r in records.values() if r.quarantined)
     log(cfg, f"  fixer loop done: {done} compiling, {q} quarantined")
+    write_fix_report(cfg, records)
 
 
 # ----------------------------------------------------------------------------
