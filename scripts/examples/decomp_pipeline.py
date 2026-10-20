@@ -104,6 +104,7 @@ import json
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -336,6 +337,21 @@ GATE = {"gate": None, "tuner": None}
 
 class ModelError(Exception):
     pass
+
+
+# Set when the run is being stopped (Ctrl+C, or the app's Stop button = SIGTERM).
+# Stopping also kills the compilers, so a compile that "fails" now means nothing:
+# workers stop before they change any file (StopRun) instead of acting on it.
+STOPPING = threading.Event()
+
+
+class StopRun(Exception):
+    pass
+
+
+def _on_sigterm(signum, frame):
+    STOPPING.set()
+    raise KeyboardInterrupt                   # same clean stop as Ctrl+C
 
 
 class ServerSaid(Exception):
@@ -653,7 +669,10 @@ def work_pool(workers: int, items: list, fn, every=0, checkpoint=None) -> None:
     last = time.time()
     try:
         for k, fu in enumerate(as_completed(futs), 1):
-            fu.result()
+            try:
+                fu.result()
+            except StopRun:
+                raise KeyboardInterrupt
             # save every `every` items, and at least every 30 seconds
             if checkpoint and ((every and k % every == 0) or time.time() - last > 30):
                 checkpoint()
@@ -3200,8 +3219,13 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         pool.shutdown(wait=True)
     except KeyboardInterrupt:
         stopping.set()
+        STOPPING.set()
         prog.close()
         save_now()
+        try:
+            error_summary(P)
+        except Exception:
+            pass
         with state:
             write_outputs(P, progress, order, args.comments)
         try:
@@ -4419,12 +4443,16 @@ def compile_tu(cfg: Config, rel_path: str) -> tuple[bool, str, list[dict]]:
     (The old version passed -fdiagnostics-format=json, which is a GCC-only flag:
     clang rejects it, so EVERY function was reported as failing.)"""
     src = cfg.workdir / rel_path
+    if STOPPING.is_set():
+        raise StopRun
     _pch_flags(cfg)                       # brings the PCH up to date first, if needed
     with HEADER_LOCK.read():
         cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}",
                "-fsyntax-only", "-w", "-ferror-limit=20", *PIC_FLAGS,
                *_pch_flags(cfg, rebuild=False), *cfg.extra_flags, str(src)]
         proc = subprocess.run(cmd, capture_output=True, text=True)
+    if STOPPING.is_set():
+        raise StopRun                     # the compiler was probably killed by the stop
     return proc.returncode == 0, proc.stderr, []
 
 
@@ -5013,6 +5041,8 @@ def cache_key(src: str, err: str) -> str:
 def quarantine(cfg: Config, rec: FuncRecord, original: Optional[str] = None) -> None:
     """original: the code before any fix attempts (kept, rather than whatever the
     attempts left behind), so the recover stage starts from the real thing."""
+    if STOPPING.is_set():
+        raise StopRun                         # not because the run is being stopped
     cfg.quarantine_dir.mkdir(parents=True, exist_ok=True)
     src = cfg.workdir / rec.file
     dst = cfg.quarantine_dir / Path(rec.file).name
@@ -5115,7 +5145,11 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
         if new_text:
             (cfg.workdir / rel).write_text(new_text)
             phase("compiling the model's edit")
-            ok3, err3, _ = compile_tu(cfg, rel)
+            try:
+                ok3, err3, _ = compile_tu(cfg, rel)
+            except StopRun:
+                (cfg.workdir / rel).write_text(src)
+                raise
             write_note(cfg, rel, f"[compile] {_first_error(err, rel)[1][:120]} — plan: "
                                  f"{getattr(_FIX_TL, 'plan', '')[:160]} — "
                                  + ("compiles now." if ok3 else
@@ -5150,6 +5184,55 @@ def error_kinds(cfg: Config, records: dict) -> list[tuple[int, str, list[str]]]:
             msg = re.sub(r"\b\d+\b", "N", msg)[:120]
             kinds.setdefault(msg, []).append(r.name)
     return sorted(((len(v), k, v[:3]) for k, v in kinds.items()), reverse=True)
+
+
+def error_summary(P: "Paths", records: Optional[dict] = None, cfg: Optional[Config] = None,
+                  limit=15) -> None:
+    """Every kind of error so far, grouped, into the log: printed when the run is
+    stopped and when it finishes. Fast (no compiling), so it fits in the few seconds
+    the Stop button allows."""
+    out = ["", "━━━━ errors so far ━━━━"]
+    try:
+        fns = load_progress(P).get("functions", {})
+    except Exception:
+        fns = {}
+    rw: dict[str, list[str]] = {}
+    for e in fns.values():
+        if e.get("status") in ("skipped", "redo", "too big") or e.get("redo_failed"):
+            why = e.get("reason") or e.get("retry_reason") or e.get("redo_failed") or e["status"]
+            rw.setdefault(why, []).append(e.get("name") or e.get("ghidra", "?"))
+    if rw:
+        out.append(f"rewrite — {sum(map(len, rw.values()))} function(s) without a usable "
+                   f"rewrite (tried again next run):")
+        for why, names in sorted(rw.items(), key=lambda kv: -len(kv[1]))[:limit]:
+            out.append(f"  {len(names):6d} × {why}   e.g. {', '.join(names[:3])}")
+    if records is None and P.manifest.exists():
+        try:
+            cfg = cfg or Config(input_file=P.rewritten, workdir=P.build)
+            records = load_manifest(cfg)
+        except Exception:
+            records = None
+    if records:
+        cfg = cfg or Config(input_file=P.rewritten, workdir=P.build)
+        kinds = error_kinds(cfg, records)
+        failing = [r for r in records.values() if not r.compiles and not r.quarantined]
+        if kinds:
+            out.append(f"build — {sum(n for n, _, _ in kinds)} function(s) quarantined, by "
+                       f"first compile error:")
+            out += [f"  {n:6d} × {k}   e.g. {', '.join(ex)}" for n, k, ex in kinds[:limit]]
+            if len(kinds) > limit:
+                out.append(f"  ... and {len(kinds) - limit} more kinds (build/fix_report.txt)")
+        if failing:
+            out.append(f"build — {len(failing)} function(s) not compiling yet (not tried, or "
+                       f"stopped before they were)")
+    if MODEL_ACTIVITY.get("errors"):
+        out.append(f"model — LM Studio turned down {MODEL_ACTIVITY['errors']} request(s) this run")
+    if MODEL_ACTIVITY.get("thinking_only"):
+        out.append(f"model — {MODEL_ACTIVITY['thinking_only']} answer(s) were only thinking")
+    if len(out) == 2:
+        out.append("  none")
+    for line in out:
+        plog(P, line)
 
 
 def write_fix_report(cfg: Config, records: dict) -> None:
@@ -6849,7 +6932,11 @@ def gate_change(ctx: ImproveCtx, rec, old: str, new: str, behaviour=True,
             and len(old) > 300:
         return False, "removes too much of the function"
     path.write_text(new)
-    ok, err, _ = compile_tu(ctx.cfg, rec.file)
+    try:
+        ok, err, _ = compile_tu(ctx.cfg, rec.file)
+    except StopRun:
+        path.write_text(old)                  # never leave an unchecked change behind
+        raise
     why = ""
     if not ok:
         first = next((l for l in err.splitlines() if "error" in l), err[:200])
@@ -7615,7 +7702,11 @@ def _global_change(ctx, edits, tag, round_log, ops):
             txn.write(p, t)
     if not txn.old:
         return False, "no change"
-    ok, why = _gate_files(ctx, list(txn.old))
+    try:
+        ok, why = _gate_files(ctx, list(txn.old))
+    except StopRun:
+        txn.rollback()
+        raise
     if not ok:
         txn.rollback()
         return False, why
@@ -8996,6 +9087,9 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
 
 
 def run_pipeline(args) -> int:
+    STOPPING.clear()
+    if threading.current_thread() is threading.main_thread():
+        signal.signal(signal.SIGTERM, _on_sigterm)
     P = Paths(args.workdir.expanduser().resolve())
     P.no_snapshot = args.no_snapshot
     P.make()
@@ -9117,8 +9211,15 @@ def run_pipeline(args) -> int:
                 info["model_busy"] = round(share * 100) if share is not None else None
             mark_stage(P, stage, done=True, seconds=round(time.time() - t0), **info)
     except KeyboardInterrupt:
+        STOPPING.set()
+        if BAR["p"] is not None:
+            BAR["p"].close()
         if records is not None:
             save_manifest(cfg, records)
+        try:
+            error_summary(P, records, cfg)
+        except Exception:
+            pass
         plog(P, "Paused. Run the same command to carry on from here.")
         write_report(P)
         sys.stdout.flush()
@@ -9131,6 +9232,7 @@ def run_pipeline(args) -> int:
         write_report(P)
         raise
     data = write_report(P)
+    error_summary(P, records, cfg)
     bd, lk = data.get("build") or {}, data.get("link") or {}
     plog(P, "=" * 60)
     if bd:
@@ -9291,6 +9393,7 @@ def main(argv=None) -> int:
     # fresh module state (matters when called more than once in one process)
     GATE["gate"] = GATE["tuner"] = None
     MODEL_STATS.update(calls=0, no_answer=0, rejected=0)
+    MODEL_ACTIVITY.update(errors=0, thinking_only=0)
     _PSEUDO_CACHE.clear()
 
     if args.emit_ghidra_script is not None:

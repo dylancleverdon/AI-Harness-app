@@ -803,3 +803,35 @@ def test_platform_code_in_one_function_doesnt_hide_the_rest(tmp_path, model):
     assert "windows.h" not in cpp and "#ifdef" not in cpp
     assert len(manifest(tmp_path)) == 7                 # every function made it
     assert "applyLowpassFilter" not in by_name(tmp_path)  # the copied name was refused
+
+
+def test_stop_button_prints_errors_and_stops_cleanly(tmp_path, model):
+    """The app's Stop button sends SIGTERM and kills after 4 seconds."""
+    import signal
+    import subprocess
+    import time
+    write_export(tmp_path)
+    orig = model.reply
+
+    def slow(msgs):
+        time.sleep(1.5)
+        return orig(msgs)
+    model.reply = slow
+    proc = subprocess.Popen([sys.executable, str(SCRIPT), "--workdir", str(tmp_path),
+                             "--api", model.url, "--to", "link"],
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    log = tmp_path / "pipeline.log"
+    deadline = time.time() + 240
+    while time.time() < deadline and not (log.exists() and "Stage 4/8" in log.read_text()):
+        time.sleep(0.5)
+    time.sleep(3)                                   # well into the fix stage
+    proc.send_signal(signal.SIGTERM)
+    t0 = time.time()
+    out, _ = proc.communicate(timeout=30)
+    assert time.time() - t0 < 4, "must finish before the app's 4-second kill"
+    text = log.read_text()
+    assert "errors so far" in text and "Paused." in text
+    # nothing was quarantined just because the compilers were killed
+    for r in manifest(tmp_path).values():
+        if r["quarantined"]:
+            assert r["name"] == "squareIt", r["name"]
