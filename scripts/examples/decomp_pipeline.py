@@ -3666,7 +3666,8 @@ STD_INCLUDES = [
 
 
 def write_intrinsics(cfg: Config) -> None:
-    cfg.intrins_h.write_text(GHIDRA_INTRINS_H)
+    if not cfg.intrins_h.exists() or cfg.intrins_h.read_text() != GHIDRA_INTRINS_H:
+        cfg.intrins_h.write_text(GHIDRA_INTRINS_H)    # unchanged: leave it (and the PCH) be
 
 
 # ----------------------------------------------------------------------------
@@ -4797,13 +4798,14 @@ HEADER_LOCK = RWLock()
 
 
 def _pch_flags(cfg: Config, rebuild=True) -> list[str]:
-    """Use the PCH only if it's at least as new as shared.h (the header can be
-    repaired mid-run); rebuild it once if it's stale (rebuild=False: just say
-    whether it can be used)."""
+    """Use the PCH only if it's at least as new as shared.h and the header it
+    includes (the header can be repaired mid-run); rebuild it once if it's stale
+    (rebuild=False: just say whether it can be used)."""
     pch = _pch_path(cfg)
 
     def fresh():
-        return pch.exists() and pch.stat().st_mtime >= cfg.shared_h.stat().st_mtime
+        newest = max(f.stat().st_mtime for f in (cfg.shared_h, cfg.intrins_h) if f.exists())
+        return pch.exists() and pch.stat().st_mtime >= newest
     try:
         if not fresh():
             if not rebuild:
@@ -5071,30 +5073,81 @@ def preflight_diagnose(cfg: Config, records: dict[str, FuncRecord]) -> bool:
     return False
 
 
+def _sweep_key(cfg: Config) -> str:
+    """What every function's compile result depends on besides its own file."""
+    h = hashlib.sha1()
+    for name in ("shared.h", "ghidra_intrins.h"):
+        f = cfg.workdir / name
+        h.update(f.read_bytes() if f.exists() else b"-")
+    h.update(" ".join([cfg.cxx or "", cfg.std, *cfg.extra_flags, *PIC_FLAGS]).encode())
+    return h.hexdigest()
+
+
 def compile_sweep(cfg: Config, records: dict[str, FuncRecord]) -> None:
+    """Compile every function on its own. Results are remembered (by the
+    function's text and the shared header), so a function whose file and header
+    haven't changed since it was last compiled isn't compiled again: rerunning
+    after a small change to the rewrite, or after the sweep was stopped, only
+    compiles what changed."""
     from concurrent.futures import ThreadPoolExecutor
     ok_n = 0
     total = len(records)
     t0 = time.time()
     _pch_flags(cfg)   # build the PCH once before the workers start
+    cache_path = cfg.workdir / "compile_cache.json"
+    try:
+        cache = json.loads(cache_path.read_text())
+    except Exception:
+        cache = {}
+    hkey = _sweep_key(cfg)
+    if cache.get("header") != hkey:
+        cache = {"header": hkey, "files": {}}      # the header changed: all are stale
+    known = cache["files"]
+
+    def key_of(rec):
+        f = cfg.workdir / rec.file
+        return hashlib.sha1(f.read_bytes()).hexdigest() if f.exists() else ""
+
+    recs, reused = [], 0
+    for rec in records.values():
+        k = key_of(rec)
+        hit = known.get(rec.mangled)
+        if k and hit and hit[0] == k:
+            _sweep_record(rec, hit[1], hit[2])
+            ok_n += hit[1]
+            reused += 1
+        else:
+            recs.append((rec, k))
     workers = max(1, (os.cpu_count() or 2) - 1)
-    log(cfg, f"  compiling with {workers} parallel worker(s)")
-    recs = list(records.values())
-    prog = Progress(total, 0, title="compiling each function on its own")
+    log(cfg, f"  compiling with {workers} parallel worker(s)"
+             + (f"; {reused} function(s) unchanged since their last compile (result reused)"
+                if reused else ""))
+    prog = Progress(total, reused, title="compiling each function on its own")
     prog.extra = lambda: f"{ok_n} pass"
+
+    def save():
+        try:
+            write_atomic(cache_path, json.dumps(cache))
+        except OSError:
+            pass
     try:
         with ThreadPoolExecutor(max_workers=workers) as pool:
-            results = pool.map(lambda r: compile_tu(cfg, r.file), recs)
-            paired = zip(recs, results)
-            for i, (rec, (ok, err, _)) in enumerate(paired, 1):
+            results = pool.map(lambda rk: compile_tu(cfg, rk[0].file), recs)
+            for i, ((rec, k), (ok, err, _)) in enumerate(zip(recs, results), 1):
                 _sweep_record(rec, ok, err)
+                if k:
+                    known[rec.mangled] = [k, ok, "" if ok else err[-4000:]]
                 if ok:
                     ok_n += 1
                 prog.end(rec.mangled)
+                if i % 500 == 0:
+                    save()                    # a stopped sweep picks up from here
     finally:
+        save()
         prog.close()
     log(cfg, show=True, msg=f"  isolated compile: {ok_n}/{len(records)} TUs pass, "
-             f"{len(records)-ok_n} need repair ({time.time() - t0:.0f}s)")
+             f"{len(records)-ok_n} need repair ({time.time() - t0:.0f}s"
+             + (f", {reused} reused" if reused else "") + ")")
 
 
 def _sweep_record(rec: FuncRecord, ok: bool, err: str) -> None:

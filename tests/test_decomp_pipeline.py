@@ -947,3 +947,17 @@ def test_done_without_a_draft_file_is_rewritten(tmp_path, model):
     assert run(tmp_path, model, "--to", "rewrite") == 0
     assert model.calls["rewrite"] == calls + 1
     assert (tmp_path / "rewrite" / ".rewritten" / "1000.cpp").exists()
+
+
+def test_compile_results_are_remembered(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "split") == 0
+    before = {r["name"]: r["compiles"] for r in manifest(tmp_path).values()}
+    st = tmp_path / "build" / "build_state.json"
+    data = json.loads(st.read_text())
+    data["sweep_done"] = False                  # as if the sweep had been stopped
+    st.write_text(json.dumps(data))
+    assert run(tmp_path, model, "--to", "split") == 0
+    log = (tmp_path / "build" / "worklist.log").read_text()
+    assert "7 function(s) unchanged since their last compile" in log
+    assert {r["name"]: r["compiles"] for r in manifest(tmp_path).values()} == before
