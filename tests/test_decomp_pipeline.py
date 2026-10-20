@@ -118,6 +118,7 @@ class FakeModel:
         self.cut_fence = set()        # ... answers with the closing ``` missing
         self.too_long = set()         # ... whose whole-function answer hits the token limit
         self.piece_limit = 0          # pieces longer than this get a cut-off answer
+        self.ctx_error = {}           # Ghidra name -> "<ctxerr>" or "<http400>"
         self.seen_no_think = 0
         fake = self
 
@@ -145,10 +146,18 @@ class FakeModel:
                 n = int(self.headers.get("Content-Length", 0))
                 req = json.loads(self.rfile.read(n))
                 text = fake.reply(req["messages"])
+                if text == "<http400>":             # refused before answering
+                    return self._json({"error": "Trying to keep the first 9000 tokens when "
+                                                "context the overflows."}, 400)
                 self.send_response(200)
                 self.send_header("Content-Type", "text/event-stream")
                 self.end_headers()
                 finish = None
+                if text == "<ctxerr>":              # LM Studio's error inside the stream
+                    err = {"error": {"message": "The number of tokens to keep from the "
+                                                "initial prompt is greater than the context length"}}
+                    self.wfile.write(f"data: {json.dumps(err)}\n\n".encode())
+                    return
                 if text.startswith("<cut>"):        # an answer that hit the token limit
                     text, finish = text[5:], "length"
                 if text == "<think-only>":     # LM Studio's separate reasoning stream
@@ -180,6 +189,8 @@ class FakeModel:
                 if "/no_think" not in user:
                     return "<think-only>"
                 self.seen_no_think += 1
+            if g in self.ctx_error:
+                return self.ctx_error[g]
             if g in self.too_long:
                 return "<cut>```cpp\nint startedWriting(int a) {\n    if (a) {"
             if g in self.cut_fence:
@@ -766,3 +777,14 @@ def test_fix_stage_sees_whole_types_and_undoes_bad_edits(tmp_path, model):
         "undeclared" in (b / "fix_report.txt").read_text()
     notes = (b / "improve" / "notes" / (Path(rec["file"]).stem + ".md")).read_text()
     assert "undone" in notes
+
+
+def test_prompt_too_long_for_lm_studio_is_split_not_fatal(tmp_path, model):
+    write_export(tmp_path)
+    model.ctx_error = {"FUN_00001010": "<ctxerr>", "FUN_00001030": "<http400>"}
+    assert run(tmp_path, model, "--to", "rewrite") == 0          # the run carries on
+    prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())["functions"]
+    for k in ("1010", "1030"):
+        assert prog[k]["status"] == "done" and prog[k]["pieces"] >= 1, k
+        assert prog[k]["cut_off_sizes"]
+    assert prog["1000"]["status"] == "done"

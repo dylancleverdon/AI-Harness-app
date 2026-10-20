@@ -338,6 +338,10 @@ class ModelError(Exception):
     pass
 
 
+class ServerSaid(Exception):
+    """The model server answered this request with an error message."""
+
+
 # What the model is doing right now, for the progress bar and the stall warning:
 # requests waiting for an answer, answers received, when anything last arrived
 # (thinking counts), and answers that were only thinking with no actual reply.
@@ -392,9 +396,16 @@ def last_reply() -> dict:
     return getattr(_TL, "last", {}) or {}
 
 
+TOO_LONG = re.compile(r"context|too (?:long|large|many tokens)|exceed|n_ctx|max.*tokens", re.I)
+
+
 def why_no_code(reply: str) -> str:
     info = last_reply()
     thought = info.get("thought", 0)
+    if info.get("error"):
+        if TOO_LONG.search(info["error"]):
+            return "cut off: the prompt is too long for the model's context"
+        return f"server error: {info['error'][:120]}"
     if info.get("finish") == "length":
         return ("cut off at the token limit while thinking" if thought > info.get("chars", 0)
                 else "cut off at the token limit")
@@ -522,11 +533,24 @@ class ModelClient:
             req = urllib.request.Request(url, data=json.dumps(body).encode(),
                                          headers={"Content-Type": "application/json"})
             text, first_word, thought, finish = _read_stream(req, self.kind, timeout)
-        except urllib.error.HTTPError as e:
-            detail = e.read().decode(errors="replace")[:300]
-            if fatal:
-                sys.exit(f"\n{self.name} answered with an error: {detail}")
-            return None
+        except (urllib.error.HTTPError, ServerSaid) as e:
+            # the server is there but turned this request down (often: the prompt is
+            # longer than the model's context). Not a reason to stop the whole run.
+            detail = (e.read().decode(errors="replace") if isinstance(e, urllib.error.HTTPError)
+                      else str(e))
+            try:
+                detail = json.loads(detail).get("error", detail)
+                if isinstance(detail, dict):
+                    detail = detail.get("message", str(detail))
+            except Exception:
+                pass
+            detail = " ".join(str(detail).split())[:300]
+            _TL.last = {"error": detail, "finish": "error", "thought": 0, "chars": 0,
+                        "max_out": max_out, "raw": ""}
+            if MODEL_ACTIVITY.setdefault("errors", 0) < 3 or "context" in detail.lower():
+                say(f"  !! {self.name} turned a request down: {detail}")
+            MODEL_ACTIVITY["errors"] += 1
+            return "" if fatal else None
         except Exception as e:
             if fatal:
                 sys.exit(f"\nCould not reach {self.name} at {self.base} ({e}). Check the "
@@ -586,6 +610,9 @@ def _read_stream(req, kind, timeout=1800):
                 if data == "[DONE]":
                     break
                 j = json.loads(data)
+                if j.get("error"):                # LM Studio refused / failed this one
+                    e = j["error"]
+                    raise ServerSaid(e.get("message") if isinstance(e, dict) else str(e))
                 ch = (j.get("choices") or [{}])[0]
                 finish = ch.get("finish_reason") or finish
                 d = ch.get("delta") or ch.get("message") or {}
@@ -2729,7 +2756,10 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                 (d / f"{key}.txt").write_text(
                     f"{gname}: no usable code. Why: {'; then '.join(no_code_why)}\n"
                     f"prompt ~{in_tokens} tokens, answer room {max_out} tokens (--ctx "
-                    f"{args.ctx})\n" + "".join(f"\n===== reply {i + 1} =====\n{r}\n"
+                    f"{args.ctx}); how the last reply ended: "
+                    f"{last_reply().get('finish')}"
+                    + (f"; server said: {last_reply()['error']}" if last_reply().get("error") else "")
+                    + "\n" + "".join(f"\n===== reply {i + 1} =====\n{r}\n"
                                               for i, r in enumerate(raws)))
         ok = False
         if code:
