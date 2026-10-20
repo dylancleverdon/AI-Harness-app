@@ -412,6 +412,35 @@ def last_reply() -> dict:
     return getattr(_TL, "last", {}) or {}
 
 
+RUN_CTX: dict = {"ctx": None, "P": None}
+_CPT_LOCK = threading.Lock()
+
+
+def learn_from_rejection(prompt_chars: int) -> None:
+    """LM Studio said a prompt of this many characters didn't fit in --ctx tokens:
+    so this program's code has fewer characters per token than assumed. Lower the
+    estimate, so every prompt, piece and answer budget is sized to fit from now on
+    (kept in pipeline_state.json for the next run with the same --ctx)."""
+    global CHARS_PER_TOKEN
+    ctx = RUN_CTX.get("ctx")
+    if not ctx:
+        return
+    with _CPT_LOCK:
+        new = max(1.5, round(0.9 * prompt_chars / ctx, 2))
+        if new >= CHARS_PER_TOKEN:
+            return
+        CHARS_PER_TOKEN = new
+    say(f"  prompts are denser than estimated: now assuming {new} characters per token, "
+        f"so prompts and pieces are made smaller to fit --ctx {ctx}")
+    if RUN_CTX.get("P") is not None:
+        try:
+            st = load_pstate(RUN_CTX["P"])
+            st["chars_per_token"] = {"ctx": ctx, "value": new}
+            write_atomic(RUN_CTX["P"].state, json.dumps(st, indent=2))
+        except Exception:
+            pass
+
+
 TOO_LONG = re.compile(r"context|too (?:long|large|many tokens)|exceed|n_ctx|max.*tokens", re.I)
 
 
@@ -563,6 +592,8 @@ class ModelClient:
             detail = " ".join(str(detail).split())[:300]
             _TL.last = {"error": detail, "finish": "error", "thought": 0, "chars": 0,
                         "max_out": max_out, "raw": ""}
+            if TOO_LONG.search(detail):
+                learn_from_rejection(sum(len(m["content"]) for m in messages))
             if MODEL_ACTIVITY.setdefault("errors", 0) < 3 or "context" in detail.lower():
                 say(f"  !! {self.name} turned a request down: {detail}")
             MODEL_ACTIVITY["errors"] += 1
@@ -2562,7 +2593,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     for key, e in done.items():
         if e.get("status") == "redo" and e.get("name") and not e.get("retry_reason") \
                 and (P.rewritten_dir / f"{key}.cpp").exists():
-            e["status"], e["stale"] = "done", True
+            e["status"], e["stale"] = "done", "suspect"
 
     # Functions skipped last time (the model returned no code, Ghidra had no
     # pseudocode) are marked redo, so every run tries them again.
@@ -2579,14 +2610,28 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                 f"will be tried again ({', '.join(f'{n} {r}' for r, n in retry.items())})")
 
     marked = 0
-    if "rewrite" in redo:
+    asked = {"rewrite": "rewrite" in redo, "suspect": bool(args.redo_suspect)}
+    if args.cancel_redo:
+        n = 0
+        for e in done.values():
+            if e.get("stale") in ("rewrite", "suspect", True):
+                e.pop("stale")
+                n += 1
+        plog(P, f"  --cancel-redo: {n} function(s) are no longer marked to be rewritten again "
+                f"(they keep their current version)")
+        asked = {"rewrite": False, "suspect": False}
+    unfinished = sum(1 for k in sel_keys if (done.get(k) or {}).get("stale") in ("rewrite", True))
+    if asked["rewrite"] and unfinished:
+        plog(P, f"  --redo rewrite: carrying on with the {unfinished} function(s) the last one "
+                f"didn't get to")
+    elif asked["rewrite"]:
         snapshot(P, "redo-rewrite", [P.progress, P.rewritten, P.rewritten_dir, P.names,
                                      P.index])
         progress["redo_gen"] = progress.get("redo_gen", 0) + 1
         for key in sel_keys:
             e = done.get(key)
             if e and e.get("status") == "done":
-                e["stale"] = True
+                e["stale"] = "rewrite"
                 marked += 1
             elif e:
                 e["status"] = "todo"
@@ -2605,7 +2650,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
         if e.get("pseudo_sha") is None:
             e["pseudo_sha"] = sha
         elif e["pseudo_sha"] != sha and not e.get("stale"):
-            e["stale"] = True
+            e["stale"] = "pseudocode"
             changed += 1
     if changed:
         plog(P, f"  {changed} function(s) have new pseudocode since they were rewritten — "
@@ -2613,7 +2658,7 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
 
     taken = {e["name"] for e in done.values() if e.get("name")} | \
             {n for n, _ in funcs if not PLACEHOLDER.match(n)}
-    if args.redo_suspect:
+    if args.redo_suspect and not any(e.get("stale") == "suspect" for e in done.values()):
         n_sus = 0
         for n, a in selected:
             e = done.get(f"{a:x}")
@@ -2630,19 +2675,45 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
                     why.append("no real name")
                 e["suspect"] = sorted(set(why))
             if e["suspect"] and not e.get("stale"):
-                e["stale"] = True
+                e["stale"] = "suspect"
                 n_sus += 1
         if n_sus:
             snapshot(P, "redo-suspect", [P.progress, P.rewritten, P.rewritten_dir])
         plog(P, f"  {n_sus} function(s) flagged for a second look will be rewritten again "
                 f"(their current version stays until then)")
+    elif args.redo_suspect:
+        left = sum(1 for e in done.values() if e.get("stale") == "suspect")
+        plog(P, f"  --redo-suspect: carrying on with the {left} flagged function(s) not "
+                f"rewritten again yet")
     save_progress(P, progress)
 
-    todo = [(n, a) for n, a in selected
-            if done.get(f"{a:x}", {}).get("status") not in ("done", "skipped")
-            or done.get(f"{a:x}", {}).get("stale")]
+    def redo_now(e) -> bool:
+        """Is this function's "rewrite it again" mark active in this run?"""
+        st = e.get("stale")
+        if st in ("pseudocode", "split"):
+            return True                       # automatic: always
+        if st == "suspect":
+            return asked["suspect"]
+        if st in ("rewrite", True):
+            return asked["rewrite"] or asked["suspect"]
+        return False
+
+    new_todo = [(n, a) for n, a in selected
+                if done.get(f"{a:x}", {}).get("status") not in ("done", "skipped")]
+    again = [(n, a) for n, a in selected
+             if done.get(f"{a:x}", {}).get("status") == "done" and redo_now(done[f"{a:x}"])]
+    todo = new_todo + again
+    waiting = sum(1 for n, a in selected if done.get(f"{a:x}", {}).get("status") == "done"
+                  and done[f"{a:x}"].get("stale") and not redo_now(done[f"{a:x}"]))
+    if waiting:
+        plog(P, f"  {waiting} function(s) are still marked to be rewritten again from an "
+                f"earlier --redo-suspect / --redo rewrite; they keep their current version. "
+                f"Turn that option on again to carry on, or use --cancel-redo to drop the marks.")
+    have = len(selected) - len(new_todo)
     if len(todo) < len(selected):
-        plog(P, f"  {len(selected) - len(todo)} already done, {len(todo)} to go")
+        plog(P, f"  {have} already have a rewrite, {len(new_todo)} to go"
+                + (f", {len(again)} being rewritten again (each keeps its current version "
+                   f"until the new one replaces it)" if again else ""))
     if not todo:
         write_outputs(P, progress, order, args.comments)
         return _rewrite_summary(progress, order, stop=False)
@@ -2670,7 +2741,8 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
     system = SYSTEM_PROMPT.replace("{comments}",
                                    WITH_COMMENTS if args.comments else NO_COMMENTS)
     t_start, last_write = time.time(), time.time()
-    prog = Progress(len(selected), len(selected) - len(todo), title="rewriting functions")
+    prog = (Progress(len(selected), have, title="rewriting functions") if not again else
+            Progress(len(todo), 0, title=f"rewriting {len(new_todo)} new + {len(again)} again"))
     GATE["gate"] = ModelGate(args.parallel)
     GATE["tuner"] = None
     answered0 = MODEL_ACTIVITY["answered"]
@@ -3263,7 +3335,7 @@ def _rewrite_summary(progress, order, stop=False, model=None) -> dict:
             r = re.sub(r"^\d+ of \d+ parts", "some parts", r)
             reasons[r] = reasons.get(r, 0) + 1
     out = {"functions": len(order), "done": len(done),
-           "stale": sum(1 for e in done if e.get("stale")),
+           "stale": sum(1 for e in done if e.get("stale")),       # marked to be redone
            "skipped": sum(1 for e in es if e.get("status") in ("skipped", "redo")),
            "too_big": sum(1 for e in es if e.get("status") == "too big"),
            "not_started": len(order) - len(es),
@@ -9087,12 +9159,19 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
 
 
 def run_pipeline(args) -> int:
+    global CHARS_PER_TOKEN
     STOPPING.clear()
     if threading.current_thread() is threading.main_thread():
         signal.signal(signal.SIGTERM, _on_sigterm)
     P = Paths(args.workdir.expanduser().resolve())
     P.no_snapshot = args.no_snapshot
     P.make()
+    # what earlier runs learned about how densely this program's code tokenizes
+    CHARS_PER_TOKEN = 3.2
+    learned = load_pstate(P).get("chars_per_token") or {}
+    if learned.get("ctx") == args.ctx and learned.get("value"):
+        CHARS_PER_TOKEN = learned["value"]
+    RUN_CTX.update(ctx=args.ctx, P=P)
     acquire_lock(P, args.force)
 
     redo = set(args.redo or [])
@@ -9263,7 +9342,12 @@ def build_parser() -> argparse.ArgumentParser:
                         "deletes; snapshots first). Bare --redo means --redo rewrite. "
                         "Repeatable")
     g.add_argument("--redo-suspect", action="store_true",
-                   help="rewrite again only the functions flagged for a second look")
+                   help="rewrite again the functions flagged for a second look (each keeps "
+                        "its current version until replaced; turn it off and they're left "
+                        "as they are)")
+    g.add_argument("--cancel-redo", action="store_true",
+                   help="drop the 'rewrite again' marks left by an unfinished --redo-suspect "
+                        "or --redo rewrite (functions keep their current version)")
     g.add_argument("--no-snapshot", action="store_true",
                    help="don't copy current files to snapshots/ before a redo replaces them")
     g.add_argument("--pause-between-stages", action="store_true",

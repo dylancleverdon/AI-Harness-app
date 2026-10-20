@@ -396,7 +396,10 @@ def test_redo_rewrite_replaces_in_place_and_never_deletes(tmp_path, model):
     # carrying on finishes the redo, then updates the build: the changed function
     # gets its new code, the unchanged ones keep their fixes
     calls = model.calls["rewrite"]
-    assert run(tmp_path, model) == 0
+    assert run(tmp_path, model, "--to", "rewrite") == 0      # option off: left alone
+    assert model.calls["rewrite"] == calls
+    assert "still marked to be rewritten again" in (tmp_path / "pipeline.log").read_text()
+    assert run(tmp_path, model, "--redo", "rewrite") == 0     # on again: carries on
     assert model.calls["rewrite"] == calls + 6
     by_addr = {r["ghidra_addr"]: r for r in manifest(tmp_path).values()}
     assert "left + right" in (tmp_path / "build" / by_addr["1000"]["file"]).read_text()
@@ -557,7 +560,7 @@ def test_failed_redo_keeps_old_version_and_retries(tmp_path, model):
     assert "addNumbers" in (tmp_path / "rewrite" / "rewritten.cpp").read_text()
     model.no_code = set()
     calls = model.calls["rewrite"]
-    assert run(tmp_path, model, "--to", "rewrite") == 0
+    assert run(tmp_path, model, "--to", "rewrite", "--redo", "rewrite") == 0   # carries on
     assert model.calls["rewrite"] == calls + 1
 
 
@@ -835,3 +838,33 @@ def test_stop_button_prints_errors_and_stops_cleanly(tmp_path, model):
     for r in manifest(tmp_path).values():
         if r["quarantined"]:
             assert r["name"] == "squareIt", r["name"]
+
+
+def test_redo_suspect_marks_only_count_while_asked(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    calls = model.calls["rewrite"]
+    # tripleValue is flagged (decompiler names left): marked, but --max 0-ish stop
+    assert run(tmp_path, model, "--to", "rewrite", "--redo-suspect", "--max", "1") == 0
+    marked = [e for e in json.loads((tmp_path / "rewrite" / "progress.json").read_text())
+              ["functions"].values() if e.get("stale")]
+    after_max = model.calls["rewrite"]
+    # without the option: nothing is redone, nothing is "not done"
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    assert model.calls["rewrite"] == after_max
+    rep = json.loads((tmp_path / "report.json").read_text())["rewrite"]
+    assert rep["done"] == 7
+    # --cancel-redo drops whatever marks are left
+    assert run(tmp_path, model, "--to", "rewrite", "--cancel-redo") == 0
+    assert not any(e.get("stale") for e in json.loads(
+        (tmp_path / "rewrite" / "progress.json").read_text())["functions"].values())
+    assert after_max >= calls and marked is not None
+
+
+def test_rejected_prompt_teaches_the_size_estimate(tmp_path, model):
+    write_export(tmp_path)
+    model.ctx_error = {"FUN_00001010": "<ctxerr>"}
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    learned = json.loads((tmp_path / "pipeline_state.json").read_text())["chars_per_token"]
+    assert learned["value"] < 3.2 and learned["ctx"] == 16384
+    assert dp.CHARS_PER_TOKEN == learned["value"]
