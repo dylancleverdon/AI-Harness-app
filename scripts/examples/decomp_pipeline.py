@@ -2723,6 +2723,19 @@ def run_rewrite(P: Paths, args, redo: set, client: ModelClient) -> dict:
 
     progress = load_progress(P)
     rename_copied_names(P, progress)
+    # progress.json says "done", but the draft itself must be there too: one that
+    # isn't would silently be left out of rewritten.cpp
+    lost = [k for k, e in progress.get("functions", {}).items()
+            if e.get("status") == "done" and not (P.rewritten_dir / f"{k}.cpp").exists()]
+    for k in lost:
+        e = progress["functions"][k]
+        e.update(status="redo", reason="its draft file was missing")
+        struggle("rewrite", "functions marked done whose draft file was missing (rewritten "
+                 "again)", e.get("name") or e.get("ghidra"))
+    if lost:
+        save_progress(P, progress)
+        plog(P, f"  !! {len(lost)} function(s) were marked done but their draft file was "
+                f"missing; they'll be rewritten")
     done = progress.setdefault("functions", {})
     # every function stays in the output, in program order, whatever is selected
     order = [f"{a:x}" for _, a in funcs]
@@ -4118,6 +4131,30 @@ def write_shared_header(cfg: Config, fwd: list[_Unit], types: list[_Unit],
     cfg.shared_h.write_text("\n".join(out) + "\n")
 
 
+def suspect_syntax(code: str) -> list[str]:
+    """Things in a function's text that can make a parser run past its end."""
+    out = []
+    flat = re.sub(r'"(\\.|[^"\\\n])*"', '""', code)          # drop ordinary strings
+    if re.search(r'\bu?8?R"', code):
+        out.append("raw string literal R\"...\"")
+    if flat.count("/*") != flat.count("*/"):
+        out.append("unclosed /* comment")
+    if re.search(r"\\\s*$", code, flags=re.M):
+        out.append("line ending in a backslash")
+    if re.search(r"\d'\d", code):
+        out.append("digit separator like 1'000")
+    if brace_balance(code) != 0:
+        out.append(f"braces don't balance ({brace_balance(code):+d})")
+    no_str = re.sub(r"'(\\.|[^'\\\n])*'", "''", flat)
+    if no_str.count("(") != no_str.count(")"):
+        out.append(f"parentheses don't balance ({no_str.count('(') - no_str.count(')'):+d})")
+    if re.search(r"\[[^\]\n]*\]\s*\([^)]*\)\s*(mutable\s*)?(->[^{]*)?\{", code):
+        out.append("lambda")
+    if re.search(r"(?m)^\s*(template\s*<|#)", code):
+        out.append("template or preprocessor line")
+    return out
+
+
 def classify_missing(tu, path: str, offset: int) -> str:
     """What libclang made of the code at `offset` (for the report)."""
     for c in tu.cursor.get_children():
@@ -4183,7 +4220,7 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
     parse_path = str(cfg.workdir / "_parse_monolith.cpp")
     Path(parse_path).write_bytes(parse_bytes)
 
-    args = _libclang_args(cfg)
+    args = _libclang_args(cfg) + ["-ferror-limit=0"]    # list every error, not 20
     idx = cx.Index.create()
     stats = _SplitStats()
 
@@ -4444,9 +4481,23 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
                re.finditer(rb"//@ghidra\s+([0-9a-fA-F]+)\b", raw)]
     marker_offs = [p for p, _ in markers]
     import bisect
+    # Every function in the rewrite starts at its own marker, so a function that
+    # runs past the next marker is libclang carrying on past a broken ending (an
+    # unclosed raw string, a lambda missing its brace...) and swallowing the
+    # functions after it. End it at that marker; the swallowed ones are cut out
+    # by their markers below.
+    swallowers = []
+    for idx, (s0, e0, name0, mangled0) in enumerate(clean_spans):
+        k = bisect.bisect_right(marker_offs, s0)
+        if k < len(marker_offs) and marker_offs[k] < e0:
+            inner = bisect.bisect_left(marker_offs, e0) - k
+            swallowers.append((name0, s0, marker_offs[k], inner))
+            clean_spans[idx] = (s0, marker_offs[k], name0, mangled0)
     prev_end = 0
     for (s, e, name, mangled) in clean_spans:
-        body = raw[s:e].decode("utf-8", "replace")
+        body = raw[s:e].decode("utf-8", "replace").rstrip()
+        if brace_balance(body) > 0:           # cut short above: close it
+            body += "\n" + "}" * brace_balance(body)
         m_dup = re.match(r"^(.*)__dup\d+$", name)
         if m_dup:   # rename the definition itself to match its new prototype
             body = re.sub(rf"\b{re.escape(m_dup.group(1))}\b(?=\s*\()", name, body, count=1)
@@ -4471,14 +4522,16 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
     have = {r.ghidra_addr for r in records.values() if r.ghidra_addr}
     covered = [(s0, e0) for s0, e0, _, _ in clean_spans]
     starts = [s0 for s0, _ in covered]
+    swallowed_until = {}
+    for name0, s0, cut, inner in swallowers:
+        j = bisect.bisect_left(starts, s0)
+        nxt = starts[j + 1] if j + 1 < len(starts) else len(raw)
+        swallowed_until[j] = nxt
     carved: dict[str, int] = {}
     for i, (pos, addr_b) in enumerate(markers):
         addr = addr_b.decode()
         if addr in have:
             continue
-        j = bisect.bisect_right(starts, pos) - 1
-        if j >= 0 and covered[j][0] <= pos < covered[j][1]:
-            continue                       # sits inside a function that was found
         end = markers[i + 1][0] if i + 1 < len(markers) else len(raw)
         nxt = bisect.bisect_right(starts, pos)
         if nxt < len(starts):
@@ -4491,7 +4544,9 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
         body_txt = (funcs_in[0] if funcs_in else "\n\n".join(items)).strip()
         if not body_txt or "{" not in body_txt:
             continue
-        why = classify_missing(tu2, parse_path, pos + prefix_len)
+        j = bisect.bisect_right(starts, pos) - 1
+        why = ("swallowed by the function before it" if j >= 0 and swallowed_until.get(j, -1) > pos
+               else classify_missing(tu2, parse_path, pos + prefix_len))
         carved[why] = carved.get(why, 0) + 1
         base = re.sub(r"\W", "_", _func_name(body_txt) or f"func_{addr}")
         name = base if base not in records else f"{base}__{addr}"
@@ -4528,8 +4583,39 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
                 glob_lines.append(text)
     cfg.globals_cpp.write_text("\n".join(glob_lines) + "\n")
 
-    # ---- did we find every function? (each one in the rewrite has a //@ghidra marker)
+    # ---- functions libclang ran past the end of: what in their code might cause it
     lost_note = []
+    if swallowers:
+        total = sum(n for *_, n in swallowers)
+        struggle("split", "functions libclang ran past the end of, swallowing the ones after "
+                 "them (cut at the next marker)", swallowers[0][0], n=len(swallowers),
+                 handled=True, hint=f"{total} swallowed function(s) were cut out by their "
+                                    f"markers; the causes are in split_report.txt")
+        log(cfg, f"  !! libclang ran past the end of {len(swallowers)} function(s) and "
+                 f"swallowed {total} after them; cut them apart at the markers "
+                 f"(details in split_report.txt)")
+        text = raw.decode("utf-8", "replace")
+        causes: dict[str, int] = {}
+        details = []
+        for name0, s0, cut, inner in sorted(swallowers, key=lambda t: -t[3]):
+            own = raw[s0:cut].decode("utf-8", "replace")
+            why = suspect_syntax(own)
+            for w in why:
+                causes[w] = causes.get(w, 0) + 1
+            if len(details) < 40:
+                details += ["", f"-- {name0} (line {text.count(chr(10), 0, s0) + 1}) swallowed "
+                                f"{inner} function(s); suspicious: {', '.join(why) or 'nothing found'}",
+                            *own.rstrip().split("\n")[-25:]]
+        lost_note = ["", f"== {len(swallowers)} function(s) libclang ran past the end of "
+                         f"(it swallowed {total} after them). Likely causes: " +
+                         (", ".join(f"{n} × {w}" for w, n in sorted(causes.items(),
+                                                                     key=lambda t: -t[1]))
+                          or "none recognised"),
+                     "   (the last lines of each, biggest first)", *details]
+        for w, n in causes.items():
+            struggle("split", f"runaway function cause: {w}", n=n, handled=True)
+
+    # ---- did we find every function? (each one in the rewrite has a //@ghidra marker)
     if len(markers) > 20 and len(records) < 0.9 * len(markers):
         last = max((e for _, e, _, _ in clean_spans), default=0)
         after = [p for p in marker_offs if p > last]
@@ -4545,7 +4631,7 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
                      else "The missing ones are spread through the file (see split_report.txt)."))
         if first_lost is not None:
             start = text.rfind("\n", 0, max(0, text.rfind("//@ghidra", 0, first_lost) - 1))
-            lost_note = ["", f"== where the split lost track (line {line_no}) — the code before it:",
+            lost_note += ["", f"== where the split lost track (line {line_no}) — the code before it:",
                          text[max(0, start - 3000):first_lost]]
 
     # ---- report ----

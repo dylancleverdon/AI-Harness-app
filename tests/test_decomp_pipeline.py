@@ -925,3 +925,25 @@ def test_console_shows_only_what_needs_attention(tmp_path, model, capsys):
     # --verbose prints everything again
     assert run(tmp_path, model, "--to", "fix", "--verbose", "--redo", "fix") == 0
     assert "fixer loop over" in capsys.readouterr().out
+
+
+def test_runaway_function_doesnt_swallow_the_rest(tmp_path, model):
+    # an unclosed raw string: libclang reads on to the end of the file, so the
+    # function "contains" every function after it
+    model.rewrite_override["FUN_00001010"] = (
+        'const char *sumThree() {\n    return R"(abc;\n}', "sumThree")
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "split") == 0
+    assert len(manifest(tmp_path)) == 7
+    report = (tmp_path / "build" / "split_report.txt").read_text()
+    assert "ran past the end" in report and "raw string" in report
+
+
+def test_done_without_a_draft_file_is_rewritten(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    (tmp_path / "rewrite" / ".rewritten" / "1000.cpp").unlink()
+    calls = model.calls["rewrite"]
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    assert model.calls["rewrite"] == calls + 1
+    assert (tmp_path / "rewrite" / ".rewritten" / "1000.cpp").exists()
