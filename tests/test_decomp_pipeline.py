@@ -808,6 +808,23 @@ def test_platform_code_in_one_function_doesnt_hide_the_rest(tmp_path, model):
     assert "applyLowpassFilter" not in by_name(tmp_path)  # the copied name was refused
 
 
+def test_methods_namespaces_and_templates_reach_the_split(tmp_path, model):
+    # shapes libclang doesn't list as top-level functions: before, they vanished
+    model.rewrite_override["FUN_00001000"] = (
+        "int Math::addNumbers(int a, int b) {\n    return a + b;\n}", "addNumbers")
+    model.rewrite_override["FUN_00001020"] = (
+        "namespace util {\nunsigned int tripleValue(unsigned int v) {\n"
+        "    return v * 3;\n}\n}  // namespace util", "tripleValue")
+    model.rewrite_override["FUN_00001040"] = (
+        "template <typename T>\nT squareIt(T n) {\n    return n * n;\n}", "squareIt")
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "split") == 0
+    cpp = (tmp_path / "rewrite" / "rewritten.cpp").read_text()
+    assert "Math::" not in cpp and "addNumbers(" in cpp and "namespace util" not in cpp
+    assert len(manifest(tmp_path)) == 7                 # every function made it
+    assert "cut out by their marker" in (tmp_path / "build" / "worklist.log").read_text()
+
+
 def test_stop_button_prints_errors_and_stops_cleanly(tmp_path, model):
     """The app's Stop button sends SIGTERM and kills after 4 seconds."""
     import signal

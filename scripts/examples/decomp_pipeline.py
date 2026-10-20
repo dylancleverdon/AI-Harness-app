@@ -1524,6 +1524,9 @@ You get ONE function. Rewrite it as the C++ a person would plausibly have writte
   you need to.
 - Write ONLY this one function. Never write bodies for other functions, not even
   small helpers: declare them instead.
+- Write it as a plain free function: not inside a class, struct or namespace, and no
+  "Class::" in its name (write Class_method instead). An object pointer (this) becomes
+  an ordinary first parameter.
 - Ghidra helper notation is not real code: CONCAT44(a, b), SUB84(x, 0), ZEXT48(x),
   NEON_xxx(...) and the like describe bit or vector operations. Turn them into plain
   C++ (shifts, casts, ordinary float maths, or a simple loop over 4 floats); never
@@ -1943,8 +1946,10 @@ def parse_reply(reply):
             tail = re.split(r"^\s*NAME:", m.group(1), flags=re.M)[0].strip()
             if "{" in tail and tail.rstrip().endswith("}") and brace_balance(tail) == 0:
                 code = tail
+    if code is not None and "namespace" in code:
+        code = unwrap_namespaces(code)
     m = re.search(r"^\s*NAME:\s*`?([A-Za-z_][\w:~]*)`?\s*$", reply, flags=re.M)
-    return code, (m.group(1) if m else None)
+    return code, (flat_name(m.group(1)) if m else None)
 
 
 # ---------------------------------------------------------------- tiny functions
@@ -2269,12 +2274,63 @@ PREPROC = re.compile(r"^\s*#\s*(if|ifdef|ifndef|elif|else|endif|define|undef|pra
                      r"warning|line|import)\b")
 
 
-def clean_for_monolith(code: str) -> str:
+NAMESPACE_OPEN = re.compile(r"\s*(inline\s+)?namespace(\s+[\w:]+)?\s*\{\s*$")
+QUALIFIED_DEF = re.compile(r"(?<![\w:])((?:[A-Za-z_]\w*::)+~?[A-Za-z_]\w*)(\s*\()")
+
+
+def flat_name(name: str) -> str:
+    """Class::method -> Class_method (functions are free functions here)."""
+    return name.replace("::~", "_destroy_").replace("::", "_") if name else name
+
+
+def flatten_function(item: str, name: str = None) -> str:
+    """`void Foo::bar(...) {` -> `void Foo_bar(...) {`. libclang drops a definition
+    whose class it doesn't know entirely (it never reaches the split), so a
+    function named after a C++ method becomes a free function; a constructor or
+    destructor gets a return type."""
+    head, brace, body = item.partition("{")
+    if not brace or "operator" in head:
+        return item
+    found = list(QUALIFIED_DEF.finditer(head))
+    if not found:
+        return item
+    m = found[-1]
+    flat = flat_name(m.group(1))
+    if name and flat.endswith(name.split("_")[-1]) and re.fullmatch(r"\w+", name):
+        flat = name                       # the name it was given (what callers use)
+    before = head[:m.start()]
+    lines = before.split("\n")
+    if not re.search(r"[\w*&>]\s*$", lines[-1]):   # no return type (constructor)
+        before += "void "
+    return before + flat + head[m.end(1):] + brace + body
+
+
+def unwrap_namespaces(code: str) -> str:
+    """Drop `namespace x {` and its closing brace (the split only looks at
+    top-level functions, so one inside a namespace would be lost)."""
+    out, stack, depth = [], [], 0
+    for line in code.split("\n"):
+        if NAMESPACE_OPEN.match(line):
+            stack.append(depth)
+            continue
+        s = line.strip()
+        if stack and depth == stack[-1] and s.startswith("}"):
+            stack.pop()                       # the namespace's own closing brace
+            line = s[1:].lstrip(";").strip()
+            if not line or line.startswith("//"):
+                continue
+        depth = max(0, depth + _depth_change(line))
+        out.append(line)
+    return "\n".join(out)
+
+
+def clean_for_monolith(code: str, name: str = None) -> str:
     """A function's rewrite as it goes into rewritten.cpp. Everything goes into ONE
     file, so one function's #ifdef _WIN32 without its #endif, or an extra '}',
     would hide every function after it from the split. Preprocessor lines and
     includes other than the standard library's are dropped; extra closing braces
-    at the end are removed."""
+    at the end are removed. Namespaces are unwrapped and `Class::method`
+    definitions become free functions, both of which the split can't see."""
     out = []
     for line in code.split("\n"):
         if PREPROC.match(line):
@@ -2283,7 +2339,12 @@ def clean_for_monolith(code: str) -> str:
         if m and m.group(1) not in STD_HEADERS:
             continue
         out.append(line)
-    code = "\n".join(out)
+    code = unwrap_namespaces("\n".join(out))
+    if "::" in code:
+        code = "\n\n".join(
+            flatten_function(it, name) if it.rstrip().endswith("}") and _func_name(it) and not
+            re.match(r"\s*(template\s*<[^>]*>\s*)?(struct|class|union|enum)\b", it) else it
+            for it in split_items(code))
     while brace_balance(code) < 0:
         i = code.rstrip().rfind("}")
         if i < 0:
@@ -2297,7 +2358,8 @@ def clean_for_monolith(code: str) -> str:
 def write_outputs(P: Paths, progress, order, keep_comments):
     """rewritten.cpp from every finished function (including ones waiting to be
     rewritten again: their current version stays until the new one replaces it)."""
-    names = {e["ghidra"]: e["name"] for e in progress.get("functions", {}).values()
+    names = {e["ghidra"]: flat_name(e["name"])
+             for e in progress.get("functions", {}).values()
              if e.get("name") and e["name"] != e["ghidra"]}
     codes, index = [], {}
     for key in order:
@@ -2308,12 +2370,12 @@ def write_outputs(P: Paths, progress, order, keep_comments):
                 code = f.read_text()
                 code, _ = keep_one_function(code if keep_comments else strip_comments(code),
                                             {e.get("name"), e.get("ghidra")})
-                code = clean_for_monolith(code)
+                code = clean_for_monolith(code, names.get(e["ghidra"]))
                 # apply names FIRST, then add the marker, so the marker's literal
                 # Ghidra name/address are never rewritten by apply_names
                 code = mark_function(apply_names(code, names), e["ghidra"], key)
                 codes.append(code)
-                final = e.get("name") or e["ghidra"]
+                final = flat_name(e.get("name")) or e["ghidra"]
                 index[final] = {"ghidra": e["ghidra"], "addr": key,
                                 "status": e.get("status"),
                                 "pieces": e.get("pieces"), "tiny": e.get("tiny", False)}
@@ -3963,6 +4025,21 @@ def write_shared_header(cfg: Config, fwd: list[_Unit], types: list[_Unit],
     cfg.shared_h.write_text("\n".join(out) + "\n")
 
 
+def classify_missing(tu, path: str, offset: int) -> str:
+    """What libclang made of the code at `offset` (for the report)."""
+    for c in tu.cursor.get_children():
+        if c.location.file is None or c.location.file.name != path:
+            continue
+        if c.extent.start.offset <= offset < c.extent.end.offset or \
+                offset <= c.extent.start.offset < offset + 400:
+            return {"NAMESPACE": "inside a namespace", "CLASS_DECL": "inside a class",
+                    "STRUCT_DECL": "inside a struct", "FUNCTION_TEMPLATE": "templates",
+                    "CLASS_TEMPLATE": "inside a class template",
+                    "FUNCTION_DECL": "inside another function"}.get(
+                        c.kind.name, c.kind.name.lower().replace("_", " "))
+    return "not understood by libclang"
+
+
 def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, FuncRecord]:
     """tu_dir: where to write the per-function files (default funcs/). Resume
     writes them to a scratch folder and then decides file by file what to keep."""
@@ -4294,6 +4371,48 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
             src_sha=hashlib.sha1(raw[s:e]).hexdigest()[:16],
         )
 
+    # ---- functions libclang didn't list (inside a class or namespace, a template,
+    # a Class::method of an unknown class...): cut them out by their //@ghidra
+    # marker instead, so they go to the fixer rather than vanishing
+    have = {r.ghidra_addr for r in records.values() if r.ghidra_addr}
+    covered = [(s0, e0) for s0, e0, _, _ in clean_spans]
+    starts = [s0 for s0, _ in covered]
+    carved: dict[str, int] = {}
+    for i, (pos, addr_b) in enumerate(markers):
+        addr = addr_b.decode()
+        if addr in have:
+            continue
+        j = bisect.bisect_right(starts, pos) - 1
+        if j >= 0 and covered[j][0] <= pos < covered[j][1]:
+            continue                       # sits inside a function that was found
+        end = markers[i + 1][0] if i + 1 < len(markers) else len(raw)
+        nxt = bisect.bisect_right(starts, pos)
+        if nxt < len(starts):
+            end = min(end, starts[nxt])
+        chunk = raw[pos:end].decode("utf-8", "replace")
+        first_nl = chunk.find("\n")
+        body_txt = chunk[first_nl + 1:] if first_nl >= 0 else ""
+        items = [it for it in split_items(body_txt) if it.strip()]
+        funcs_in = [it for it in items if it.rstrip().endswith("}") and _func_name(it)]
+        body_txt = (funcs_in[0] if funcs_in else "\n\n".join(items)).strip()
+        if not body_txt or "{" not in body_txt:
+            continue
+        why = classify_missing(tu2, parse_path, pos + prefix_len)
+        carved[why] = carved.get(why, 0) + 1
+        base = re.sub(r"\W", "_", _func_name(body_txt) or f"func_{addr}")
+        name = base if base not in records else f"{base}__{addr}"
+        safe = re.sub(r"[^A-Za-z0-9_]", "_", name)[:120]
+        (tu_dir / f"{safe}.cpp").write_text(include_line + body_txt + "\n")
+        records[name] = FuncRecord(
+            name=name, mangled=name, file=f"funcs/{safe}.cpp", start=pos, end=end,
+            ghidra_addr=addr, src_sha=hashlib.sha1(raw[pos:end]).hexdigest()[:16])
+        have.add(addr)
+    if carved:
+        log(cfg, f"  {sum(carved.values())} function(s) libclang didn't list were cut out "
+                 f"by their marker instead (" + ", ".join(
+                     f"{n} {k}" for k, n in sorted(carved.items(), key=lambda t: -t[1]))
+                 + "); the fixer will make them compile")
+
     # ---- globals.cpp (file-scope definitions) ----
     glob_lines = [include_line, "// ==== global definitions ===="]
     gnames = seen_global_names(globs)
@@ -4321,9 +4440,11 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
         text = raw.decode("utf-8", "replace")
         line_no = text.count("\n", 0, first_lost) + 1 if first_lost is not None else 0
         log(cfg, f"  !! the split found {len(records)} functions, but the rewrite has "
-                 f"{len(markers)}. libclang loses track of the file around line {line_no} "
-                 f"of {cfg.input_file.name}: everything after that is missing from the build. "
-                 f"The code just before it is in split_report.txt.")
+                 f"{len(markers)}. " + (
+                     f"libclang loses track of the file around line {line_no} of "
+                     f"{cfg.input_file.name}: everything after that is missing from the build. "
+                     f"The code just before it is in split_report.txt." if first_lost is not None
+                     else "The missing ones are spread through the file (see split_report.txt)."))
         if first_lost is not None:
             start = text.rfind("\n", 0, max(0, text.rfind("//@ghidra", 0, first_lost) - 1))
             lost_note = ["", f"== where the split lost track (line {line_no}) — the code before it:",
