@@ -1056,3 +1056,17 @@ def test_diagnostics_report_has_everything(tmp_path, model, capsys):
                  "build/split_report.txt", "Log of this run", "command:"):
         assert part in rep, part
     assert (tmp_path / "diagnostics" / "latest.md").read_text() == rep
+
+
+def test_guessed_declarations_dont_conflict_with_the_real_one(tmp_path, model):
+    # a caller's draft guesses its callee's parameters wrong: shared.h used to get
+    # both declarations, and calls matched the wrong one
+    model.rewrite_override["FUN_00001060"] = (
+        "int addNumbers(long *values);\nint g_counter = 0;\n\n"
+        "void bumpCounter() {\n    g_counter++;\n}", "bumpCounter")
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "split") == 0
+    header = (tmp_path / "build" / "shared.h").read_text()
+    assert len(re.findall(r"\baddNumbers\s*\(", header)) == 1
+    assert "addNumbers(int" in header.replace(" ", "")
+    assert by_name(tmp_path)["sumThree"]["compiles"]

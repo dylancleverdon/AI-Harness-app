@@ -4359,6 +4359,7 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
     seen_fwd: set[str] = set()
     seen_type: set[str] = set()
     seen_proto: set[str] = set()
+    proto_meta: list[tuple[str, bool]] = []     # (name, from a definition?) per proto
     seen_global: set[str] = set()
     namespaces = 0
     order = 0
@@ -4491,6 +4492,7 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
                 continue
             seen_proto.add(pkey)
             protos.append(_Unit("proto", fname_out, [proto], order))
+            proto_meta.append((fname_out, is_def))
 
         elif k == "CXX_METHOD":
             # out-of-line `Foo::bar` definitions: declared inside struct Foo already
@@ -4513,6 +4515,26 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
             seen_global.add(gkey)
             globs.append(_Unit("global", gname, [decl], order))
 
+    # Each draft declared the functions it calls with its own guess at their
+    # parameters, so one function could end up with many conflicting declarations
+    # (overloads) and calls matched a wrong one or none. A function the program
+    # defines is declared once, as defined; one it doesn't define keeps the
+    # first declaration only.
+    defined = {n for n, d in proto_meta if d}
+    kept, first = [], set()
+    dropped = 0
+    for u, (n, d) in zip(protos, proto_meta):
+        if (d if n in defined else n not in first):
+            kept.append(u)
+            first.add(n)
+        else:
+            dropped += 1
+    if dropped:
+        stats.notes.append(f"dropped {dropped} guessed declaration(s) of functions that "
+                           f"conflict with their real definition (or an earlier guess)")
+        struggle("split", "guessed declarations of called functions dropped from shared.h "
+                 "(they conflicted with the real definition)", n=dropped, handled=True)
+    protos = kept
     types = _order_units(types)
     write_shared_header(cfg, fwd, types, globs, protos)
 
@@ -5844,6 +5866,18 @@ def compile_fix_edit(cfg: Config, rec: FuncRecord, src: str, err: str) -> Option
     notes = error_notes(err, rec.file)
     if notes:
         msg += " (" + "; ".join(notes) + ")"
+    if re.search(r"undeclared identifier|no matching function|arguments to function call|"
+                 r"not a function", msg):
+        # the draft may call a function by a name it made up, or with a guessed
+        # signature: say what the original really calls, and how those are declared
+        try:
+            calls = list((ctx.pseudo_calls(rec) or {}).keys())[:12]
+        except Exception:
+            calls = []
+        if calls:
+            context += ("\nThe original (Ghidra's pseudocode) calls these functions; use these "
+                        "names and match their declarations:\n" + "\n".join(
+                            f"  {n}: {_proto_for(cfg, n) or '(no declaration)'}" for n in calls))
     new = ctx.line_edit(rec, src, line, f"The compiler says: {msg}. Fix it without changing "
                         f"what the code does; don't rename the function.", context=context)
     _FIX_TL.plan = ctx.last_plan
