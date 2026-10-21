@@ -5812,6 +5812,8 @@ def templated_fix(cfg: Config, rel_path: str, stderr: str) -> bool:
             r"use of undeclared identifier '([A-Za-z_][A-Za-z0-9_]*)'", stderr))):
         if re.search(rf"\b{re.escape(m)}\s*\(", src):
             continue
+        if GHIDRA_GLOBAL.match(m):
+            continue          # a global: declaring it here as a local would read 0
         if body_open != -1 and not re.search(rf"\b(uint64_t|auto)\s+{re.escape(m)}\b", src):
             decl = f"\n    uint64_t {m} = 0; // auto-declared (undeclared in the rewrite)\n"
             src = src[:body_open + 1] + decl + src[body_open + 1:]
@@ -6656,6 +6658,15 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
                                 "Code:", "```cpp", _read(src).strip(), "```"])
                     if notes:
                         out += ["Notes:"] + [f"- {n}" for n in notes]
+                    try:
+                        exp, idx = _load_pseudocode(cfg)
+                        ps = _pseudo_for(r, exp, idx)
+                    except Exception:
+                        ps = None
+                    if ps:
+                        out += ["Ghidra's pseudocode:", "```c", ps.strip()[:12000], "```"]
+                    if r.recovery:
+                        out.append(f"Recovered as: {r.recovery}")
 
     # ---- the rewrite's failures, with what the model actually answered
     try:
@@ -7065,11 +7076,130 @@ def _recover_window_patch(cfg: Config, rec: FuncRecord, pseudo: str,
     return ok
 
 
+GHIDRA_GLOBAL = re.compile(r"^(?:(?:_?DAT|PTR|UNK|s|u)_[0-9a-fA-F]{4,}\w*|PTR_\w+)$")
+FAITHFUL_START = "// ==== Ghidra globals used by functions rebuilt from pseudocode ===="
+FAITHFUL_END = "// ==== end of Ghidra globals used by rebuilt functions ===="
+_FAITHFUL_LOCK = threading.Lock()
+
+
+def _ret_and_params(head: str, name: str):
+    """(return type, [(type, name)]) from a function header; None if it isn't simple."""
+    m = re.search(rf"\b{re.escape(name)}\s*\((.*)\)\s*(?:const\s*)?;?\s*$", head.strip(), re.S)
+    if not m:
+        return None
+    parts = _split_params(m.group(1))
+    if parts is None:
+        return None
+    ret = head.strip()[:m.start()].replace('extern "C"', "").replace("static", "").strip()
+    return ret, parts
+
+
+def _match_prototype(body: str, name: str, proto: Optional[str]) -> str:
+    """Ghidra's version of a function, given the signature everything else in the
+    program uses for it (from shared.h), so callers and the definition agree.
+    Ghidra's own parameter and return types stay inside, so its code is unchanged:
+    the declared parameters are converted to them on the first lines, and the
+    values it returns are converted back."""
+    if not proto:
+        return body
+    i = body.find("{")
+    if i < 0:
+        return body
+    mine = _ret_and_params(body[:i], name)
+    theirs = _ret_and_params(proto, name)
+    if not mine or not theirs:
+        return body
+    gret, gparts = mine
+    pret, ptypes = theirs
+    gparams = [_param(x) for x in gparts]
+    if (_norm_type(gret) == _norm_type(pret) and len(gparams) == len(ptypes)
+            and all(_norm_type(t) == _norm_type(pt) for (t, _), pt in zip(gparams, ptypes))):
+        return body                                       # already the same
+    def castable(a, b):
+        simple = lambda t: "*" in t or all(w in SIG_BASE_TYPES or w in ("const", "volatile")
+                                           or w.startswith(("undefined", "u", "s"))
+                                           for w in re.findall(r"[A-Za-z_]\w*", t))
+        return simple(a) and simple(b)
+    params, prelude = [], []
+    for k, pt in enumerate(ptypes):
+        if k < len(gparams) and gparams[k][1]:
+            gt, gn = gparams[k]
+            if _norm_type(gt) == _norm_type(pt):
+                params.append(f"{pt} {gn}")
+            elif castable(gt, pt):
+                params.append(f"{pt} {gn}_in")
+                prelude.append(f"    {gt} {gn} = ({gt}){gn}_in;")
+            else:
+                return body
+        else:
+            params.append(f"{pt} arg_{k + 1}")
+    for gt, gn in gparams[len(ptypes):]:
+        if gn:
+            prelude.append(f"    {gt} {gn} = 0;   // not passed: the program declares fewer parameters")
+    text = body[i + 1:]
+    if _norm_type(gret) != _norm_type(pret):
+        if pret == "void":
+            text = re.sub(r"\breturn\s+([^;]+);", r"{ (void)(\1); return; }", text)
+        elif castable(gret, pret) or gret == "void":
+            text = re.sub(r"\breturn\s+([^;]+);", rf"return ({pret})(\1);", text)
+            text = re.sub(r"\breturn\s*;", "return {};", text)
+        else:
+            return body
+    head = f"{pret} {name}({', '.join(params)})"
+    return head + " {" + ("\n" + "\n".join(prelude) if prelude else "") + text
+
+
+def _declare_faithful_globals(cfg: Config, rec: FuncRecord, err: str) -> bool:
+    """Ghidra globals the rebuilt function uses that nothing declares: declared at
+    the top of its file (as Ghidra's raw memory, 64-bit) and defined once in
+    globals.cpp. True if any were added."""
+    names = sorted({n for n in re.findall(r"use of undeclared identifier '([A-Za-z_]\w*)'", err)
+                    if GHIDRA_GLOBAL.match(n)})
+    if not names:
+        return False
+    path = cfg.workdir / rec.file
+    text = path.read_text()
+    arr = {n for n in names if re.search(rf"\b{re.escape(n)}\s*\[", text)}
+    decls = "".join(f"extern uint64_t {n}{'[]' if n in arr else ''};\n" for n in names)
+    text = text.replace('#include "shared.h"\n', '#include "shared.h"\n' + decls, 1)
+    path.write_text(text)
+    with _FAITHFUL_LOCK:
+        g = cfg.globals_cpp.read_text() if cfg.globals_cpp.exists() else ""
+        have = set(re.findall(r"^uint64_t (\w+)", g, re.M))
+        new = [f"uint64_t {n}{'[1]' if n in arr else ' = 0'};" for n in names if n not in have]
+        if new:
+            if FAITHFUL_START in g:
+                a = g.index(FAITHFUL_END)
+                g = g[:a] + "\n".join(new) + "\n" + g[a:]
+            else:
+                g = g.rstrip("\n") + "\n\n" + "\n".join([FAITHFUL_START, *new, FAITHFUL_END]) + "\n"
+            cfg.globals_cpp.write_text(g)
+    return True
+
+
 def _recover_faithful(cfg: Config, rec: FuncRecord, pseudo: str) -> bool:
-    """Last resort: make Ghidra's own pseudocode compile against shared.h, with
-    its name fixed to match the prototype. Ugly but faithful to the binary."""
-    body = deghidra_text(_rename_defined_func(pseudo, re.sub(r"__dup\d+$", "", rec.name)))
-    ok, _ = _write_and_compile(cfg, rec, body)
+    """Ghidra's own pseudocode made to compile, using what the whole program
+    knows: callees by their names in the program, the signature everything
+    else uses for this function, Ghidra's globals declared, then the fixes
+    that need no model. Faithful to the binary; the improve stage makes it
+    readable later."""
+    base = re.sub(r"__dup\d+$", "", rec.name)
+    _, index = _load_pseudocode(cfg)
+    to_final = {v.get("ghidra"): k for k, v in index.items() if v.get("ghidra") and v.get("ghidra") != k}
+    own = next((v.get("ghidra") for k, v in index.items() if k in (rec.name, base)), None)
+    to_final.pop(own, None)
+    text = apply_names(pseudo, to_final) if to_final else pseudo
+    body = deghidra_text(_rename_defined_func(text, base))
+    body = _match_prototype(body, base, _proto_for(cfg, rec.name))
+    ok, err = _write_and_compile(cfg, rec, body)
+    if not ok and _declare_faithful_globals(cfg, rec, err):
+        ok, err, _ = compile_tu(cfg, rec.file)
+    if not ok:
+        ok = quick_fix(cfg, rec, {})
+        err = rec.last_error
+    if not ok:
+        struggle("recover", "Ghidra's pseudocode still doesn't compile: "
+                 + error_kind(_first_error(err or "", rec.file)[1]), rec.name)
     return ok
 
 
@@ -7087,8 +7217,15 @@ def recover_one(cfg: Config, rec: FuncRecord, export: dict, index: dict) -> bool
 
     big = len(pseudo) + len(orig_text) > cfg.model_ctx_chars
     rec.recovery_model = cfg.fix_model_used or ""
-    # Small steps first; the improve stage then improves whatever comes through.
-    # (a) error-window patching: start from the original decompiled body, which is
+    # (a) Ghidra's own pseudocode, made to compile with what the whole program
+    # knows (no model): it does what the binary does; improve makes it readable
+    phase("rebuilding from Ghidra's pseudocode (no model)")
+    if _recover_faithful(cfg, rec, pseudo):
+        rec.recovery = "faithful-pseudocode"
+        return _finish_recovery(cfg, rec)
+
+    # Then the model, in small steps; the improve stage improves what comes through.
+    # (b) error-window patching: start from the original decompiled body, which is
     # closer to correct than the stub, and fix only the lines around each error
     (cfg.workdir / rec.file).write_text(orig_text)
     phase("patching the lines around each error")
@@ -7098,12 +7235,6 @@ def recover_one(cfg: Config, rec: FuncRecord, export: dict, index: dict) -> bool
         if not _accept_model_fix(rec.name, orig_body, body):
             rec.recovery = "window-patch"
             return _finish_recovery(cfg, rec)
-
-    # (b) faithful: Ghidra's own pseudocode, made to compile (no model)
-    phase("faithful fallback (Ghidra's own pseudocode)")
-    if _recover_faithful(cfg, rec, pseudo):
-        rec.recovery = "faithful-pseudocode"
-        return _finish_recovery(cfg, rec)
 
     # (c) last resort: the model writes the function again from the pseudocode
     if proto and not big:
@@ -10409,6 +10540,8 @@ def declare_missing(cfg: Config, records: dict[str, FuncRecord]) -> int:
     uid = max([int(x) for x in re.findall(r"^//@unit (\d+)", cfg.shared_h.read_text(), re.M)]
               or [0]) + 1000
     head, defs = [], []
+    gtext = cfg.globals_cpp.read_text() if cfg.globals_cpp.exists() else ""
+    defined = set(re.findall(r"^uint64_t (\w+)", gtext, re.M))   # e.g. by a rebuilt function
     for n in kept:
         texts = [text_of.get(r.file, "") for r in by_name[n][:20]]
         uid += 1
@@ -10416,10 +10549,12 @@ def declare_missing(cfg: Config, records: dict[str, FuncRecord]) -> int:
             head += [f"//@unit {uid} proto {n}", f'extern "C" uint64_t {n}(...);']
         elif any(re.search(rf"\b{re.escape(n)}\s*\[", t) for t in texts):
             head += [f"//@unit {uid} global {n}", f"extern uint64_t {n}[];"]
-            defs.append(f"uint64_t {n}[1];")
+            if n not in defined:
+                defs.append(f"uint64_t {n}[1];")
         else:
             head += [f"//@unit {uid} global {n}", f"extern uint64_t {n};"]
-            defs.append(f"uint64_t {n} = 0;")
+            if n not in defined:
+                defs.append(f"uint64_t {n} = 0;")
     # every declaration must leave shared.h compiling; one that doesn't (it clashes
     # with something) is dropped, and if that can't be sorted out, none are added
     for _ in range(5):
@@ -11090,7 +11225,7 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--libclang", default=None, help="path to libclang .dylib/.so")
     g.add_argument("--callgraph", type=Path, default=None,
                    help="call graph for dependency order (default ghidra/callgraph.json)")
-    g.add_argument("--fix-attempts", type=int, default=6,
+    g.add_argument("--fix-attempts", type=int, default=2,
                    help="small edits the model may try per function that doesn't compile")
     g.add_argument("--flag", action="append", default=[], dest="extra_flags",
                    help="extra compile flag (repeatable), e.g. --flag -I/path")

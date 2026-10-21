@@ -1193,3 +1193,26 @@ def test_quick_fixes_are_remembered_and_quarantined_functions_rebuilt_right_away
         if r["quick_key"]:
             r["compiles"] = False
     (tmp_path / "build" / "manifest.json").write_text(json.dumps(m))
+
+
+def test_faithful_rebuild_uses_the_programs_names_and_signatures(tmp_path, model):
+    # a draft nothing can fix: it's rebuilt from Ghidra's pseudocode, which calls
+    # FUN_00001000 - known to the program as addNumbers
+    model.rewrite_override["FUN_00001010"] = (
+        "int sumThree(int a, int b, int c) {\n    return addNumbers(a, b, c, wrongThing);\n}",
+        "sumThree")
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "fix") == 0
+    r = by_name(tmp_path)["sumThree"]
+    assert r["compiles"] and r["recovery"] == "faithful-pseudocode"
+    code = (tmp_path / "build" / r["file"]).read_text()
+    assert "addNumbers(" in code and "FUN_00001000" not in code
+
+
+def test_match_prototype_keeps_ghidras_types_inside():
+    body = "long FUN_1(long param_1,int param_2) {\n  return param_1 + param_2;\n}"
+    out = dp._match_prototype(body, "FUN_1", "Pair *FUN_1(Pair *, int);")
+    assert out.startswith("Pair * FUN_1(Pair * param_1_in, int param_2) {")
+    assert "long param_1 = (long)param_1_in;" in out and "return (Pair *)(param_1 + param_2);" in out
+    out = dp._match_prototype("void FUN_2(long param_1) {\n  g(param_1);\n}", "FUN_2", "void FUN_2();")
+    assert "void FUN_2() {" in out and "long param_1 = 0;" in out
