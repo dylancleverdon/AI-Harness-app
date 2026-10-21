@@ -117,6 +117,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections import Counter
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, as_completed, wait
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
@@ -236,7 +237,7 @@ def phase(text: str) -> None:
             key = getattr(_BAR_TL, "key", None)
             if key in p.active:
                 p.active[key][1] = text
-            else:
+            elif len(p.active) == 1:
                 for v in p.active.values():
                     v[1] = text
 
@@ -4913,6 +4914,7 @@ class FuncRecord:
     recovery_model: str = ""  # the model the last recovery attempt used
     duplicate_of: str = ""  # merged into this identical function by the improve stage
     quick_key: str = ""     # the code + headers + quick-fix version the no-model fixes last ran on
+    retry_key: str = ""     # the learned fixes a quarantined function was last retried with
 
 
 def _load_libclang(cfg: Config):
@@ -6864,17 +6866,52 @@ def _join_tokens(toks: list[str]) -> str:
     return out
 
 
+def _keeps_meaning(before: str, after: str) -> bool:
+    """A learned fix may change types and casts, not what the line does: every call,
+    number and assignment in it is still there, and it isn't commented out."""
+    a = after.strip()
+    if not a or a.startswith(("//", "/*")):
+        return False
+    calls = lambda s: {c for c in re.findall(r"\b([A-Za-z_]\w*)\s*\(", s)
+                       if c not in CPP_KEYWORDS}
+    nums = lambda s: Counter(re.findall(r"\b0[xX][0-9a-fA-F]+|\b\d+(?:\.\d+)?\b", s))
+    assigns = lambda s: len(re.findall(r"(?<![=!<>+\-*/%&|^])=(?!=)", s))
+    return (calls(before) <= calls(after) and not (nums(before) - nums(after))
+            and assigns(after) >= assigns(before))
+
+
+def _map_tokens(toks: list[str], mapping: dict) -> list[str]:
+    out = []
+    for tok in toks:
+        if re.fullmatch(r"[A-Za-z_]\w*", tok) and tok not in CPP_KEYWORDS \
+                and tok not in RULE_LITERALS and not re.fullmatch(r"u?int\d+_t", tok):
+            tok = mapping.setdefault(tok, f"@{len(mapping) + 1}")
+        out.append(tok)
+    return out
+
+
+def _raw_tokens(text: str) -> list[str]:
+    return [tok for kind, tok, _, _ in tokens(text) if kind != "comment"]
+
+
 class FixLessons:
     """What the fix stage learned, shared by every function and kept between runs
-    (build/fix_lessons.json):
+    (build/fix_lessons.json; readable in build/learned_fixes.txt):
     - examples: per kind of error, a few edits that fixed it, shown to the model
       when another function has the same kind of error;
     - tried: per function, model edits that were undone, so the same edit isn't
       tried again;
-    - rules: one-line fixes (with the names made into placeholders) that keep
-      working are applied without the model."""
+    - rules: fixes learned from the model's edits, with the names made into
+      placeholders: the whole line, or just the few tokens around what changed
+      (so it matches in other lines too). A rule is tried without the model on
+      every function with the same kind of error from its FIRST success (a
+      candidate); each use is kept only if the function compiles, or that error is
+      gone without adding more, and is undone otherwise. Three successes (and
+      twice as many as failures) make it proven; one that keeps failing is retired.
+      These are this project's own; the script's built-in quick fixes are separate."""
 
-    PROMOTE = 3                     # successes before a fix becomes a rule
+    PROMOTE = 3                     # successes before a candidate is proven
+    TRY_CANDIDATES = 6              # candidates tried per error, at most
 
     def __init__(self, cfg: Config):
         self.path = cfg.workdir / "fix_lessons.json"
@@ -6886,6 +6923,39 @@ class FixLessons:
         for k in ("examples", "tried", "rules"):
             self.data.setdefault(k, {})
         self.applied = 0
+        self.tried_rules = 0
+        self.new_rules = 0
+        self.version = 0                # goes up whenever a rule is added or proven
+
+    @classmethod
+    def tier(cls, r: dict) -> str:
+        if r["bad"] >= 5 and r["bad"] > 3 * r["ok"]:
+            return "retired"
+        if r["ok"] >= cls.PROMOTE and r["ok"] > 2 * r["bad"]:
+            return "proven"
+        return "candidate" if r["ok"] >= 1 else "retired"
+
+    def fingerprint(self, kind: str) -> str:
+        """Which rules a function with this kind of error would get: when it
+        changes, functions that already had the quick fixes get them again."""
+        with self.lock:
+            ids = sorted(rid for rid, r in self.data["rules"].items()
+                         if r["kind"] == kind and self.tier(r) != "retired")
+        return text_sha("|".join(ids))[:12] if ids else ""
+
+    def _add_rule(self, kind: str, tb: list, ta: list, span: bool, origin: str) -> None:
+        rid = text_sha(kind + " ".join(tb) + "->" + " ".join(ta) + ("|span" if span else ""))[:16]
+        r = self.data["rules"].get(rid)
+        if r is None:
+            r = self.data["rules"][rid] = {"kind": kind, "before": tb, "after": ta, "ok": 0,
+                                           "bad": 0, "span": span, "from": origin,
+                                           "at": time.strftime("%Y-%m-%d %H:%M")}
+            self.new_rules += 1
+            self.version += 1
+        was = self.tier(r)
+        r["ok"] += 1
+        if was != "proven" and self.tier(r) == "proven":
+            self.version += 1
 
     def save(self):
         with self.lock:
@@ -6910,7 +6980,7 @@ class FixLessons:
             return None
         return "\n".join(before), "\n".join(after)
 
-    def learned(self, kind: str, msg: str, src: str, new: str) -> None:
+    def learned(self, kind: str, msg: str, src: str, new: str, origin: str = "") -> None:
         ch = self.change(src, new)
         if not ch:
             return
@@ -6920,16 +6990,30 @@ class FixLessons:
             ex = [e for e in ex if e["before"].strip() != before.strip()]
             ex.append({"error": msg[:160], "before": before.strip(), "after": after.strip()})
             self.data["examples"][kind] = ex[-4:]
-            if before.count("\n") == 0 and after.count("\n") <= 2 and before.strip():
-                mapping: dict = {}
-                tb = _rule_tokens(before, mapping)
-                ta = _rule_tokens(after, mapping)
-                # every placeholder in the fix must come from the original line
-                if tb and ta and all(t in tb for t in ta if t.startswith("@")):
-                    rid = text_sha(kind + " ".join(tb) + "->" + " ".join(ta))[:16]
-                    r = self.data["rules"].setdefault(rid, {"kind": kind, "before": tb,
-                                                            "after": ta, "ok": 0, "bad": 0})
-                    r["ok"] += 1
+            if not (before.count("\n") == 0 and after.count("\n") <= 2 and before.strip()
+                    and _keeps_meaning(before, after)):
+                return
+            mapping: dict = {}
+            tb = _rule_tokens(before, mapping)
+            ta = _rule_tokens(after, mapping)
+            # every placeholder in the fix must come from the original line
+            if tb and ta and all(t in tb for t in ta if t.startswith("@")):
+                self._add_rule(kind, tb, ta, False, origin)
+            # and the few tokens around what changed, to match inside other lines
+            rb, ra = _raw_tokens(before), _raw_tokens(after)
+            p = 0
+            while p < min(len(rb), len(ra)) and rb[p] == ra[p]:
+                p += 1
+            s = 0
+            while s < min(len(rb), len(ra)) - p and rb[-1 - s] == ra[-1 - s]:
+                s += 1
+            lo, hi_b, hi_a = max(0, p - 2), min(len(rb), len(rb) - s + 2), min(len(ra), len(ra) - s + 2)
+            wb, wa = rb[lo:hi_b], ra[lo:hi_a]
+            if len(wb) >= 3 and (lo > 0 or hi_b < len(rb)):
+                m2: dict = {}
+                sb, sa = _map_tokens(wb, m2), _map_tokens(wa, m2)
+                if sa and all(x in sb for x in sa if x.startswith("@")):
+                    self._add_rule(kind, sb, sa, True, origin)
 
     def failed(self, rel: str, src: str, new: str) -> None:
         ch = self.change(src, new)
@@ -6963,31 +7047,79 @@ class FixLessons:
         return "\n".join(out)
 
     def rules_for(self, kind: str) -> list[tuple[str, dict]]:
+        """Proven rules for this kind of error, then the most promising candidates."""
         with self.lock:
-            return [(rid, r) for rid, r in self.data["rules"].items()
-                    if r["kind"] == kind and r["ok"] >= self.PROMOTE and r["ok"] > 2 * r["bad"]]
+            live = [(rid, r) for rid, r in self.data["rules"].items()
+                    if r["kind"] == kind and self.tier(r) != "retired"]
+        proven = [x for x in live if self.tier(x[1]) == "proven"]
+        cand = sorted((x for x in live if self.tier(x[1]) == "candidate"),
+                      key=lambda x: (x[1]["bad"] - x[1]["ok"], x[0]))
+        return sorted(proven, key=lambda x: -x[1]["ok"]) + cand[:self.TRY_CANDIDATES]
 
     @staticmethod
     def apply(rule: dict, line: str) -> Optional[str]:
-        mapping: dict = {}
-        if _rule_tokens(line, mapping) != rule["before"]:
-            return None
-        back = {v: k for k, v in mapping.items()}
         indent = re.match(r"[ \t]*", line).group(0)
-        return indent + _join_tokens([back.get(t, t) for t in rule["after"]])
+        if not rule.get("span"):
+            mapping: dict = {}
+            if _rule_tokens(line, mapping) != rule["before"]:
+                return None
+            back = {v: k for k, v in mapping.items()}
+            new = indent + _join_tokens([back.get(t, t) for t in rule["after"]])
+        else:
+            toks, n = _raw_tokens(line), len(rule["before"])
+            for i in range(len(toks) - n + 1):
+                mapping = {}
+                if _map_tokens(toks[i:i + n], mapping) == rule["before"]:
+                    back = {v: k for k, v in mapping.items()}
+                    new = indent + _join_tokens(toks[:i] + [back.get(t, t) for t in rule["after"]]
+                                                + toks[i + n:])
+                    break
+            else:
+                return None
+        return new if _keeps_meaning(line, new) else None
 
     def rules_for_all(self) -> list:
         with self.lock:
-            return [r for r in self.data["rules"].values()
-                    if r["ok"] >= self.PROMOTE and r["ok"] > 2 * r["bad"]]
+            return [r for r in self.data["rules"].values() if self.tier(r) == "proven"]
+
+    def counts(self) -> dict:
+        with self.lock:
+            c = Counter(self.tier(r) for r in self.data["rules"].values())
+        return {k: c.get(k, 0) for k in ("proven", "candidate", "retired")}
+
+    def write_readable(self, path: Path) -> None:
+        """build/learned_fixes.txt: every rule, by tier, so the good ones can become
+        built-in quick fixes in the script."""
+        with self.lock:
+            rules = list(self.data["rules"].values())
+        out = ["Fixes this project learned from the model's edits (@1, @2 ... stand for any",
+               "name). Proven ones are applied without the model; candidates are tried on",
+               "every function with the same error and kept only where they work.", ""]
+        for tier in ("proven", "candidate", "retired"):
+            rs = sorted((r for r in rules if self.tier(r) == tier), key=lambda r: (-r["ok"], r["bad"]))
+            out.append(f"== {tier}: {len(rs)}")
+            for r in rs[:300]:
+                out.append(f"[{r['ok']} worked, {r['bad']} didn't] {r['kind']}"
+                           + (" (part of a line)" if r.get("span") else ""))
+                out.append(f"    {_join_tokens(r['before'])}")
+                out.append(f"  → {_join_tokens(r['after'])}")
+            out.append("")
+        try:
+            write_atomic(path, "\n".join(out) + "\n")
+        except OSError:
+            pass
 
     def rule_result(self, rid: str, ok: bool) -> None:
         with self.lock:
             r = self.data["rules"].get(rid)
             if r:
+                was = self.tier(r)
                 r["ok" if ok else "bad"] += 1
-        if ok:
-            self.applied += 1
+                if was != "proven" and self.tier(r) == "proven":
+                    self.version += 1
+            self.tried_rules += 1
+            if ok:
+                self.applied += 1
 
 
 _LESSONS: dict = {}
@@ -7150,7 +7282,7 @@ def _rule_fix(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str, line: 
         new = "\n".join(lines[:line - 1] + [new_line] + lines[line:])
         if lessons.is_repeat(rel, new):
             continue
-        phase("a fix learned from other functions")
+        phase(f"a fix learned from other functions ({lessons.tier(rule)})")
         (cfg.workdir / rel).write_text(new)
         ok, err2, _ = compile_tu(cfg, rel)
         first = _first_error(err, rel)
@@ -7250,7 +7382,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             if ok3:
                 cache[key] = (cfg.workdir / rel).read_text()
                 save_cache(cfg, cache)
-                lessons.learned(kind, emsg, src, new_text)
+                lessons.learned(kind, emsg, src, new_text, rec.name)
                 rec.compiles = True
                 return True
             # keep the edit only if it got somewhere: fewer errors, or the error it
@@ -7260,7 +7392,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             if n_errors(err3) < n_errors(err) or (after != before and n_errors(err3) <= n_errors(err)):
                 rec.last_error = keep_error(err3)
                 if before[0] and before not in _all_errors(err3, rel):
-                    lessons.learned(kind, emsg, src, new_text)    # that error is gone
+                    lessons.learned(kind, emsg, src, new_text, rec.name)    # that error is gone
             else:
                 (cfg.workdir / rel).write_text(src)
                 lessons.failed(rel, src, new_text)
@@ -7394,6 +7526,13 @@ def rates_lines(P: "Paths", records: Optional[dict], st: dict) -> list[str]:
         done = fs["fixed"] + fs["quarantined"]
         now.update(fix_tried=done, fix_success_pct=round(100 * fs["fixed"] / done, 1),
                    fix_per_hour=round(done / max(time.time() - fs["start"], 60) * 3600))
+    lr = RUN_CTX.get("learned")
+    if lr:
+        now["learned_proven"] = lr.get("proven", 0)
+        if lr.get("tried"):
+            now["learned_kept_pct"] = round(100 * lr["kept"] / lr["tried"], 1)
+    if RUN_CTX.get("rescued"):
+        now["rescued"] = RUN_CTX["rescued"]
     tr = RUN_CTX.get("test_run")
     if tr and tr.get("cases"):
         now["test_pass_pct"] = round(100 * tr["passed"] / tr["cases"], 1)
@@ -7405,7 +7544,9 @@ def rates_lines(P: "Paths", records: Optional[dict], st: dict) -> list[str]:
     cols = [("compile_pct", "compile %"), ("quarantined_pct", "quarantined %"),
             ("to_fix", "to fix"), ("fix_tried", "fixer tried"),
             ("fix_success_pct", "fixer success %"), ("fix_per_hour", "fixer per hour"),
-            ("recover_success_pct", "recover success %"), ("test_pass_pct", "test pass %")]
+            ("recover_success_pct", "recover success %"), ("learned_proven", "learned fixes"),
+            ("learned_kept_pct", "learned kept %"), ("rescued", "rescued"),
+            ("test_pass_pct", "test pass %")]
     rows = hist[-4:] + [now]
     out = ["rates (this run last; earlier runs above it):",
            "  " + f"{'run':12}" + "".join(f"{h:>19}" for _, h in cols)]
@@ -7531,7 +7672,7 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
     for name in ("split_report.txt", "libclang_parse_errors.txt", "header_repair_report.txt",
                  "globals_repair_report.txt", "fix_report.txt", "first_error.txt",
                  "header_errors.txt", "link_report.txt", "link_errors.txt",
-                 "improve_report.txt", "fix_lessons.json", "test/test_report.txt"):
+                 "improve_report.txt", "learned_fixes.txt", "test/test_report.txt"):
         f = P.build / name
         if f.exists():
             section(f"build/{name}", _read(f))
@@ -7571,16 +7712,20 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
     # (and no new quick fix was added since) is skipped: they'd do the same again
     hk = _sweep_key(cfg)
 
+    lessons = fix_lessons(cfg)
+
     def qkey(rec):
         try:
             text = (cfg.workdir / rec.file).read_text()
         except OSError:
             text = ""
-        return hashlib.sha1(f"{QUICK_FIX_VERSION}|{hk}|{text}".encode()).hexdigest()[:16]
+        kind = error_kind(_first_error(rec.last_error, rec.file)[1]) if rec.last_error else ""
+        return hashlib.sha1(f"{QUICK_FIX_VERSION}|{hk}|{text}|{lessons.fingerprint(kind)}"
+                            .encode()).hexdigest()[:16]
     todo = [m for m in failing if records[m].quick_key != qkey(records[m])]
     if len(todo) < len(failing):
         log(cfg, show=True, msg=f"  quick fixes: {len(failing) - len(todo)} function(s) already had "
-                                f"them and haven't changed since — skipped")
+                                f"them (and no new learned fix applies) — skipped")
     if todo:
         qp = Progress(len(todo), 0, title="quick fixes for every failing function (no model)")
         qn = [0]
@@ -7641,24 +7786,32 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
                  f"{'fixed' if ok else 'quarantined, then ' + how if how else 'quarantined'} "
                  f"({fmt_duration(time.time() - t1)})")
 
-    lessons = fix_lessons(cfg)
     export, index = ({}, {}) if cfg.no_pseudo or cfg.recover_later else _load_pseudocode(cfg)
+    retried_at = [lessons.version]
 
     def checkpoint():
         # this loop can run for hours; save so a rerun picks up from here
         save_manifest(cfg, records)
         save_cache(cfg, cache)
         lessons.save()
+        # a fix learned since the last look: try it on what's already quarantined
+        # (a few at a time, so saving isn't held up for long)
+        if lessons.version != retried_at[0]:
+            retried_at[0] = lessons.version
+            with prog.lock:
+                busy = set(prog.active)
+            n = retry_quarantined(cfg, records, cache, limit=40, busy=busy)
+            if n:
+                fixed[0] += n
     try:
         work_pool(cfg.workers, list(enumerate(failing, 1)), one, 25, checkpoint)
     finally:
         prog.close()
         lessons.save()
+    # everything learned this run, on everything quarantined
+    retry_quarantined(cfg, records, cache)
     save_cache(cfg, cache)
-    n_rules = len(lessons.rules_for_all())
-    if lessons.applied or n_rules:
-        log(cfg, show=True, msg=f"  learned: {n_rules} fix(es) the model no longer needs to "
-                                f"make, used {lessons.applied} time(s) this run")
+    report_learned(cfg, lessons)
     if MODEL_STATS["no_answer"]:
         struggle("fix", "small edits the model couldn't give a usable answer for",
                  n=MODEL_STATS["no_answer"], handled=True)
@@ -11517,6 +11670,77 @@ def restore_missing_files(cfg: Config, records: dict[str, FuncRecord]) -> int:
     return len(missing)
 
 
+def retry_quarantined(cfg: Config, records: dict[str, FuncRecord], cache: dict,
+                      limit: Optional[int] = None, busy: Optional[set] = None) -> int:
+    """Quarantined functions get the fixes learned since they were quarantined:
+    their original code goes back, the quick fixes (with every learned fix for its
+    kind of error) run, and it's kept only if it compiles now. A function is retried
+    only when the learned fixes for its error have changed since its last retry."""
+    lessons = fix_lessons(cfg)
+    todo = []
+    for m, r in records.items():
+        if not r.quarantined or (busy and m in busy) or not r.last_error:
+            continue
+        kind = error_kind(_first_error(r.last_error, r.file)[1])
+        fp = lessons.fingerprint(kind)
+        if fp and r.retry_key != fp and (cfg.quarantine_dir / Path(r.file).name).exists():
+            todo.append((m, fp))
+    if limit:
+        todo = todo[:limit]
+    if not todo:
+        return 0
+    rescued = 0
+    title = "quarantined functions, with the fixes learned since"
+    prog = Progress(len(todo), 0, title=title) if limit is None else None
+    for m, fp in todo:
+        rec = records[m]
+        path = cfg.workdir / rec.file
+        if prog:
+            prog.begin(m, rec.name)
+        try:
+            stub = path.read_text()
+            path.write_text((cfg.quarantine_dir / Path(rec.file).name).read_text())
+            rec.compiles = False
+            if quick_fix(cfg, rec, cache):
+                rec.quarantined = False
+                rec.recovery = "learned fix"
+                rescued += 1
+                write_note(cfg, rec.file, "[compile] fixed after quarantine by fixes learned "
+                                          "from other functions")
+                log(cfg, show=True, msg=f"    {rec.name} -> fixed after quarantine (learned fix)")
+            else:
+                path.write_text(stub)               # stays quarantined
+                rec.compiles = False
+            rec.retry_key = fp
+        except OSError:
+            pass
+        finally:
+            if prog:
+                prog.end(m)
+    if prog:
+        prog.close()
+    RUN_CTX["rescued"] = RUN_CTX.get("rescued", 0) + rescued
+    if rescued or limit is None:
+        log(cfg, show=True, msg=f"  learned fixes on quarantined functions: {rescued} of "
+                                f"{len(todo)} retried compile now")
+    save_manifest(cfg, records)
+    return rescued
+
+
+def report_learned(cfg: Config, lessons: "FixLessons") -> None:
+    c = lessons.counts()
+    lessons.write_readable(cfg.workdir / "learned_fixes.txt")
+    if lessons.tried_rules or sum(c.values()):
+        kept = (f", {round(100 * lessons.applied / lessons.tried_rules)}% kept"
+                if lessons.tried_rules else "")
+        log(cfg, show=True, msg=f"  learned fixes: {c['proven']} proven, {c['candidate']} being "
+                                f"tried, {c['retired']} retired ({lessons.new_rules} new this "
+                                f"run); used {lessons.applied} of {lessons.tried_rules} time(s) "
+                                f"tried{kept}; {RUN_CTX.get('rescued', 0)} quarantined "
+                                f"function(s) rescued. All in build/learned_fixes.txt")
+    RUN_CTX["learned"] = {"tried": lessons.tried_rules, "kept": lessons.applied, **c}
+
+
 def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
     write_intrinsics(cfg)            # --from fix skips the split: bring the helpers up to date
     restore_missing_files(cfg, records)
@@ -11524,6 +11748,8 @@ def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
     save_manifest(cfg, records)
     n_failing = sum(1 for r in records.values() if not r.compiles and not r.quarantined)
     if not n_failing:
+        retry_quarantined(cfg, records, load_cache(cfg))
+        save_manifest(cfg, records)
         log(cfg, show=True, msg="  nothing to fix")
         return
     if not model_check(cfg):
@@ -11535,6 +11761,7 @@ def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
                      f"the deterministic fixes can't handle.")
             sys.exit(2)
         log(cfg, "  --force: continuing without the model")
+    retry_quarantined(cfg, records, load_cache(cfg))
     log(cfg, "  » dependency order + fixer loop")
     order = build_dep_order(cfg, records)
     fixer_loop(cfg, records, order)
@@ -13113,6 +13340,8 @@ def main(argv=None) -> int:
     RUN_CTX.pop("quick_done", None)
     RUN_CTX.pop("recover_run", None)
     RUN_CTX.pop("test_run", None)
+    RUN_CTX.pop("learned", None)
+    RUN_CTX.pop("rescued", None)
     SHOW_ALL["on"] = bool(getattr(args, "verbose", False))
     REPORTED["done"] = False
     _PSEUDO_CACHE.clear()

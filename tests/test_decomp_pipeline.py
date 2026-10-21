@@ -1498,3 +1498,79 @@ def test_find_factory_follows_privacy_and_underscores():
     assert dp._find_factory("AcmeFactory", {"other", "Thing_Factory"}, m)[0] == "Thing_Factory"
     name, why = dp._find_factory("AcmeFactory", {"other"}, m)
     assert name is None and "Name1Factory" in why
+
+
+# ---- fixes learned from the model's edits: tried from the first success, also
+# inside other lines, never changing what a line does; quarantined functions get them
+
+def test_learned_fix_is_tried_from_its_first_success_and_inside_other_lines(tmp_path):
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path)
+    L = dp.FixLessons(cfg)
+    kind = "cannot cast from type 'X' to pointer type 'X'"
+    L.learned(kind, "msg", "  p = (float *)val;\n", "  p = (float *)(uintptr_t)val;\n", "f1")
+    rules = L.rules_for(kind)
+    assert rules and all(L.tier(r) == "candidate" for _, r in rules)
+    span = next(r for _, r in rules if r.get("span"))
+    # a different line, a different name: the part around the change still matches
+    assert dp.FixLessons.apply(span, "    q = (char *)buf;") == "    q = (char*)(uintptr_t)buf;"
+    assert dp.FixLessons.apply(span, "    return x + 1;") is None
+    fp = L.fingerprint(kind)
+    for rid, _ in rules:
+        L.rule_result(rid, True)
+        L.rule_result(rid, True)
+    assert all(L.tier(r) == "proven" for _, r in L.rules_for(kind))
+    assert L.fingerprint(kind) == fp                 # same rules: nothing new to retry
+    rid = rules[0][0]
+    for _ in range(12):
+        L.rule_result(rid, False)
+    assert L.tier(L.data["rules"][rid]) == "retired"
+    L.write_readable(tmp_path / "learned_fixes.txt")
+    text = (tmp_path / "learned_fixes.txt").read_text()
+    assert "== proven" in text and "== retired: 1" in text
+
+
+def test_learned_fixes_never_change_what_a_line_does():
+    assert dp._keeps_meaning("x = (int *)p;", "x = (int *)(uintptr_t)p;")
+    assert not dp._keeps_meaning("x = foo(a);", "x = 0;")              # a call dropped
+    assert not dp._keeps_meaning("x = a + 4;", "x = a;")               # a number dropped
+    assert not dp._keeps_meaning("x = y;", "(void)y;")                 # an assignment dropped
+    assert not dp._keeps_meaning("x = y;", "// x = y;")                # commented out
+
+
+def test_quarantined_functions_get_fixes_learned_after_them(tmp_path, monkeypatch):
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path)
+    (tmp_path / "funcs").mkdir()
+    cfg.quarantine_dir.mkdir(parents=True)
+    err = "funcs/f.c:3:5: error: cannot cast from type 'long' to pointer type 'float *'\n"
+    recs = {}
+    for n in ("good", "bad"):
+        (tmp_path / "funcs" / f"{n}.c").write_text("// QUARANTINED stub\n")
+        (cfg.quarantine_dir / f"{n}.c").write_text(f"ORIGINAL {n}\n")
+        recs[n] = dp.FuncRecord(name=n, mangled=n, file=f"funcs/{n}.c", start=0, end=0,
+                                quarantined=True, last_error=err.replace("f.c", f"{n}.c"))
+    monkeypatch.setattr(dp, "_LESSONS", {})
+    monkeypatch.setattr(dp, "save_manifest", lambda cfg, records: None)
+    calls = []
+
+    def fake_quick_fix(cfg, rec, cache):
+        calls.append(rec.name)
+        text = (cfg.workdir / rec.file).read_text()
+        assert text.startswith("ORIGINAL")          # works on the original, not the stub
+        if rec.name == "good":
+            rec.compiles = True
+            return True
+        (cfg.workdir / rec.file).write_text("half-fixed\n")
+        return False
+    monkeypatch.setattr(dp, "quick_fix", fake_quick_fix)
+    # nothing learned for this error yet: nothing to retry
+    assert dp.retry_quarantined(cfg, recs, {}) == 0 and not calls
+    L = dp.fix_lessons(cfg)
+    L.learned(dp.error_kind("cannot cast from type 'long' to pointer type 'float *'"), "m",
+              "p = (float *)v;", "p = (float *)(uintptr_t)v;", "elsewhere")
+    assert dp.retry_quarantined(cfg, recs, {}) == 1
+    assert not recs["good"].quarantined and recs["good"].compiles
+    assert recs["bad"].quarantined and not recs["bad"].compiles
+    assert (tmp_path / "funcs" / "bad.c").read_text() == "// QUARANTINED stub\n"   # put back
+    # the same learned fixes again: not retried
+    calls.clear()
+    assert dp.retry_quarantined(cfg, recs, {}) == 0 and not calls
