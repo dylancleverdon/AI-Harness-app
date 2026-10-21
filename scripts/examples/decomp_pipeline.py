@@ -2208,18 +2208,50 @@ def _depth_change(line):
     return d
 
 
+def _brace_paren_change(line):
+    """(change in {} depth, change in ()/[] depth), ignoring string/char literals."""
+    b = p = i = 0
+    n = len(line)
+    while i < n:
+        ch = line[i]
+        if ch in "\"'":
+            j = i + 1
+            while j < n and line[j] != ch:
+                j += 2 if line[j] == "\\" else 1
+            i = j + 1
+            continue
+        if ch == "{":
+            b += 1
+        elif ch == "}":
+            b -= 1
+        elif ch in "([":
+            p += 1
+        elif ch in ")]":
+            p -= 1
+        i += 1
+    return b, p
+
+
 def split_items(code):
-    """Top-level pieces of a file: an #include, a declaration, a struct, a function."""
-    items, cur, depth = [], [], 0
+    """Top-level pieces of a file: an #include, a declaration, a struct, a function.
+    Braces decide where a function ends; parentheses only count outside braces (a
+    header split over lines), so an extra ')' inside a body can't cut it apart."""
+    items, cur, depth, parens = [], [], 0, 0
     for line in code.split("\n"):
         s = line.strip()
         if not cur and not s:
             continue
         cur.append(line)
-        depth = max(0, depth + _depth_change(line))
+        db, dp = _brace_paren_change(line)
+        was = depth
+        depth = max(0, depth + db)
+        if was == 0 and depth == 0:
+            parens = max(0, parens + dp)
+        else:
+            parens = 0                     # inside braces: parentheses don't matter
         last = next((l.strip() for l in reversed(cur) if l.strip()), "")
-        if depth == 0 and ((not s and not last.endswith(")")) or s.startswith("#")
-                           or s.endswith((";", "}"))):
+        if depth == 0 and parens == 0 and ((not s and not last.endswith(")"))
+                                           or s.startswith("#") or s.endswith((";", "}"))):
             items.append("\n".join(cur).rstrip())
             cur = []
     if cur:
@@ -2232,9 +2264,18 @@ def combine(codes):
     declarations once (before the functions), functions in program order."""
     includes, types, decls, funcs, seen = [], [], [], [], set()
     for code in codes:
+        in_function = False
         for item in split_items(code):
             first = item.split("\n", 1)[0].strip()
             norm = re.sub(r"\s+", " ", item).strip()
+            if first.startswith("//@ghidra"):
+                in_function = True
+            if in_function:
+                # the function and anything after it stay together, in place: a
+                # stray "}" or "return 0;" moved away (or dropped as a duplicate of
+                # another function's) would leave this function unclosed
+                funcs.append(item)
+                continue
             if IMPORT_RE.match(first):
                 if norm not in seen:
                     seen.add(norm)
@@ -5440,6 +5481,24 @@ def templated_fix(cfg: Config, rel_path: str, stderr: str) -> bool:
             decl = f"\n    uint64_t {m} = 0; // auto-declared (undeclared in the rewrite)\n"
             src = src[:body_open + 1] + decl + src[body_open + 1:]
 
+    # "cast from pointer to smaller type 'int' loses information": the original
+    # was 32-bit code. (int)(uintptr_t)p keeps exactly what the cast did.
+    lines = src.split("\n")
+    name = Path(rel_path).name
+    for l in stderr.splitlines():
+        m = DIAG_RE.match(l.strip())
+        if not (m and "cast from pointer to smaller type" in m.group("msg")
+                and Path(m.group("file")).name == name):
+            continue
+        ln, col = int(m.group("line")) - 1, int(m.group("col")) - 1
+        if not 0 <= ln < len(lines):
+            continue
+        text = lines[ln]
+        c = re.match(r"\(\s*(?:const\s+)?(?:unsigned\s+|signed\s+)?[A-Za-z_]\w*\s*\)", text[col:])
+        if c and "uintptr_t" not in text[col:col + c.end() + 12]:
+            lines[ln] = text[:col + c.end()] + "(uintptr_t)" + text[col + c.end():]
+    src = "\n".join(lines)
+
     if src != orig:
         src_path.write_text(src)
         return True
@@ -5564,6 +5623,180 @@ def _first_error(err: str, rel: str) -> tuple[int, str]:
     return 0, (next((l for l in err.splitlines() if "error" in l), "") or err[:200]).strip()
 
 
+def error_kind(msg: str) -> str:
+    """A compile error with its names and numbers taken out, so the same kind of
+    error groups together ("use of undeclared identifier 'X'")."""
+    msg = re.sub(r"'[^']*'", "'X'", msg)
+    return re.sub(r"\b\d+\b", "N", msg)[:120]
+
+
+# names kept as they are in a learned rule (types and library calls mean the same
+# thing in every function; everything else is a placeholder)
+RULE_LITERALS = set("""size_t ssize_t uintptr_t intptr_t ptrdiff_t NULL nullptr std malloc
+calloc realloc free memcpy memset memmove memcmp strlen strcpy strcmp strncpy printf
+sprintf snprintf fprintf sinf cosf sqrtf fabsf floorf ceilf powf sin cos sqrt fabs
+static_cast reinterpret_cast const_cast true false""".split())
+
+
+def _rule_tokens(text: str, mapping: dict) -> Optional[list[str]]:
+    out = []
+    for kind, tok, _, _ in tokens(text):
+        if kind == "comment":
+            continue
+        if kind == "ident" and tok not in CPP_KEYWORDS and tok not in RULE_LITERALS \
+                and not re.fullmatch(r"u?int\d+_t", tok):
+            tok = mapping.setdefault(tok, f"@{len(mapping) + 1}")
+        out.append(tok)
+    return out
+
+
+def _join_tokens(toks: list[str]) -> str:
+    out = ""
+    for t in toks:
+        if out and (re.match(r"[\w@]", t) and re.search(r"[\w@]$", out)
+                    or t in ("=", "==", "!=", "+=", "-=", "&&", "||", "?", ":")
+                    or out.endswith((",", "=", "&&", "||", "?", ":"))):
+            out += " "
+        out += t
+    return out
+
+
+class FixLessons:
+    """What the fix stage learned, shared by every function and kept between runs
+    (build/fix_lessons.json):
+    - examples: per kind of error, a few edits that fixed it, shown to the model
+      when another function has the same kind of error;
+    - tried: per function, model edits that were undone, so the same edit isn't
+      tried again;
+    - rules: one-line fixes (with the names made into placeholders) that keep
+      working are applied without the model."""
+
+    PROMOTE = 3                     # successes before a fix becomes a rule
+
+    def __init__(self, cfg: Config):
+        self.path = cfg.workdir / "fix_lessons.json"
+        self.lock = threading.Lock()
+        try:
+            self.data = json.loads(self.path.read_text())
+        except Exception:
+            self.data = {}
+        for k in ("examples", "tried", "rules"):
+            self.data.setdefault(k, {})
+        self.applied = 0
+
+    def save(self):
+        with self.lock:
+            text = json.dumps(self.data, indent=0)
+        try:
+            write_atomic(self.path, text)
+        except OSError:
+            pass
+
+    @staticmethod
+    def change(src: str, new: str) -> Optional[tuple[str, str]]:
+        """The lines an edit changed: (before, after), or None if it's too big."""
+        a, b = src.split("\n"), new.split("\n")
+        i = 0
+        while i < min(len(a), len(b)) and a[i] == b[i]:
+            i += 1
+        j = 0
+        while j < min(len(a), len(b)) - i and a[-1 - j] == b[-1 - j]:
+            j += 1
+        before, after = a[i:len(a) - j], b[i:len(b) - j]
+        if not before and not after or len(before) > 8 or len(after) > 8:
+            return None
+        return "\n".join(before), "\n".join(after)
+
+    def learned(self, kind: str, msg: str, src: str, new: str) -> None:
+        ch = self.change(src, new)
+        if not ch:
+            return
+        before, after = ch
+        with self.lock:
+            ex = self.data["examples"].setdefault(kind, [])
+            ex = [e for e in ex if e["before"].strip() != before.strip()]
+            ex.append({"error": msg[:160], "before": before.strip(), "after": after.strip()})
+            self.data["examples"][kind] = ex[-4:]
+            if before.count("\n") == 0 and after.count("\n") <= 2 and before.strip():
+                mapping: dict = {}
+                tb = _rule_tokens(before, mapping)
+                ta = _rule_tokens(after, mapping)
+                # every placeholder in the fix must come from the original line
+                if tb and ta and all(t in tb for t in ta if t.startswith("@")):
+                    rid = text_sha(kind + " ".join(tb) + "->" + " ".join(ta))[:16]
+                    r = self.data["rules"].setdefault(rid, {"kind": kind, "before": tb,
+                                                            "after": ta, "ok": 0, "bad": 0})
+                    r["ok"] += 1
+
+    def failed(self, rel: str, src: str, new: str) -> None:
+        ch = self.change(src, new)
+        with self.lock:
+            t = self.data["tried"].setdefault(rel, [])
+            t.append({"sha": text_sha(new)[:16],
+                      "before": ch[0].strip()[:300] if ch else "",
+                      "after": ch[1].strip()[:300] if ch else ""})
+            self.data["tried"][rel] = t[-8:]
+
+    def is_repeat(self, rel: str, new: str) -> bool:
+        sha = text_sha(new)[:16]
+        with self.lock:
+            return any(t["sha"] == sha for t in self.data["tried"].get(rel, []))
+
+    def prompt(self, kind: str, rel: str) -> str:
+        """Examples for this kind of error, and edits not to make again."""
+        with self.lock:
+            ex = list(self.data["examples"].get(kind, []))[-3:]
+            bad = [t for t in self.data["tried"].get(rel, []) if t["after"]][-3:]
+        out = []
+        if ex:
+            out.append("Edits that fixed this kind of error in other functions:")
+            for e in ex:
+                out.append(f"  before: {e['before'][:200]}\n  after:  {e['after'][:200]}")
+        if bad:
+            out.append("Edits already tried on this function that did NOT work (don't "
+                       "repeat them):")
+            for t in bad:
+                out.append(f"  {t['before'][:150]}  ->  {t['after'][:150]}")
+        return "\n".join(out)
+
+    def rules_for(self, kind: str) -> list[tuple[str, dict]]:
+        with self.lock:
+            return [(rid, r) for rid, r in self.data["rules"].items()
+                    if r["kind"] == kind and r["ok"] >= self.PROMOTE and r["ok"] > 2 * r["bad"]]
+
+    @staticmethod
+    def apply(rule: dict, line: str) -> Optional[str]:
+        mapping: dict = {}
+        if _rule_tokens(line, mapping) != rule["before"]:
+            return None
+        back = {v: k for k, v in mapping.items()}
+        indent = re.match(r"[ \t]*", line).group(0)
+        return indent + _join_tokens([back.get(t, t) for t in rule["after"]])
+
+    def rules_for_all(self) -> list:
+        with self.lock:
+            return [r for r in self.data["rules"].values()
+                    if r["ok"] >= self.PROMOTE and r["ok"] > 2 * r["bad"]]
+
+    def rule_result(self, rid: str, ok: bool) -> None:
+        with self.lock:
+            r = self.data["rules"].get(rid)
+            if r:
+                r["ok" if ok else "bad"] += 1
+        if ok:
+            self.applied += 1
+
+
+_LESSONS: dict = {}
+
+
+def fix_lessons(cfg: Config) -> FixLessons:
+    key = str(cfg.workdir)
+    if key not in _LESSONS:
+        _LESSONS[key] = FixLessons(cfg)
+    return _LESSONS[key]
+
+
 def compile_fix_edit(cfg: Config, rec: FuncRecord, src: str, err: str) -> Optional[str]:
     """Plan and make one small edit to the lines with the first compile error."""
     line, msg = _first_error(err, rec.file)
@@ -5578,15 +5811,59 @@ def compile_fix_edit(cfg: Config, rec: FuncRecord, src: str, err: str) -> Option
         _FIXCTX["ctx"] = ctx
     ctx.model = cfg.fix_model_used
     decls = gather_declarations(cfg, extract_error_symbols(err))
+    learned = fix_lessons(cfg).prompt(error_kind(msg), rec.file)
+    context = "\n".join(x for x in (
+        f"Declarations the program already has (use them, don't redefine them):\n{decls}"
+        if decls else "", learned) if x)
     new = ctx.line_edit(rec, src, line, f"The compiler says: {msg}. Fix it without changing "
-                        f"what the code does; don't rename the function.",
-                        context=(f"Declarations the program already has (use them, don't "
-                                 f"redefine them):\n{decls}" if decls else ""))
+                        f"what the code does; don't rename the function.", context=context)
     _FIX_TL.plan = ctx.last_plan
     MODEL_STATS["calls"] += 1
     if new is None:
         MODEL_STATS["no_answer"] += 1
     return new
+
+
+def _all_errors(err: str, rel: str) -> list[tuple[int, str]]:
+    name = Path(rel).name
+    out = []
+    for l in err.splitlines():
+        m = DIAG_RE.match(l.strip())
+        if m and "error" in m.group("sev") and Path(m.group("file")).name == name:
+            out.append((int(m.group("line")), m.group("msg")))
+    return out
+
+
+def _rule_fix(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str, line: int,
+              kind: str, lessons: FixLessons) -> bool:
+    """Try the fixes learned for this kind of error on the flagged line. True if
+    one was kept (it compiles now, or the error is gone without adding more)."""
+    lines = src.split("\n")
+    if not 1 <= line <= len(lines):
+        return False
+    for rid, rule in lessons.rules_for(kind):
+        new_line = lessons.apply(rule, lines[line - 1])
+        if new_line is None or new_line == lines[line - 1]:
+            continue
+        new = "\n".join(lines[:line - 1] + [new_line] + lines[line:])
+        if lessons.is_repeat(rel, new):
+            continue
+        phase("a fix learned from other functions")
+        (cfg.workdir / rel).write_text(new)
+        ok, err2, _ = compile_tu(cfg, rel)
+        first = _first_error(err, rel)
+        if ok or (n_errors(err2) <= n_errors(err) and first not in _all_errors(err2, rel)):
+            lessons.rule_result(rid, True)
+            write_note(cfg, rel, f"[compile] {first[1][:100]} — fixed with a learned rule"
+                                 + (" — compiles now." if ok else "."))
+            rec.compiles = ok
+            if not ok:
+                rec.last_error = err2[-4000:]
+            return True
+        (cfg.workdir / rel).write_text(src)
+        lessons.rule_result(rid, False)
+        lessons.failed(rel, src, new)
+    return False
 
 
 def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
@@ -5628,6 +5905,15 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
                 rec.compiles = True
                 return True
 
+        # 2b) fixes learned from other functions (no model needed)
+        lessons = fix_lessons(cfg)
+        eline, emsg = _first_error(err, rel)
+        kind = error_kind(emsg)
+        if eline and _rule_fix(cfg, rec, rel, src, err, eline, kind, lessons):
+            if rec.compiles:
+                return True
+            continue
+
         # 3) the model: ONE small edit to the line the compiler flags (planned
         #    first, with the notes from earlier tries), never a whole new function
         if attempt >= cfg.max_model_attempts:
@@ -5635,6 +5921,12 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
         phase(f"small edit by the model ({attempt + 1}/{cfg.max_model_attempts})")
         new_text = compile_fix_edit(cfg, rec, src, err)
         rec.attempts += 1
+        if new_text and lessons.is_repeat(rel, new_text):
+            struggle("fix", "the model repeated an edit that had already failed (skipped)",
+                     rec.name, handled=True)
+            write_note(cfg, rel, "[compile] the model suggested an edit that already failed "
+                                 "— skipped.")
+            new_text = None
         if new_text:
             (cfg.workdir / rel).write_text(new_text)
             phase("compiling the model's edit")
@@ -5650,6 +5942,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             if ok3:
                 cache[key] = (cfg.workdir / rel).read_text()
                 save_cache(cfg, cache)
+                lessons.learned(kind, emsg, src, new_text)
                 rec.compiles = True
                 return True
             # keep the edit only if it got somewhere: fewer errors, or the error it
@@ -5658,8 +5951,11 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             before, after = _first_error(err, rel), _first_error(err3, rel)
             if n_errors(err3) < n_errors(err) or (after != before and n_errors(err3) <= n_errors(err)):
                 rec.last_error = err3[-4000:]
+                if before[0] and before not in _all_errors(err3, rel):
+                    lessons.learned(kind, emsg, src, new_text)    # that error is gone
             else:
                 (cfg.workdir / rel).write_text(src)
+                lessons.failed(rel, src, new_text)
                 write_note(cfg, rel, "[compile] that edit didn't help — undone.")
 
     quarantine(cfg, rec, original)
@@ -5806,15 +6102,23 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
         log(cfg, f"    [{i}/{total}] {rec.name} -> "
                  f"{'fixed' if ok else 'quarantined'} ({fmt_duration(time.time() - t1)})")
 
+    lessons = fix_lessons(cfg)
+
     def checkpoint():
         # this loop can run for hours; save so a rerun picks up from here
         save_manifest(cfg, records)
         save_cache(cfg, cache)
+        lessons.save()
     try:
         work_pool(cfg.workers, list(enumerate(failing, 1)), one, 25, checkpoint)
     finally:
         prog.close()
+        lessons.save()
     save_cache(cfg, cache)
+    n_rules = len(lessons.rules_for_all())
+    if lessons.applied or n_rules:
+        log(cfg, show=True, msg=f"  learned: {n_rules} fix(es) the model no longer needs to "
+                                f"make, used {lessons.applied} time(s) this run")
     if MODEL_STATS["no_answer"]:
         struggle("fix", "small edits the model couldn't give a usable answer for",
                  n=MODEL_STATS["no_answer"], handled=True)
@@ -9133,7 +9437,10 @@ def _write_final(ctx, out: Path, funcs: dict, texts: dict, modules: list, mod_na
         "cmake_minimum_required(VERSION 3.16)\nproject(program CXX)\n"
         f"set(CMAKE_CXX_STANDARD {re.sub(r'[^0-9]', '', cfg.std) or '17'})\n"
         "file(GLOB SOURCES src/*.cpp)\nadd_library(program SHARED ${SOURCES})\n"
-        "target_include_directories(program PRIVATE include)\n")
+        "target_include_directories(program PRIVATE include)\n"
+        "target_compile_options(program PRIVATE\n"
+        "  $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-c++11-narrowing>\n"
+        "  $<$<CXX_COMPILER_ID:GNU>:-Wno-narrowing>)\n")
     readme = ["# Program", "", "Generated by decomp_pipeline.py (organize stage).", "",
               "## Modules", ""]
     for name, ms in zip(mod_names, modules):
@@ -9697,6 +10004,10 @@ def run_pipeline(args) -> int:
     CLIENT["c"] = client
     GATE["gate"] = ModelGate(args.parallel)
     cxx = find_compiler(args.cxx)
+    # decompiled code narrows in {...} all the time (an int into a char field);
+    # that's a warning in C and older C++, so it shouldn't stop a function compiling
+    narrow = "-Wno-c++11-narrowing" if COMPILER["clang"] else "-Wno-narrowing"
+    PIC_FLAGS[:] = [f for f in PIC_FLAGS if "narrowing" not in f] + ([narrow] if cxx else [])
     if not cxx and STAGES.index(last) >= STAGES.index("split"):
         sys.exit(f"No C++ compiler found ({args.cxx}). On a Mac: xcode-select --install; "
                  f"or pass --cxx /path/to/clang++")

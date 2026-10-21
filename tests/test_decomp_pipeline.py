@@ -987,3 +987,59 @@ def test_missing_header_doesnt_blind_libclang_and_lost_files_come_back(tmp_path,
     assert run(tmp_path, model, "--from", "fix", "--to", "fix") == 0
     assert gone.exists()
     assert "function file(s) were missing" in (tmp_path / "build" / "worklist.log").read_text()
+
+
+def test_fix_lessons_learn_rules_and_block_repeats(tmp_path):
+    cfg = dp.Config(input_file=tmp_path / "x.cpp", workdir=tmp_path)
+    L = dp.FixLessons(cfg)
+    kind = dp.error_kind("cannot initialize a variable of type 'int *' with an rvalue of type 'void *'")
+    for a, b in (("p", "n"), ("buf", "len"), ("q", "size")):
+        L.learned(kind, "msg", f"x\n    int *{a} = malloc({b});\ny",
+                  f"x\n    int *{a} = (int *)malloc({b});\ny")
+    assert len(L.rules_for(kind)) == 1
+    out = L.apply(L.rules_for(kind)[0][1], "  int *items = malloc(count * 4);")
+    assert out is None                                    # a different shape: no match
+    out = L.apply(L.rules_for(kind)[0][1], "  int *items = malloc(count);")
+    assert out.startswith("  int") and "malloc(count)" in out and "(int*)" in out.replace(" ", "")
+    assert "before:" in L.prompt(kind, "funcs/a.cpp")      # examples for other functions
+    L.failed("funcs/a.cpp", "a\nb", "a\nc")
+    assert L.is_repeat("funcs/a.cpp", "a\nc") and not L.is_repeat("funcs/b.cpp", "a\nc")
+    assert "did NOT work" in L.prompt(kind, "funcs/a.cpp")
+    L.save()
+    assert dp.FixLessons(cfg).rules_for(kind)              # kept between runs
+
+
+def test_failed_edit_is_not_repeated(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "fix") == 0
+    notes = "".join(p.read_text() for p in (tmp_path / "build" / "improve" / "notes").glob("*.md"))
+    assert "already failed" in notes                       # squareIt's bad edit came back
+    lessons = json.loads((tmp_path / "build" / "fix_lessons.json").read_text())
+    assert lessons["examples"] and lessons["tried"]
+
+
+def test_extra_parenthesis_doesnt_unclose_functions():
+    # an extra ')' used to cut a draft apart: its "return 0;" was moved to the top
+    # and its closing brace dropped as a duplicate, so libclang swallowed every
+    # function after it
+    a = dp.mark_function(dp.clean_for_monolith(
+        "int f(int x) {\n    if (x)) {\n        return 1;\n    }\n    return 0;\n}"), "FUN_1", "1")
+    b = dp.mark_function(dp.clean_for_monolith(
+        "struct S { int a; };\nint g(int y) {\n    if ((y) {\n        return 2;\n    }\n"
+        "    return 0;\n}"), "FUN_2", "2")
+    out = dp.combine([a, b])
+    assert dp.brace_balance(out) == 0
+    assert out.index("//@ghidra 1") < out.index("return 0;") < out.index("//@ghidra 2")
+    assert out.startswith("struct S")
+
+
+def test_narrowing_and_pointer_casts_dont_need_the_model(tmp_path, model):
+    model.rewrite_override["FUN_00001050"] = (
+        "struct Pair {\n    char first;\n    int second;\n};\n\n"
+        "int pairSum(Pair *p) {\n    int n = (int)p;\n    Pair q{p->second, n};\n"
+        "    return q.first + q.second;\n}", "pairSum")
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "fix") == 0
+    r = by_name(tmp_path)["pairSum"]
+    assert r["compiles"]
+    assert "(int)(uintptr_t)p" in (tmp_path / "build" / r["file"]).read_text()
