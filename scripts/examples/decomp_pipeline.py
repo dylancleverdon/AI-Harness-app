@@ -8,6 +8,8 @@ Stages, in order:
             (HTTP/MCP plugin, analyzeHeadless, or a script you run in Ghidra's GUI).
             The headless/GUI export also records Ghidra's data types and function
             signatures, for later use.
+  privacy   identifying information in the export is replaced by stand-ins (what
+            was replaced stays in private/, on this Mac)
   rewrite   a local model rewrites each function as clean C++ and names the ones
             Ghidra only had a placeholder for -> rewrite/rewritten.cpp
   split     libclang splits that file into build/shared.h, globals.cpp and one file
@@ -16,6 +18,8 @@ Stages, in order:
             deterministic fixes, then the model, then quarantine
   recover   quarantined functions are rebuilt from their Ghidra pseudocode
   link      build the whole program, stub what's missing, report what's left
+  test      (macOS, with --plugin) the rebuilt plugin and the original render the same
+            test signals in a small test host; outputs compared sample by sample
   improve   rounds of checks and small fixes, worst functions first (see below)
   organize  modules + classes, a final privacy check, then PROJ/final/: the code as a
             normal C++ project that builds on its own
@@ -120,7 +124,8 @@ from pathlib import Path
 from typing import Optional
 
 PIPELINE_VERSION = "2026-10-18.1"
-STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "improve", "organize"]
+STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
+          "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
 
 
@@ -184,6 +189,8 @@ STAGE_INFO = {
     "recover": "quarantined functions are rebuilt from their Ghidra pseudocode",
     "link": "the whole program is compiled and linked; anything still missing gets "
             "a placeholder and is listed in link_report.txt",
+    "test": "the rebuilt plugin and the original (--plugin) render the same test "
+            "signals in a small test host; their outputs are compared sample by sample",
     "improve": "checks find small problems, worst functions first; each is fixed by a "
                "rule or one small planned edit, and kept only if it still compiles and "
                "behaves like Ghidra's version",
@@ -7358,6 +7365,9 @@ def rates_lines(P: "Paths", records: Optional[dict], st: dict) -> list[str]:
         done = fs["fixed"] + fs["quarantined"]
         now.update(fix_tried=done, fix_success_pct=round(100 * fs["fixed"] / done, 1),
                    fix_per_hour=round(done / max(time.time() - fs["start"], 60) * 3600))
+    tr = RUN_CTX.get("test_run")
+    if tr and tr.get("cases"):
+        now["test_pass_pct"] = round(100 * tr["passed"] / tr["cases"], 1)
     rr = RUN_CTX.get("recover_run")
     if rr and sum(rr.values()):
         now["recover_success_pct"] = round(100 * rr["re-derived"] / sum(rr.values()), 1)
@@ -7366,7 +7376,7 @@ def rates_lines(P: "Paths", records: Optional[dict], st: dict) -> list[str]:
     cols = [("compile_pct", "compile %"), ("quarantined_pct", "quarantined %"),
             ("to_fix", "to fix"), ("fix_tried", "fixer tried"),
             ("fix_success_pct", "fixer success %"), ("fix_per_hour", "fixer per hour"),
-            ("recover_success_pct", "recover success %")]
+            ("recover_success_pct", "recover success %"), ("test_pass_pct", "test pass %")]
     rows = hist[-4:] + [now]
     out = ["rates (this run last; earlier runs above it):",
            "  " + f"{'run':12}" + "".join(f"{h:>19}" for _, h in cols)]
@@ -7492,7 +7502,7 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
     for name in ("split_report.txt", "libclang_parse_errors.txt", "header_repair_report.txt",
                  "globals_repair_report.txt", "fix_report.txt", "first_error.txt",
                  "header_errors.txt", "link_report.txt", "link_errors.txt",
-                 "improve_report.txt", "fix_lessons.json"):
+                 "improve_report.txt", "fix_lessons.json", "test/test_report.txt"):
         f = P.build / name
         if f.exists():
             section(f"build/{name}", _read(f))
@@ -11761,6 +11771,933 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
     return cfg
 
 
+# ============================================================================
+# The test stage: the rebuilt plugin against the original, in a small test host
+# ============================================================================
+#
+# No DAW: a tiny command-line Audio Unit host (AU_HOST_C, compiled once) loads a
+# plugin from its bundle and registers it inside its own process, so nothing is
+# installed. The rebuilt program is packaged as a temporary .component next to it
+# (the original's Info.plist, with the privacy stand-ins) and deleted afterwards.
+# Both plugins render the same test signals with the same settings; the outputs
+# are compared sample by sample. Everything that fails says which step, with the
+# Audio Unit error's name, the loader's message, or the crash's stack trace.
+
+AU_HOST_C = r'''// aharness_host.c: a tiny command-line Audio Unit host, for testing the rebuilt
+// plugin against the original. decomp_pipeline.py writes and compiles it; don't edit.
+//
+//   aharness_host info   <bundle> <factory> <type> <subtype> <manufacturer>
+//   aharness_host render <bundle> <factory> <type> <subtype> <manufacturer>
+//                        <signal> <seconds> <out.f32> [id=value ...]
+//
+// The plugin is loaded from its bundle and registered inside this process only
+// (nothing is installed, no DAW needed). Each step prints "STEP ..." before it
+// starts. A failure prints one "ERROR ..." line naming the step and the Audio
+// Unit error. A crash prints "CRASH ..." with the faulting address and a stack
+// trace. The output file is interleaved 32-bit float at 44.1 kHz.
+#include <AudioToolbox/AudioToolbox.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <execinfo.h>
+#include <math.h>
+#include <signal.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#define RATE 44100.0
+#define BLOCK 512
+
+static const char *status_name(OSStatus e) {
+    switch (e) {
+    case kAudioUnitErr_InvalidProperty: return "kAudioUnitErr_InvalidProperty";
+    case kAudioUnitErr_InvalidParameter: return "kAudioUnitErr_InvalidParameter";
+    case kAudioUnitErr_InvalidElement: return "kAudioUnitErr_InvalidElement";
+    case kAudioUnitErr_NoConnection: return "kAudioUnitErr_NoConnection";
+    case kAudioUnitErr_FailedInitialization: return "kAudioUnitErr_FailedInitialization";
+    case kAudioUnitErr_TooManyFramesToProcess: return "kAudioUnitErr_TooManyFramesToProcess";
+    case kAudioUnitErr_InvalidFile: return "kAudioUnitErr_InvalidFile";
+    case kAudioUnitErr_FormatNotSupported: return "kAudioUnitErr_FormatNotSupported";
+    case kAudioUnitErr_Uninitialized: return "kAudioUnitErr_Uninitialized";
+    case kAudioUnitErr_InvalidScope: return "kAudioUnitErr_InvalidScope";
+    case kAudioUnitErr_PropertyNotWritable: return "kAudioUnitErr_PropertyNotWritable";
+    case kAudioUnitErr_CannotDoInCurrentContext: return "kAudioUnitErr_CannotDoInCurrentContext";
+    case kAudioUnitErr_InvalidPropertyValue: return "kAudioUnitErr_InvalidPropertyValue";
+    case kAudioUnitErr_PropertyNotInUse: return "kAudioUnitErr_PropertyNotInUse";
+    case kAudioUnitErr_Initialized: return "kAudioUnitErr_Initialized";
+    case kAudioUnitErr_InvalidOfflineRender: return "kAudioUnitErr_InvalidOfflineRender";
+    case kAudioUnitErr_Unauthorized: return "kAudioUnitErr_Unauthorized";
+    case kAudioComponentErr_InstanceInvalidated: return "kAudioComponentErr_InstanceInvalidated";
+    case -50: return "paramErr (a bad argument)";
+    case -108: return "memFullErr (out of memory)";
+    case -2005: return "badComponentType";
+    case -3000: return "invalidComponentID";
+    default: return "unknown";
+    }
+}
+
+static int fail(const char *step, OSStatus e) {
+    char cc[5] = {0};
+    uint32_t v = (uint32_t)e;
+    int printable = 1;
+    for (int i = 0; i < 4; i++) {
+        cc[i] = (char)(v >> (24 - 8 * i));
+        if (cc[i] < 32 || cc[i] > 126) printable = 0;
+    }
+    printf("ERROR step=\"%s\" status=%d name=%s%s%s%s\n", step, (int)e, status_name(e),
+           printable ? " fourcc='" : "", printable ? cc : "", printable ? "'" : "");
+    fflush(stdout);
+    return 2;
+}
+
+static int fail_msg(const char *step, const char *msg) {
+    printf("ERROR step=\"%s\" message=\"%s\"\n", step, msg ? msg : "");
+    fflush(stdout);
+    return 2;
+}
+
+static OSType fourcc(const char *s) {
+    if (strlen(s) != 4) return 0;
+    return ((OSType)(unsigned char)s[0] << 24) | ((OSType)(unsigned char)s[1] << 16) |
+           ((OSType)(unsigned char)s[2] << 8) | (OSType)(unsigned char)s[3];
+}
+
+// ---- crashes: say where, then die as usual (so macOS writes its crash report too)
+static void on_crash(int sig, siginfo_t *info, void *ctx) {
+    (void)ctx;
+    char line[160];
+    int n = snprintf(line, sizeof line, "CRASH signal=%d (%s) address=%p\n", sig,
+                     sig == SIGSEGV ? "SIGSEGV: bad memory access" :
+                     sig == SIGBUS ? "SIGBUS: bad memory access" :
+                     sig == SIGILL ? "SIGILL: illegal instruction" :
+                     sig == SIGFPE ? "SIGFPE: arithmetic error" :
+                     sig == SIGABRT ? "SIGABRT: abort" : "?",
+                     info ? info->si_addr : NULL);
+    if (write(1, line, (size_t)n) < 0) _exit(3);
+    void *frames[64];
+    int count = backtrace(frames, 64);
+    if (write(1, "CRASH stack:\n", 13) < 0) _exit(3);
+    backtrace_symbols_fd(frames, count, 1);
+    if (write(1, "CRASH end\n", 10) < 0) _exit(3);
+    signal(sig, SIG_DFL);
+    raise(sig);
+}
+
+static void catch_crashes(void) {
+    struct sigaction sa;
+    memset(&sa, 0, sizeof sa);
+    sa.sa_sigaction = on_crash;
+    sa.sa_flags = SA_SIGINFO | SA_RESETHAND;
+    int sigs[] = {SIGSEGV, SIGBUS, SIGILL, SIGFPE, SIGABRT};
+    for (unsigned i = 0; i < sizeof sigs / sizeof *sigs; i++) sigaction(sigs[i], &sa, NULL);
+}
+
+// ---- loading -------------------------------------------------------------------
+static int open_unit(int argc, char **argv, AudioComponentInstance *au, OSType *type) {
+    if (argc < 7) return fail_msg("arguments", "need <bundle> <factory> <type> <subtype> <manufacturer>");
+    const char *path = argv[2], *factory = argv[3];
+    printf("STEP load bundle %s\n", path);
+    CFURLRef url = CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8 *)path,
+                                                           (CFIndex)strlen(path), true);
+    CFBundleRef bundle = url ? CFBundleCreate(NULL, url) : NULL;
+    if (!bundle) return fail_msg("load bundle", "not a bundle (no Contents/Info.plist?)");
+    printf("STEP load executable\n");
+    fflush(stdout);
+    CFErrorRef err = NULL;
+    if (!CFBundleLoadExecutableAndReturnError(bundle, &err)) {
+        char msg[2048] = "the executable couldn't be loaded";
+        if (err) {
+            CFStringRef d = CFErrorCopyDescription(err);
+            if (d) { CFStringGetCString(d, msg, sizeof msg, kCFStringEncodingUTF8); CFRelease(d); }
+            CFDictionaryRef ui = CFErrorCopyUserInfo(err);
+            CFStringRef dbg = ui ? (CFStringRef)CFDictionaryGetValue(ui, CFSTR("NSDebugDescription")) : NULL;
+            if (dbg && CFGetTypeID(dbg) == CFStringGetTypeID()) {
+                size_t used = strlen(msg);
+                strncat(msg, " | ", sizeof msg - used - 1);
+                used = strlen(msg);
+                CFStringGetCString(dbg, msg + used, (CFIndex)(sizeof msg - used), kCFStringEncodingUTF8);
+            }
+        }
+        for (char *c = msg; *c; c++) if (*c == '"' || *c == '\n') *c = '\'';
+        return fail_msg("load executable", msg);
+    }
+    printf("STEP find factory %s\n", factory);
+    CFStringRef fname = CFStringCreateWithCString(NULL, factory, kCFStringEncodingUTF8);
+    AudioComponentFactoryFunction f =
+        (AudioComponentFactoryFunction)CFBundleGetFunctionPointerForName(bundle, fname);
+    CFRelease(fname);
+    if (!f) return fail_msg("find factory", "the executable doesn't export this factory function");
+    AudioComponentDescription desc = {fourcc(argv[4]), fourcc(argv[5]), fourcc(argv[6]), 0, 0};
+    *type = desc.componentType;
+    printf("STEP register %s/%s/%s\n", argv[4], argv[5], argv[6]);
+    AudioComponent comp = AudioComponentRegister(&desc, CFSTR("aharness test"), 0x10000, f);
+    if (!comp) return fail_msg("register", "AudioComponentRegister returned nothing");
+    printf("STEP instantiate (the plugin's factory and constructor run here)\n");
+    fflush(stdout);
+    OSStatus e = AudioComponentInstanceNew(comp, au);
+    if (e) return fail("instantiate", e);
+    return 0;
+}
+
+static int takes_input(OSType type) {
+    return type != kAudioUnitType_MusicDevice && type != kAudioUnitType_Generator;
+}
+
+static OSStatus set_channels(AudioComponentInstance au, OSType type, UInt32 ch, const char **where) {
+    AudioStreamBasicDescription f;
+    memset(&f, 0, sizeof f);
+    f.mSampleRate = RATE;
+    f.mFormatID = kAudioFormatLinearPCM;
+    f.mFormatFlags = kAudioFormatFlagsNativeFloatPacked | kAudioFormatFlagIsNonInterleaved;
+    f.mBytesPerPacket = 4; f.mFramesPerPacket = 1; f.mBytesPerFrame = 4;
+    f.mChannelsPerFrame = ch; f.mBitsPerChannel = 32;
+    OSStatus e = 0;
+    if (takes_input(type)) {
+        *where = "set the input format";
+        e = AudioUnitSetProperty(au, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &f, sizeof f);
+        if (e) return e;
+    }
+    *where = "set the output format";
+    return AudioUnitSetProperty(au, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &f, sizeof f);
+}
+
+// tempo and position, for plugins that ask the host (some crash if nobody answers)
+static Float64 g_beat;
+static OSStatus beat_and_tempo(void *ud, Float64 *beat, Float64 *tempo) {
+    (void)ud;
+    if (beat) *beat = g_beat;
+    if (tempo) *tempo = 120.0;
+    return noErr;
+}
+
+// ---- info: the parameters, as JSON ----------------------------------------------
+static int cmd_info(int argc, char **argv) {
+    AudioComponentInstance au; OSType type;
+    int r = open_unit(argc, argv, &au, &type);
+    if (r) return r;
+    printf("STEP read the parameter list\n");
+    UInt32 size = 0;
+    OSStatus e = AudioUnitGetPropertyInfo(au, kAudioUnitProperty_ParameterList, kAudioUnitScope_Global, 0, &size, NULL);
+    if (e) size = 0;
+    UInt32 n = size / sizeof(AudioUnitParameterID);
+    AudioUnitParameterID *ids = n ? calloc(n, sizeof *ids) : NULL;
+    if (n && (e = AudioUnitGetProperty(au, kAudioUnitProperty_ParameterList, kAudioUnitScope_Global, 0, ids, &size)))
+        return fail("read the parameter list", e);
+    printf("INFO {\"type\":\"%c%c%c%c\",\"params\":[", (char)(type >> 24), (char)(type >> 16),
+           (char)(type >> 8), (char)type);
+    int first = 1;
+    for (UInt32 i = 0; i < n; i++) {
+        AudioUnitParameterInfo pi; UInt32 s = sizeof pi;
+        memset(&pi, 0, sizeof pi);
+        if (AudioUnitGetProperty(au, kAudioUnitProperty_ParameterInfo, kAudioUnitScope_Global, ids[i], &pi, &s)) continue;
+        char name[256] = "";
+        if ((pi.flags & kAudioUnitParameterFlag_HasCFNameString) && pi.cfNameString) {
+            CFStringGetCString(pi.cfNameString, name, sizeof name, kCFStringEncodingUTF8);
+            if (pi.flags & kAudioUnitParameterFlag_CFNameRelease) CFRelease(pi.cfNameString);
+        } else {
+            strncpy(name, pi.name, sizeof name - 1);
+        }
+        for (char *c = name; *c; c++) if (*c == '"' || *c == '\\' || (unsigned char)*c < 32) *c = ' ';
+        printf("%s{\"id\":%u,\"name\":\"%s\",\"min\":%g,\"max\":%g,\"default\":%g,\"writable\":%s}",
+               first ? "" : ",", (unsigned)ids[i], name, pi.minValue, pi.maxValue, pi.defaultValue,
+               (pi.flags & kAudioUnitParameterFlag_IsWritable) ? "true" : "false");
+        first = 0;
+    }
+    printf("]}\n");
+    free(ids);
+    AudioComponentInstanceDispose(au);
+    return 0;
+}
+
+// ---- render ---------------------------------------------------------------------
+static const char *g_signal = "silence";
+static double g_t;
+static uint32_t g_seed = 12345;
+
+static float sample_at(int ch) {
+    double t = g_t;
+    if (!strcmp(g_signal, "impulses")) return (fmod(t, 0.25) < 1.0 / RATE) ? 0.9f : 0.0f;
+    if (!strcmp(g_signal, "sweep")) {                 // 20 Hz .. 20 kHz, log, over 5 s
+        double k = log(1000.0) / 5.0;
+        return (float)(0.5 * sin(2 * M_PI * 20.0 * (exp(k * t) - 1) / k));
+    }
+    if (!strcmp(g_signal, "noise")) {                 // seeded: the same every run
+        g_seed = g_seed * 1664525u + 1013904223u + (uint32_t)ch;
+        return (float)((g_seed >> 8) / 8388608.0 - 1.0) * 0.5f;
+    }
+    if (!strcmp(g_signal, "sine")) return (float)(0.5 * sin(2 * M_PI * 440.0 * t));
+    return 0.0f;                                      // silence
+}
+
+static OSStatus input_proc(void *ref, AudioUnitRenderActionFlags *flags, const AudioTimeStamp *ts,
+                           UInt32 bus, UInt32 frames, AudioBufferList *io) {
+    (void)ref; (void)flags; (void)ts; (void)bus;
+    for (UInt32 i = 0; i < frames; i++) {
+        for (UInt32 b = 0; b < io->mNumberBuffers; b++)
+            if (io->mBuffers[b].mData) ((float *)io->mBuffers[b].mData)[i] = sample_at((int)b);
+        g_t += 1.0 / RATE;
+    }
+    return noErr;
+}
+
+static int cmd_render(int argc, char **argv) {
+    if (argc < 10) return fail_msg("arguments", "need ... <signal> <seconds> <out.f32> [id=value ...]");
+    AudioComponentInstance au; OSType type;
+    int r = open_unit(argc, argv, &au, &type);
+    if (r) return r;
+    printf("STEP set the format (44.1 kHz float, stereo, else mono)\n");
+    const char *where = "";
+    UInt32 ch = 2;
+    OSStatus e = set_channels(au, type, 2, &where);
+    if (e) {
+        ch = 1;
+        if (set_channels(au, type, 1, &where)) return fail(where, e);
+    }
+    printf("FORMAT channels=%u\n", (unsigned)ch);
+    UInt32 max = BLOCK;
+    if ((e = AudioUnitSetProperty(au, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &max, sizeof max)))
+        return fail("set maximum frames per slice", e);
+    HostCallbackInfo hc;
+    memset(&hc, 0, sizeof hc);
+    hc.beatAndTempoProc = beat_and_tempo;
+    AudioUnitSetProperty(au, kAudioUnitProperty_HostCallbacks, kAudioUnitScope_Global, 0, &hc, sizeof hc);
+    g_signal = argv[7];
+    double seconds = atof(argv[8]);
+    if (takes_input(type)) {
+        AURenderCallbackStruct cb = {input_proc, NULL};
+        e = AudioUnitSetProperty(au, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &cb, sizeof cb);
+        if (e) return fail("connect the test signal to the input", e);
+    }
+    printf("STEP initialize\n");
+    fflush(stdout);
+    if ((e = AudioUnitInitialize(au))) return fail("initialize", e);
+    for (int i = 10; i < argc; i++) {
+        unsigned id; float v;
+        if (sscanf(argv[i], "%u=%f", &id, &v) == 2) {
+            e = AudioUnitSetParameter(au, id, kAudioUnitScope_Global, 0, v, 0);
+            if (e) { char step[64]; snprintf(step, sizeof step, "set parameter %u", id); return fail(step, e); }
+        }
+    }
+    if (type == kAudioUnitType_MusicDevice || type == kAudioUnitType_MusicEffect)
+        MusicDeviceMIDIEvent(au, 0x90, 60, 100, 0);   // middle C
+    FILE *out = fopen(argv[9], "wb");
+    if (!out) return fail_msg("open the output file", argv[9]);
+    static float bufs[2][BLOCK], inter[BLOCK * 2];
+    struct { AudioBufferList list; AudioBuffer second; } abl;
+    AudioTimeStamp ts;
+    memset(&ts, 0, sizeof ts);
+    ts.mFlags = kAudioTimeStampSampleTimeValid;
+    long total = (long)(seconds * RATE);
+    printf("STEP render %s for %.1f s\n", g_signal, seconds);
+    fflush(stdout);
+    for (long done = 0; done < total; done += BLOCK) {
+        UInt32 frames = (UInt32)((total - done) < BLOCK ? (total - done) : BLOCK);
+        abl.list.mNumberBuffers = ch;
+        abl.list.mBuffers[0].mNumberChannels = 1;
+        abl.list.mBuffers[0].mDataByteSize = frames * 4;
+        abl.list.mBuffers[0].mData = bufs[0];
+        abl.second.mNumberChannels = 1;
+        abl.second.mDataByteSize = frames * 4;
+        abl.second.mData = bufs[1];
+        AudioUnitRenderActionFlags flags = 0;
+        e = AudioUnitRender(au, &flags, &ts, 0, frames, &abl.list);
+        if (e) {
+            char step[64];
+            snprintf(step, sizeof step, "render (at %.3f s)", done / RATE);
+            return fail(step, e);
+        }
+        for (UInt32 i = 0; i < frames; i++)
+            for (UInt32 c = 0; c < ch; c++) inter[ch * i + c] = bufs[c][i];
+        fwrite(inter, sizeof(float), frames * ch, out);
+        ts.mSampleTime += frames;
+        g_beat += frames / RATE * 2.0;
+    }
+    fclose(out);
+    printf("STEP clean up\n");
+    AudioUnitUninitialize(au);
+    AudioComponentInstanceDispose(au);
+    printf("OK rendered %ld frames\n", total);
+    return 0;
+}
+
+int main(int argc, char **argv) {
+    setvbuf(stdout, NULL, _IOLBF, 0);
+    catch_crashes();
+    if (argc < 2) return fail_msg("arguments", "info | render");
+    if (!strcmp(argv[1], "info")) return cmd_info(argc, argv);
+    if (!strcmp(argv[1], "render")) return cmd_render(argc, argv);
+    return fail_msg("arguments", "unknown command");
+}
+'''
+
+TEST_SIGNALS = [("silence", 1.0), ("impulses", 2.0), ("sweep", 5.0), ("noise", 2.0)]
+TEST_TIMEOUT = 120                   # seconds per host run; longer counts as a hang
+
+
+class TestSetupError(Exception):
+    """The test couldn't start; the message says what to do."""
+
+
+def _can_run_au_test() -> bool:
+    return sys.platform == "darwin"
+
+
+def _plugin_bundle(plugin: Path) -> dict:
+    import plistlib
+    if not plugin.exists():
+        raise TestSetupError(f"--plugin {plugin}: not found")
+    if plugin.is_file() or not (plugin / "Contents").is_dir():
+        raise TestSetupError(f"--plugin {plugin}: give the plugin's bundle folder (the "
+                             f"one ending .component), not a file inside it")
+    pl = plugin / "Contents" / "Info.plist"
+    try:
+        with open(pl, "rb") as f:
+            info = plistlib.load(f)
+    except Exception as e:
+        raise TestSetupError(f"{pl} couldn't be read ({type(e).__name__}: {e})")
+    comps = [c for c in (info.get("AudioComponents") or []) if isinstance(c, dict)]
+    if not comps:
+        raise TestSetupError(f"{pl} has no AudioComponents entry: an old-style (Component "
+                             f"Manager) plugin, which this test host can't load")
+    for c in comps:
+        for k in ("type", "subtype", "manufacturer", "factoryFunction"):
+            if not isinstance(c.get(k), str) or (k != "factoryFunction" and len(c[k]) != 4):
+                raise TestSetupError(f"{pl}: AudioComponents entry {c.get('name', '?')!r} has "
+                                     f"no usable {k!r}")
+    exe = plugin / "Contents" / "MacOS" / str(info.get("CFBundleExecutable") or "")
+    if not exe.is_file():
+        raise TestSetupError(f"{plugin}: Contents/MacOS/{info.get('CFBundleExecutable')} "
+                             f"(its executable) is missing")
+    return {"info": info, "components": comps, "exe": exe}
+
+
+def _stand_in_text(text: str, mapping: dict) -> str:
+    """The privacy sweep's replacements, applied to text from outside the export
+    (the original plugin's Info.plist)."""
+    for kind, m in mapping.items():
+        for found in sorted(m, key=len, reverse=True):
+            si = m[found]
+            if kind == "name":
+                text = re.sub(re.escape(found), lambda x, s=si: (
+                    s.upper() if x.group(0).isupper() else s.lower() if x.group(0).islower()
+                    else s), text, flags=re.I)
+            else:
+                text = text.replace(found, si)
+    return text
+
+
+def _stand_in_plist(v, mapping: dict, key: str = ""):
+    if isinstance(v, str):
+        # the four-letter codes a host finds the plugin by stay as they are
+        return v if key in ("type", "subtype", "manufacturer") else _stand_in_text(v, mapping)
+    if isinstance(v, list):
+        return [_stand_in_plist(x, mapping) for x in v]
+    if isinstance(v, dict):
+        return {k: _stand_in_plist(x, mapping, k) for k, x in v.items()}
+    return v
+
+
+def _scrub_test_text(text: str, mapping: dict, plugin: Optional[Path]) -> str:
+    """The test report goes into the diagnostics report, which is sent on: the
+    original plugin's name, its folder and anything identifying are replaced."""
+    if plugin is not None:
+        text = text.replace(str(plugin), "Original.component")
+        for word in {plugin.name, plugin.stem}:
+            if len(word) >= 3:
+                text = text.replace(word, "Original")
+    text = _stand_in_text(text, mapping)
+    for kind, rx, pattern in PRIVACY_PATTERNS:
+        known = mapping.get(kind, {})
+        text = rx.sub(lambda m, k=known, p=pattern: k.get(m.group(0)) or p.format(n="?"), text)
+    return text
+
+
+def _exported_functions(lib: Path) -> Optional[set]:
+    """Function names the library exports, as dlsym would look them up (None: nm
+    couldn't read it)."""
+    try:
+        r = subprocess.run(["nm", "-g", str(lib)], capture_output=True, text=True, timeout=120)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if r.returncode != 0:
+        return None
+    names = set()
+    for line in r.stdout.splitlines():
+        parts = line.split()
+        if len(parts) >= 3 and parts[-2] in ("T", "t"):
+            n = parts[-1]
+            names.add(n[1:] if sys.platform == "darwin" and n.startswith("_") else n)
+    return names
+
+
+def _find_factory(want: str, exported: Optional[set], mapping: dict) -> tuple[Optional[str], str]:
+    """The rebuilt library's name for the plugin's factory function, and how it was
+    found. The privacy sweep may have renamed it, and Ghidra keeps Mach-O's leading
+    underscore in names, so a few spellings are tried."""
+    if exported is None:
+        return want, "nm couldn't list the library's functions; trying the original name"
+    cleaned = _stand_in_text(want, mapping)
+    for c in dict.fromkeys([want, cleaned]):
+        for v in (c, "_" + c, "__" + c):
+            if v in exported:
+                return v, ("as in the original" if v == want else f"as {v} (privacy stand-ins "
+                           f"and Ghidra's leading underscore)")
+    low = {e.lower().lstrip("_"): e for e in exported}
+    for c in (want, cleaned):
+        if c.lower().lstrip("_") in low:
+            return low[c.lower().lstrip("_")], "by name, ignoring case"
+    facts = sorted(e for e in exported if e.lower().endswith("factory"))
+    if len(facts) == 1:
+        return facts[0], "the only exported function whose name ends in Factory"
+    return None, (f"the rebuilt library exports no {want} (also tried {cleaned}, with leading "
+                  f"underscores); functions ending in Factory: {', '.join(facts[:8]) or 'none'}")
+
+
+def _archs(path: Path) -> list[str]:
+    try:
+        r = subprocess.run(["lipo", "-archs", str(path)], capture_output=True, text=True,
+                           timeout=30)
+        return r.stdout.split() if r.returncode == 0 else []
+    except (OSError, subprocess.TimeoutExpired):
+        return []
+
+
+def _native_arch() -> str:
+    import platform
+    m = platform.machine()
+    return "arm64" if m in ("arm64", "aarch64") else m
+
+
+def _build_host(P: Paths, arch: str) -> Path:
+    """The test host for one architecture, compiled once (again only if its source
+    changes)."""
+    d = P.build / "test" / "host"
+    d.mkdir(parents=True, exist_ok=True)
+    key = hashlib.sha1(AU_HOST_C.encode()).hexdigest()[:10]
+    exe = d / f"aharness_host-{arch}-{key}"
+    if exe.exists():
+        return exe
+    src = d / "aharness_host.c"
+    src.write_text(AU_HOST_C)
+    cc = shutil.which("clang") or shutil.which("cc") or "clang"
+    cmd = [cc, "-O1", "-g", "-w", "-arch", arch, str(src), "-o", str(exe),
+           "-framework", "AudioToolbox", "-framework", "CoreFoundation",
+           "-framework", "AudioUnit", "-framework", "CoreAudio"]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise TestSetupError(f"the test host didn't compile for {arch} (Xcode command line "
+                             f"tools: xcode-select --install). Compiler said:\n"
+                             + (r.stderr or r.stdout)[-3000:])
+    for old in d.glob(f"aharness_host-{arch}-*"):
+        if old != exe:
+            old.unlink(missing_ok=True)
+    return exe
+
+
+def _host_argv(host: Path, arch: str) -> list[str]:
+    if arch != _native_arch() and sys.platform == "darwin":
+        return ["arch", f"-{arch}", str(host)]      # e.g. Intel-only plugin, under Rosetta
+    return [str(host)]
+
+
+def _crash_report(since: float) -> list[str]:
+    """The crash report macOS wrote for the host, if there is one: exception and the
+    crashed thread's frames."""
+    d = Path.home() / "Library" / "Logs" / "DiagnosticReports"
+    try:
+        found = sorted((p for p in d.glob("aharness_host*") if p.stat().st_mtime >= since - 1),
+                       key=lambda p: p.stat().st_mtime)
+    except OSError:
+        return []
+    if not found:
+        return []
+    p = found[-1]
+    out = [f"macOS crash report: {p}"]
+    try:
+        text = p.read_text(errors="replace")
+        if p.suffix == ".ips":
+            body = json.loads(text.split("\n", 1)[1])
+            ex = body.get("exception") or {}
+            out.append(f"  exception: {ex.get('type', '?')} {ex.get('signal', '')} "
+                       f"{ex.get('subtype', '')}".rstrip())
+            if body.get("termination"):
+                out.append(f"  termination: {json.dumps(body['termination'])[:300]}")
+            imgs = body.get("usedImages") or []
+            for t in body.get("threads") or []:
+                if t.get("triggered"):
+                    for i, fr in enumerate((t.get("frames") or [])[:25]):
+                        img = imgs[fr.get("imageIndex", -1)] if 0 <= fr.get("imageIndex", -1) < len(imgs) else {}
+                        out.append(f"  {i:2d} {img.get('name', '?'):24} {fr.get('symbol', '?')}"
+                                   f" + {fr.get('symbolLocation', fr.get('imageOffset', '?'))}")
+                    break
+        else:
+            keep = False
+            for line in text.splitlines():
+                if line.startswith(("Exception Type", "Exception Codes", "Termination")):
+                    out.append("  " + line)
+                if re.match(r"Thread \d+ Crashed", line):
+                    keep = True
+                elif keep and not line.strip():
+                    break
+                if keep:
+                    out.append("  " + line)
+    except Exception as e:
+        out.append(f"  (couldn't read it: {type(e).__name__}: {e})")
+    return out[:40]
+
+
+def _run_host(argv: list[str], timeout: int = TEST_TIMEOUT) -> dict:
+    """Run the host once and read what it said."""
+    t0 = time.time()
+    res: dict = {"ok": False, "steps": [], "error": None, "crash": [], "signal": None,
+                 "timeout": False, "channels": None, "info": None, "stderr": ""}
+    try:
+        r = subprocess.run(argv, capture_output=True, text=True, errors="replace",
+                           timeout=timeout)
+        out, err, code = r.stdout, r.stderr, r.returncode
+    except subprocess.TimeoutExpired as e:
+        out = e.stdout.decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or "")
+        err = e.stderr.decode(errors="replace") if isinstance(e.stderr, bytes) else (e.stderr or "")
+        code = None
+        res["timeout"] = True
+    except OSError as e:
+        res["error"] = f"the test host couldn't start: {e}"
+        return res
+    for line in out.splitlines():
+        if line.startswith("STEP "):
+            res["steps"].append(line[5:])
+        elif line.startswith("ERROR "):
+            res["error"] = line[6:]
+        elif line.startswith("CRASH"):
+            if not line.startswith("CRASH end"):
+                res["crash"].append(line)
+        elif line.startswith("FORMAT channels="):
+            res["channels"] = int(line.split("=", 1)[1])
+        elif line.startswith("INFO "):
+            try:
+                res["info"] = json.loads(line[5:])
+            except ValueError:
+                res["error"] = "the host's parameter list couldn't be read: " + line[5:300]
+        elif res["crash"] and not line.startswith("CRASH end") and len(res["crash"]) < 70:
+            res["crash"].append(line)                # the stack trace's frames
+    res["stderr"] = err[-2000:]
+    if code is not None and code < 0:
+        try:
+            res["signal"] = signal.Signals(-code).name
+        except ValueError:
+            res["signal"] = f"signal {-code}"
+        res["crash"] += _crash_report(t0)
+    res["ok"] = code == 0 and not res["error"] and not res["timeout"]
+    res["seconds"] = round(time.time() - t0, 2)
+    return res
+
+
+def _describe_failure(res: dict, records_by_name: dict) -> list[str]:
+    """What went wrong in one host run, in words, with every detail it gave."""
+    step = res["steps"][-1] if res["steps"] else "starting"
+    out = []
+    if res["timeout"]:
+        out.append(f"took longer than {TEST_TIMEOUT} s during: {step} (an endless loop or a "
+                   f"wait that never ends)")
+    elif res["signal"] or res["crash"]:
+        out.append(f"crashed ({res['signal'] or 'signal'}) during: {step}")
+        frames = []
+        for line in res["crash"]:
+            out.append("    " + line)
+            m = re.search(r"\b((?:FUN|thunk_FUN)_[0-9a-fA-F]+|[A-Za-z_]\w*)\s*\+\s*\d+", line)
+            if m and m.group(1) in records_by_name and "program" in line:
+                frames.append(m.group(1))
+        if frames:
+            out.append("    rebuilt functions in the stack (innermost first): " + ", ".join(
+                f"{n} ({records_by_name[n]})" for n in dict.fromkeys(frames)))
+        addr = next((int(m.group(1), 16) for l in res["crash"]
+                     for m in [re.search(r"address=0x([0-9a-fA-F]+)", l)] if m), None)
+        if addr is not None and addr < 0x10000:
+            out.append("    (an address near zero: a null pointer, often a global or object the "
+                       "rebuilt program never set up)")
+    elif res["error"]:
+        out.append(f"failed at step {step}: {res['error']}")
+    else:
+        out.append(f"failed during: {step} (no message)")
+    if res.get("stderr", "").strip():
+        out.append("    stderr: " + res["stderr"].strip().replace("\n", "\n            ")[-1500:])
+    return out
+
+
+def _read_f32(path: Path):
+    from array import array
+    a = array("f")
+    try:
+        a.frombytes(path.read_bytes()[: (path.stat().st_size // 4) * 4])
+    except OSError:
+        pass
+    return a
+
+
+def _compare_outputs(a_path: Path, b_path: Path, channels: int, tol: float) -> dict:
+    import math
+    a, b = _read_f32(a_path), _read_f32(b_path)
+    n = min(len(a), len(b))
+    maxd = sumsq = suma = sumb = 0.0
+    first = -1
+    bad = 0
+    for i in range(n):
+        x, y = a[i], b[i]
+        if math.isnan(y) or math.isinf(y):
+            bad += 1
+            if first < 0:
+                first = i
+            continue
+        d = abs(x - y)
+        if d > maxd:
+            maxd = d
+        if d > tol and first < 0:
+            first = i
+        sumsq += d * d
+        suma += x * x
+        sumb += y * y
+    ch = max(1, channels)
+    res = {"frames": len(a) // ch, "frames_rebuilt": len(b) // ch, "max_diff": maxd,
+           "rms_diff": math.sqrt(sumsq / n) if n else 0.0,
+           "rms_original": math.sqrt(suma / n) if n else 0.0,
+           "rms_rebuilt": math.sqrt(sumb / n) if n else 0.0,
+           "nan_or_inf": bad,
+           "first_diff_s": round((first // ch) / 44100.0, 4) if first >= 0 else None}
+    res["same"] = len(a) == len(b) and first < 0
+    return res
+
+
+def _write_wav(f32: Path, wav: Path, channels: int) -> None:
+    import struct
+    data = f32.read_bytes()
+    ch = max(1, channels)
+    with open(wav, "wb") as f:
+        f.write(b"RIFF" + struct.pack("<I", 36 + len(data)) + b"WAVEfmt "
+                + struct.pack("<IHHIIHH", 16, 3, ch, 44100, 44100 * ch * 4, ch * 4, 32)
+                + b"data" + struct.pack("<I", len(data)) + data)
+
+
+def _test_presets(params: list) -> list[tuple[str, list[str]]]:
+    """Settings to test with: the defaults, and every writable parameter at its
+    lowest, middle and highest."""
+    ps = [p for p in params if p.get("writable", True)][:64]
+    presets = [("defaults", [])]
+    if ps:
+        for name, pick in (("all lowest", lambda p: p["min"]),
+                           ("all middle", lambda p: (p["min"] + p["max"]) / 2),
+                           ("all highest", lambda p: p["max"])):
+            presets.append((name, [f"{p['id']}={pick(p):g}" for p in ps]))
+    return presets
+
+
+def run_test(P: Paths, cfg: Config, args) -> dict:
+    """Run the rebuilt plugin and the original side by side and compare them."""
+    result: dict = {"ran": False, "cases": 0, "passed": 0}
+    rep: list[str] = [f"Run test: the rebuilt plugin against the original "
+                      f"({time.strftime('%Y-%m-%d %H:%M:%S')})", ""]
+    tdir = P.build / "test"
+
+    mapping: dict = {}
+    plugin: Optional[Path] = None
+
+    def finish(msg: str, ok: bool = False) -> dict:
+        msg = _scrub_test_text(msg, mapping, plugin)
+        if result.get("failure"):
+            result["failure"] = _scrub_test_text(result["failure"], mapping, plugin)
+        rep.extend(["", msg])
+        tdir.mkdir(parents=True, exist_ok=True)
+        write_atomic(tdir / "test_report.txt",
+                     _scrub_test_text("\n".join(rep), mapping, plugin) + "\n")
+        write_atomic(tdir / "results.json", json.dumps(result, indent=1))
+        plog(P, show=True, msg=f"  test: {msg}")
+        plog(P, show=True, msg=f"  test: everything it saw is in {tdir / 'test_report.txt'}")
+        if result["cases"]:
+            RUN_CTX["test_run"] = {"cases": result["cases"], "passed": result["passed"]}
+        if not ok:
+            struggle("test", result.get("failure") or msg[:120], hint="see build/test/test_report.txt")
+        return result
+
+    if not getattr(args, "plugin", None):
+        plog(P, show=True, msg="  test: skipped: give the original plugin with --plugin "
+                               "/path/to/Plugin.component to compare the rebuilt one with it")
+        result["skipped"] = "no --plugin"
+        return result
+    if not _can_run_au_test():
+        plog(P, show=True, msg="  test: skipped: Audio Units only run on macOS")
+        result["skipped"] = "not macOS"
+        return result
+    lib = cfg.workdir / ("program.dylib" if sys.platform == "darwin" else "program.so")
+    if not lib.exists():
+        result["failure"] = "no rebuilt library"
+        return finish(f"there's no rebuilt program to test ({lib} is missing): run the link "
+                      f"stage first (it builds it)")
+    try:
+        mapping.update(json.loads((P.root / "private" / "privacy_map.json").read_text()))
+    except (OSError, ValueError):
+        pass
+    plugin = Path(args.plugin).expanduser().resolve()
+    try:
+        orig = _plugin_bundle(plugin)
+    except TestSetupError as e:
+        result["failure"] = "the original plugin couldn't be read"
+        return finish(str(e))
+    records = {}
+    try:
+        records = load_manifest(cfg) if cfg.manifest_path.exists() else {}
+    except Exception:
+        pass
+    by_name = {r.name: r.file for r in records.values()}
+    exported = _exported_functions(lib)
+
+    # the hosts: one for this Mac's architecture (the rebuilt program), and one
+    # for the original's if it can't run natively (an Intel-only plugin)
+    native = _native_arch()
+    o_archs = _archs(orig["exe"])
+    o_arch = native if (not o_archs or native in o_archs) else o_archs[0]
+    rep += [f"original: {plugin}", f"  architectures: {', '.join(o_archs) or '?'}; tested as "
+            f"{o_arch}", f"rebuilt:  {lib} ({native})", ""]
+    try:
+        host = {native: _build_host(P, native)}
+        if o_arch != native:
+            host[o_arch] = _build_host(P, o_arch)
+    except TestSetupError as e:
+        result["failure"] = "the test host didn't build"
+        return finish(str(e))
+
+    tdir.mkdir(parents=True, exist_ok=True)
+    tmp = Path(tempfile.mkdtemp(prefix="run-", dir=tdir))
+    keep_wavs = tdir / "listen"
+    shutil.rmtree(keep_wavs, ignore_errors=True)
+    try:
+        # the rebuilt plugin, packaged as a .component for the length of the test
+        import plistlib
+        bundle = tmp / "Rebuilt.component"
+        (bundle / "Contents" / "MacOS").mkdir(parents=True)
+        shutil.copy2(lib, bundle / "Contents" / "MacOS" / "program")
+        info = _stand_in_plist(orig["info"], mapping)
+        info["CFBundleExecutable"] = "program"
+        with open(bundle / "Contents" / "Info.plist", "wb") as f:
+            plistlib.dump(info, f)
+        res_dir = plugin / "Contents" / "Resources"
+        if res_dir.is_dir():
+            (bundle / "Contents" / "Resources").symlink_to(res_dir)
+        rep.append(f"packaged the rebuilt program as {bundle} (deleted after the test), with "
+                   f"the original's Info.plist ({sum(len(m) for m in mapping.values())} privacy "
+                   f"stand-in(s) applied) and its Resources folder linked in")
+        crashes = 0
+        for comp in orig["components"]:
+            desc = [comp["type"], comp["subtype"], comp["manufacturer"]]
+            name = comp.get("name") or "/".join(desc)
+            fac, how = _find_factory(comp["factoryFunction"], exported, mapping)
+            rep += ["", f"== component {_stand_in_text(str(name), mapping)} "
+                        f"({'/'.join(desc)})", f"factory: original {comp['factoryFunction']}; "
+                        f"rebuilt {fac or 'NOT FOUND'} ({how})"]
+            if not fac:
+                result["failure"] = "the rebuilt program has no factory function"
+                return finish(f"can't test: {how}. The factory is the function the plugin "
+                              f"starts from; check that it compiled (build/link_report.txt).")
+            if fac in by_name:
+                rec = next(r for r in records.values() if r.name == fac)
+                if rec.quarantined or not rec.compiles:
+                    rep.append(f"  note: {fac} doesn't compile ({by_name[fac]}); the library "
+                               f"has a placeholder for it, so the plugin can't start")
+            o_cmd = _host_argv(host[o_arch], o_arch)
+            r_cmd = _host_argv(host[native], native)
+            oi = _run_host(o_cmd + ["info", str(plugin), comp["factoryFunction"], *desc])
+            if not oi["ok"] or not oi["info"]:
+                rep += ["original plugin, loading:"] + _describe_failure(oi, {})
+                result["failure"] = "the original plugin didn't load in the test host"
+                return finish("the ORIGINAL plugin didn't load in the test host, so there's "
+                              "nothing to compare with (see above). If it needs its "
+                              "license or installer, run it once in a DAW first.")
+            ri = _run_host(r_cmd + ["info", str(bundle), fac, *desc])
+            rep.append("rebuilt plugin, loading: " + ("OK" if ri["ok"] else "FAILED"))
+            if not ri["ok"] or not ri["info"]:
+                rep += _describe_failure(ri, by_name)
+                result.update(cases=1, passed=0, failure="the rebuilt plugin didn't load: "
+                              + (ri["steps"][-1] if ri["steps"] else "starting"))
+                return finish("the rebuilt plugin didn't load: " + _describe_failure(ri, by_name)[0])
+            op, rp = oi["info"]["params"], ri["info"]["params"]
+            rep.append(f"parameters: original {len(op)}, rebuilt {len(rp)}")
+            ok_ids = {p["id"]: p for p in rp}
+            for p in op:
+                q = ok_ids.get(p["id"])
+                if not q:
+                    rep.append(f"  missing in the rebuilt plugin: {p['id']} {p['name']}")
+                elif any(abs(p[k] - q[k]) > 1e-6 for k in ("min", "max", "default")):
+                    rep.append(f"  {p['id']} {p['name']}: original {p['min']}..{p['max']} "
+                               f"(default {p['default']}), rebuilt {q['min']}..{q['max']} "
+                               f"(default {q['default']})")
+            instrument = comp["type"] in ("aumu", "augn")
+            signals = [("silence", 3.0)] if instrument else TEST_SIGNALS
+            cases = [(pn, pv, s, secs) for pn, pv in _test_presets(op) for s, secs in signals]
+            rep += ["", f"{len(cases)} case(s): settings × test signals; a case passes when "
+                        f"every sample is within {args.test_tolerance:g} of the original's", ""]
+            for i, (pn, pv, sig, secs) in enumerate(cases, 1):
+                label = f"{pn} / {sig}"
+                if crashes >= 3:
+                    rep.append(f"[{i}] {label}: skipped (the rebuilt plugin crashed 3 times)")
+                    continue
+                result["cases"] += 1
+                of, rf = tmp / f"o{i}.f32", tmp / f"r{i}.f32"
+                ro = _run_host(o_cmd + ["render", str(plugin), comp["factoryFunction"], *desc,
+                                        sig, str(secs), str(of), *pv])
+                if not ro["ok"]:
+                    rep += [f"[{i}] {label}: the ORIGINAL failed, case not counted:"] \
+                        + _describe_failure(ro, {})
+                    result["cases"] -= 1
+                    continue
+                rr = _run_host(r_cmd + ["render", str(bundle), fac, *desc, sig, str(secs),
+                                        str(rf), *pv])
+                if not rr["ok"]:
+                    crashes += bool(rr["signal"] or rr["crash"])
+                    rep += [f"[{i}] {label}: FAIL"] + _describe_failure(rr, by_name)
+                    result.setdefault("failure", f"{label}: " + _describe_failure(rr, by_name)[0])
+                    continue
+                if (ro["channels"] or 2) != (rr["channels"] or 2):
+                    rep.append(f"[{i}] {label}: FAIL: the original renders {ro['channels']} "
+                               f"channel(s), the rebuilt {rr['channels']}")
+                    result.setdefault("failure", f"{label}: different channel count")
+                    continue
+                c = _compare_outputs(of, rf, ro["channels"] or 2, args.test_tolerance)
+                if c["same"]:
+                    result["passed"] += 1
+                    rep.append(f"[{i}] {label}: pass (max difference {c['max_diff']:.3g})")
+                else:
+                    why = []
+                    if c["frames"] != c["frames_rebuilt"]:
+                        why.append(f"{c['frames_rebuilt']} frames instead of {c['frames']}")
+                    if c["nan_or_inf"]:
+                        why.append(f"{c['nan_or_inf']} NaN/infinite sample(s)")
+                    if c["rms_rebuilt"] == 0 and c["rms_original"] > 0:
+                        why.append("the rebuilt output is silent")
+                    if c["first_diff_s"] is not None:
+                        why.append(f"differs from {c['first_diff_s']} s on")
+                    why.append(f"max difference {c['max_diff']:.3g}, rms difference "
+                               f"{c['rms_diff']:.3g} (original's level {c['rms_original']:.3g})")
+                    rep.append(f"[{i}] {label}: FAIL: " + "; ".join(why))
+                    result.setdefault("failure", f"{label}: outputs differ")
+                    if not keep_wavs.exists():         # the first failure, to listen to
+                        keep_wavs.mkdir(parents=True)
+                        slug = re.sub(r"\W+", "-", label).strip("-")
+                        _write_wav(of, keep_wavs / f"{slug}-original.wav", ro["channels"] or 2)
+                        _write_wav(rf, keep_wavs / f"{slug}-rebuilt.wav", rr["channels"] or 2)
+                        rep.append(f"    to listen: {keep_wavs}")
+                for f in (of, rf):
+                    f.unlink(missing_ok=True)
+        result["ran"] = True
+        n, k = result["cases"], result["passed"]
+        return finish(f"{k}/{n} case(s) pass" + (" — the rebuilt plugin sounds the same as the "
+                      "original in every case" if n and k == n else ""), ok=bool(n) and k == n)
+    finally:
+        if getattr(args, "keep_test_bundle", False):
+            plog(P, show=True, msg=f"  test: kept the temporary files in {tmp}")
+        else:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+
 def run_pipeline(args) -> int:
     global CHARS_PER_TOKEN
     STOPPING.clear()
@@ -11877,6 +12814,13 @@ def run_pipeline(args) -> int:
                 records = build_split(cfg, redo_split)
                 info = {"note": f"{sum(1 for r in records.values() if r.compiles)}/"
                                 f"{len(records)} compile after the sweep"}
+            elif stage == "test":
+                tr = run_test(P, cfg, args)
+                if not tr.get("ran"):
+                    mark_stage(P, stage, done=False, note=tr.get("skipped") or tr.get("failure") or "")
+                    ran_something = True
+                    continue
+                info = {"note": f"{tr['passed']}/{tr['cases']} case(s) pass"}
             elif stage in ("improve", "organize") and args.lang == "c":
                 plog(P, show=True, msg=f"  {stage}: not in C mode yet (its behaviour checks are "
                                        f"built for the C++ build). In C mode, what comes after "
@@ -11959,13 +12903,13 @@ def build_parser() -> argparse.ArgumentParser:
     g = ap.add_argument_group("pipeline")
     g.add_argument("--workdir", type=Path, default=Path("./decomp_project"),
                    help="project folder for everything this pipeline writes")
-    g.add_argument("--from", dest="from_stage", choices=["export", "privacy", "rewrite", "split", "fix", "recover", "link", "improve",
+    g.add_argument("--from", dest="from_stage", choices=["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
                             "organize"], default=None,
                    help="start at this stage (earlier stages must have run)")
-    g.add_argument("--to", dest="to_stage", choices=["export", "privacy", "rewrite", "split", "fix", "recover", "link", "improve",
+    g.add_argument("--to", dest="to_stage", choices=["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
                             "organize"], default=None,
                    help="stop after this stage")
-    g.add_argument("--redo", action="append", nargs="?", const="rewrite", choices=["export", "privacy", "rewrite", "split", "fix", "recover", "link", "improve",
+    g.add_argument("--redo", action="append", nargs="?", const="rewrite", choices=["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
                             "organize"],
                    help="do a stage's work again, replacing results in place (never "
                         "deletes; snapshots first). Bare --redo means --redo rewrite. "
@@ -12085,6 +13029,14 @@ def build_parser() -> argparse.ArgumentParser:
                         "out from --ctx)")
     g.add_argument("--resume", action="store_true", help=argparse.SUPPRESS)  # always on now
 
+    g = ap.add_argument_group("test (macOS)")
+    g.add_argument("--plugin", default=None, metavar="PATH",
+                   help="the original plugin's bundle folder (.component) to test the rebuilt one against")
+    g.add_argument("--test-tolerance", type=float, default=1e-4,
+                   help="largest difference per sample that still counts as the same")
+    g.add_argument("--keep-test-bundle", action="store_true",
+                   help="keep the temporary .component and raw outputs after the test")
+
     g = ap.add_argument_group("improve / organize")
     g.add_argument("--improve-rounds", type=int, default=3,
                    help="rounds of checks and small fixes (a round with nothing to fix ends "
@@ -12121,6 +13073,7 @@ def main(argv=None) -> int:
     RUN_CTX.pop("fix_run", None)
     RUN_CTX.pop("quick_done", None)
     RUN_CTX.pop("recover_run", None)
+    RUN_CTX.pop("test_run", None)
     SHOW_ALL["on"] = bool(getattr(args, "verbose", False))
     REPORTED["done"] = False
     _PSEUDO_CACHE.clear()

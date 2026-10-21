@@ -842,7 +842,7 @@ def test_stop_button_prints_errors_and_stops_cleanly(tmp_path, model):
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     log = tmp_path / "pipeline.log"
     deadline = time.time() + 240
-    while time.time() < deadline and not (log.exists() and "Stage 5/9" in log.read_text()):
+    while time.time() < deadline and not (log.exists() and "Stage 5/10" in log.read_text()):
         time.sleep(0.5)
     time.sleep(3)                                   # well into the fix stage
     proc.send_signal(signal.SIGTERM)
@@ -916,7 +916,7 @@ def test_console_shows_only_what_needs_attention(tmp_path, model, capsys):
     out = capsys.readouterr().out
     log = (tmp_path / "pipeline.log").read_text() + (tmp_path / "build" / "worklist.log").read_text()
     assert "fixer loop over" in log and "fixer loop over" not in out   # detail: file only
-    assert "━━━━ Stage 5/9" in out and "fixer loop done" in out         # headers and results
+    assert "━━━━ Stage 5/10" in out and "fixer loop done" in out         # headers and results
     assert "couldn't handle:" in out and "no usable rewrite" in out
     assert "run(s)]" not in out
     # the same problem next run is flagged as repeating
@@ -1305,3 +1305,195 @@ def test_c_mode_embeds_the_programs_data_and_fixes_up_its_pointers(tmp_path, mod
     s = so.FUN_000010b0()
     assert b"AcmeAudio" not in s and s.startswith(b"Name1")     # swept, same length
     assert "AcmeAudio" not in (tmp_path / "ghidra" / "ghidra_data.json").read_text()
+
+
+# ---- the test stage (macOS only for real; here its host is checked against
+# stand-in Apple headers, and its steps run with a stand-in host)
+
+STUB_CF = """// declarations only: lets the test host be syntax-checked away from a Mac
+#include <stdint.h>
+typedef int32_t OSStatus; typedef uint32_t OSType; typedef uint32_t UInt32; typedef uint8_t UInt8;
+typedef double Float64; typedef unsigned char Boolean; typedef long CFIndex; typedef unsigned long CFTypeID;
+typedef const struct __CFAllocator *CFAllocatorRef; typedef const struct __CFURL *CFURLRef;
+typedef struct __CFBundle *CFBundleRef; typedef struct __CFError *CFErrorRef;
+typedef const struct __CFString *CFStringRef; typedef const struct __CFDictionary *CFDictionaryRef;
+typedef const void *CFTypeRef; typedef uint32_t CFStringEncoding;
+#define kCFStringEncodingUTF8 0x08000100
+#define CFSTR(s) ((CFStringRef)s)
+#define noErr 0
+CFURLRef CFURLCreateFromFileSystemRepresentation(CFAllocatorRef, const UInt8 *, CFIndex, Boolean);
+CFBundleRef CFBundleCreate(CFAllocatorRef, CFURLRef);
+Boolean CFBundleLoadExecutableAndReturnError(CFBundleRef, CFErrorRef *);
+void *CFBundleGetFunctionPointerForName(CFBundleRef, CFStringRef);
+CFStringRef CFErrorCopyDescription(CFErrorRef); CFDictionaryRef CFErrorCopyUserInfo(CFErrorRef);
+const void *CFDictionaryGetValue(CFDictionaryRef, const void *);
+CFTypeID CFGetTypeID(CFTypeRef); CFTypeID CFStringGetTypeID(void);
+Boolean CFStringGetCString(CFStringRef, char *, CFIndex, CFStringEncoding);
+CFStringRef CFStringCreateWithCString(CFAllocatorRef, const char *, CFStringEncoding);
+void CFRelease(CFTypeRef);
+"""
+
+STUB_AT = """#include <CoreFoundation/CoreFoundation.h>
+typedef struct { OSType componentType, componentSubType, componentManufacturer; UInt32 componentFlags, componentFlagsMask; } AudioComponentDescription;
+typedef struct OpaqueAudioComponent *AudioComponent;
+typedef struct ComponentInstanceRecord *AudioComponentInstance; typedef AudioComponentInstance AudioUnit;
+typedef struct AudioComponentPlugInInterface AudioComponentPlugInInterface;
+typedef AudioComponentPlugInInterface *(*AudioComponentFactoryFunction)(const AudioComponentDescription *);
+typedef UInt32 AudioUnitPropertyID, AudioUnitScope, AudioUnitElement, AudioUnitParameterID, AudioUnitRenderActionFlags;
+typedef float AudioUnitParameterValue;
+typedef struct { Float64 mSampleRate; UInt32 mFormatID, mFormatFlags, mBytesPerPacket, mFramesPerPacket, mBytesPerFrame, mChannelsPerFrame, mBitsPerChannel, mReserved; } AudioStreamBasicDescription;
+typedef struct { UInt32 mNumberChannels, mDataByteSize; void *mData; } AudioBuffer;
+typedef struct { UInt32 mNumberBuffers; AudioBuffer mBuffers[1]; } AudioBufferList;
+typedef struct { Float64 mSampleTime; uint64_t mHostTime; Float64 mRateScalar; uint64_t mWordClockTime; char smpte[24]; UInt32 mFlags, mReserved; } AudioTimeStamp;
+typedef OSStatus (*AURenderCallback)(void *, AudioUnitRenderActionFlags *, const AudioTimeStamp *, UInt32, UInt32, AudioBufferList *);
+typedef struct { AURenderCallback inputProc; void *inputProcRefCon; } AURenderCallbackStruct;
+typedef OSStatus (*HostCallback_GetBeatAndTempo)(void *, Float64 *, Float64 *);
+typedef struct { void *hostUserData; HostCallback_GetBeatAndTempo beatAndTempoProc; void *a, *b, *c; } HostCallbackInfo;
+typedef struct { char name[52]; CFStringRef unitName; UInt32 clumpID; CFStringRef cfNameString; UInt32 unit; float minValue, maxValue, defaultValue; UInt32 flags; } AudioUnitParameterInfo;
+enum { kAudioUnitErr_InvalidProperty = -10879, kAudioUnitErr_InvalidParameter = -10878, kAudioUnitErr_InvalidElement = -10877,
+ kAudioUnitErr_NoConnection = -10876, kAudioUnitErr_FailedInitialization = -10875, kAudioUnitErr_TooManyFramesToProcess = -10874,
+ kAudioUnitErr_InvalidFile = -10871, kAudioUnitErr_FormatNotSupported = -10868, kAudioUnitErr_Uninitialized = -10867,
+ kAudioUnitErr_InvalidScope = -10866, kAudioUnitErr_PropertyNotWritable = -10865, kAudioUnitErr_CannotDoInCurrentContext = -10863,
+ kAudioUnitErr_InvalidPropertyValue = -10851, kAudioUnitErr_PropertyNotInUse = -10850, kAudioUnitErr_Initialized = -10849,
+ kAudioUnitErr_InvalidOfflineRender = -10848, kAudioUnitErr_Unauthorized = -10847, kAudioComponentErr_InstanceInvalidated = -66749 };
+enum { kAudioUnitType_MusicDevice = 'aumu', kAudioUnitType_MusicEffect = 'aumf', kAudioUnitType_Generator = 'augn',
+ kAudioFormatLinearPCM = 'lpcm', kAudioFormatFlagsNativeFloatPacked = 9, kAudioFormatFlagIsNonInterleaved = 32,
+ kAudioUnitProperty_StreamFormat = 8, kAudioUnitProperty_MaximumFramesPerSlice = 14, kAudioUnitProperty_HostCallbacks = 27,
+ kAudioUnitProperty_SetRenderCallback = 23, kAudioUnitProperty_ParameterList = 3, kAudioUnitProperty_ParameterInfo = 4,
+ kAudioUnitScope_Global = 0, kAudioUnitScope_Input = 1, kAudioUnitScope_Output = 2, kAudioTimeStampSampleTimeValid = 1,
+ kAudioUnitParameterFlag_HasCFNameString = 1 << 27, kAudioUnitParameterFlag_CFNameRelease = 1 << 4, kAudioUnitParameterFlag_IsWritable = 1 << 31 };
+AudioComponent AudioComponentRegister(const AudioComponentDescription *, CFStringRef, UInt32, AudioComponentFactoryFunction);
+OSStatus AudioComponentInstanceNew(AudioComponent, AudioComponentInstance *);
+OSStatus AudioComponentInstanceDispose(AudioComponentInstance);
+OSStatus AudioUnitSetProperty(AudioUnit, AudioUnitPropertyID, AudioUnitScope, AudioUnitElement, const void *, UInt32);
+OSStatus AudioUnitGetProperty(AudioUnit, AudioUnitPropertyID, AudioUnitScope, AudioUnitElement, void *, UInt32 *);
+OSStatus AudioUnitGetPropertyInfo(AudioUnit, AudioUnitPropertyID, AudioUnitScope, AudioUnitElement, UInt32 *, Boolean *);
+OSStatus AudioUnitInitialize(AudioUnit); OSStatus AudioUnitUninitialize(AudioUnit);
+OSStatus AudioUnitSetParameter(AudioUnit, AudioUnitParameterID, AudioUnitScope, AudioUnitElement, AudioUnitParameterValue, UInt32);
+OSStatus AudioUnitRender(AudioUnit, AudioUnitRenderActionFlags *, const AudioTimeStamp *, UInt32, UInt32, AudioBufferList *);
+OSStatus MusicDeviceMIDIEvent(AudioUnit, UInt32, UInt32, UInt32, UInt32);
+"""
+
+
+def test_au_test_host_compiles_against_apples_api(tmp_path):
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        pytest.skip("no C compiler")
+    import subprocess
+    (tmp_path / "CoreFoundation").mkdir()
+    (tmp_path / "AudioToolbox").mkdir()
+    (tmp_path / "CoreFoundation" / "CoreFoundation.h").write_text(STUB_CF)
+    (tmp_path / "AudioToolbox" / "AudioToolbox.h").write_text(STUB_AT)
+    (tmp_path / "host.c").write_text(dp.AU_HOST_C)
+    r = subprocess.run([cc, "-fsyntax-only", "-Wall", "-Wextra", "-Werror", "-Wno-multichar",
+                        "-Wno-unused-result", "-D_GNU_SOURCE", f"-I{tmp_path}",
+                        str(tmp_path / "host.c")], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+
+
+FAKE_HOST = r"""
+import json, os, signal, sys, math
+from array import array
+cmd, bundle, factory = sys.argv[1], sys.argv[2], sys.argv[3]
+rebuilt = bundle.endswith("Rebuilt.component")
+print("STEP load bundle " + bundle)
+if rebuilt:
+    import plistlib
+    info = plistlib.load(open(os.path.join(bundle, "Contents", "Info.plist"), "rb"))
+    assert info["CFBundleExecutable"] == "program", info
+    assert os.path.exists(os.path.join(bundle, "Contents", "MacOS", "program"))
+    assert factory == "Name1AUFactory", factory
+print("STEP instantiate")
+if cmd == "info":
+    print("INFO " + json.dumps({"type": "aufx", "params": [
+        {"id": 0, "name": "Gain", "min": 0, "max": 2, "default": 1, "writable": True}]}))
+    sys.exit(0)
+sig, secs, out = sys.argv[7], float(sys.argv[8]), sys.argv[9]
+gain = 1.0
+for a in sys.argv[10:]:
+    gain = float(a.split("=")[1])
+print("FORMAT channels=2")
+print("STEP render " + sig)
+if rebuilt and sig == "sweep" and gain == 0:
+    print("CRASH signal=11 (SIGSEGV: bad memory access) address=0x8")
+    print("CRASH stack:")
+    print("2   program   0x0000000100001234 FUN_00001000 + 20")
+    print("CRASH end")
+    sys.stdout.flush()
+    os.kill(os.getpid(), signal.SIGSEGV)
+n = int(secs * 1000)
+off = 0.5 if (rebuilt and sig == "noise" and gain == 2) else 0.0
+array("f", [gain * math.sin(i / 10.0) + off for i in range(2 * n)]).tofile(open(out, "wb"))
+print("OK")
+"""
+
+
+def test_test_stage_packages_runs_compares_and_explains(tmp_path, monkeypatch):
+    import plistlib
+    import subprocess
+    from types import SimpleNamespace
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        pytest.skip("no C compiler")
+    P = dp.Paths(tmp_path / "proj")
+    P.use_c()
+    P.make()
+    (P.root / "private").mkdir()
+    (P.root / "private" / "privacy_map.json").write_text(json.dumps(
+        {"name": {"Acme": "Name1"}, "bundle ID": {"com.acme.verb": "com.example.app1"}}))
+    lib = P.build / ("program.dylib" if sys.platform == "darwin" else "program.so")
+    (tmp_path / "f.c").write_text("void *Name1AUFactory(void *d) { return d; }\n")
+    subprocess.run([cc, "-shared", "-fPIC", str(tmp_path / "f.c"), "-o", str(lib)], check=True)
+    plugin = tmp_path / "Acme Verb.component"
+    (plugin / "Contents" / "MacOS").mkdir(parents=True)
+    (plugin / "Contents" / "Resources").mkdir()
+    (plugin / "Contents" / "MacOS" / "Acme Verb").write_bytes(b"\0")
+    with open(plugin / "Contents" / "Info.plist", "wb") as f:
+        plistlib.dump({"CFBundleExecutable": "Acme Verb", "CFBundleIdentifier": "com.acme.verb",
+                       "AudioComponents": [{"type": "aufx", "subtype": "verb", "manufacturer": "Acme",
+                                            "name": "Acme: Verb", "factoryFunction": "AcmeAUFactory"}]}, f)
+    fake = tmp_path / "fake_host.py"
+    fake.write_text(FAKE_HOST)
+    monkeypatch.setattr(dp, "_can_run_au_test", lambda: True)
+    monkeypatch.setattr(dp, "_build_host", lambda P, arch: fake)
+    monkeypatch.setattr(dp, "_archs", lambda p: [])
+    monkeypatch.setattr(dp, "_host_argv", lambda host, arch: [sys.executable, str(host)])
+    monkeypatch.setattr(dp, "_crash_report", lambda since: [])
+    cfg = SimpleNamespace(workdir=P.build, manifest_path=P.build / "manifest.json")
+    args = SimpleNamespace(plugin=str(plugin), test_tolerance=1e-4, keep_test_bundle=False)
+    res = dp.run_test(P, cfg, args)
+    rep = (P.build / "test" / "test_report.txt").read_text()
+    assert res["ran"], rep
+    # 4 settings x 4 signals; at the lowest gain the sweep crashes, at the highest
+    # the noise differs
+    assert res["cases"] == 16 and res["passed"] == 14, rep
+    assert "rebuilt Name1AUFactory" in rep
+    assert "crashed (SIGSEGV)" in rep and "FUN_00001000 + 20" in rep and "null pointer" in rep
+    assert "all highest / noise: FAIL" in rep and "max difference 0.5" in rep
+    assert sorted(p.name for p in (P.build / "test" / "listen").iterdir()) == [
+        "all-highest-noise-original.wav", "all-highest-noise-rebuilt.wav"]
+    assert not list((P.build / "test").glob("run-*"))       # the temporary bundle is gone
+    assert "Acme" not in rep and "tmp_path" not in rep and "Original.component" in rep  # sent on: scrubbed
+    # the original that won't load: said plainly, nothing compared
+    (plugin / "Contents" / "Info.plist").write_bytes(b"not a plist")
+    res = dp.run_test(P, cfg, args)
+    assert not res["ran"] and "couldn't be read" in (P.build / "test" / "test_report.txt").read_text()
+
+
+def test_test_stage_is_skipped_without_a_plugin_or_off_macos(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    P = dp.Paths(tmp_path)
+    P.make()
+    cfg = SimpleNamespace(workdir=P.build, manifest_path=P.build / "manifest.json")
+    assert dp.run_test(P, cfg, SimpleNamespace(plugin=None))["skipped"] == "no --plugin"
+    monkeypatch.setattr(dp, "_can_run_au_test", lambda: False)
+    assert dp.run_test(P, cfg, SimpleNamespace(plugin="x.component"))["skipped"] == "not macOS"
+
+
+def test_find_factory_follows_privacy_and_underscores():
+    m = {"name": {"Acme": "Name1"}}
+    assert dp._find_factory("AcmeFactory", {"_Name1Factory"}, m)[0] == "_Name1Factory"
+    assert dp._find_factory("AcmeFactory", {"AcmeFactory"}, m)[0] == "AcmeFactory"
+    assert dp._find_factory("AcmeFactory", {"other", "Thing_Factory"}, m)[0] == "Thing_Factory"
+    name, why = dp._find_factory("AcmeFactory", {"other"}, m)
+    assert name is None and "Name1Factory" in why

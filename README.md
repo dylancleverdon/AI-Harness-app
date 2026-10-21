@@ -93,7 +93,7 @@ Failed runs are explained in plain English: LM Studio unreachable, model not loa
 
 ## Decomp pipeline (`decomp_pipeline.py`)
 
-`scripts/examples/decomp_pipeline.py` combines `pseudo_to_cpp.py` and `DECOMP_FIXER.py` (kept unchanged in `scripts/legacy/`) into one resumable pipeline: **export** (Ghidra pseudocode) → **rewrite** (model writes readable C++) → **split** (libclang: `shared.h` + one file per function) → **fix** → **recover** → **link** → **improve** → **organize** (modules, classes, privacy check, `final/`).
+`scripts/examples/decomp_pipeline.py` combines `pseudo_to_cpp.py` and `DECOMP_FIXER.py` (kept unchanged in `scripts/legacy/`) into one resumable pipeline: **export** (Ghidra pseudocode) → **privacy** → **rewrite** (model writes readable C++) → **split** (libclang: `shared.h` + one file per function) → **fix** → **recover** → **link** → **test** (macOS: the rebuilt plugin against the original) → **improve** → **organize** (modules, classes, privacy check, `final/`).
 
 ```bash
 python3 decomp_pipeline.py --workdir ~/decomp/MyApp                 # everything, or carry on
@@ -107,6 +107,17 @@ python3 decomp_pipeline.py --workdir ~/decomp/MyApp --from improve  # another ro
 - **Always the model loaded in LM Studio**, checked at each stage. Tasks it couldn't do are retried when a different model is loaded.
 - **`--redo` never deletes.** Results are replaced in place; the current files are copied to `snapshots/` first.
 - **Privacy (stage 2):** right after the export, identifying information is replaced in Ghidra's export, so nothing later sees it: names in `privacy_blocklist.txt` (names found in bundle IDs and copyright lines are added automatically), web and email addresses, bundle IDs, user folder paths and copyright lines. Each value gets a consistent stand-in; names that would clash are kept apart. What was replaced is listed in `private/privacy_report.txt`, which stays on your Mac (the log and the diagnostics report only show counts), including the stand-ins the plugin uses while it runs (its bundle ID), which its rebuilt `Info.plist` must match. Run it on its own with `--from privacy --to privacy`. `final/` isn't written while the privacy check still finds something.
+- **C mode (`--lang c`): build what Ghidra decompiled, without the model.** Ghidra's pseudocode is compiled as C (in `build_c/`; the C++ build in `build/` is left alone), with the quick fixes and the model only for what doesn't compile. The program's own data (strings, tables, pointers between them) is exported from Ghidra too and built in, with its pointers fixed up when the library loads, so the code finds what it expects. The data comes from the export stage, so the first C run needs Ghidra once:
+  ```bash
+  python3 decomp_pipeline.py --workdir ~/decomp/MyPlugin --lang c \
+      --ghidra-home ~/ghidra --project ~/GhidraProjects/MyPlugin.gpr --redo export
+  ```
+  Later runs carry on without Ghidra. Improve and organize don't run in C mode yet.
+- **Test (macOS, `--plugin`):** a tiny command-line Audio Unit host (built once with the Xcode command line tools) loads a plugin straight from its bundle and registers it inside its own process: nothing is installed and no DAW is needed. The rebuilt library is packaged as a temporary `.component` (the original's `Info.plist` with the privacy stand-ins, its `Resources` linked in), deleted after the test (`--keep-test-bundle` keeps it). Both plugins render the same test signals (silence, impulses, a sine sweep, noise; a held note for instruments) with the default settings and every parameter at its lowest, middle and highest; outputs must match within `--test-tolerance` (0.0001). Anything that goes wrong says which step (loading, finding the factory function, creating the plugin, setting the format, initializing, rendering), with the Audio Unit error's name, the loader's message (e.g. a missing symbol), or for a crash the faulting address, the stack trace (with the rebuilt functions in it) and macOS's crash report. Everything is in `build_c/test/test_report.txt` (also in the diagnostics report, with names and paths replaced); the first failing case is saved as WAVs in `build_c/test/listen/` to listen to. Just the test:
+  ```bash
+  python3 decomp_pipeline.py --workdir ~/decomp/MyPlugin --lang c --from test --to test \
+      --plugin "/Library/Audio/Plug-Ins/Components/MyPlugin.component"
+  ```
 - `REPORT.md` / `report.json` sum up every stage, including the improve score (lower is better).
 - **The log** shows stage headers, one result line per stage, each function the fix and recover stages finish, warnings, and at the end *what the script struggled with* (things it couldn't handle or had to work around, marked when they keep coming back). Everything else goes to `pipeline.log` and `build/worklist.log`; `--verbose` prints it all.
 - **Diagnostics report:** every run (also when stopped) writes `diagnostics/report-<time>.md`: the struggle report, the run's log, every function that doesn't compile grouped by error (with compiler output, code and notes for examples of each), the rewrite's failures and the stages' own reports. AI Harness sends it to the `decomp-reports` branch of this repo when the run ends, so Claude can read it (Settings → Reports; **this repo is public**, so anyone can read what's sent).
