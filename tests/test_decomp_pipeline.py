@@ -350,7 +350,8 @@ def test_end_to_end(tmp_path, model):
     assert report["rewrite"]["done"] == 7 and report["rewrite"]["renamed"] == 7
     assert report["export"]["datatypes"] == 1 and report["export"]["signatures"] == 7
     st = json.loads((tmp_path / "pipeline_state.json").read_text())
-    assert all(st["stages"][s]["done"] for s in dp.STAGES)
+    assert all(st["stages"][s]["done"] for s in dp.STAGES if s != "test")
+    assert st["stages"]["test"]["note"] == "no --plugin"          # skipped, and says why
     assert st["stages"]["rewrite"]["model"] == "fake-model"
     assert (tmp_path / "REPORT.md").read_text().startswith("# Decomp pipeline report")
     assert model.calls["rewrite"] == 7 and model.calls["recover"] == 0
