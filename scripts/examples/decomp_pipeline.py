@@ -1910,7 +1910,13 @@ def compile_errors(code):
 
 
 def n_errors(err):
-    return len(re.findall(r"\berror\b", err)) if err else 0
+    """How many errors the compiler reported: its error lines (file:line:col:
+    error: ...). Counting the word "error" also counted the "1 error generated."
+    summary, so going from 2 errors to 1 looked like no progress."""
+    if not err:
+        return 0
+    n = len(re.findall(r":\d+:\d+: (?:fatal )?error:", err))
+    return n or len(re.findall(r"^(?:fatal )?error:|: error:", err, re.M)) or (1 if err.strip() else 0)
 
 
 # ---------------------------------------------------------------- incremental fix
@@ -10385,7 +10391,7 @@ def quick_fix(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
     rules. True if the function compiles now. Never quarantines."""
     rel = rec.file
     lessons = fix_lessons(cfg)
-    for _ in range(8):
+    for _ in range(30):                      # one error per round; stops when none applies
         ok, err, _ = compile_tu(cfg, rel)
         if ok:
             rec.compiles = True

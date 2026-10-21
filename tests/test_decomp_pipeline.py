@@ -1167,3 +1167,11 @@ def test_declaring_missing_names_never_breaks_shared_h(tmp_path, model):
     header = (tmp_path / "build" / "shared.h").read_text()
     assert "extern uint64_t code" not in header and "uint64_t undefined8" not in header
     assert dp._compile_header_human(cfg, "shared.h")[0]
+
+
+def test_error_count_ignores_the_summary_line():
+    # "1 error generated." used to count as an error, so 2 -> 1 looked like no progress
+    assert dp.n_errors("a.cpp:1:2: error: x\n1 error generated.") == 1
+    assert dp.n_errors("/p/fastpass 3/a.cpp:1:2: error: x\n/p/b.h:3:4: error: y\n"
+                       "2 errors generated.") == 2
+    assert dp.n_errors("") == 0
