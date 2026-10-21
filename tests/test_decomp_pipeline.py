@@ -1150,3 +1150,20 @@ def test_ghidra_globals_and_library_calls_are_declared_once(tmp_path, model):
     assert by_name(tmp_path)["squareIt"]["compiles"]
     log = (tmp_path / "build" / "worklist.log").read_text()
     assert "quick fixes (no model)" in log
+
+
+def test_declaring_missing_names_never_breaks_shared_h(tmp_path, model):
+    # errors saved by an earlier compile say 'code' is undeclared, but the headers
+    # define it by now: declaring it again broke shared.h, and with it every compile
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "split") == 0
+    cfg = dp.Config(input_file=tmp_path / "rewrite" / "rewritten.cpp", workdir=tmp_path / "build",
+                    cxx=dp.COMPILER["cmd"] or shutil.which("clang++") or shutil.which("g++"))
+    records = dp.load_manifest(cfg)
+    r = next(iter(records.values()))
+    r.compiles, r.last_error = False, ("x.cpp:1:1: error: use of undeclared identifier 'code'\n"
+                                       "x.cpp:2:1: error: use of undeclared identifier 'undefined8'")
+    dp.declare_missing(cfg, records)
+    header = (tmp_path / "build" / "shared.h").read_text()
+    assert "extern uint64_t code" not in header and "uint64_t undefined8" not in header
+    assert dp._compile_header_human(cfg, "shared.h")[0]

@@ -10293,7 +10293,13 @@ def declare_missing(cfg: Config, records: dict[str, FuncRecord]) -> int:
             if not GHIDRA_LOCAL.match(n):
                 by_name.setdefault(n, []).append(r)
     program = {r.name for r in records.values()}
-    names = {n for n in by_name if n not in program and n not in CPP_KEYWORDS}
+    # the errors come from the last compile: a name the headers declare by now
+    # (Ghidra's "code" type, say) must not be declared again
+    _replace_section(cfg.shared_h, [])
+    have = set(re.findall(r"[A-Za-z_]\w*", strip_comments(  # switched-off lines don't count
+        cfg.shared_h.read_text() + "\n" +
+        (cfg.intrins_h.read_text() if cfg.intrins_h.exists() else ""))))
+    names = {n for n in by_name if n not in program and n not in CPP_KEYWORDS and n not in have}
     if not names:
         _replace_section(cfg.shared_h, [])
         return 0
@@ -10329,6 +10335,37 @@ def declare_missing(cfg: Config, records: dict[str, FuncRecord]) -> int:
         else:
             head += [f"//@unit {uid} global {n}", f"extern uint64_t {n};"]
             defs.append(f"uint64_t {n} = 0;")
+    # every declaration must leave shared.h compiling; one that doesn't (it clashes
+    # with something) is dropped, and if that can't be sorted out, none are added
+    for _ in range(5):
+        _replace_section(cfg.shared_h, head)
+        ok, err = _compile_header_human(cfg, "shared.h")
+        if ok:
+            break
+        lines = cfg.shared_h.read_text().split("\n")
+        start = next(i for i, l in enumerate(lines) if l == DECLARED_START)
+        bad = set()
+        for l in err.splitlines():
+            m = DIAG_RE.match(l.strip())
+            if m and "error" in m.group("sev") and Path(m.group("file")).name == "shared.h":
+                k = int(m.group("line")) - 1
+                if k > start:
+                    bad.add(lines[k].strip())
+        if not bad:
+            head = []
+            break
+        drop = {re.search(r"([A-Za-z_]\w*)\s*(\(|\[|;)", b).group(1) for b in bad
+                if re.search(r"([A-Za-z_]\w*)\s*(\(|\[|;)", b)}
+        kept = [n for n in kept if n not in drop]
+        head = [l for i, l in enumerate(head)
+                if not any(re.search(rf"\b{re.escape(d)}\b", l) for d in drop)]
+        defs = [d for d in defs if not any(re.search(rf"\b{re.escape(x)}\b", d) for x in drop)]
+    else:
+        head = []
+    if not head:
+        _replace_section(cfg.shared_h, [])
+        log(cfg, "  (couldn't declare the missing names without breaking shared.h — skipped)")
+        return 0
     _replace_section(cfg.shared_h, head)
     _replace_section(cfg.globals_cpp, defs)
     affected = {r.mangled: r for n in kept for r in by_name[n]}
