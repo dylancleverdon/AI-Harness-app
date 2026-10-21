@@ -3922,6 +3922,7 @@ typedef uint8_t   undefined1;
 typedef uint16_t  undefined2;
 typedef uint32_t  undefined4;
 typedef uint64_t  undefined8;
+typedef uint64_t  code(...);   // Ghidra's "code *": a pointer to some function
 typedef uint8_t   byte;
 typedef uint16_t  word;
 typedef uint32_t  dword;
@@ -6651,6 +6652,34 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
     cache = load_cache(cfg)
     failing = [m for m in order if m in records and not records[m].compiles
                and not records[m].quarantined]
+    # every failing function gets the fixes that need no model first (seconds
+    # each, all in parallel), so the model only sees what those can't fix
+    quick_done = RUN_CTX.setdefault("quick_done", set())
+    todo = [m for m in failing if m not in quick_done]
+    if todo:
+        qp = Progress(len(todo), 0, title="quick fixes for every failing function (no model)")
+        qn = [0]
+        qp.extra = lambda: f"{qn[0]} fixed"
+
+        def quick(m):
+            rec = records[m]
+            qp.begin(m, rec.name)
+            try:
+                if quick_fix(cfg, rec, cache):
+                    qn[0] += 1
+                    log(cfg, f"    {rec.name} -> fixed without the model")
+            finally:
+                qp.end(m)
+                quick_done.add(m)
+        try:
+            work_pool(max(cfg.workers, (os.cpu_count() or 2) - 1), todo, quick, 200,
+                      lambda: save_manifest(cfg, records))
+        finally:
+            qp.close()
+        save_manifest(cfg, records)
+        log(cfg, show=True, msg=f"  quick fixes (no model): {qn[0]} of {len(todo)} function(s) "
+                                f"compile now")
+        failing = [m for m in failing if not records[m].compiles]
     total = len(failing)
     log(cfg, f"  fixer loop over {total} failing TU(s), dependency-ordered")
     fixed = [0]
@@ -10232,6 +10261,118 @@ def build_split(cfg: Config, redo_split: bool) -> dict[str, FuncRecord]:
     return records
 
 
+GHIDRA_LOCAL = re.compile(r"^(local_|[a-z]{1,3}Var\d|[a-z]{0,2}Stack_|auStack|in_|unaff_|"
+                          r"extraout_|param_\d|stack0x)")
+DECLARED_START = "// ==== declared by the build: Ghidra globals and library functions ===="
+DECLARED_END = "// ==== end of declared by the build ===="
+
+
+def _replace_section(path: Path, lines: list[str]) -> None:
+    text = path.read_text() if path.exists() else ""
+    if DECLARED_START in text:
+        a = text.index(DECLARED_START)
+        b = text.find(DECLARED_END, a)
+        text = text[:a] + (text[b + len(DECLARED_END):].lstrip("\n") if b >= 0 else "")
+    if lines:
+        text = text.rstrip("\n") + "\n\n" + "\n".join([DECLARED_START, *lines, DECLARED_END]) + "\n"
+    path.write_text(text)
+
+
+def declare_missing(cfg: Config, records: dict[str, FuncRecord]) -> int:
+    """Names the code uses that nothing declares, but that Ghidra's pseudocode
+    uses too: its global variables (DAT_..., PTR_...) and library functions
+    (mach_absolute_time, ___cxa_allocate_exception...). They're declared once in
+    shared.h (and defined in globals.cpp) instead of being fixed function by
+    function. Names the model made up aren't in the pseudocode and stay errors.
+    Returns how many names were declared."""
+    by_name: dict[str, list[FuncRecord]] = {}
+    for r in records.values():
+        if r.compiles or r.quarantined or not r.last_error:
+            continue
+        for n in set(re.findall(r"use of undeclared identifier '([A-Za-z_]\w*)'", r.last_error)):
+            if not GHIDRA_LOCAL.match(n):
+                by_name.setdefault(n, []).append(r)
+    program = {r.name for r in records.values()}
+    names = {n for n in by_name if n not in program and n not in CPP_KEYWORDS}
+    if not names:
+        _replace_section(cfg.shared_h, [])
+        return 0
+    export, _ = _load_pseudocode(cfg)
+    want = names | {"_" + n for n in names}
+    seen: set[str] = set()
+    for code in export.values():
+        for t in re.findall(r"[A-Za-z_]\w*", code or ""):
+            if t in want:
+                seen.add(t)
+    kept = sorted(n for n in names if n in seen or "_" + n in seen)
+    if not kept:
+        return 0
+    text_of = {}
+    for n in kept:
+        for r in by_name[n][:20]:
+            if r.file not in text_of:
+                try:
+                    text_of[r.file] = (cfg.workdir / r.file).read_text()
+                except OSError:
+                    text_of[r.file] = ""
+    uid = max([int(x) for x in re.findall(r"^//@unit (\d+)", cfg.shared_h.read_text(), re.M)]
+              or [0]) + 1000
+    head, defs = [], []
+    for n in kept:
+        texts = [text_of.get(r.file, "") for r in by_name[n][:20]]
+        uid += 1
+        if any(re.search(rf"\b{re.escape(n)}\s*\(", t) for t in texts):
+            head += [f"//@unit {uid} proto {n}", f'extern "C" uint64_t {n}(...);']
+        elif any(re.search(rf"\b{re.escape(n)}\s*\[", t) for t in texts):
+            head += [f"//@unit {uid} global {n}", f"extern uint64_t {n}[];"]
+            defs.append(f"uint64_t {n}[1];")
+        else:
+            head += [f"//@unit {uid} global {n}", f"extern uint64_t {n};"]
+            defs.append(f"uint64_t {n} = 0;")
+    _replace_section(cfg.shared_h, head)
+    _replace_section(cfg.globals_cpp, defs)
+    affected = {r.mangled: r for n in kept for r in by_name[n]}
+    log(cfg, show=True, msg=f"  declared {len(kept)} name(s) the code uses that Ghidra's "
+                            f"pseudocode has too (globals like DAT_..., library functions); "
+                            f"compiling the {len(affected)} function(s) that use them again")
+    struggle("fix", "Ghidra globals / library functions nothing declared (declared once in "
+             "shared.h)", kept[0], n=len(kept), handled=True)
+    compile_sweep(cfg, affected)
+    return len(kept)
+
+
+def quick_fix(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
+    """The fixes that need no model, until none applies: declare leftover Ghidra
+    locals, edits learned before, casts to declared parameter types, learned
+    rules. True if the function compiles now. Never quarantines."""
+    rel = rec.file
+    lessons = fix_lessons(cfg)
+    for _ in range(8):
+        ok, err, _ = compile_tu(cfg, rel)
+        if ok:
+            rec.compiles = True
+            return True
+        rec.last_error = keep_error(err)
+        if templated_fix(cfg, rel, err):
+            continue
+        src = (cfg.workdir / rel).read_text()
+        key = cache_key(src, err)
+        if key in cache and cache[key] != src:
+            (cfg.workdir / rel).write_text(cache[key])
+            continue
+        if _cast_args_fix(cfg, rec, rel, src, err):
+            if rec.compiles:
+                return True
+            continue
+        line, msg = _first_error(err, rel)
+        if line and _rule_fix(cfg, rec, rel, src, err, line, error_kind(msg), lessons):
+            if rec.compiles:
+                return True
+            continue
+        break
+    return False
+
+
 def restore_missing_files(cfg: Config, records: dict[str, FuncRecord]) -> int:
     """A function whose file has gone missing gets it back from rewritten.cpp
     (its fixes are lost, so the fixer sees it again) instead of stopping the run."""
@@ -10257,6 +10398,8 @@ def restore_missing_files(cfg: Config, records: dict[str, FuncRecord]) -> int:
 
 def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
     restore_missing_files(cfg, records)
+    declare_missing(cfg, records)
+    save_manifest(cfg, records)
     n_failing = sum(1 for r in records.values() if not r.compiles and not r.quarantined)
     if not n_failing:
         log(cfg, show=True, msg="  nothing to fix")
@@ -10872,6 +11015,7 @@ def main(argv=None) -> int:
     MODEL_ACTIVITY.update(errors=0, thinking_only=0)
     STRUGGLES.clear()
     RUN_CTX.pop("fix_run", None)
+    RUN_CTX.pop("quick_done", None)
     RUN_CTX.pop("recover_run", None)
     SHOW_ALL["on"] = bool(getattr(args, "verbose", False))
     REPORTED["done"] = False

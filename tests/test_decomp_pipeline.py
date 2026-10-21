@@ -1125,3 +1125,28 @@ def test_mismatched_argument_is_cast_without_the_model(tmp_path):
     assert dp._cast_args_fix(cfg, rec, rel, src, err)
     assert rec.compiles
     assert "takeAddress((uint64_t)(buf));" in (tmp_path / rel).read_text()
+
+
+def test_ghidra_globals_and_library_calls_are_declared_once(tmp_path, model):
+    # the drafts use a Ghidra global and a library function nothing declares; both
+    # are in Ghidra's pseudocode, so they're declared once in shared.h. A name the
+    # model made up isn't, and stays an error.
+    write_export(tmp_path)
+    exp = tmp_path / "ghidra" / "ghidra_export.json"
+    data = json.loads(exp.read_text())
+    data["pseudocode"]["1040"] = ("int FUN_00001040(int param_1)\n\n{\n  _mach_absolute_time();\n"
+                                  "  return param_1 * param_1 + DAT_00424a80;\n}\n")
+    exp.write_text(json.dumps(data))
+    model.rewrite_override["FUN_00001040"] = (
+        "int squareIt(int n) {\n    mach_absolute_time();\n    return n * n + DAT_00424a80;\n}",
+        "squareIt")
+    model.rewrite_override["FUN_00001030"] = (
+        "int clampToZero(int x) {\n    madeUpHelper(x);\n    return x < 0 ? 0 : x;\n}", "clampToZero")
+    assert run(tmp_path, model, "--to", "fix") == 0
+    header = (tmp_path / "build" / "shared.h").read_text()
+    assert 'extern "C" uint64_t mach_absolute_time(...);' in header
+    assert "extern uint64_t DAT_00424a80;" in header and "madeUpHelper" not in header
+    assert "uint64_t DAT_00424a80 = 0;" in (tmp_path / "build" / "globals.cpp").read_text()
+    assert by_name(tmp_path)["squareIt"]["compiles"]
+    log = (tmp_path / "build" / "worklist.log").read_text()
+    assert "quick fixes (no model)" in log
