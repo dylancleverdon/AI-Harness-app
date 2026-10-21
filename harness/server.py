@@ -33,7 +33,7 @@ app = FastAPI(title="AI Harness", lifespan=lifespan)
 runs = RunManager()
 monitor = memory.Monitor(on_tick=runs.on_tick)
 VERSION = updater.version()
-_update = {"available": False}
+_update = {"available": False, "restart_needed": False}
 
 
 def _script_path(name):
@@ -56,7 +56,10 @@ def ping():
 @app.get("/api/status")
 def status():
     return {"version": VERSION, "lmstudio": lmstudio.status(), "memory": monitor.latest,
-            "settings": settings.get(), "scripts_dir": str(SCRIPTS_DIR), "update": _update,
+            "settings": settings.get(), "scripts_dir": str(SCRIPTS_DIR),
+            "update": {**_update, "restart_needed": updater.restart_needed(),
+                       "running": updater.RUNNING},
+            "active_runs": len(runs.active()),
             "python": script_python(), "term_cwd": str(runs.term_cwd),
             "sensor_tools": monitor.sensors.tools()}
 
@@ -439,7 +442,11 @@ def update_check():
 
 
 @app.post("/api/update/apply")
-def update_apply():
+def update_apply(force: bool = False):
+    # updating restarts the app, which cuts running scripts off: ask before
+    # downloading anything, so saying no leaves everything as it was
+    if runs.active() and not force:
+        raise HTTPException(409, "scripts are running")
     res = updater.apply()
     if res["ok"]:
         _update.clear()

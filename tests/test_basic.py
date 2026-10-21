@@ -626,3 +626,31 @@ def test_option_groups_and_popout_console(tmp_path):
     page = c.get("/static/console.html")
     assert page.status_code == 200 and "console.js" in page.text
     assert c.get("/static/console.js").status_code == 200
+
+
+def test_update_asks_before_downloading_while_scripts_run(monkeypatch):
+    # updating restarts the app, which stops running scripts: with scripts running,
+    # nothing is downloaded unless the user says go ahead (force)
+    from harness import server, updater
+    c = TestClient(server.app, headers={"x-harness": "1"})
+    pulled = []
+    monkeypatch.setattr(updater, "apply", lambda: pulled.append(1) or {"ok": True, "log": "", "version": "v2"})
+    monkeypatch.setattr(server.runs, "active", lambda: ["a run"])
+    r = c.post("/api/update/apply")
+    assert r.status_code == 409 and not pulled
+    assert c.post("/api/update/apply?force=true").json()["ok"] and pulled
+    monkeypatch.setattr(server.runs, "active", lambda: [])
+    assert c.post("/api/update/apply").status_code == 200
+
+
+def test_downloaded_but_not_restarted_is_shown(monkeypatch):
+    # an update pulled while the app kept running the old code: "restart to use it",
+    # not "up to date"
+    from harness import server, updater
+    monkeypatch.setattr(updater, "RUNNING", "old 2026-10-20")
+    monkeypatch.setattr(updater, "version", lambda: "new 2026-10-21")
+    monkeypatch.setattr(updater, "_seen", {"at": 0.0, "value": False})
+    monkeypatch.setattr(updater, "_check", lambda: {"available": False, "behind": 0, "error": None})
+    assert updater.check()["restart_needed"] is True
+    s = TestClient(server.app, headers={"x-harness": "1"}).get("/api/status").json()
+    assert s["update"]["restart_needed"] is True and s["update"]["running"] == "old 2026-10-20"

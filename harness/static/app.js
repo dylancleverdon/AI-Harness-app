@@ -42,7 +42,13 @@ async function refreshStatus() {
 }
 function showUpdate(u) {
   const b = $('#update-btn'), a = $('#apply-update');
-  if (u && u.available) {
+  a.textContent = 'Update now';
+  if (u && u.restart_needed && !u.available) {
+    // downloaded earlier, but the app is still running the version it started with
+    b.textContent = '⬆ Restart to finish updating'; b.classList.remove('hidden'); a.classList.remove('hidden');
+    a.textContent = 'Restart now';
+    $('#s-update-msg').textContent = `An update was downloaded; the app is still running ${u.running || 'the old version'}. Restart to use it.`;
+  } else if (u && u.available) {
     b.textContent = `⬆ Update available (${u.behind})`; b.classList.remove('hidden'); a.classList.remove('hidden');
     $('#s-update-msg').textContent = (u.changes || []).join(' · ');
   } else { b.classList.add('hidden'); a.classList.add('hidden'); $('#s-update-msg').textContent = u && u.error ? u.error : 'Up to date.'; }
@@ -637,11 +643,39 @@ $$('[data-setting]').forEach(i => i.onchange = async () => {
 });
 $('#check-update').onclick = async () => { $('#s-update-msg').textContent = 'Checking…'; showUpdate(await api('/update/check')); };
 $('#apply-update').onclick = async () => {
-  $('#apply-update').disabled = true; $('#s-update-msg').textContent = 'Updating…';
-  const r = await api('/update/apply', { method: 'POST' });
-  if (!r.ok) { $('#s-update-msg').textContent = 'Update failed: ' + r.log; $('#apply-update').disabled = false; return; }
+  const a = $('#apply-update'), justRestart = a.textContent === 'Restart now';
+  // ask BEFORE downloading: updating restarts the app, which stops running scripts.
+  // Saying no leaves everything as it was, and the update stays on offer.
+  const busy = ((state.status || {}).active_runs || 0) > 0;
+  let force = false;
+  if (busy) {
+    if (!confirm('Scripts are running. ' + (justRestart ? 'Restarting' : 'Updating restarts AI Harness, which') +
+      ' stops them (a decomp run carries on from where it stopped when you start it again). Go ahead?')) return;
+    force = true;
+  }
+  a.disabled = true;
+  if (!justRestart) {
+    $('#s-update-msg').textContent = 'Updating…';
+    let r;
+    try { r = await api('/update/apply' + (force ? '?force=true' : ''), { method: 'POST' }); }
+    catch (e) {
+      a.disabled = false;
+      if (!/running/.test(e.message) || !confirm('Scripts are running. Updating restarts AI Harness, which stops them. Go ahead?')) {
+        $('#s-update-msg').textContent = 'Not updated: scripts are running.'; return;
+      }
+      force = true; a.disabled = true;
+      r = await api('/update/apply?force=true', { method: 'POST' });
+    }
+    if (!r.ok) { $('#s-update-msg').textContent = 'Update failed: ' + r.log; a.disabled = false; return; }
+  }
   $('#s-update-msg').textContent = 'Restarting…';
-  try { await api('/restart', { method: 'POST' }); } catch (e) { if (confirm('Scripts are running. Restart anyway?')) await api('/restart?force=true', { method: 'POST' }); }
+  try { await api('/restart' + (force ? '?force=true' : ''), { method: 'POST' }); }
+  catch (e) {
+    if (!confirm('Scripts are running. Restart anyway? (They stop.)')) {
+      a.disabled = false; showUpdate(await api('/update/check')); return;
+    }
+    await api('/restart?force=true', { method: 'POST' });
+  }
   const t = setInterval(async () => { try { await api('/ping'); clearInterval(t); location.reload(); } catch { } }, 800);
 };
 

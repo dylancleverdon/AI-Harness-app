@@ -19,8 +19,30 @@ def version():
     return out if code == 0 else "unknown"
 
 
+RUNNING = None       # the version this process started with (set below)
+
+
+_seen = {"at": 0.0, "value": False}
+
+
+def restart_needed():
+    """The code on disk is newer than what's running: an update was downloaded but
+    the app hasn't restarted yet. (Asked often by the status poll: looked up at most
+    every 20 seconds.)"""
+    if time.time() - _seen["at"] > 20:
+        _seen.update(at=time.time(), value=version() != RUNNING)
+    return _seen["value"]
+
+
 def check():
     """Fetch and report how far behind the upstream branch we are."""
+    res = _check()
+    res["restart_needed"] = restart_needed()
+    res["running"] = RUNNING
+    return res
+
+
+def _check():
     try:
         if _git("rev-parse", "--git-dir")[0] != 0:
             return {"available": False, "error": "not a git checkout"}
@@ -35,6 +57,9 @@ def check():
         return {"available": n > 0, "behind": n, "changes": changes[:15], "error": None}
     except Exception as e:
         return {"available": False, "error": str(e)}
+
+
+RUNNING = version()
 
 
 def apply():
