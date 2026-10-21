@@ -49,6 +49,8 @@ Control AI Harness from your phone: start and stop scripts, watch the live conso
 2. In AI Harness on the Mac: Settings → **Remote access** → set a password, tick *Allow my Tailscale devices to sign in*, then **Restart AI Harness now**.
 3. On the phone (Tailscale on), open the address the panel shows (`http://<your-mac>:8765`) and sign in.
 
+On a phone the layout is compact: Run settings open as a full-screen sheet with one section per option group, the script list folds away, and Keep awake / Screen off sit behind ⋯. The console has ⟳ (reload if it got out of sync; it also reconnects by itself when the phone wakes) and ⧉ Pop out (its own window, e.g. on a second monitor; it follows the script's next run).
+
 Only this Mac and signed-in Tailscale devices are answered; other devices on your Wi-Fi are refused. Turning remote access on or off, changing the password and the shell prompt only work on the Mac itself. *Sign out all devices* (or a new password) signs every phone out.
 
 ## Memory guard
@@ -100,6 +102,7 @@ python3 decomp_pipeline.py --workdir ~/decomp/MyApp --from improve  # another ro
 ```
 
 - **Small steps, not rewrites.** After the first rewrite the model never writes a whole function again. Checks find one small problem at a time (decompiler names, Ghidra helper notation, stack-protector code, pointer arithmetic, warnings, goto, missing calls, behaviour that differs from Ghidra's version, privacy…). A rule fixes it, or the model plans one edit and rewrites only those few lines. A change is kept only if the function still compiles and still behaves like Ghidra's version. Each function's notes (`build/improve/notes/`) tell the model what was tried before; every version is kept in `build/improve/history/`.
+- **Fix, then rebuild.** Every failing function first gets the fixes that need no model (remembered, so unchanged functions are skipped next run), then up to `--fix-attempts` (2) small model edits. If that fails it's rebuilt from Ghidra's pseudocode straight away, using what the whole program knows (callee names, the signature everyone else uses, Ghidra's globals), so it does what the binary does; the improve stage makes it readable later.
 - **Calls are checked against Ghidra's.** A draft must call other functions by the names the pseudocode uses; made-up names are matched back to the real ones when `rewritten.cpp` is built, and drafts that leave out the original's calls (or call things it doesn't) are flagged for *Redo suspect*. Functions are named in one pass in the improve stage, so callers and callees always agree.
 - **Always the model loaded in LM Studio**, checked at each stage. Tasks it couldn't do are retried when a different model is loaded.
 - **`--redo` never deletes.** Results are replaced in place; the current files are copied to `snapshots/` first.

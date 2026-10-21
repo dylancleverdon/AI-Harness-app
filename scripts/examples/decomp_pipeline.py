@@ -10657,6 +10657,7 @@ def restore_missing_files(cfg: Config, records: dict[str, FuncRecord]) -> int:
 
 
 def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
+    write_intrinsics(cfg)            # --from fix skips the split: bring the helpers up to date
     restore_missing_files(cfg, records)
     declare_missing(cfg, records)
     save_manifest(cfg, records)
@@ -10680,6 +10681,8 @@ def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
 
 
 def build_recover(cfg: Config, records: dict[str, FuncRecord]) -> None:
+    write_intrinsics(cfg)            # --from recover skips the split: bring the helpers up to date
+    restore_missing_files(cfg, records)
     pseudocode_recovery(cfg, records)
     save_manifest(cfg, records)
 
