@@ -997,11 +997,15 @@ def test_fix_lessons_learn_rules_and_block_repeats(tmp_path):
     for a, b in (("p", "n"), ("buf", "len"), ("q", "size")):
         L.learned(kind, "msg", f"x\n    int *{a} = malloc({b});\ny",
                   f"x\n    int *{a} = (int *)malloc({b});\ny")
-    assert len(L.rules_for(kind)) == 1
-    out = L.apply(L.rules_for(kind)[0][1], "  int *items = malloc(count * 4);")
-    assert out is None                                    # a different shape: no match
-    out = L.apply(L.rules_for(kind)[0][1], "  int *items = malloc(count);")
+    rules = L.rules_for(kind)
+    assert len(rules) == 2                                # the whole line, and the part that changed
+    whole = next(r for _, r in rules if not r.get("span"))
+    part = next(r for _, r in rules if r.get("span"))
+    assert L.apply(whole, "  int *items = malloc(count * 4);") is None   # a different shape
+    out = L.apply(whole, "  int *items = malloc(count);")
     assert out.startswith("  int") and "malloc(count)" in out and "(int*)" in out.replace(" ", "")
+    out = L.apply(part, "  int *items = malloc(count * 4);")             # matches inside it
+    assert "(int*)malloc(count*4)" in out.replace(" ", "")
     assert "before:" in L.prompt(kind, "funcs/a.cpp")      # examples for other functions
     L.failed("funcs/a.cpp", "a\nb", "a\nc")
     assert L.is_repeat("funcs/a.cpp", "a\nc") and not L.is_repeat("funcs/b.cpp", "a\nc")
