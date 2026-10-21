@@ -3968,6 +3968,57 @@ static inline int32_t  SEXT24(int16_t  v){ return v; }
 static inline int64_t  SEXT48(int32_t  v){ return v; }
 """
 
+
+def _ghidra_helper_funcs(have: str) -> str:
+    """Every size of Ghidra's value notation (CONCATxy, SUBxy, ZEXTxy, SEXTxy,
+    CARRYn, SCARRYn, SBORROWn), so code that uses one compiles and does what
+    Ghidra means. Sizes are in bytes; 9-16 byte values use 128-bit integers."""
+    def ut(n):
+        return {1: "uint8_t", 2: "uint16_t"}.get(n) or ("uint32_t" if n <= 4 else
+                                                     "uint64_t" if n <= 8 else "__uint128_t")
+    def st(n):
+        return {1: "int8_t", 2: "int16_t"}.get(n) or ("int32_t" if n <= 4 else
+                                                    "int64_t" if n <= 8 else "__int128_t")
+    def size(n):                     # bytes of the type holding an n-byte value
+        return 1 if n == 1 else 2 if n == 2 else 4 if n <= 4 else 8 if n <= 8 else 16
+    def mask(t, n):                  # the low n bytes of a value of type t
+        return f"(({t})~({t})0)" if n >= size(16 if "128" in t else 8 if "64" in t else 4 if "32" in t
+                                               else 2 if "16" in t else 1) else f"((({t})1 << {8 * n}) - 1)"
+    out = ["", "// --- every size of Ghidra's value notation (generated) ---"]
+    def add(name, code):
+        if not re.search(rf"\b{name}\s*\(", have):
+            out.append(code)
+    for x in range(1, 17):
+        for y in range(1, 17 - x):
+            r = ut(x + y)
+            add(f"CONCAT{x}{y}", f"static inline {r} CONCAT{x}{y}({ut(x)} h, {ut(y)} l)"
+                f"{{ return ((({r})h & {mask(r, x)}) << {8 * y}) | (({r})l & {mask(r, y)}); }}")
+    for x in range(2, 17):
+        for y in range(1, x):
+            add(f"SUB{x}{y}", f"static inline {ut(y)} SUB{x}{y}({ut(x)} v, int off)"
+                f"{{ return ({ut(y)})((v >> (8 * off)) & {mask(ut(x), y)}); }}")
+    for x in range(1, 16):
+        for y in range(x + 1, 17):
+            c = size(y)
+            add(f"ZEXT{x}{y}", f"static inline {ut(y)} ZEXT{x}{y}({ut(x)} v)"
+                f"{{ return ({ut(y)})(v & {mask(ut(x), x)}); }}")
+            add(f"SEXT{x}{y}", f"static inline {st(y)} SEXT{x}{y}({ut(x)} v)"
+                f"{{ return ({st(y)})(({st(c)})(({ut(c)})v << {8 * (c - x)}) >> {8 * (c - x)}); }}")
+    for n in (1, 2, 4, 8, 16):
+        add(f"CARRY{n}", f"static inline bool CARRY{n}({ut(n)} a, {ut(n)} b)"
+            f"{{ return ({ut(n)})(a + b) < a; }}")
+        add(f"SCARRY{n}", f"static inline bool SCARRY{n}({st(n)} a, {st(n)} b)"
+            f"{{ {st(n)} r; return __builtin_add_overflow(a, b, &r); }}")
+        add(f"SBORROW{n}", f"static inline bool SBORROW{n}({st(n)} a, {st(n)} b)"
+            f"{{ {st(n)} r; return __builtin_sub_overflow(a, b, &r); }}")
+    out += ["template<typename T> static inline int POPCOUNT(T v){ return __builtin_popcountll((unsigned long long)v); }",
+            "template<typename T> static inline int LZCOUNT(T v){ return v ? __builtin_clzll((unsigned long long)v) - (64 - 8 * (int)sizeof(T)) : 8 * (int)sizeof(T); }"]
+    return "\n".join(out) + "\n"
+
+
+GHIDRA_INTRINS_H += _ghidra_helper_funcs(GHIDRA_INTRINS_H)
+
+
 # Standard headers the decompiled C++ leans on (std::string, ostream, exceptions,
 # pthread types...). Included both when libclang parses the monolith and at the
 # top of shared.h, so these types resolve instead of being dropped as unknown.
@@ -10307,7 +10358,8 @@ def declare_missing(cfg: Config, records: dict[str, FuncRecord]) -> int:
     have = set(re.findall(r"[A-Za-z_]\w*", strip_comments(  # switched-off lines don't count
         cfg.shared_h.read_text() + "\n" +
         (cfg.intrins_h.read_text() if cfg.intrins_h.exists() else ""))))
-    names = {n for n in by_name if n not in program and n not in CPP_KEYWORDS and n not in have}
+    names = {n for n in by_name if n not in program and n not in CPP_KEYWORDS and n not in have
+             and not GHIDRA_HELPERS.match(n)}    # Ghidra notation is defined, never "a library call"
     if not names:
         return 0
     export, _ = _load_pseudocode(cfg)
