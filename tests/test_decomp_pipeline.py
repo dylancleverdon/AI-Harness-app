@@ -1070,3 +1070,20 @@ def test_guessed_declarations_dont_conflict_with_the_real_one(tmp_path, model):
     assert len(re.findall(r"\baddNumbers\s*\(", header)) == 1
     assert "addNumbers(int" in header.replace(" ", "")
     assert by_name(tmp_path)["sumThree"]["compiles"]
+
+
+def test_made_up_callee_names_are_matched_to_the_original(tmp_path, model):
+    # the model calls "addTwo" where the original calls FUN_00001000 (addNumbers)
+    model.rewrite_override["FUN_00001010"] = (
+        "int addTwo(int x, int y);\n\nint sumThree(int a, int b, int c) {\n"
+        "    return addTwo(addTwo(a, b), c);\n}", "sumThree")
+    model.rewrite_override["FUN_00001060"] = (     # invents a main(): flagged, not trusted
+        "int g_counter = 0;\n\nint main() {\n    g_counter++;\n    return 0;\n}\n\n"
+        "void bumpCounter() {\n    g_counter++;\n}", "bumpCounter")
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "split") == 0
+    cpp = (tmp_path / "rewrite" / "rewritten.cpp").read_text()
+    assert "addNumbers(addNumbers(a, b), c)" in cpp and "addTwo(a" not in cpp
+    assert by_name(tmp_path)["sumThree"]["compiles"]
+    prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())["functions"]
+    assert not any("calls functions" in w for w in prog["1010"].get("suspect", []))

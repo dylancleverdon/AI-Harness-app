@@ -90,6 +90,7 @@ python3 decomp_pipeline.py --workdir ~/decomp/MyApp --from improve  # another ro
 ```
 
 - **Small steps, not rewrites.** After the first rewrite the model never writes a whole function again. Checks find one small problem at a time (decompiler names, Ghidra helper notation, stack-protector code, pointer arithmetic, warnings, goto, missing calls, behaviour that differs from Ghidra's version, privacy…). A rule fixes it, or the model plans one edit and rewrites only those few lines. A change is kept only if the function still compiles and still behaves like Ghidra's version. Each function's notes (`build/improve/notes/`) tell the model what was tried before; every version is kept in `build/improve/history/`.
+- **Calls are checked against Ghidra's.** A draft must call other functions by the names the pseudocode uses; made-up names are matched back to the real ones when `rewritten.cpp` is built, and drafts that leave out the original's calls (or call things it doesn't) are flagged for *Redo suspect*. Functions are named in one pass in the improve stage, so callers and callees always agree.
 - **Always the model loaded in LM Studio**, checked at each stage. Tasks it couldn't do are retried when a different model is loaded.
 - **`--redo` never deletes.** Results are replaced in place; the current files are copied to `snapshots/` first.
 - **Privacy:** put product/company names in `privacy_blocklist.txt`. `final/` isn't written while the privacy check still finds something.

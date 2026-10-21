@@ -1559,8 +1559,10 @@ You get ONE function. Rewrite it as the C++ a person would plausibly have writte
 - Give the parameters and local variables meaningful names.
 - If the function has a placeholder name (like FUN_100003a20), give it a meaningful
   name in lowerCamelCase that says what it does. Otherwise keep its name.
-- Calls to other functions: use the names you are given. Declare them (no body) if
-  you need to.
+- Calls to other functions: call them by EXACTLY the name the pseudocode uses
+  (FUN_..., or the name given). Never rename them or make up names for them: the
+  other functions are named later, all at once, so the names stay consistent. If
+  you declare one, give it the parameters the pseudocode passes.
 - Write ONLY this one function. Never write bodies for other functions, not even
   small helpers: declare them instead.
 - Write it as a plain free function: not inside a class, struct or namespace, and no
@@ -1783,8 +1785,80 @@ def leftover_names(code):
     return sorted(set(LEFTOVER_NAMES.findall(strip_comments(code))))
 
 
+# Library calls a draft may make although Ghidra shows them differently (_malloc)
+# or not at all (a rewrite may use std::abs for an inline expression)
+LIB_CALLS = set("""malloc calloc realloc free memcpy memmove memset memcmp strlen strcpy strncpy
+strcmp strncmp strcat strchr strrchr strstr strdup sprintf snprintf printf fprintf vsnprintf
+sscanf fopen fclose fread fwrite fseek ftell fflush fgets fputs puts putchar getchar exit abort
+atexit qsort bsearch abs labs llabs fabs fabsf sqrt sqrtf sin sinf cos cosf tan tanf atan atanf
+atan2 atan2f exp expf log logf log10 log10f pow powf floor floorf ceil ceilf round roundf fmod
+fmodf fmin fminf fmax fmaxf min max clamp swap assert time clock rand srand sizeof alignof
+static_cast reinterpret_cast const_cast dynamic_cast offsetof va_start va_end va_arg isnan isinf
+memchr toupper tolower isdigit isalpha isspace atoi atol atof strtol strtoul strtod getenv
+pthread_mutex_lock pthread_mutex_unlock pthread_create pthread_join""".split())
+
+
+def call_sequence(code: str, own: set) -> list[str]:
+    """Functions a piece of code calls, in order of first call: not its own name,
+    member calls (a.f(), p->f()), std:: calls, casts, types or Ghidra helper notation."""
+    toks = tokens(code)
+    types = {toks[i + 1][1] for i, t in enumerate(toks[:-1])
+             if t[1] in ("struct", "class", "union", "enum", "typedef")}
+    out, seen = [], set()
+    for i, (k, t, _, _) in enumerate(toks):
+        if k != "ident" or i + 1 >= len(toks) or toks[i + 1][1] != "(":
+            continue
+        if t in CPP_KEYWORDS or t in own or t in types or _SIG_SKIP.match(t) \
+                or re.fullmatch(r"u?int\d+_t|size_t|uintptr_t|intptr_t|float|double", t):
+            continue
+        if i and toks[i - 1][1] in (".", "->", "::"):
+            continue
+        if t not in seen:
+            seen.add(t)
+            out.append(t)
+    return out
+
+
+def compare_calls(code: str, pseudo: str, own: set) -> tuple[list[str], list[str]]:
+    """(calls the draft makes that the original doesn't, program functions the
+    original calls that the draft doesn't). Ghidra writes library calls with a
+    leading underscore (_malloc); those, and well-known library functions, aren't
+    counted either way."""
+    i = pseudo.find("{")
+    want_all = call_sequence(pseudo[i:] if i >= 0 else pseudo, own)
+    lib = {c.lstrip("_") for c in want_all if c.startswith("_")}
+    want = [c for c in want_all if not c.startswith("_")]
+    got = call_sequence(code, own)
+    extra = [c for c in got if c not in want and c.lstrip("_") not in lib
+             and c not in LIB_CALLS and c.lstrip("_") not in LIB_CALLS]
+    missing = [c for c in want if c not in got]
+    return extra, missing
+
+
+def align_calls(code: str, pseudo: str, own: set) -> tuple[str, dict]:
+    """A draft that calls functions by names it made up (drawShape) where the
+    original calls real ones (FUN_00012a40) gets the real names back, when the
+    two line up one to one. Returns (code, {made-up: real})."""
+    extra, missing = compare_calls(code, pseudo, own)
+    if not extra or len(extra) != len(missing):
+        return code, {}
+    mapping = dict(zip(extra, missing))
+    for old, new in mapping.items():
+        code = re.sub(rf"\b{re.escape(old)}\b(?=\s*\()", new, code)
+    return code, mapping
+
+
 def suspect_reasons(code, pseudo, name, check_names=True):
     why = []
+    if pseudo:
+        own = {n for n in (name, _func_name_in(code)) if n}
+        extra, missing = compare_calls(code, pseudo, own)
+        if missing and len(missing) > len(extra):
+            why.append(f"leaves out calls the original makes ({', '.join(missing[:3])})")
+        elif extra and len(extra) > len(missing):
+            why.append(f"calls functions the original doesn't ({', '.join(extra[:3])})")
+        if re.search(r"\bint\s+main\s*\(", code) and not re.search(r"\bmain\s*\(", pseudo):
+            why.append("wrote a main() the original doesn't have")
     if invented_strings(code, pseudo or ""):
         why.append("invented text/printing")
     if name and BAD_NAME.match(name):
@@ -1805,6 +1879,13 @@ def suspect_reasons(code, pseudo, name, check_names=True):
 
 PRELUDE = ("#include <cstdint>\n#include <cstddef>\n#include <cstdlib>\n#include <cstring>\n"
            "#include <cmath>\n#include <cstdio>\n")
+
+
+def _func_name_in(code: str):
+    for it in split_items(code):
+        if it.rstrip().endswith("}") and _func_name(it):
+            return _func_name(it)
+    return None
 
 
 def compile_errors(code):
@@ -2459,6 +2540,26 @@ def name_definition(code: str, expected: str) -> str:
     return code
 
 
+_EXPORT_CACHE: dict = {}
+
+
+def _export_pseudocode(P: Paths) -> dict:
+    """address -> Ghidra's pseudocode, read once (and again if the export changes)."""
+    try:
+        mtime = P.export.stat().st_mtime
+    except OSError:
+        return {}
+    hit = _EXPORT_CACHE.get(str(P.export))
+    if hit and hit[0] == mtime:
+        return hit[1]
+    try:
+        data = json.loads(P.export.read_text()).get("pseudocode", {}) or {}
+    except Exception:
+        data = {}
+    _EXPORT_CACHE[str(P.export)] = (mtime, data)
+    return data
+
+
 def write_outputs(P: Paths, progress, order, keep_comments):
     """rewritten.cpp from every finished function (including ones waiting to be
     rewritten again: their current version stays until the new one replaces it)."""
@@ -2466,6 +2567,7 @@ def write_outputs(P: Paths, progress, order, keep_comments):
              for e in progress.get("functions", {}).values()
              if e.get("name") and e["name"] != e["ghidra"]}
     codes, index = [], {}
+    pseudos, aligned = _export_pseudocode(P), 0
     for key in order:
         e = progress.get("functions", {}).get(key)
         if e and e.get("status") == "done":
@@ -2475,10 +2577,22 @@ def write_outputs(P: Paths, progress, order, keep_comments):
                 code, _ = keep_one_function(code if keep_comments else strip_comments(code),
                                             {e.get("name"), e.get("ghidra")})
                 code = clean_for_monolith(code, names.get(e["ghidra"]))
-                code = name_definition(code, names.get(e["ghidra"], e["ghidra"]))
+                own_name = names.get(e["ghidra"], e["ghidra"])
+                code = name_definition(code, own_name)
                 # apply names FIRST, then add the marker, so the marker's literal
                 # Ghidra name/address are never rewritten by apply_names
-                code = mark_function(apply_names(code, names), e["ghidra"], key)
+                code = apply_names(code, names)
+                pseudo = pseudos.get(key)
+                if pseudo:
+                    code, fixed = align_calls(code, apply_names(pseudo, names),
+                                              {own_name, e["ghidra"]})
+                    if fixed:
+                        aligned += 1
+                        struggle("rewrite", "drafts calling functions by made-up names (the "
+                                 "real names put back)", f"{own_name}: " + ", ".join(
+                                     f"{a}->{b}" for a, b in list(fixed.items())[:2]),
+                                 handled=True)
+                code = mark_function(code, e["ghidra"], key)
                 codes.append(code)
                 final = flat_name(e.get("name")) or e["ghidra"]
                 index[final] = {"ghidra": e["ghidra"], "addr": key,
@@ -9070,7 +9184,7 @@ def pass_constants(ctx, round_log, limit=10):
     ctx.count("constants", "kept", n)
 
 
-def pass_functions(ctx, round_log, limit=20):
+def pass_functions(ctx, round_log, limit=None):
     """Functions still without a real name (FUN_..., a poor name, or a name the
     rewrite suggested changing) are named from their goal and their calls."""
     if not ctx.model:
