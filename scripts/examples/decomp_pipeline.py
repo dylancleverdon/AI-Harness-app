@@ -120,7 +120,7 @@ from pathlib import Path
 from typing import Optional
 
 PIPELINE_VERSION = "2026-10-18.1"
-STAGES = ["export", "rewrite", "split", "fix", "recover", "link", "improve", "organize"]
+STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "improve", "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
 
 
@@ -164,6 +164,9 @@ BAR: dict = {"p": None, "stage": ""}
 STAGE_INFO = {
     "export": "getting every function's pseudocode from Ghidra (once — after that "
               "Ghidra can be closed)",
+    "privacy": "identifying information (names, web and email addresses, bundle IDs, "
+               "paths, copyright lines) is replaced in Ghidra's export, before anything "
+               "else sees it; what was replaced is kept in private/ on this Mac only",
     "rewrite": "the model rewrites each function as readable C++, gives placeholder "
                "names real ones, and strips identifying strings",
     "split": "libclang splits the rewrite into shared.h + one file per function, "
@@ -2916,8 +2919,188 @@ def open_ghidra(P: Paths, args, live_ok=True) -> GhidraCache:
     return GhidraCache(P.export, live)
 
 
+# ============================================================================
+# Stage: privacy
+# ============================================================================
+# Runs on Ghidra's export, so every later stage only ever sees cleaned code. The
+# untouched export is kept as ghidra/ghidra_export.original.json and the sweep is
+# always redone from it; what was replaced with what is in private/, which nothing
+# sends anywhere (the log and the diagnostics report only show counts).
+
+PRIVACY_VERSION = 1
+PRIVACY_PATTERNS = [
+    ("web address", re.compile(r"\b(?:https?|ftp)://[^\s\"'<>\\)]+", re.I), "https://example.invalid/{n}"),
+    ("email address", re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b"),
+     "user{n}@example.invalid"),
+    ("bundle ID", re.compile(r"\b(?:com|org|net|io|co|de|uk|fr|jp|ch|nl|se|au|ca|it|es|dk|no|fi)"
+                             r"\.(?!apple\b|example\b)[A-Za-z0-9-]+(?:\.[A-Za-z0-9_-]+)+\b"), "com.example.app{n}"),
+    ("user folder", re.compile(r"(?:/Users|/home)/(?!Shared\b)[^/\s\"'\\]+", re.I), "/Users/user{n}"),
+    ("copyright line", re.compile(r"(?:copyright|\(c\)|©)[^\"\n\\]{0,100}", re.I), "Copyright (removed {n})"),
+]
+# words that appear in bundle IDs and copyright lines without identifying anyone
+PRIVACY_COMMON = set("""audio sound music plugin plugins plug effect effects filter filters studio
+studios labs lab software soft systems system digital media apps app inc llc ltd gmbh corp company
+all rights reserved the and com org net www http https example apple version build release mac macos
+audiounit component components vst vst3 juce instrument instruments synth synths tools tool""".split())
+
+
+def _privacy_terms(P: Paths, texts: list[str]) -> tuple[list[str], list[str]]:
+    """(the blocklist, names found in bundle IDs and copyright lines). The found
+    names are added to privacy_blocklist.txt so the later stages use them too
+    (delete a line there if one isn't identifying)."""
+    load_blocklist(P)                                  # creates the file the first time
+    f = P.root / "privacy_blocklist.txt"
+    lines = f.read_text().splitlines()
+    have = {l.strip().lower() for l in lines if l.strip() and not l.lstrip().startswith("#")}
+    found = []
+    for t in texts:
+        for m in PRIVACY_PATTERNS[2][1].finditer(t):            # com.vendor.product
+            found += m.group(0).split(".")[1:]
+        for m in PRIVACY_PATTERNS[4][1].finditer(t):            # Copyright 2019 Vendor Ltd
+            found += re.findall(r"[A-Z][A-Za-z0-9&-]{2,}", m.group(0))
+    new = []
+    for w in found:
+        lw = w.lower()
+        if len(w) >= 4 and lw not in PRIVACY_COMMON and lw not in have and not w.isdigit() \
+                and not re.fullmatch(r"(19|20)\d\d", w):
+            have.add(lw)
+            new.append(w)
+    if new:
+        with open(f, "a") as fh:
+            fh.write("# found automatically in bundle IDs and copyright lines "
+                     f"({time.strftime('%Y-%m-%d')}; delete any that aren't identifying):\n"
+                     + "".join(f"{w}\n" for w in new))
+    return load_blocklist(P), new
+
+
+def run_privacy(P: Paths, args) -> dict:
+    original = P.ghidra / "ghidra_export.original.json"
+    if not P.export.exists() and not original.exists():
+        plog(P, show=True, msg="  no Ghidra export yet: nothing to sweep")
+        return {"replaced": 0}
+    try:
+        cur = json.loads(P.export.read_text()) if P.export.exists() else {}
+    except Exception:
+        cur = {}
+    if cur and "privacy" not in cur:
+        # a fresh export from Ghidra: it becomes the original the sweep starts from
+        same = original.exists() and original.read_bytes() == P.export.read_bytes()
+        if original.exists() and not same:
+            snapshot(P, "privacy-new-export", [original])
+        if not same:
+            shutil.copyfile(P.export, original)
+    if not original.exists():
+        plog(P, show=True, msg="  privacy: the Ghidra export couldn't be read — nothing swept")
+        return {"replaced": 0}
+    try:
+        data = json.loads(original.read_text())
+    except Exception as e:
+        plog(P, show=True, msg=f"  privacy: the Ghidra export couldn't be read ({e}) — nothing swept")
+        return {"replaced": 0}
+    texts = [v for v in (data.get("pseudocode") or {}).values() if isinstance(v, str)]
+    terms, auto = _privacy_terms(P, texts + [json.dumps(data.get("datatypes") or [])])
+    mapping: dict[str, dict[str, str]] = {}
+    counts: dict[str, int] = {}
+
+    def stand_in(kind, found, pattern):
+        m = mapping.setdefault(kind, {})
+        if found not in m:
+            m[found] = pattern.format(n=len(m) + 1)
+        counts[kind] = counts.get(kind, 0) + 1
+        return m[found]
+
+    term_rx = re.compile("|".join(re.escape(t) for t in sorted(terms, key=len, reverse=True)),
+                         re.I) if terms else None
+
+    def term_stand_in(m):
+        t = m.group(0)
+        base = stand_in("name", t, "Name{n}")     # each spelling its own: no two names merge
+        return base.upper() if t.isupper() else base.lower() if t.islower() else base
+
+    def clean(text: str) -> str:
+        for kind, rx, pattern in PRIVACY_PATTERNS:
+            text = rx.sub(lambda m, k=kind, pt=pattern: stand_in(k, m.group(0), pt), text)
+        if term_rx:
+            text = term_rx.sub(term_stand_in, text)
+        return text
+
+    def walk(v):
+        if isinstance(v, str):
+            return clean(v)
+        if isinstance(v, list):
+            return [walk(x) for x in v]
+        if isinstance(v, dict):
+            return {k: walk(x) for k, x in v.items()}
+        return v
+
+    cleaned = walk(data)
+    # check 1: two different functions must not end up with the same name
+    seen_names: dict[str, str] = {}
+    clashes = 0
+    for f_old, f_new in zip(data.get("functions") or [], cleaned.get("functions") or []):
+        if not isinstance(f_new, dict):
+            continue
+        n, a = f_new.get("name"), f_new.get("addr")
+        if n in seen_names and seen_names[n] != a and n != f_old.get("name"):
+            f_new["name"] = f"{n}_{a}"            # unique again (Ghidra's address)
+            clashes += 1
+        seen_names.setdefault(f_new.get("name"), a)
+    # check 2: replaced values the plugin uses while it runs (it finds its own
+    # resources by its bundle ID; web addresses it opens): the rebuilt plugin's
+    # Info.plist and resources need the same stand-ins
+    runtime = sorted({b for k in ("bundle ID", "web address") for b in mapping.get(k, {}).values()})
+    cleaned["privacy"] = {"version": PRIVACY_VERSION, "replaced": sum(counts.values()),
+                          "runtime_stand_ins": runtime,
+                          "at": time.strftime("%Y-%m-%d %H:%M:%S")}
+    write_atomic(P.export, json.dumps(cleaned))
+    priv = P.root / "private"
+    priv.mkdir(exist_ok=True)
+    write_atomic(priv / "privacy_map.json", json.dumps(mapping, indent=1))
+    rep = ["What the privacy sweep replaced (this file stays on this Mac; nothing sends it).", ""]
+    for kind, m in mapping.items():
+        rep.append(f"{kind}: {len(m)} different, {counts.get(kind, 0)} place(s)")
+        rep += [f"    {a}  ->  {b}" for a, b in sorted(m.items())]
+        rep.append("")
+    if runtime:
+        rep += ["Stand-ins the plugin uses while it runs (its bundle ID, web addresses it opens):",
+                "the rebuilt plugin's Info.plist and resources must use the same ones.",
+                *[f"    {x}" for x in runtime], ""]
+    if clashes:
+        rep.append(f"{clashes} function name(s) would have clashed after replacing; Ghidra's "
+                   f"address was added to keep them apart.")
+    if auto:
+        rep.append("Names found automatically and added to privacy_blocklist.txt:")
+        rep += [f"    {w}" for w in auto]
+    write_atomic(priv / "privacy_report.txt", "\n".join(rep) + "\n")
+    total = sum(counts.values())
+    plog(P, show=True, msg=f"  privacy: {total} replacement(s) in Ghidra's export ("
+                           + ", ".join(f"{len(m)} {k}{'s' if len(m) != 1 else ''}"
+                                       for k, m in mapping.items())
+                           + (f"; {len(auto)} name(s) found automatically and added to "
+                              f"privacy_blocklist.txt" if auto else "")
+                           + "). What was replaced: private/privacy_report.txt (stays on this Mac)")
+    if runtime:
+        plog(P, show=True, msg=f"  privacy: {len(runtime)} stand-in(s) are values the plugin uses while "
+                               f"it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist "
+                               f"must use the same ones (listed in private/privacy_report.txt)")
+    if clashes:
+        struggle("privacy", "function names that would have clashed after replacing (kept apart)",
+                 n=clashes, handled=True)
+    return {"replaced": total, "kinds": {k: len(m) for k, m in mapping.items()}}
+
+
+def export_is_private(P: Paths) -> bool:
+    try:
+        return "privacy" in json.loads(P.export.read_text())
+    except Exception:
+        return False
+
+
 def run_export(P: Paths, args, redo: set) -> dict:
     refresh = "export" in redo
+    original = P.ghidra / "ghidra_export.original.json"
+    if original.exists() and export_is_private(P):
+        shutil.copyfile(original, P.export)    # the privacy stage cleans it again next
     headless = bool(args.headless_export or args.project)
     if refresh:
         snapshot(P, "redo-export", [P.export])
@@ -11000,6 +11183,11 @@ def run_pipeline(args) -> int:
         COMPILER["cmd"] = None
 
     run_stages = STAGES[STAGES.index(first):STAGES.index(last) + 1]
+    if STAGES.index(first) > STAGES.index("privacy") and P.export.exists() \
+            and not export_is_private(P):
+        # starting after the privacy stage with an export it hasn't swept: sweep it
+        # first, so nothing later sees the identifying information
+        run_stages = ["privacy"] + run_stages
     plog(P, show=True, msg=f"decomp_pipeline {PIPELINE_VERSION}: {P.root} — stages "
             f"{run_stages[0]} → {run_stages[-1]}"
             + (f" (redo: {', '.join(sorted(redo))})" if redo else ""))
@@ -11025,6 +11213,9 @@ def run_pipeline(args) -> int:
                 ei = run_export(P, args, redo)
                 info = {"note": f"{ei.get('with_pseudocode', 0)}/{ei.get('functions', 0)} "
                                 f"with pseudocode"}
+            elif stage == "privacy":
+                pi = run_privacy(P, args)
+                info = {"note": f"{pi.get('replaced', 0)} replacement(s)"}
             elif stage == "rewrite":
                 try:
                     s = run_rewrite(P, args, redo, client)
@@ -11124,13 +11315,13 @@ def build_parser() -> argparse.ArgumentParser:
     g = ap.add_argument_group("pipeline")
     g.add_argument("--workdir", type=Path, default=Path("./decomp_project"),
                    help="project folder for everything this pipeline writes")
-    g.add_argument("--from", dest="from_stage", choices=["export", "rewrite", "split", "fix", "recover", "link", "improve",
+    g.add_argument("--from", dest="from_stage", choices=["export", "privacy", "rewrite", "split", "fix", "recover", "link", "improve",
                             "organize"], default=None,
                    help="start at this stage (earlier stages must have run)")
-    g.add_argument("--to", dest="to_stage", choices=["export", "rewrite", "split", "fix", "recover", "link", "improve",
+    g.add_argument("--to", dest="to_stage", choices=["export", "privacy", "rewrite", "split", "fix", "recover", "link", "improve",
                             "organize"], default=None,
                    help="stop after this stage")
-    g.add_argument("--redo", action="append", nargs="?", const="rewrite", choices=["export", "rewrite", "split", "fix", "recover", "link", "improve",
+    g.add_argument("--redo", action="append", nargs="?", const="rewrite", choices=["export", "privacy", "rewrite", "split", "fix", "recover", "link", "improve",
                             "organize"],
                    help="do a stage's work again, replacing results in place (never "
                         "deletes; snapshots first). Bare --redo means --redo rewrite. "

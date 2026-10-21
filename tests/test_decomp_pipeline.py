@@ -842,7 +842,7 @@ def test_stop_button_prints_errors_and_stops_cleanly(tmp_path, model):
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     log = tmp_path / "pipeline.log"
     deadline = time.time() + 240
-    while time.time() < deadline and not (log.exists() and "Stage 4/8" in log.read_text()):
+    while time.time() < deadline and not (log.exists() and "Stage 5/9" in log.read_text()):
         time.sleep(0.5)
     time.sleep(3)                                   # well into the fix stage
     proc.send_signal(signal.SIGTERM)
@@ -916,7 +916,7 @@ def test_console_shows_only_what_needs_attention(tmp_path, model, capsys):
     out = capsys.readouterr().out
     log = (tmp_path / "pipeline.log").read_text() + (tmp_path / "build" / "worklist.log").read_text()
     assert "fixer loop over" in log and "fixer loop over" not in out   # detail: file only
-    assert "━━━━ Stage 4/8" in out and "fixer loop done" in out         # headers and results
+    assert "━━━━ Stage 5/9" in out and "fixer loop done" in out         # headers and results
     assert "couldn't handle:" in out and "no usable rewrite" in out
     assert "run(s)]" not in out
     # the same problem next run is flagged as repeating
@@ -1216,3 +1216,32 @@ def test_match_prototype_keeps_ghidras_types_inside():
     assert "long param_1 = (long)param_1_in;" in out and "return (Pair *)(param_1 + param_2);" in out
     out = dp._match_prototype("void FUN_2(long param_1) {\n  g(param_1);\n}", "FUN_2", "void FUN_2();")
     assert "void FUN_2() {" in out and "long param_1 = 0;" in out
+
+
+def test_privacy_stage_sweeps_the_export_and_keeps_the_details_private(tmp_path, model):
+    write_export(tmp_path)
+    exp = tmp_path / "ghidra" / "ghidra_export.json"
+    data = json.loads(exp.read_text())
+    data["pseudocode"]["1060"] = ('void FUN_00001060(void)\n\n{\n  _printf("Visit https://acme-audio.example.com/'
+                                  'support or mail jo@acmeaudio.com");\n'
+                                  '  _CFBundleGetBundleWithIdentifier("com.AcmeAudio.GlitchBox");\n'
+                                  '  _printf("/Users/jdoe/Library/x Copyright 2021 AcmeAudio Ltd");\n'
+                                  '  DAT_00002000 = DAT_00002000 + 1;\n  return;\n}\n')
+    exp.write_text(json.dumps(data))
+    assert run(tmp_path, model, "--to", "privacy") == 0
+    clean = exp.read_text()
+    for gone in ("acme-audio.example.com", "jo@acmeaudio.com", "com.AcmeAudio.GlitchBox", "jdoe",
+                 "AcmeAudio", "GlitchBox"):
+        assert gone not in clean, gone
+    assert "com.example.app1" in clean and "example.invalid" in clean
+    original = (tmp_path / "ghidra" / "ghidra_export.original.json").read_text()
+    assert "AcmeAudio" in original                              # kept, to sweep again from
+    report = (tmp_path / "private" / "privacy_report.txt").read_text()
+    assert "AcmeAudio" in report
+    assert "AcmeAudio" in (tmp_path / "privacy_blocklist.txt").read_text()
+    log = (tmp_path / "pipeline.log").read_text()
+    assert "replacement(s)" in log and "AcmeAudio" not in log   # counts only, never the words
+    # starting later with an export that hasn't been swept sweeps it first
+    shutil.copyfile(tmp_path / "ghidra" / "ghidra_export.original.json", exp)
+    assert run(tmp_path, model, "--from", "rewrite", "--to", "rewrite") == 0
+    assert "AcmeAudio" not in exp.read_text()
