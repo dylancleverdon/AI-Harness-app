@@ -1,4 +1,4 @@
-# Diagnostics — fastpass 3 — 2026-10-20 19:21:52
+# Diagnostics — fastpass 3 — 2026-10-20 19:36:03
 
 
 ## Run
@@ -10,9 +10,9 @@ python: 3.15.0 on darwin
 compiler: None (clang)
 compile flags: -Wno-c++11-narrowing
 --ctx 8192, chars per token 2.06
-model: ?
+model: qwen2.5-coder-3b-instruct-mlx
 model requests turned down this run: 0, thinking-only answers: 0
-fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
+fix stage model edits: {'calls': 298, 'no_answer': 61, 'rejected': 0}
 ```
 
 ## What the script struggled with
@@ -22,107 +22,128 @@ fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 ━━━━ what the script struggled with this run ━━━━
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 couldn't handle:
-  fix       12980 × not compiling yet (not reached before the run ended)   e.g. FUN_00001a3c, updateParameter, processAndFilterInput   [also in the last 4 run(s)]
-  fix          58 × quarantined: no matching function for call to 'X'   e.g. FUN_00003fd4, FUN_0000408c, FUN_000041a8   [also in the last 1 run(s)]
-  fix          14 × quarantined: use of undeclared identifier 'X'   e.g. FUN_00003e34, FUN_00004aa8, processInput20   [also in the last 1 run(s)]
-  fix          10 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. FUN_00004130, FUN_00037ecc, FUN_0020e450   [also in the last 1 run(s)]
-  fix           9 × quarantined: redefinition of 'X'   e.g. FUN_001f9bc4, FUN_001f9dec, FUN_002068e0   [also in the last 1 run(s)]
-  fix           6 × quarantined: no member named 'X' in 'X'   e.g. FUN_00044518, FUN_001f9ca8, FUN_001fadc4   [also in the last 1 run(s)]
-  fix           5 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001f78c8, FUN_00200b9c, FUN_00216154   [also in the last 1 run(s)]
-  fix           5 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_001ff028, FUN_00208b9c, FUN_0021ea38   [also in the last 1 run(s)]
-  fix           3 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_001f896c, FUN_00208274, FUN_0020af54   [also in the last 1 run(s)]
-  fix           3 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, FUN_001f7848, FUN_0022333c   [also in the last 1 run(s)]
-  fix           2 × quarantined: void function 'X' should not return a value [-Wreturn-mismatch]   e.g. FUN_00215bc8, FUN_0021cffc   [also in the last 1 run(s)]
-  fix           2 × quarantined: variable has incomplete type 'X'   e.g. openFile, FUN_00208bd4   [also in the last 1 run(s)]
-  fix           2 × quarantined: unknown type name 'X'   e.g. FUN_00208d74, _mach_timebase_info   [also in the last 1 run(s)]
-  fix           2 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00225de8, _vsnprintf   [also in the last 1 run(s)]
-  fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_0021a234, _CFRelease   [also in the last 1 run(s)]
-  fix           2 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_0021f318, FUN_002246d4   [also in the last 1 run(s)]
-  fix           2 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. FUN_00200cb8, FUN_00224594   [also in the last 1 run(s)]
-  fix           2 × quarantined: expected unqualified-id   e.g. getData, string   [also in the last 1 run(s)]
-  fix           2 × quarantined: expected expression   e.g. FUN_00208454, FUN_002145e4   [also in the last 1 run(s)]
-  fix           2 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_0020dfa4, FUN_0020dfcc   [also in the last 1 run(s)]
-  fix           1 × quarantined: use of undeclared label 'X'   e.g. FUN_0021608c   [also in the last 1 run(s)]
-  fix           1 × quarantined: unknown type name 'X'; did you mean 'X'?   e.g. _CFStringGetFileSystemRepresentation   [also in the last 1 run(s)]
-  fix           1 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00206ac0   [also in the last 1 run(s)]
-  fix           1 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_0020a438   [also in the last 1 run(s)]
-  fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_002075bc   [also in the last 1 run(s)]
-  fix           1 × quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'   e.g. FUN_00202428   [also in the last 1 run(s)]
-  fix           1 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_0020df60   [also in the last 1 run(s)]
-  fix           1 × quarantined: no matching constructor for initialization of 'X'   e.g. FUN_001f9f64   [also in the last 1 run(s)]
-  fix           1 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00220624   [also in the last 1 run(s)]
-  fix           1 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_00206b88   [also in the last 1 run(s)]
-  fix           1 × quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_001fa8c8   [also in the last 1 run(s)]
-  fix           1 × quarantined: function definition is not allowed here   e.g. FUN_002008cc   [also in the last 1 run(s)]
-  fix           1 × quarantined: expression is not assignable   e.g. FUN_00223db4   [also in the last 1 run(s)]
-  fix           1 × quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X'   e.g. _stat   [also in the last 1 run(s)]
-  fix           1 × quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00208364   [also in the last 1 run(s)]
-  fix           1 × quarantined: cannot cast from type 'X' (aka 'X') to pointer type 'X' (aka 'X')   e.g. _fopen   [also in the last 1 run(s)]
-  fix           1 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. _memmove   [also in the last 1 run(s)]
-  fix           1 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00008858   [also in the last 1 run(s)]
-  fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_001f9e9c   [also in the last 1 run(s)]
-  fix           1 × quarantined: arithmetic on a pointer to void   e.g. FUN_00008830   [also in the last 1 run(s)]
-  fix           1 × quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]   e.g. _fclose   [also in the last 1 run(s)]
-  fix           1 × quarantined: 'X' does not name a template but is followed by template arguments; did you mean 'X'?   e.g. FUN_00007240   [also in the last 1 run(s)]
-  rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 4 run(s)]
-                    → tried again next run
+  fix       12915 × not compiling yet (not reached before the run ended)   e.g. FUN_00001a3c, updateParameter, processAndFilterInput   [also in the last 5 run(s)]
+  fix          73 × quarantined: no matching function for call to 'X'   e.g. FUN_000033e0, FUN_00003438, FUN_000034cc   [also in the last 2 run(s)]
+  fix          19 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. FUN_00004130, FUN_000058ac, FUN_00037ecc   [also in the last 2 run(s)]
+  fix          15 × quarantined: use of undeclared identifier 'X'   e.g. FUN_00003e34, FUN_00004aa8, processInput20   [also in the last 2 run(s)]
+  fix          11 × quarantined: no member named 'X' in 'X'   e.g. FUN_00044518, FUN_001dbea4, FUN_001e1280   [also in the last 2 run(s)]
+  fix          10 × quarantined: redefinition of 'X'   e.g. FUN_001e1ed8, FUN_001f9bc4, FUN_001f9dec   [also in the last 2 run(s)]
+  fix           6 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_001dc410, FUN_001ff028, FUN_00208b9c   [also in the last 2 run(s)]
+  fix           5 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001f78c8, FUN_00200b9c, FUN_00216154   [also in the last 2 run(s)]
+  fix           4 × quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')   e.g. FUN_000c80a0, FUN_001dc350, FUN_001e2314
+  fix           3 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00225de8, _pthread_mutexattr_settype, _vsnprintf   [also in the last 2 run(s)]
+  fix           3 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_001f896c, FUN_00208274, FUN_0020af54   [also in the last 2 run(s)]
+  fix           3 × quarantined: expected expression   e.g. FUN_001dab18, FUN_00208454, FUN_002145e4   [also in the last 2 run(s)]
+  fix           3 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, FUN_001f7848, FUN_0022333c   [also in the last 2 run(s)]
+  fix           2 × quarantined: void function 'X' should not return a value [-Wreturn-mismatch]   e.g. FUN_00215bc8, FUN_0021cffc   [also in the last 2 run(s)]
+  fix           2 × quarantined: variable has incomplete type 'X'   e.g. openFile, FUN_00208bd4   [also in the last 2 run(s)]
+  fix           2 × quarantined: unknown type name 'X'   e.g. FUN_00208d74, _mach_timebase_info   [also in the last 2 run(s)]
+  fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_0021a234, _CFRelease   [also in the last 2 run(s)]
+  fix           2 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_0021f318, FUN_002246d4   [also in the last 2 run(s)]
+  fix           2 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. FUN_00200cb8, FUN_00224594   [also in the last 2 run(s)]
+  fix           2 × quarantined: expected unqualified-id   e.g. getData, string   [also in the last 2 run(s)]
+  fix           2 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00005000, FUN_001e2054
+  fix           2 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_0020dfa4, FUN_0020dfcc   [also in the last 2 run(s)]
+  fix           2 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00008858, FUN_001e1c28   [also in the last 2 run(s)]
+  fix           2 × quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed   e.g. FUN_0011f0c0, FUN_001e2cac
+  fix           1 × quarantined: use of undeclared label 'X'   e.g. FUN_0021608c   [also in the last 2 run(s)]
+  fix           1 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_0021a1f4
+  fix           1 × quarantined: unknown type name 'X'; did you mean 'X'?   e.g. _CFStringGetFileSystemRepresentation   [also in the last 2 run(s)]
+  fix           1 × quarantined: type 'X' does not provide a subscript operator   e.g. FUN_00004424
+  fix           1 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00206ac0   [also in the last 2 run(s)]
+  fix           1 × quarantined: subscript of pointer to incomplete type 'X'   e.g. FUN_000f80f4
+  fix           1 × quarantined: static_cast from 'X' to 'X' is not allowed   e.g. FUN_0011eee8
+  fix           1 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_0020a438   [also in the last 2 run(s)]
+  fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_002075bc   [also in the last 2 run(s)]
+  fix           1 × quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'   e.g. FUN_00202428   [also in the last 2 run(s)]
+  fix           1 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_0020df60   [also in the last 2 run(s)]
+  fix           1 × quarantined: no matching constructor for initialization of 'X'   e.g. FUN_001f9f64   [also in the last 2 run(s)]
+  fix           1 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00220624   [also in the last 2 run(s)]
+  fix           1 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_00206b88   [also in the last 2 run(s)]
+  fix           1 × quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))   e.g. FUN_00208990
+  fix           1 × quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_001fa8c8   [also in the last 2 run(s)]
+  fix           1 × quarantined: function definition is not allowed here   e.g. FUN_002008cc   [also in the last 2 run(s)]
+  fix           1 × quarantined: expression is not assignable   e.g. FUN_00223db4   [also in the last 2 run(s)]
+  fix           1 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')   e.g. FUN_000050fc
+  fix           1 × quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X'   e.g. _stat   [also in the last 2 run(s)]
+  fix           1 × quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00208364   [also in the last 2 run(s)]
+  fix           1 × quarantined: cannot cast from type 'X' (aka 'X') to pointer type 'X' (aka 'X')   e.g. _fopen   [also in the last 2 run(s)]
+  fix           1 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. _memmove   [also in the last 2 run(s)]
+  fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_001f9e9c   [also in the last 2 run(s)]
+worked around (cost time, nothing lost):
+  fix          96 × the model repeated an edit that had already failed (skipped)   e.g. FUN_0021a1f4, FUN_0020157c, FUN_00003340
+  rewrite    4710 × drafts whose function had a different name than the one its callers use (renamed)   e.g. FUN_000b50b8, getFloatValue, main
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[19:21:47] decomp_pipeline 2026-10-18.1: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
-[19:21:47]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[19:21:47] ━━━━ Stage 1/8 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
-[19:21:47]   using the existing ghidra_export.json (Ghidra not needed)
-[19:21:52] 
-[19:21:52] ━━━━ what the script struggled with this run ━━━━
-[19:21:52] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[19:21:52] couldn't handle:
-[19:21:52]   fix       12980 × not compiling yet (not reached before the run ended)   e.g. FUN_00001a3c, updateParameter, processAndFilterInput   [also in the last 4 run(s)]
-[19:21:52]   fix          58 × quarantined: no matching function for call to 'X'   e.g. FUN_00003fd4, FUN_0000408c, FUN_000041a8   [also in the last 1 run(s)]
-[19:21:52]   fix          14 × quarantined: use of undeclared identifier 'X'   e.g. FUN_00003e34, FUN_00004aa8, processInput20   [also in the last 1 run(s)]
-[19:21:52]   fix          10 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. FUN_00004130, FUN_00037ecc, FUN_0020e450   [also in the last 1 run(s)]
-[19:21:52]   fix           9 × quarantined: redefinition of 'X'   e.g. FUN_001f9bc4, FUN_001f9dec, FUN_002068e0   [also in the last 1 run(s)]
-[19:21:52]   fix           6 × quarantined: no member named 'X' in 'X'   e.g. FUN_00044518, FUN_001f9ca8, FUN_001fadc4   [also in the last 1 run(s)]
-[19:21:52]   fix           5 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001f78c8, FUN_00200b9c, FUN_00216154   [also in the last 1 run(s)]
-[19:21:52]   fix           5 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_001ff028, FUN_00208b9c, FUN_0021ea38   [also in the last 1 run(s)]
-[19:21:52]   fix           3 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_001f896c, FUN_00208274, FUN_0020af54   [also in the last 1 run(s)]
-[19:21:52]   fix           3 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, FUN_001f7848, FUN_0022333c   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: void function 'X' should not return a value [-Wreturn-mismatch]   e.g. FUN_00215bc8, FUN_0021cffc   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: variable has incomplete type 'X'   e.g. openFile, FUN_00208bd4   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: unknown type name 'X'   e.g. FUN_00208d74, _mach_timebase_info   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00225de8, _vsnprintf   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_0021a234, _CFRelease   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_0021f318, FUN_002246d4   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. FUN_00200cb8, FUN_00224594   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: expected unqualified-id   e.g. getData, string   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: expected expression   e.g. FUN_00208454, FUN_002145e4   [also in the last 1 run(s)]
-[19:21:52]   fix           2 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_0020dfa4, FUN_0020dfcc   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: use of undeclared label 'X'   e.g. FUN_0021608c   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: unknown type name 'X'; did you mean 'X'?   e.g. _CFStringGetFileSystemRepresentation   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00206ac0   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_0020a438   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_002075bc   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'   e.g. FUN_00202428   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_0020df60   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: no matching constructor for initialization of 'X'   e.g. FUN_001f9f64   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00220624   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_00206b88   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_001fa8c8   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: function definition is not allowed here   e.g. FUN_002008cc   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: expression is not assignable   e.g. FUN_00223db4   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X'   e.g. _stat   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00208364   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: cannot cast from type 'X' (aka 'X') to pointer type 'X' (aka 'X')   e.g. _fopen   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. _memmove   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00008858   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_001f9e9c   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: arithmetic on a pointer to void   e.g. FUN_00008830   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]   e.g. _fclose   [also in the last 1 run(s)]
-[19:21:52]   fix           1 × quarantined: 'X' does not name a template but is followed by template arguments; did you mean 'X'?   e.g. FUN_00007240   [also in the last 1 run(s)]
-[19:21:52]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 4 run(s)]
-[19:21:52]                     → tried again next run
+[19:23:21] decomp_pipeline 2026-10-18.1: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
+[19:23:21]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[19:23:21] ━━━━ Stage 1/8 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
+[19:23:21]   using the existing ghidra_export.json (Ghidra not needed)
+[19:23:28]   callgraph.json: 22076 functions with internal calls
+[19:23:28]   export: 30489/30489 functions have pseudocode
+[19:23:28] ━━━━ Stage 2/8 · rewrite ━━━━ the model rewrites each function as readable C++, gives placeholder names real ones, and strips identifying strings
+[19:23:29]   12705 function(s) are still marked to be rewritten again from an earlier --redo-suspect / --redo rewrite; they keep their current version. Turn that option on again to carry on, or use --cancel-redo to drop the marks.
+[19:23:29]   30489 already have a rewrite, 0 to go
+[19:23:48] ━━━━ Stage 3/8 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
+[19:23:49] ━━━━ Stage 4/8 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
+[19:36:03] 
+[19:36:03] ━━━━ what the script struggled with this run ━━━━
+[19:36:03] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[19:36:03] couldn't handle:
+[19:36:03]   fix       12915 × not compiling yet (not reached before the run ended)   e.g. FUN_00001a3c, updateParameter, processAndFilterInput   [also in the last 5 run(s)]
+[19:36:03]   fix          73 × quarantined: no matching function for call to 'X'   e.g. FUN_000033e0, FUN_00003438, FUN_000034cc   [also in the last 2 run(s)]
+[19:36:03]   fix          19 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. FUN_00004130, FUN_000058ac, FUN_00037ecc   [also in the last 2 run(s)]
+[19:36:03]   fix          15 × quarantined: use of undeclared identifier 'X'   e.g. FUN_00003e34, FUN_00004aa8, processInput20   [also in the last 2 run(s)]
+[19:36:03]   fix          11 × quarantined: no member named 'X' in 'X'   e.g. FUN_00044518, FUN_001dbea4, FUN_001e1280   [also in the last 2 run(s)]
+[19:36:03]   fix          10 × quarantined: redefinition of 'X'   e.g. FUN_001e1ed8, FUN_001f9bc4, FUN_001f9dec   [also in the last 2 run(s)]
+[19:36:03]   fix           6 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_001dc410, FUN_001ff028, FUN_00208b9c   [also in the last 2 run(s)]
+[19:36:03]   fix           5 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001f78c8, FUN_00200b9c, FUN_00216154   [also in the last 2 run(s)]
+[19:36:03]   fix           4 × quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')   e.g. FUN_000c80a0, FUN_001dc350, FUN_001e2314
+[19:36:03]   fix           3 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00225de8, _pthread_mutexattr_settype, _vsnprintf   [also in the last 2 run(s)]
+[19:36:03]   fix           3 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_001f896c, FUN_00208274, FUN_0020af54   [also in the last 2 run(s)]
+[19:36:03]   fix           3 × quarantined: expected expression   e.g. FUN_001dab18, FUN_00208454, FUN_002145e4   [also in the last 2 run(s)]
+[19:36:03]   fix           3 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, FUN_001f7848, FUN_0022333c   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: void function 'X' should not return a value [-Wreturn-mismatch]   e.g. FUN_00215bc8, FUN_0021cffc   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: variable has incomplete type 'X'   e.g. openFile, FUN_00208bd4   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: unknown type name 'X'   e.g. FUN_00208d74, _mach_timebase_info   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_0021a234, _CFRelease   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_0021f318, FUN_002246d4   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. FUN_00200cb8, FUN_00224594   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: expected unqualified-id   e.g. getData, string   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00005000, FUN_001e2054
+[19:36:03]   fix           2 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_0020dfa4, FUN_0020dfcc   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00008858, FUN_001e1c28   [also in the last 2 run(s)]
+[19:36:03]   fix           2 × quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed   e.g. FUN_0011f0c0, FUN_001e2cac
+[19:36:03]   fix           1 × quarantined: use of undeclared label 'X'   e.g. FUN_0021608c   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_0021a1f4
+[19:36:03]   fix           1 × quarantined: unknown type name 'X'; did you mean 'X'?   e.g. _CFStringGetFileSystemRepresentation   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: type 'X' does not provide a subscript operator   e.g. FUN_00004424
+[19:36:03]   fix           1 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00206ac0   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: subscript of pointer to incomplete type 'X'   e.g. FUN_000f80f4
+[19:36:03]   fix           1 × quarantined: static_cast from 'X' to 'X' is not allowed   e.g. FUN_0011eee8
+[19:36:03]   fix           1 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_0020a438   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_002075bc   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'   e.g. FUN_00202428   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_0020df60   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: no matching constructor for initialization of 'X'   e.g. FUN_001f9f64   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00220624   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_00206b88   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))   e.g. FUN_00208990
+[19:36:03]   fix           1 × quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_001fa8c8   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: function definition is not allowed here   e.g. FUN_002008cc   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: expression is not assignable   e.g. FUN_00223db4   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')   e.g. FUN_000050fc
+[19:36:03]   fix           1 × quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X'   e.g. _stat   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00208364   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: cannot cast from type 'X' (aka 'X') to pointer type 'X' (aka 'X')   e.g. _fopen   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. _memmove   [also in the last 2 run(s)]
+[19:36:03]   fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_001f9e9c   [also in the last 2 run(s)]
+[19:36:03] worked around (cost time, nothing lost):
+[19:36:03]   fix          96 × the model repeated an edit that had already failed (skipped)   e.g. FUN_0021a1f4, FUN_0020157c, FUN_00003340
+[19:36:03]   rewrite    4710 × drafts whose function had a different name than the one its callers use (renamed)   e.g. FUN_000b50b8, getFloatValue, main
 ```
 
 ## Build status
@@ -130,36 +151,43 @@ couldn't handle:
 ```
 {
  "functions": 30464,
- "compile": 17329,
- "quarantined": 155,
- "to fix": 12980
+ "compile": 17345,
+ "quarantined": 204,
+ "to fix": 12915
 }
 ```
 
-## Quarantined: 155 function(s), by first error
+## Quarantined: 204 function(s), by first error
 
--     58 × no matching function for call to 'X'
--     14 × use of undeclared identifier 'X'
--     10 × cannot cast from type 'X' to pointer type 'X'
--      9 × redefinition of 'X'
--      6 × no member named 'X' in 'X'
+-     73 × no matching function for call to 'X'
+-     19 × cannot cast from type 'X' to pointer type 'X'
+-     15 × use of undeclared identifier 'X'
+-     11 × no member named 'X' in 'X'
+-     10 × redefinition of 'X'
+-      6 × C-style cast from 'X' to 'X' is not allowed
 -      5 × assigning to 'X' from incompatible type 'X'
--      5 × C-style cast from 'X' to 'X' is not allowed
+-      4 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
 -      3 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
+-      3 × expected expression
 -      3 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *
+-      3 × too many arguments to function call, expected N, have N
 -      2 × expected unqualified-id
+-      2 × cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'
+-      2 × assigning to 'X' (aka 'X') from incompatible type 'X'
+-      2 × C-style cast from 'X' to 'X' (aka 'X') is not allowed
 -      2 × variable has incomplete type 'X'
 -      2 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'
--      2 × expected expression
 -      2 × unknown type name 'X'
 -      2 × assignment to cast is illegal, lvalue casts are not supported
 -      2 × void function 'X' should not return a value [-Wreturn-mismatch]
 -      2 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
 -      2 × must use 'X' tag to refer to type 'X' in this scope
--      2 × too many arguments to function call, expected N, have N
+-      1 × type 'X' does not provide a subscript operator
+-      1 × cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')
 -      1 × 'X' does not name a template but is followed by template arguments; did you mean 'X'?
 -      1 × arithmetic on a pointer to void
--      1 × assigning to 'X' (aka 'X') from incompatible type 'X'
+-      1 × subscript of pointer to incomplete type 'X'
+-      1 × static_cast from 'X' to 'X' is not allowed
 -      1 × array type 'X' (aka 'X') is not assignable
 -      1 × no matching constructor for initialization of 'X'
 -      1 × incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')
@@ -169,9 +197,11 @@ couldn't handle:
 -      1 × member reference base type 'X' (aka 'X') is not a structure or union
 -      1 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'
 -      1 × cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'
+-      1 × invalid operands to binary expression ('X' and 'X' (aka 'X'))
 -      1 × redefinition of 'X' with a different type: 'X' vs 'X'
 -      1 × no viable conversion from 'X' to 'X'
 -      1 × use of undeclared label 'X'
+-      1 × use of undeclared identifier 'X'; did you mean 'X'?
 -      1 × member reference base type 'X' is not a structure or union
 -      1 × expression is not assignable
 -      1 × unknown type name 'X'; did you mean 'X'?
@@ -180,9 +210,103 @@ couldn't handle:
 -      1 × called object type 'X' (aka 'X') is not a function or function pointer
 -      1 × cannot initialize a parameter of type 'X' with an lvalue of type 'X'
 
-### Quarantined — 58 × no matching function for call to 'X'
+### Quarantined — 73 × no matching function for call to 'X'
 
-All: FUN_00003fd4 (3fd4), FUN_0000408c (408c), FUN_000041a8 (41a8), processAndFree (41cc), FUN_00004218 (4218), processBuffer4 (4314), processInput19 (6df4), FUN_0000877c (877c), FUN_000442e8 (442e8), FUN_00044554 (44554), FUN_0004466c (4466c), FUN_001f66f0 (1f66f0), FUN_001f72c0 (1f72c0), FUN_001f7a60 (1f7a60), FUN_001f7d10 (1f7d10), FUN_001f9c88 (1f9c88), FUN_001f9dc4 (1f9dc4), FUN_001fa0f4 (1fa0f4), FUN_001fa63c (1fa63c), FUN_001fac98 (1fac98), FUN_001fae14 (1fae14), FUN_001fb730 (1fb730), FUN_001fc5e8 (1fc5e8), FUN_00200480 (200480), FUN_00200a80 (200a80), FUN_00200acc (200acc), FUN_002084e8 (2084e8), FUN_002085e8 (2085e8), FUN_0020a4e0 (20a4e0), FUN_0020a924 (20a924), FUN_0020b8b4 (20b8b4), FUN_0020c82c (20c82c), FUN_00212fd0 (212fd0), FUN_00213964 (213964), FUN_00215b88 (215b88), FUN_00216d48 (216d48), FUN_00219cd4 (219cd4), FUN_0021af00 (21af00), FUN_0021af40 (21af40), FUN_0021b3a4 (21b3a4), FUN_0021b618 (21b618), FUN_0021b828 (21b828), FUN_0021bb10 (21bb10), FUN_0021be18 (21be18), FUN_0021c718 (21c718), FUN_0021d890 (21d890), FUN_0021d9d8 (21d9d8), FUN_0021da60 (21da60), FUN_0021dd98 (21dd98), FUN_0021de88 (21de88), FUN_0021dfec (21dfec), FUN_0021e73c (21e73c), FUN_0021f558 (21f558), FUN_002207dc (2207dc), FUN_00223444 (223444), FUN_00224540 (224540), FUN_0022a7e8 (22a7e8), _fseeko (3862b4)
+All: FUN_000033e0 (33e0), FUN_00003438 (3438), FUN_000034cc (34cc), FUN_00003fd4 (3fd4), FUN_0000408c (408c), FUN_000041a8 (41a8), processAndFree (41cc), FUN_00004218 (4218), processBuffer4 (4314), FUN_00004b88 (4b88), FUN_00004ce8 (4ce8), processValues (4d30), FUN_000059a8 (59a8), processInput19 (6df4), FUN_0000877c (877c), FUN_000442e8 (442e8), FUN_00044554 (44554), FUN_0004466c (4466c), FUN_0011bf98 (11bf98), FUN_0011f078 (11f078), FUN_001dbe84 (1dbe84), FUN_001e22b8 (1e22b8), FUN_001e2d64 (1e2d64), FUN_001f66f0 (1f66f0), FUN_001f72c0 (1f72c0), FUN_001f7a60 (1f7a60), FUN_001f7d10 (1f7d10), FUN_001f9c88 (1f9c88), FUN_001f9dc4 (1f9dc4), FUN_001fa0f4 (1fa0f4), FUN_001fa63c (1fa63c), FUN_001fac98 (1fac98), FUN_001fae14 (1fae14), FUN_001fb730 (1fb730), FUN_001fc5e8 (1fc5e8), FUN_001fec1c (1fec1c), FUN_00200480 (200480), FUN_00200a80 (200a80), FUN_00200acc (200acc), FUN_0020157c (20157c), FUN_002084e8 (2084e8), FUN_002085e8 (2085e8), FUN_0020a4e0 (20a4e0), FUN_0020a924 (20a924), FUN_0020b8b4 (20b8b4), FUN_0020c82c (20c82c), FUN_00212fd0 (212fd0), FUN_00213964 (213964), FUN_00215b88 (215b88), FUN_00216d48 (216d48), FUN_00219cd4 (219cd4), FUN_0021ad3c (21ad3c), FUN_0021af00 (21af00), FUN_0021af40 (21af40), FUN_0021b3a4 (21b3a4), FUN_0021b618 (21b618), FUN_0021b828 (21b828), FUN_0021bb10 (21bb10), FUN_0021be18 (21be18), FUN_0021c718 (21c718), FUN_0021d890 (21d890), FUN_0021d9d8 (21d9d8), FUN_0021da60 (21da60), FUN_0021dd98 (21dd98), FUN_0021de88 (21de88), FUN_0021dfec (21dfec), FUN_0021e73c (21e73c), FUN_0021f558 (21f558), FUN_002207dc (2207dc), FUN_00223444 (223444), FUN_00224540 (224540), FUN_0022a7e8 (22a7e8), _fseeko (3862b4)
+
+#### FUN_000033e0 — funcs/__Z12FUN_000033e0m.cpp, Ghidra 33e0, 8 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000033e0m.cpp:4:3: error: no matching function for call to 'FUN_00216668'
+    4 |   FUN_00216668("TLinkedViewValue", value);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:41971:7: note: candidate function not viable: no known conversion from 'const char[17]' to 'undefined8' (aka 'unsigned long long') for 1st argument
+ 41971 | void *FUN_00216668(undefined8, size_t);
+       |       ^            ~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000033e0(size_t value) {
+  FUN_00216668("TLinkedViewValue", value);
+}
+```
+Notes:
+- 10-20 18:44 [compile] no matching function for call to 'FUN_00216668' — plan: Change line 4 to: `FUN_00216668("TLinkedViewValue", (size_t)value);` — still fails: no matching function for call to 'FUN_00216668'
+- 10-20 18:44 [compile] that edit didn't help — undone.
+- 10-20 18:44 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:24 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:24 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:26 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:26 [compile] the model suggested an edit that already failed — skipped.
+
+#### FUN_00003438 — funcs/__Z12FUN_00003438Pyyyy.cpp, Ghidra 3438, 7 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00003438Pyyyy.cpp:4:5: error: no matching function for call to 'FUN_00004b88'
+    4 |     FUN_00004b88(data, filterParams, input, output);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1689:8: note: candidate function not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'float *' for 1st argument
+ 1689 | float *FUN_00004b88(float *, float, float, float);
+      |        ^            ~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00003438(undefined8 *data, undefined8 filterParams, undefined8 input, undefined8 output) {
+    FUN_00004b88(data, filterParams, input, output);
+}
+```
+Notes:
+- 10-20 15:02 [compile] that edit didn't help — undone.
+- 10-20 15:02 [compile] no matching function for call to 'applyLowpassFilter30' — plan: To fix the compiler error and ensure that the function `applyLowpassFilter30` is called correctly, you need to change the return type from `undefined8 *` to `fl — compiles now.
+- 10-20 18:44 [compile] no matching function for call to 'FUN_00004b88' — plan: Change line 4 to: `float *result = FUN_00004b88(data, filterParams, input, output);` — still fails: no matching function for call to 'FUN_00004b88'
+- 10-20 18:44 [compile] that edit didn't help — undone.
+- 10-20 19:24 [compile] no matching function for call to 'FUN_00004b88' — plan: Change line 4 to: `float *result = FUN_00004b88((uint64_t *)data, filterParams, input, output);` — still fails: no matching function for call to 'FUN_00004b88'
+- 10-20 19:24 [compile] that edit didn't help — undone.
+- 10-20 19:24 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:26 [compile] no matching function for call to 'FUN_00004b88' — plan: Change line 4 from `float *FUN_00004b88(data, filterParams, input, output);` to `float *FUN_00004b88((uint64_t *)data, filterParams, input, output);` — still fails: no matching function for call to 'FUN_00004b88'
+- 10-20 19:26 [compile] that edit didn't help — undone.
+
+#### FUN_000034cc — funcs/__Z12FUN_000034ccPvS_S_S_.cpp, Ghidra 34cc, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000034ccPvS_S_S_.cpp:4:5: error: no matching function for call to 'FUN_00004ce8'
+    4 |     FUN_00004ce8(input, filterCoefficients, output, state);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1701:6: note: candidate function not viable: cannot convert argument of incomplete type 'void *' to 'float *' for 1st argument
+ 1701 | void FUN_00004ce8(float *, float, float *, float *);
+      |      ^            ~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000034cc(void* input, void* filterCoefficients, void* output, void* state) {
+    FUN_00004ce8(input, filterCoefficients, output, state);
+}
+```
+Notes:
+- 10-20 19:28 [compile] no matching function for call to 'FUN_00004ce8' — plan: Change line 4 to: `FUN_00004ce8((float *)input, (float *)filterCoefficients, (float *)output, (float *)state);` — still fails: no matching function for call to 'FUN_00004ce8'
+- 10-20 19:28 [compile] that edit didn't help — undone.
+- 10-20 19:28 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:29 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:29 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:30 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:30 [compile] the model suggested an edit that already failed — skipped.
 
 #### FUN_00003fd4 — funcs/__Z12FUN_00003fd4PiPli.cpp, Ghidra 3fd4, 6 model attempt(s)
 
@@ -383,129 +507,283 @@ Notes:
 - 10-20 18:11 [compile] the model suggested an edit that already failed — skipped.
 - 10-20 18:11 [compile] the model suggested an edit that already failed — skipped.
 
-#### processBuffer4 — funcs/__Z14processBuffer4lm.cpp, Ghidra 4314, 6 model attempt(s)
+### Quarantined — 19 × cannot cast from type 'X' to pointer type 'X'
+
+All: FUN_00004130 (4130), FUN_000058ac (58ac), FUN_00037ecc (37ecc), FUN_001da95c (1da95c), FUN_001e1800 (1e1800), FUN_001e20d0 (1e20d0), FUN_001e248c (1e248c), FUN_001e2b00 (1e2b00), FUN_001e2b24 (1e2b24), FUN_001e2c68 (1e2c68), FUN_001e2ef4 (1e2ef4), FUN_0020e450 (20e450), FUN_0021af98 (21af98), FUN_0021b230 (21b230), FUN_0021f404 (21f404), FUN_00229274 (229274), FUN_002292c8 (2292c8), FUN_00229374 (229374), _pthread_getspecific (3865b4)
+
+#### FUN_00004130 — funcs/__Z12FUN_00004130y.cpp, Ghidra 4130, 6 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z14processBuffer4lm.cpp:5:5: error: no matching function for call to 'FUN_000b50b8'
-    5 |     FUN_000b50b8((uint8_t*)buffer + i *0x10);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1183:9: note: candidate function not viable: no known conversion from 'uint8_t *' (aka 'unsigned char *') to 'uint64_t' (aka 'unsigned long long') for 1st argument; dereference the argument with *
- 1183 | uint8_t FUN_000b50b8(uint64_t);
-      |         ^            ~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1213:6: note: candidate function not viable: no known conversion from 'uint8_t *' (aka 'unsigned char *') to 'long' for 1st argument; dereference the argument with *
- 1213 | void FUN_000b50b8(long);
-      |      ^            ~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1189:6: note: candidate function not viable: no known conversion from 'uint8_t *' (aka 'unsigned char *') to 'FilterState *' for 1st argument
- 1189 | void FUN_000b50b8(FilterState *);
-      |      ^            ~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1195:6: note: candidate function not viable: no known conversion from 'uint8_t *' (aka 'unsigned char *') to 'long *' for 1st argument
- 1195 | void FUN_000b50b8(long *);
-      |      ^            ~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:15449:6: note: candidate function not viable: requires 2 arguments, but 1 was provided
- 15449 | void FUN_000b50b8(long, undefined8 *);
-       |      ^            ~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1297:6: note: candidate function not viable: requires 2 arguments, but 1 was provided
- 1297 | void FUN_000b50b8(uint64_t *, long);
-      |      ^            ~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1241:6: note: candidate function not viable: requires 2 arguments, but 1 was provided
- 1241 | void FUN_000b50b8(long *, long);
-      |      ^            ~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00004130y.cpp:9:33: error: cannot cast from type 'void' to pointer type 'LowpassFilterState *'
+    9 |     LowpassFilterState* state = static_cast<LowpassFilterState*>(FUN_0021608c(DAT_00453258, param_1 << 4));
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void processBuffer4(long buffer, ulong size) {
-  for (ulong i = 0; i < size; i++) {
-    FUN_000b50b8(buffer + i * 0x10);
-  }
-}
-```
-Notes:
-- 10-20 16:19 [compile] that edit didn't help — undone.
-- 10-20 16:20 [compile] called object type 'int' is not a function or function pointer — plan: Change line 5 from `applyLowpassFilter(buffer + i * 0x10);` to `applyLowpassFilter((uint8_t*)buffer + i * 0x10);`. — still fails: called object type 'int' is not a function or function pointer
-- 10-20 16:20 [compile] that edit didn't help — undone.
-- 10-20 16:21 [compile] called object type 'int' is not a function or function pointer — plan: Change line 5 from `applyLowpassFilter(buffer + i * 0x10);` to `applyLowpassFilter((uint8_t*)buffer + i * 0x10);`. — still fails: called object type 'int' is not a function or function pointer
-- 10-20 16:21 [compile] that edit didn't help — undone.
-- 10-20 18:09 [compile] call to 'FUN_000b50b8' is ambiguous — plan: Change line 5 from `FUN_000b50b8(buffer + i * 0x10);` to `FUN_000b50b8((uint8_t*)buffer + i * 0x10);`. — still fails: no matching function for call to 'FUN_000b50b8'
-- 10-20 18:09 [compile] no matching function for call to 'FUN_000b50b8' — plan: Change line 5 from `FUN_000b50b8((uint8_t*)buffer + i *0x10);` to `FUN_000b50b8((uint64_t*)buffer + i *0x10);`. — still fails: no matching function for call to 'FUN_000b50b8'
-- 10-20 18:09 [compile] that edit didn't help — undone.
-- 10-20 18:10 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:10 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:11 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:11 [compile] the model suggested an edit that already failed — skipped.
-
-#### processInput19 — funcs/__Z14processInput19PhS_S_.cpp, Ghidra 6df4, 6 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z14processInput19PhS_S_.cpp:4:5: error: no matching function for call to 'processAudio2'
-    4 |     processAudio2(input1, input2, input3);
-      |     ^~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:33275:6: note: candidate function not viable: no known conversion from 'uint8_t *' (aka 'unsigned char *') to 'undefined8 *' (aka 'unsigned long long *') for 1st argument
- 33275 | void processAudio2(undefined8 *, undefined8, undefined8 *);
-       |      ^             ~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void processInput19(uint8_t* input1, uint8_t* input2, uint8_t* input3) {
-    processFunction(input1, input2, input3);
-}
-```
-Notes:
-- 10-20 18:34 [compile] use of undeclared identifier 'processFunction'; did you mean 'processAudio2'? — plan: Change line 4 from `processFunction(input1, input2, input3);` to `processAudio2(input1, input2, input3);`. — still fails: no matching function for call to 'processAudio2'
-- 10-20 18:34 [compile] no matching function for call to 'processAudio2' — plan: Change line 4 from `processAudio2(input1, input2, input3);` to `processAudio2((uint64_t *)input1, (uint64_t *)input2, (uint64_t *)input3);`. — still fails: no matching function for call to 'processAudio2'
-- 10-20 18:34 [compile] that edit didn't help — undone.
-- 10-20 18:34 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:35 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:35 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:36 [compile] the model suggested an edit that already failed — skipped.
-
-#### FUN_0000877c — funcs/__Z12FUN_0000877cP11FilterStatei.cpp, Ghidra 877c, 6 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000877cP11FilterStatei.cpp:8:9: error: no matching function for call to 'processValue'
-    8 |         processValue(filter, sample);
-      |         ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1501:6: note: candidate function not viable: requires 1 argument, but 2 were provided
- 1501 | void processValue(long);
-      |      ^            ~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-FilterState * FUN_0000877c(FilterState* filter, int sample) {
-    filter->state1 = 0;
-    filter->state2 = 0.0f;
-
-    if (sample != 0) {
-        processValue(filter, sample);
+long FUN_00004130(uint64_t param_1) {
+    if ((DAT_00453260 & 1) == 0) {
+        DAT_00453258 = new LowpassFilterState();
+        FUN_000041f4(0x424978);
+        DAT_00453260 = 1;
     }
-
-    return filter;
+    LowpassFilterState* state = FUN_0021608c(DAT_00453258, param_1 << 4);
+    FUN_00004218((long)state, param_1);
+    return (long)state;
 }
 ```
 Notes:
-- 10-20 18:12 [compile] no member named 'state1' in 'FilterState' — plan: Change line 4 to `filter->state[1] = 0;` — still fails: no member named 'state2' in 'FilterState'
-- 10-20 18:13 [compile] no member named 'state2' in 'FilterState' — plan: Change line 5 to `filter->state[2] = 0.0f;` — still fails: no matching function for call to 'processValue'
-- 10-20 18:13 [compile] no matching function for call to 'processValue' — plan: Change line 8 to `processValue((uint64_t*)filter, sample);` — still fails: no matching function for call to 'processValue'
-- 10-20 18:13 [compile] that edit didn't help — undone.
-- 10-20 18:14 [compile] no matching function for call to 'processValue' — plan: Change line 8 to `processValue((uint64_t*)filter, (uint64_t)sample);` — still fails: no matching function for call to 'processValue'
-- 10-20 18:14 [compile] that edit didn't help — undone.
-- 10-20 18:14 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:14 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:09 [compile] call to 'FUN_000041f4' is ambiguous — plan: Change line 6 to `FUN_000041f4(0x424978L);` — still fails: cannot initialize a variable of type 'LowpassFilterState *' with an rvalue of type 'void'
+- 10-20 18:10 [compile] cannot initialize a variable of type 'LowpassFilterState *' with an rvalue of type 'void' — plan: Change line 9 to `LowpassFilterState* state = static_cast<LowpassFilterState*>(FUN_0021608c(DAT_00453258, param_1 << 4));` — still fails: cannot cast from type 'void' to pointer type 'LowpassFilterState *'
+- 10-20 18:10 [compile] cannot cast from type 'void' to pointer type 'LowpassFilterState *' — plan: Change line 9 to `LowpassFilterState* state = (LowpassFilterState*)FUN_0021608c(DAT_00453258, param_1 << 4));` — still fails: cannot cast from type 'void' to pointer type 'LowpassFilterState *'
+- 10-20 18:10 [compile] that edit didn't help — undone.
+- 10-20 18:11 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:11 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:12 [compile] the model suggested an edit that already failed — skipped.
 
-### Quarantined — 14 × use of undeclared identifier 'X'
+#### FUN_000058ac — funcs/__Z12FUN_000058acPf.cpp, Ghidra 58ac, 5 model attempt(s)
 
-All: FUN_00003e34 (3e34), FUN_00004aa8 (4aa8), processInput20 (7250), FUN_000072dc (72dc), FUN_00007308 (7308), processList2 (c01c), FUN_00020cb8 (20cb8), FUN_00206820 (206820), FUN_00215c10 (215c10), FUN_00215ca4 (215ca4), FUN_00215d14 (215d14), FUN_0021adb4 (21adb4), FUN_0021b404 (21b404), FUN_0021b494 (21b494)
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000058acPf.cpp:9:14: error: cannot cast from type 'void' to pointer type 'float *'
+    9 |     puVar1 = (float *)setData((Data *)param_1);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000058acPf.cpp:12:15: error: assigning to 'float' from incompatible type 'uint64_t *' (aka 'unsigned long long *')
+   12 |     *puVar1 = &DAT_00425050.0f;
+      |               ^~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000058acPf.cpp:12:28: error: expected ';' after expression
+   12 |     *puVar1 = &DAT_00425050.0f;
+      |                            ^
+      |                            ;
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000058ac(float *param_1)
+{
+    float *puVar1;
+
+    puVar1 = setData(param_1);
+    puVar1[1] = 0.0f;
+    puVar1[2] = 0.0f;
+    *puVar1 = &DAT_00425050.0f;
+    return;
+}
+```
+Notes:
+- 10-20 19:29 [compile] no matching function for call to 'setData' — plan: Change line 9 to: `puVar1 = (float *)setData(param_1);` — still fails: cannot cast from type 'void' to pointer type 'float *'
+- 10-20 19:29 [compile] cannot cast from type 'void' to pointer type 'float *' — plan: Change line 9 to: `puVar1 = (float *)setData((Data *)param_1);` — still fails: no matching function for call to 'setData'
+- 10-20 19:30 [compile] no matching function for call to 'setData' — plan: Change line 9 to: `puVar1 = (float *)setData((Data *)param_1);` — still fails: cannot cast from type 'void' to pointer type 'float *'
+- 10-20 19:30 [compile] cannot cast from type 'void' to pointer type 'float *' — plan: Change line 9 to: `puVar1 = (float *)setData(param_1);` — still fails: no matching function for call to 'setData'
+- 10-20 19:31 [compile] no matching function for call to 'setData' — plan: Change line 9 to: `puVar1 = (float *)setData((Data *)param_1);` — still fails: cannot cast from type 'void' to pointer type 'float *'
+
+#### FUN_00037ecc — funcs/__Z12FUN_00037eccl.cpp, Ghidra 37ecc, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00037eccl.cpp:11:18: error: cannot cast from type 'void' to pointer type 'void *'
+   11 |         pvVar1 = (void *)FUN_000041f4(param_1);
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00037eccl.cpp:14:5: error: no matching function for call to 'FUN_00037f68'
+   14 |     FUN_00037f68();
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:5847:6: note: candidate function not viable: requires 3 arguments, but 0 were provided
+ 5847 | void FUN_00037f68(float *, float *, int);
+      |      ^            ~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00037ecc(long param_1) {
+    void *pvVar1;
+
+    if ((DAT_004532f8 & 1) == 0) {
+        pvVar1 = FUN_000041f4(param_1);
+    }
+    pvVar1 = FUN_0021608c(DAT_004532f0, param_1 << 2);
+    FUN_00037f68();
+}
+```
+Notes:
+- 10-20 18:09 [compile] assigning to 'void *' from incompatible type 'void' — plan: Change `pvVar1 = FUN_000041f4(param_1);` to `pvVar1 = (void *)FUN_000041f4(param_1);` — still fails: cannot cast from type 'void' to pointer type 'void *'
+
+#### FUN_001da95c — funcs/FUN_001da95c.cpp, Ghidra 1da95c, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001da95c.cpp:8:12: error: cannot cast from type 'void' to pointer type 'long *'
+    8 |   puVar1 = (long *)FUN_001da8a8(param_1);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001da95c.cpp:9:13: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &
+    9 |   *puVar1 = &DAT_00443490;
+      |             ^~~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint64_t * FUN_001da95c(uint64_t *param_1) {
+  undefined8 *puVar1;
+
+  puVar1 = (undefined8 *)FUN_001da8a8(param_1);
+  *puVar1 = &DAT_00443490;
+  FUN_002089d4((pthread_mutex_t *)(puVar1 + 2));
+  FUN_001da9f8(param_1 + 0xb);
+  *(undefined1 *)(param_1 + 0xd) = 0;
+  *(undefined4 *)((long)param_1 + 0x6c) = 0xffffffff;
+  *(undefined1 *)(param_1 + 0xe) = 0;
+  *(byte *)((long)param_1 + 0xc) = *(byte *)((long)param_1 + 0xc) & 0xfd | 1;
+}
+```
+Notes:
+- 10-20 19:26 [compile] cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *') — plan: Change `undefined8 *puVar1;` to `long *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'long *'
+- 10-20 19:27 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `long *puVar1;` to `uint64_t *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+- 10-20 19:27 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `uint64_t *puVar1;` to `long *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'long *'
+- 10-20 19:28 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `long *puVar1;` to `uint64_t *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+- 10-20 19:28 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `uint64_t *puVar1;` to `long *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'long *'
+
+#### FUN_001e1800 — funcs/FUN_001e1800.cpp, Ghidra 1e1800, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e1800.cpp:7:14: error: cannot cast from type 'void' to pointer type 'long *'
+    7 |     pvVar1 = (long *)FUN_001e2258(*param_1);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e1800.cpp:8:5: error: use of undeclared identifier 'operator_delete'
+    8 |     operator_delete(pvVar1);
+      |     ^~~~~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001e1800(long *param_1, long param_2) {
+  void *pvVar1;
+
+  if (*param_1 != 0) {
+    pvVar1 = (void *)FUN_001e2258(*param_1);
+    operator_delete(pvVar1);
+  }
+
+  *param_1 = param_2;
+  return;
+}
+```
+Notes:
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'void *' — plan: Change line 7 from `pvVar1 = (void *)FUN_001e2258(*param_1);` to `pvVar1 = (uint64_t *)FUN_001e2258(*param_1);` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+- 10-20 19:32 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change line 7 from `pvVar1 = (uint64_t *)FUN_001e2258(*param_1);` to `pvVar1 = (long *)FUN_001e2258(*param_1);` — still fails: cannot cast from type 'void' to pointer type 'long *'
+- 10-20 19:32 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change line 7 from `pvVar1 = (long *)FUN_001e2258(*param_1);` to `pvVar1 = (uint64_t *)FUN_001e2258(*param_1);` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+- 10-20 19:33 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change line 7 from `pvVar1 = (uint64_t *)FUN_001e2258(*param_1);` to `pvVar1 = (long *)FUN_001e2258(*param_1);` — still fails: cannot cast from type 'void' to pointer type 'long *'
+- 10-20 19:33 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change line 7 from `pvVar1 = (long *)FUN_001e2258(*param_1);` to `pvVar1 = (uint64_t *)FUN_001e2258(*param_1);` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+- 10-20 19:34 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change line 7 from `pvVar1 = (uint64_t *)FUN_001e2258(*param_1);` to `pvVar1 = (long *)FUN_001e2258(*param_1);` — still fails: cannot cast from type 'void' to pointer type 'long *'
+
+#### FUN_001e20d0 — funcs/FUN_001e20d0.cpp, Ghidra 1e20d0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e20d0.cpp:6:12: error: cannot cast from type 'void' to pointer type 'long *'
+    6 |   puVar1 = (long*)FUN_001e21f0();
+      |            ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint64_t FUN_001e20d0(void) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_001e21f0();
+  return *puVar1;
+}
+```
+Notes:
+- 10-20 19:29 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:29 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:29 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:29 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:29 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:29 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:29 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+
+#### FUN_001e248c — funcs/FUN_001e248c.cpp, Ghidra 1e248c, 1 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e248c.cpp:7:12: error: cannot cast from type 'void' to pointer type 'long *'
+    7 |   puVar2 = (long*)FUN_001e253c();
+      |            ^~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e248c.cpp:8:11: error: no matching function for call to 'FUN_0007bfd4'
+    8 |   bVar1 = FUN_0007bfd4(param_1, param_2, puVar2);
+      |           ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:10933:6: note: candidate function not viable: no known conversion from 'ulong *' (aka 'unsigned long *') to 'uint64_t *' (aka 'unsigned long long *') for 3rd argument
+ 10933 | bool FUN_0007bfd4(uintptr_t, uint64_t *, uint64_t *);
+       |      ^                                   ~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+bool FUN_001e248c(uint64_t param_1,uint64_t *param_2) {
+  bool bVar1;
+  ulong *puVar2;
+
+  puVar2 = (ulong *)FUN_001e253c();
+  bVar1 = FUN_0007bfd4(param_1, param_2, puVar2);
+  return bVar1;
+}
+```
+Notes:
+- 10-20 19:30 [compile] cannot cast from type 'void' to pointer type 'ulong *' (aka 'unsigned long *') — plan: Change line 7 from `ulong *puVar2 = (ulong *)FUN_001e253c();` to `long *puVar2 = (long *)FUN_001e253c();` — still fails: cannot cast from type 'void' to pointer type 'long *'
+- 10-20 19:30 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:30 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:30 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:30 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:30 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:30 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+
+#### FUN_001e2b00 — funcs/FUN_001e2b00.cpp, Ghidra 1e2b00, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2b00.cpp:6:12: error: cannot cast from type 'void' to pointer type 'long *'
+    6 |   puVar1 = (long*)FUN_001e2e2c();
+      |            ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint64_t FUN_001e2b00(void) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_001e2e2c();
+  return *puVar1;
+}
+```
+Notes:
+- 10-20 19:32 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:32 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:32 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:32 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:32 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:32 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:32 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+
+### Quarantined — 15 × use of undeclared identifier 'X'
+
+All: FUN_00003e34 (3e34), FUN_00004aa8 (4aa8), processInput20 (7250), FUN_000072dc (72dc), FUN_00007308 (7308), processList2 (c01c), FUN_00020cb8 (20cb8), FUN_00206820 (206820), FUN_00208af0 (208af0), FUN_00215c10 (215c10), FUN_00215ca4 (215ca4), FUN_00215d14 (215d14), FUN_0021adb4 (21adb4), FUN_0021b404 (21b404), FUN_0021b494 (21b494)
 
 #### FUN_00003e34 — funcs/__Z12FUN_00003e34l.cpp, Ghidra 3e34, 11 model attempt(s)
 
@@ -760,379 +1038,350 @@ Notes:
 - 10-20 18:36 [compile] that edit didn't help — undone.
 - 10-20 18:37 [compile] the model suggested an edit that already failed — skipped.
 
-### Quarantined — 10 × cannot cast from type 'X' to pointer type 'X'
+### Quarantined — 11 × no member named 'X' in 'X'
 
-All: FUN_00004130 (4130), FUN_00037ecc (37ecc), FUN_0020e450 (20e450), FUN_0021af98 (21af98), FUN_0021b230 (21b230), FUN_0021f404 (21f404), FUN_00229274 (229274), FUN_002292c8 (2292c8), FUN_00229374 (229374), _pthread_getspecific (3865b4)
+All: FUN_00044518 (44518), FUN_001dbea4 (1dbea4), FUN_001e1280 (1e1280), FUN_001e2d88 (1e2d88), FUN_001f9ca8 (1f9ca8), FUN_001fadc4 (1fadc4), FUN_001fec98 (1fec98), FUN_0020e40c (20e40c), FUN_0021abf4 (21abf4), FUN_0021b1d8 (21b1d8), FUN_0021df24 (21df24)
 
-#### FUN_00004130 — funcs/__Z12FUN_00004130y.cpp, Ghidra 4130, 6 model attempt(s)
+#### FUN_00044518 — funcs/__Z12FUN_00044518P11FilterStatei.cpp, Ghidra 44518, 6 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00004130y.cpp:9:33: error: cannot cast from type 'void' to pointer type 'LowpassFilterState *'
-    9 |     LowpassFilterState* state = static_cast<LowpassFilterState*>(FUN_0021608c(DAT_00453258, param_1 << 4));
-      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00044518P11FilterStatei.cpp:4:12: error: no member named 'state2' in 'FilterState'
+    4 |     state->state2 = 0.0f;
+      |     ~~~~~  ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00044518P11FilterStatei.cpp:5:12: error: no member named 'state2' in 'FilterState'
+    5 |     state->state2 = 0.0f;
+      |     ~~~~~  ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00044518P11FilterStatei.cpp:8:9: error: no matching function for call to 'FUN_00057184'
+    8 |         FUN_00057184(state, sample);
+      |         ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:7361:11: note: candidate function not viable: requires 1 argument, but 2 were provided
+ 7361 | uint64_t *FUN_00057184(uint64_t *);
+      |           ^            ~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+FilterState FUN_00044518(FilterState *state, int sample) {
+    state->state1 = 0;
+    state->state2 = 0.0f;
+
+    if (sample != 0) {
+        FUN_00057184(state, sample);
+    }
+
+    return *state;
+}
+```
+Notes:
+- 10-20 18:32 [compile] no member named 'state1' in 'FilterState' — plan: Change line 4 to: ` state->state1 = 0;` — still fails: no member named 'state1' in 'FilterState'
+- 10-20 18:32 [compile] that edit didn't help — undone.
+- 10-20 18:33 [compile] no member named 'state1' in 'FilterState' — plan: Change line 4 to: `state->state1 = 0;` — still fails: no member named 'state2' in 'FilterState'
+- 10-20 18:34 [compile] no member named 'state2' in 'FilterState' — plan: Change line 4 to: `state->state2 = 0.0f;` — still fails: no member named 'state1' in 'FilterState'
+- 10-20 18:34 [compile] that edit didn't help — undone.
+
+#### FUN_001dbea4 — funcs/FUN_001dbea4.cpp, Ghidra 1dbea4, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001dbea4.cpp:5:12: error: no member named 'process' in 'LowPassFilter'
+    5 |     filter.process(input, output);
+      |     ~~~~~~ ^
 1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-long FUN_00004130(uint64_t param_1) {
-    if ((DAT_00453260 & 1) == 0) {
-        DAT_00453258 = new LowpassFilterState();
-        FUN_000041f4(0x424978);
-        DAT_00453260 = 1;
-    }
-    LowpassFilterState* state = FUN_0021608c(DAT_00453258, param_1 << 4);
-    FUN_00004218((long)state, param_1);
-    return (long)state;
+void FUN_001dbea4(float cutoff, float alpha, float input, float *output) {
+    LowPassFilter filter(cutoff, alpha);
+    filter.process(input, output);
 }
 ```
 Notes:
-- 10-20 18:09 [compile] call to 'FUN_000041f4' is ambiguous — plan: Change line 6 to `FUN_000041f4(0x424978L);` — still fails: cannot initialize a variable of type 'LowpassFilterState *' with an rvalue of type 'void'
-- 10-20 18:10 [compile] cannot initialize a variable of type 'LowpassFilterState *' with an rvalue of type 'void' — plan: Change line 9 to `LowpassFilterState* state = static_cast<LowpassFilterState*>(FUN_0021608c(DAT_00453258, param_1 << 4));` — still fails: cannot cast from type 'void' to pointer type 'LowpassFilterState *'
-- 10-20 18:10 [compile] cannot cast from type 'void' to pointer type 'LowpassFilterState *' — plan: Change line 9 to `LowpassFilterState* state = (LowpassFilterState*)FUN_0021608c(DAT_00453258, param_1 << 4));` — still fails: cannot cast from type 'void' to pointer type 'LowpassFilterState *'
-- 10-20 18:10 [compile] that edit didn't help — undone.
-- 10-20 18:11 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:11 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:12 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:29 [compile] no matching constructor for initialization of 'LowPassFilter' — plan: Change line 4 from `LowPassFilter filter(cutoff, alpha);` to `LowPassFilter filter{cutoff, alpha};`. — still fails: no member named 'process' in 'LowPassFilter'
+- 10-20 19:30 [compile] no member named 'process' in 'LowPassFilter' — plan: Change line 5 from `filter.process(input, output);` to `filter.process(input, output, sampleRate);`. — still fails: no member named 'process' in 'LowPassFilter'
+- 10-20 19:30 [compile] that edit didn't help — undone.
+- 10-20 19:31 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:31 [compile] the model suggested an edit that already failed — skipped.
 
-#### FUN_00037ecc — funcs/__Z12FUN_00037eccl.cpp, Ghidra 37ecc, 5 model attempt(s)
+#### FUN_001e1280 — funcs/FUN_001e1280.cpp, Ghidra 1e1280, 6 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00037eccl.cpp:11:18: error: cannot cast from type 'void' to pointer type 'void *'
-   11 |         pvVar1 = (void *)FUN_000041f4(param_1);
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00037eccl.cpp:14:5: error: no matching function for call to 'FUN_00037f68'
-   14 |     FUN_00037f68();
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:5847:6: note: candidate function not viable: requires 3 arguments, but 0 were provided
- 5847 | void FUN_00037f68(float *, float *, int);
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e1280.cpp:5:12: error: no member named 'processSample' in 'LowPassFilter'
+    5 |     filter.processSample(sample);
+      |     ~~~~~~ ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001e1280(float sample) {
+    LowPassFilter filter(0.5f, 0.4f);
+    filter.processSample(sample);
+}
+```
+Notes:
+- 10-20 19:30 [compile] no matching constructor for initialization of 'LowPassFilter' — plan: Change line 4 from `LowPassFilter filter(0.5f, 0.4f);` to `LowPassFilter filter{0.5f, 0.4f};`. — still fails: no member named 'processSample' in 'LowPassFilter'
+- 10-20 19:30 [compile] no member named 'processSample' in 'LowPassFilter' — plan: Change line 5 from `filter.processSample(sample);` to `filter.processSample(&sample);`. — still fails: no member named 'processSample' in 'LowPassFilter'
+- 10-20 19:30 [compile] that edit didn't help — undone.
+- 10-20 19:30 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:31 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:31 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:32 [compile] the model suggested an edit that already failed — skipped.
+
+#### FUN_001e2d88 — funcs/FUN_001e2d88.cpp, Ghidra 1e2d88, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2d88.cpp:8:16: error: no member named 'inputBuffer' in 'LowPassFilter'
+    8 |         filter.inputBuffer[i] = inputBuffer[i];
+      |         ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2d88.cpp:12:34: error: no member named 'inputBuffer' in 'LowPassFilter'
+   12 |         outputBuffer[i] = filter.inputBuffer[i] * filter.alpha + (1 - filter.alpha) * outputBuffer[i];
+      |                           ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2d88.cpp:12:58: error: no member named 'alpha' in 'LowPassFilter'
+   12 |         outputBuffer[i] = filter.inputBuffer[i] * filter.alpha + (1 - filter.alpha) * outputBuffer[i];
+      |                                                   ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2d88.cpp:12:78: error: no member named 'alpha' in 'LowPassFilter'
+   12 |         outputBuffer[i] = filter.inputBuffer[i] * filter.alpha + (1 - filter.alpha) * outputBuffer[i];
+      |                                                                       ~~~~~~ ^
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001e2d88(float alpha, float *inputBuffer, float *outputBuffer) {
+    LowPassFilter filter;
+    filter.alpha = alpha;
+
+    for (int i = 0; i < 4; ++i) {
+        filter.inputBuffer[i] = inputBuffer[i];
+    }
+
+    for (int i = 0; i < 4; ++i) {
+        outputBuffer[i] = filter.inputBuffer[i] * filter.alpha + (1 - filter.alpha) * outputBuffer[i];
+    }
+}
+```
+Notes:
+- 10-20 19:32 [compile] no member named 'alpha' in 'LowPassFilter' — plan: Change line 5 to: `filter.cutoffFrequency = alpha;` — still fails: no member named 'inputBuffer' in 'LowPassFilter'
+
+#### FUN_001f9ca8 — funcs/FUN_001f9ca8.cpp, Ghidra 1f9ca8, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001f9ca8.cpp:5:53: error: no member named 'b' in 'LowpassFilter'
+    5 |         input[i] = filter.alpha * input[i] + filter.b * (input[i - 1] + input[i - 2]);
+      |                                              ~~~~~~ ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001f9ca8(float *input, int length, LowpassFilter filter) {
+    for (int i = 0; i < length; i++) {
+        input[i] = filter.a * input[i] + filter.b * (input[i - 1] + input[i - 2]);
+    }
+}
+```
+Notes:
+- 10-20 18:19 [compile] must use 'struct' tag to refer to type 'LowpassFilter' in this scope — plan: Change `void FUN_001f9ca8(float*input, int length, LowpassFilter filter)` to `void FUN_001f9ca8(float*input, int length, struct LowpassFilter filter)` — still fails: no member named 'a' in 'LowpassFilter'
+- 10-20 18:20 [compile] no member named 'a' in 'LowpassFilter' — plan: Change `filter.a` to `filter.alpha` in line 5. — still fails: no member named 'b' in 'LowpassFilter'
+- 10-20 18:20 [compile] no member named 'b' in 'LowpassFilter' — plan: Change `filter.b` to `filter.beta` in line 5. — still fails: no member named 'beta' in 'LowpassFilter'
+- 10-20 18:21 [compile] no member named 'beta' in 'LowpassFilter' — plan: Change `filter.beta` to `filter.b` in line 5. — still fails: no member named 'b' in 'LowpassFilter'
+- 10-20 18:21 [compile] no member named 'b' in 'LowpassFilter' — plan: Change `filter.b` to `filter.beta` in line 5. — still fails: no member named 'beta' in 'LowpassFilter'
+- 10-20 18:22 [compile] no member named 'beta' in 'LowpassFilter' — plan: Change `filter.beta` to `filter.b` in line 5. — still fails: no member named 'b' in 'LowpassFilter'
+
+#### FUN_001fadc4 — funcs/FUN_001fadc4.cpp, Ghidra 1fadc4, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:5:28: error: no member named 'buffer' in 'LowpassFilter'
+    5 |         float sum = filter.buffer[filter.bufferSize - 1];
+      |                     ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:5:42: error: no member named 'bufferSize' in 'LowpassFilter'
+    5 |         float sum = filter.buffer[filter.bufferSize - 1];
+      |                                   ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:6:32: error: no member named 'bufferSize' in 'LowpassFilter'
+    6 |         for (int j=0; j<filter.bufferSize - 1; j++) {
+      |                         ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:7:27: error: no member named 'input' in 'LowpassFilter'
+    7 |             sum += filter.input[i + j];
+      |                    ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:9:16: error: no member named 'output' in 'LowpassFilter'
+    9 |         filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
+      |         ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:9:42: error: no member named 'buffer' in 'LowpassFilter'
+    9 |         filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
+      |                                   ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:9:56: error: no member named 'bufferSize' in 'LowpassFilter'
+    9 |         filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
+      |                                                 ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:9:82: error: no member named 'bufferSize' in 'LowpassFilter'
+    9 |         filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
+      |                                                                           ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:10:16: error: no member named 'buffer' in 'LowpassFilter'
+   10 |         filter.buffer[i] = input[i];
+      |         ~~~~~~ ^
+9 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001fadc4(LowpassFilter &filter, float *input, float *output, int size) {
+    for (int i = 0; i < size; i++) {
+        float sum = filter.buffer[filter.bufferSize - 1];
+        for (int j = 0; j < filter.bufferSize - 1; j++) {
+            sum += filter.input[i + j];
+        }
+        filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
+        filter.buffer[i] = input[i];
+    }
+}
+```
+Notes:
+- 10-20 18:21 [compile] must use 'struct' tag to refer to type 'LowpassFilter' in this scope — plan: Change line 3 from `void FUN_001fadc4(LowpassFilter &filter, float *input, float *output, int size) {` to `void FUN_001fadc4(struct LowpassFilter &filter, float — still fails: no member named 'buffer' in 'LowpassFilter'
+- 10-20 18:22 [compile] no member named 'buffer' in 'LowpassFilter' — plan: Change line 5 from `float sum = filter.buffer[filter.bufferSize - 1];` to `float sum = filter.buffer[filter.bufferSize - 2];` — still fails: no member named 'buffer' in 'LowpassFilter'
+- 10-20 18:22 [compile] that edit didn't help — undone.
+- 10-20 18:22 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:23 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:23 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:24 [compile] the model suggested an edit that already failed — skipped.
+
+#### FUN_001fec98 — funcs/FUN_001fec98.cpp, Ghidra 1fec98, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fec98.cpp:7:33: error: no member named 'input' in 'LowpassFilter'
+    7 |     for (int i = 0; i < filter->input->size(); ++i){
+      |                         ~~~~~~  ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fec98.cpp:8:37: error: no member named 'input' in 'LowpassFilter'
+    8 |         float inputSample = filter->input->at(i);
+      |                             ~~~~~~  ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fec98.cpp:9:38: error: no member named 'output' in 'LowpassFilter'
+    9 |         float outputSample = filter->output->at(i);
+      |                              ~~~~~~  ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fec98.cpp:11:78: error: no member named 'output' in 'LowpassFilter'
+   11 |         float filteredSample = (inputSample + outputSample) * 0.5f - filter->output->at(i - 1);
+      |                                                                      ~~~~~~  ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fec98.cpp:13:59: error: no member named 'cutoffFrequency' in 'LowpassFilter'
+   13 |         filteredSample = (filteredSample * dt) + (filter->cutoffFrequency / sampleRate);
+      |                                                   ~~~~~~  ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fec98.cpp:15:17: error: no member named 'output' in 'LowpassFilter'
+   15 |         filter->output->at(i) = filteredSample;
+      |         ~~~~~~  ^
+6 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001fec98(LowpassFilter *filter) {
+    float sampleRate = 44100.0f;
+    float dt = 1.0f / sampleRate;
+
+    for (int i = 0; i < filter->input->size(); ++i) {
+        float inputSample = filter->input->at(i);
+        float outputSample = filter->output->at(i);
+
+        float filteredSample = (inputSample + outputSample) * 0.5f - filter->output->at(i - 1);
+
+        filteredSample = (filteredSample * dt) + (filter->cutoffFrequency / sampleRate);
+
+        filter->output->at(i) = filteredSample;
+    }
+}
+```
+Notes:
+- 10-20 19:32 [compile] must use 'struct' tag to refer to type 'LowpassFilter' in this scope — plan: Change line 4 to `float sampleRate = 44100.0f;` — still fails: no member named 'input' in 'LowpassFilter'
+- 10-20 19:33 [compile] no member named 'input' in 'LowpassFilter' — plan: Change line 7 to `for (int i = 0; i < filter->input.size(); ++i) {` — still fails: no member named 'input' in 'LowpassFilter'
+- 10-20 19:33 [compile] that edit didn't help — undone.
+- 10-20 19:33 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:34 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:34 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:35 [compile] the model suggested an edit that already failed — skipped.
+
+#### FUN_0020e40c — funcs/FUN_0020e40c.cpp, Ghidra 20e40c, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0020e40c.cpp:11:16: error: no member named 'beta' in 'LowpassFilter'
+   11 |         filter.beta = 1.0f - filter.alpha;
+      |         ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0020e40c.cpp:12:62: error: no member named 'beta' in 'LowpassFilter'
+   12 |                 output[i] = filter.alpha * input[i] + filter.beta * (input[i - 1] + output[i - 1]);
+      |                                                       ~~~~~~ ^
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_00037ecc(long param_1) {
-    void *pvVar1;
+void FUN_0020e40c(float *input, float *output, int length) {
+    LowpassFilter filter;
+    filter.a = 0.95f;
+    filter.b = 1.0f - filter.a;
 
-    if ((DAT_004532f8 & 1) == 0) {
-        pvVar1 = FUN_000041f4(param_1);
+    for (int i = 0; i < length; i++) {
+        output[i] = filter.a * input[i] + filter.b * (input[i - 1] + output[i - 1]);
     }
-    pvVar1 = FUN_0021608c(DAT_004532f0, param_1 << 2);
-    FUN_00037f68();
 }
 ```
 Notes:
-- 10-20 18:09 [compile] assigning to 'void *' from incompatible type 'void' — plan: Change `pvVar1 = FUN_000041f4(param_1);` to `pvVar1 = (void *)FUN_000041f4(param_1);` — still fails: cannot cast from type 'void' to pointer type 'void *'
+- 10-20 18:25 [compile] must use 'struct' tag to refer to type 'LowpassFilter' in this scope — plan: Change line 4 from `LowpassFilter filter;` to `struct LowpassFilter filter;`. — still fails: no member named 'a' in 'LowpassFilter'
+- 10-20 18:26 [compile] no member named 'a' in 'LowpassFilter' — plan: Change line 5 from `float filter.a = 0.95f;` to `filter.alpha = 0.95f;`. — still fails: no member named 'b' in 'LowpassFilter'
+- 10-20 18:26 [compile] no member named 'b' in 'LowpassFilter' — plan: Change line 6 from `filter.b = 1.0f - filter.a;` to `filter.beta = 1.0f - filter.alpha;`. — still fails: no member named 'beta' in 'LowpassFilter'
+- 10-20 18:27 [compile] no member named 'beta' in 'LowpassFilter' — plan: Change line 6 from `filter.beta = 1.0f - filter.alpha;` to `beta = 1.0f - alpha;`. — still fails: use of undeclared identifier 'beta'
+- 10-20 18:27 [compile] no member named 'a' in 'LowpassFilter' — plan: Change line 8 from `beta = 1.0f - alpha;` to `filter.beta = 1.0f - filter.alpha;`. — still fails: no member named 'beta' in 'LowpassFilter'
 
-#### FUN_0020e450 — funcs/FUN_0020e450.cpp, Ghidra 20e450, 6 model attempt(s)
+### Quarantined — 10 × redefinition of 'X'
 
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0020e450.cpp:6:12: error: cannot cast from type 'void' to pointer type 'long *'
-    6 |   puVar1 = (long*)FUN_0020e018();
-      |            ^~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
+All: FUN_001e1ed8 (1e1ed8), FUN_001f9bc4 (1f9bc4), FUN_001f9dec (1f9dec), FUN_002068e0 (2068e0), FUN_0020dff0 (20dff0), FUN_00213f0c (213f0c), FUN_00225cc4 (225cc4), FUN_00225dc0 (225dc0), _fwrite (3862d8), _localtime_r (3863e0)
 
-uint64_t FUN_0020e450(void) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_0020e018();
-  return *puVar1;
-}
-```
-Notes:
-- 10-20 18:25 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `uint64_t *puVar1 = (uint64_t *)FUN_0020e018();` to `long *puVar1 = (long *)FUN_0020e018();` — still fails: cannot cast from type 'void' to pointer type 'long *'
-- 10-20 18:26 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `long *puVar1 = (long *)FUN_0020e018();` to `uint64_t *puVar1 = (uint64_t*)FUN_0020e018();` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-- 10-20 18:26 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `uint64_t *puVar1 = (uint64_t *)FUN_0020e018();` to `long *puVar1 = (long *)FUN_0020e018();` — still fails: cannot cast from type 'void' to pointer type 'long *'
-- 10-20 18:27 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `long *puVar1 = (long *)FUN_0020e018();` to `uint64_t *puVar1 = (uint64_t*)FUN_0020e018();` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-- 10-20 18:27 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `uint64_t *puVar1 = (uint64_t *)FUN_0020e018();` to `long *puVar1 = (long *)FUN_0020e018();` — still fails: cannot cast from type 'void' to pointer type 'long *'
-- 10-20 18:27 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `long *puVar1 = (long *)FUN_0020e018();` to `uint64_t *puVar1 = (uint64_t*)FUN_0020e018();` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-- 10-20 18:27 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-
-#### FUN_0021af98 — funcs/FUN_0021af98.cpp, Ghidra 21af98, 10 model attempt(s)
+#### FUN_001e1ed8 — funcs/FUN_001e1ed8.cpp, Ghidra 1e1ed8, 6 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021af98.cpp:17:14: error: cannot cast from type 'void' to pointer type 'long *'
-   17 |     puVar2 = (long *)FUN_0021ad3c(0x20);
-      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021af98.cpp:20:13: error: no matching function for call to 'FUN_000043fc'
-   20 |     lVar3 = FUN_000043fc(param_1);
-      |             ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1445:21: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 1445 | extern "C" uint64_t FUN_000043fc(uint64_t *);
-      |                     ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1595:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
- 1595 | void FUN_000043fc(float *, float *, int);
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021af98.cpp:23:24: error: use of undeclared identifier '___cxa_allocate_exception'; did you mean '__cxxabiv1::__cxa_allocate_exception'?
-   23 |       plVar4 = (long *)___cxa_allocate_exception(0x18);
-      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~
-      |                        __cxxabiv1::__cxa_allocate_exception
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__exception/exception_ptr.h:33:36: note: '__cxxabiv1::__cxa_allocate_exception' declared here
-   33 | _LIBCPP_OVERRIDABLE_FUNC_VIS void* __cxa_allocate_exception(size_t) throw();
-      |                                    ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021af98.cpp:25:7: error: use of undeclared identifier '___cxa_throw'
-   25 |       ___cxa_throw(plVar4, &PTR_vtable_00444fa0, FUN_0021ae4c);
-      |       ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021af98.cpp:28:3: error: void function 'FUN_0021af98' should not return a value [-Wreturn-mismatch]
-   28 |   return param_1;
-      |   ^      ~~~~~~~
-5 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0021af98(long *param_1, short *param_2) {
-    uint64_t PTR_vtable_00444fa0 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t FUN_0021ae4c = 0; // auto-declared (undeclared in the rewrite)
-
-  int iVar1;
-  undefined8 *puVar2;
-  long lVar3;
-  long *plVar4;
-
-  if ((param_2 == (short *)0x0) || (*param_2 == 0)) {
-    FUN_0021aa70(param_1);
-  }
-  else {
-    puVar2 = (undefined8 *)FUN_0021ad3c(0x20);
-    FUN_0021ad68(puVar2, param_2, 0xffffffff);
-    FUN_0021adb4(param_1, (long)puVar2);
-    lVar3 = FUN_000043fc(param_1);
-    iVar1 = FUN_0021ae18(lVar3);
-    if (iVar1 == 0) {
-      plVar4 = (long *)___cxa_allocate_exception(0x18);
-      FUN_0021ae2c(plVar4);
-      ___cxa_throw(plVar4, &PTR_vtable_00444fa0, FUN_0021ae4c);
-    }
-  }
-  return param_1;
-}
-```
-Notes:
-- 10-20 17:34 [compile] use of undeclared identifier 'FUN_0021aa70' — plan: Change `FUN_0021aa70(param_1);` on line 14 to `FUN_0021aa70((long*)param_1);`. — still fails: use of undeclared identifier 'FUN_0021aa70'
-- 10-20 17:34 [compile] that edit didn't help — undone.
-- 10-20 17:35 [compile] use of undeclared identifier 'FUN_0021aa70' — plan: Change `FUN_0021aa70(param_1);` on line 14 to `FUN_0021aa70((long*)param_1);`. — still fails: use of undeclared identifier 'FUN_0021aa70'
-- 10-20 17:35 [compile] that edit didn't help — undone.
-- 10-20 17:35 [compile] use of undeclared identifier 'FUN_0021aa70' — plan: Change `FUN_0021aa70(param_1);` on line 14 to `FUN_0021aa70((long*)param_1);`. — still fails: use of undeclared identifier 'FUN_0021aa70'
-- 10-20 17:35 [compile] that edit didn't help — undone.
-- 10-20 17:36 [compile] use of undeclared identifier 'FUN_0021aa70' — plan: Change `FUN_0021aa70(param_1);` on line 14 to `FUN_0021aa70((long*)param_1);`. — still fails: use of undeclared identifier 'FUN_0021aa70'
-- 10-20 17:36 [compile] that edit didn't help — undone.
-- 10-20 17:37 [compile] use of undeclared identifier 'FUN_0021aa70' — plan: Change `FUN_0021aa70(param_1);` on line 14 to `FUN_0021aa70((long*)param_1);`. — still fails: use of undeclared identifier 'FUN_0021aa70'
-- 10-20 17:37 [compile] that edit didn't help — undone.
-- 10-20 18:04 [compile] cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *') — plan: Change `FUN_0021aa70((long*)param_1);` on line 14 to `FUN_0021aa70((long*)param_1);`. — still fails: cannot cast from type 'void' to pointer type 'long *'
-
-#### FUN_0021b230 — funcs/FUN_0021b230.cpp, Ghidra 21b230, 3 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021b230.cpp:24:14: error: cannot cast from type 'void' to pointer type 'long *'
-   24 |     puVar4 = (long*)FUN_0021ad3c(0x20);
-      |              ^~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021b230.cpp:27:13: error: no matching function for call to 'FUN_000043fc'
-   27 |     lVar5 = FUN_000043fc(param_1);
-      |             ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1445:21: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 1445 | extern "C" uint64_t FUN_000043fc(uint64_t *);
-      |                     ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1595:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
- 1595 | void FUN_000043fc(float *, float *, int);
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021b230.cpp:30:24: error: use of undeclared identifier '___cxa_allocate_exception'; did you mean '__cxxabiv1::__cxa_allocate_exception'?
-   30 |       plVar6 = (long *)___cxa_allocate_exception(0x18);
-      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~
-      |                        __cxxabiv1::__cxa_allocate_exception
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__exception/exception_ptr.h:33:36: note: '__cxxabiv1::__cxa_allocate_exception' declared here
-   33 | _LIBCPP_OVERRIDABLE_FUNC_VIS void* __cxa_allocate_exception(size_t) throw();
-      |                                    ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021b230.cpp:32:7: error: use of undeclared identifier '___cxa_throw'
-   32 |       ___cxa_throw(plVar6, &PTR_vtable_00444fa0, FUN_0021ae4c);
-      |       ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021b230.cpp:34:13: error: no matching function for call to 'FUN_000043fc'
-   34 |     lVar5 = FUN_000043fc(param_1);
-      |             ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1445:21: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 1445 | extern "C" uint64_t FUN_000043fc(uint64_t *);
-      |                     ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1595:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
- 1595 | void FUN_000043fc(float *, float *, int);
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~
-5 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0021b230(long *param_1, wchar_t *param_2) {
-  int iVar1;
-  int iVar2;
-  size_t sVar3;
-  undefined8 *puVar4;
-  long lVar5;
-  long *plVar6;
-  wchar_t local_58;
-  int local_54;
-  short *local_50;
-
-  sVar3 = _wcslen(param_2);
-  iVar1 = (int)sVar3;
-  if (iVar1 == 0) {
-    FUN_0021aa70(param_1);
-  }
-  else {
-    puVar4 = (undefined8 *)FUN_0021ad3c(0x20);
-    FUN_0021ad68(puVar4, (short *)0x0, iVar1 << 1 | 1);
-    FUN_0021adb4(param_1, (long)puVar4);
-    lVar5 = FUN_000043fc(param_1);
-    iVar2 = FUN_0021ae18(lVar5);
-    if (iVar2 == 0) {
-      plVar6 = (long *)___cxa_allocate_exception(0x18);
-      FUN_0021ae2c(plVar6);
-      ___cxa_throw(plVar6, &PTR_vtable_00444fa0, FUN_0021ae4c);
-    }
-    lVar5 = FUN_000043fc(param_1);
-    local_50 = (short *)FUN_0021ae6c(lVar5);
-    for (local_54 = 0; local_54 < iVar1; local_54 = local_54 + 1) {
-      local_58 = param_2[local_54];
-      if (0xffff < (uint)local_58) {
-        *local_50 = (short)((uint)(local_58 + L'\xffff0000') >> 10) + -0x2800;
-        local_58 = local_58 + L'\xffff0000' & 0x3ffU | 0xdc00;
-        local_50 = local_50 + 1;
-      }
-      *local_50 = (short)local_58;
-      local_50 = local_50 + 1;
-    }
-    *local_50 = 0;
-  }
-}
-```
-Notes:
-- 10-20 18:33 [compile] use of undeclared identifier '_wcslen'; did you mean 'wcslen'? — plan: Change line 18 from `_wcslen(param_2)` to `wcslen(param_2)`. — still fails: cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *')
-- 10-20 18:33 [compile] cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-20 18:34 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change line 24 from `long* puVar4 = (long*)FUN_0021ad3c(0x20);` to `undefined8* puVar4 = FUN_0021ad3c(0x20);`. — still fails: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-- 10-20 18:34 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — plan: Change line 24 from `long* puVar4 = (long*)FUN_0021ad3c(0x20);` to `undefined8* puVar4 = FUN_0021ad3c(0x20);`. — still fails: cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *')
-- 10-20 18:34 [compile] cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *') — fixed with a learned rule.
-
-#### FUN_0021f404 — funcs/FUN_0021f404.cpp, Ghidra 21f404, 6 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021f404.cpp:14:14: error: cannot cast from type 'void' to pointer type 'void *'
-   14 |     plVar1 = (void*)FUN_0021dd18(alStack_48, local_38);
-      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021f404.cpp:15:14: error: assigning to 'long *' from incompatible type 'void'
-   15 |     plVar1 = FUN_000b50b8((long)alStack_48);
-      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e1ed8.cpp:7:14: error: redefinition of 'uVar1'
+    7 |   undefined8 uVar1 = (undefined8)FUN_001e1ccc();
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e1ed8.cpp:4:14: note: previous definition is here
+    4 |   undefined8 uVar1;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e1ed8.cpp:7:22: error: C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed
+    7 |   undefined8 uVar1 = (undefined8)FUN_001e1ccc();
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_0021f404(undefined8 *param_1, undefined8 *param_2, undefined8 *param_3) {
-    long *plVar1;
-    long alStack_48 [2];
-    undefined8 *local_38;
-    undefined8 *local_30;
-    undefined8 *puStack_28;
+uint64_t FUN_001e1ed8(void) {
+  undefined8 uVar1;
+  undefined8 local_18;
 
-    local_38 = param_3;
-    local_30 = param_2;
-    puStack_28 = param_1;
-
-    plVar1 = FUN_0021dd18(alStack_48, local_38);
-    plVar1 = FUN_000b50b8((long)alStack_48);
-
-    return;
+  uVar1 = FUN_001e1ccc();
+  FUN_001e1e98(&local_18, uVar1);
+  return local_18;
 }
 ```
 Notes:
-- 10-20 18:18 [compile] assigning to 'long *' from incompatible type 'void' — plan: Change `plVar1 = FUN_0021dd18(alStack_48, local_38);` to `plVar1 = (void *)FUN_0021dd18(alStack_48, local_38);` — still fails: cannot cast from type 'void' to pointer type 'void *'
-- 10-20 18:18 [compile] cannot cast from type 'void' to pointer type 'void *' — plan: Change `plVar1 = FUN_0021dd18(alStack_48, local_38);` to `plVar1 = (void *)FUN_0021dd18(alStack_48, local_38);` — still fails: assigning to 'long *' from incompatible type 'void'
-- 10-20 18:19 [compile] assigning to 'long *' from incompatible type 'void' — plan: Change `plVar1 = FUN_0021dd18(alStack_48, local_38);` to `plVar1 = (void *)FUN_0021dd18(alStack_48, local_38);` — still fails: cannot cast from type 'void' to pointer type 'void *'
-- 10-20 18:19 [compile] cannot cast from type 'void' to pointer type 'void *' — plan: Change `plVar1 = (void *)FUN_0021dd18(alStack_48, local_38);` to `plVar1 = FUN_0021dd18(alStack_48, local_38);` — still fails: assigning to 'long *' from incompatible type 'void'
-- 10-20 18:20 [compile] assigning to 'long *' from incompatible type 'void' — plan: Change `plVar1 = FUN_0021dd18(alStack_48, local_38);` to `plVar1 = (void *)FUN_0021dd18(alStack_48, local_38);` — still fails: cannot cast from type 'void' to pointer type 'void *'
-- 10-20 18:20 [compile] cannot cast from type 'void' to pointer type 'void *' — plan: Change `plVar1 = (void *)FUN_0021dd18(alStack_48, local_38);` to `plVar1 = FUN_0021dd18(alStack_48, local_38);` — still fails: assigning to 'long *' from incompatible type 'void'
-- 10-20 18:20 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
-
-#### FUN_00229274 — funcs/FUN_00229274.cpp, Ghidra 229274, 6 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00229274.cpp:7:12: error: cannot cast from type 'void' to pointer type 'long *'
-    7 |   puVar1 = (long *)FUN_00228f14(param_1 + 0x238);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-uint32_t FUN_00229274(long param_1) {
-  undefined8 *puVar1;
-  undefined4 local_28;
-
-  puVar1 = (undefined8 *)FUN_00228f14(param_1 + 0x238);
-  if ((int)((ulong)*puVar1 >> 0x20) == -1) {
-    local_28 = (undefined4)*puVar1;
-  }
-  else {
-    local_28 = 0xffffffff;
-  }
-  return local_28;
-}
-```
-Notes:
-- 10-20 18:31 [compile] cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *') — plan: Change `undefined8 *puVar1;` to `long *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'long *'
-- 10-20 18:32 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `long *puVar1;` to `undefined8 *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *')
-- 10-20 18:33 [compile] cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *') — plan: Change `undefined8 *puVar1;` to `long *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'long *'
-- 10-20 18:33 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `long *puVar1;` to `undefined8 *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *')
-- 10-20 18:33 [compile] cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *') — plan: Change `undefined8 *puVar1;` to `long *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'long *'
-
-#### FUN_002292c8 — funcs/FUN_002292c8.cpp, Ghidra 2292c8, 4 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_002292c8.cpp:6:12: error: cannot cast from type 'void' to pointer type 'long *'
-    6 |   puVar1 = (long*)FUN_00228f14(param_1+0x238);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-bool FUN_002292c8(long param_1,int param_2) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_00228f14(param_1 + 0x238);
-  return (int)*puVar1 == param_2 && (int)((uint64_t)*puVar1 >> 0x20) != -1;
-}
-```
-Notes:
-- 10-20 18:40 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `uint64_t *puVar1;` to `long *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'long *'
-- 10-20 18:40 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `long *puVar1;` to `uint64_t *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-- 10-20 18:41 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `uint64_t *puVar1;` to `long *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'long *'
-- 10-20 18:41 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `long *puVar1;` to `uint64_t *puVar1;` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-- 10-20 18:41 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-20 18:41 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-20 18:41 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-
-### Quarantined — 9 × redefinition of 'X'
-
-All: FUN_001f9bc4 (1f9bc4), FUN_001f9dec (1f9dec), FUN_002068e0 (2068e0), FUN_0020dff0 (20dff0), FUN_00213f0c (213f0c), FUN_00225cc4 (225cc4), FUN_00225dc0 (225dc0), _fwrite (3862d8), _localtime_r (3863e0)
+- 10-20 19:29 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 7 to ` undefined8 uVar1 = (undefined8)FUN_001e1ccc();` — still fails: C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed
+- 10-20 19:30 [compile] C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed — plan: Change line 7 to `undefined8 uVar1 = FUN_001e1ccc();` — still fails: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 19:30 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 7 to `undefined8 uVar1 = FUN_001e1ccc();` — still fails: C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed
+- 10-20 19:31 [compile] C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed — plan: Change line 7 to `undefined8 uVar1 = FUN_001e1ccc();` — still fails: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 19:31 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 7 to `undefined8 uVar1 = (undefined8)FUN_001e1ccc();` — still fails: redefinition of 'uVar1'
+- 10-20 19:32 [compile] redefinition of 'uVar1' — plan: Change line 7 to `undefined8 uVar1 = FUN_001e1ccc();` — still fails: redefinition of 'uVar1'
+- 10-20 19:32 [compile] that edit didn't help — undone.
 
 #### FUN_001f9bc4 — funcs/FUN_001f9bc4.cpp, Ghidra 1f9bc4, 5 model attempt(s)
 
@@ -1705,255 +1954,254 @@ Notes:
 - 10-20 18:25 [compile] the model suggested an edit that already failed — skipped.
 - 10-20 18:26 [compile] the model suggested an edit that already failed — skipped.
 
-#### _fwrite — funcs/_fwrite.cpp, Ghidra 3862d8, 4 model attempt(s)
+### Quarantined — 6 × C-style cast from 'X' to 'X' is not allowed
+
+All: FUN_001dc410 (1dc410), FUN_001ff028 (1ff028), FUN_00208b9c (208b9c), FUN_0021ea38 (21ea38), FUN_00223e50 (223e50), FUN_0022afa8 (22afa8)
+
+#### FUN_001dc410 — funcs/FUN_001dc410.cpp, Ghidra 1dc410, 6 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/_fwrite.cpp:10:10: error: redefinition of 'sVar1'
-   10 |   size_t sVar1 = (*(size_t (*)(void))PTR__fwrite_00450708)();
-      |          ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/_fwrite.cpp:8:10: note: previous definition is here
-    8 |   size_t sVar1;
-      |          ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001dc410.cpp:7:32: error: C-style cast from 'void' to 'long long' is not allowed
+    7 |     long filteredValue = (long)(long long)FUN_001dbe84((undefined8 *)(param_1 + i * 0x28));
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-size_t _fwrite(void *param_1,size_t param_2,size_t param_3,FILE *param_4) {
-  size_t sVar1;
+void FUN_001dc410(long param_1, ulong param_2) {
+  std::vector<long> filteredData;
 
-  sVar1 = (*(void *)PTR__fwrite_00450700)();
-  return sVar1;
+  for (long i = 0; i < param_2; ++i) {
+    long filteredValue = FUN_001dbe84((undefined8 *)(param_1 + i * 0x28));
+    filteredData.push_back(filteredValue);
+  }
+
 }
 ```
 Notes:
-- 10-20 18:17 [compile] ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference] — plan: Change line 8 to: `int sVar1 = (*(int (*)(void))PTR__fwrite_00450708)();` — still fails: redefinition of 'sVar1' with a different type: 'int' vs 'size_t' (aka 'unsigned long')
-- 10-20 18:17 [compile] redefinition of 'sVar1' with a different type: 'int' vs 'size_t' (aka 'unsigned long') — plan: Change line 8 to: `size_t sVar1;` — still fails: redefinition of 'sVar1'
-- 10-20 18:17 [compile] redefinition of 'sVar1' — plan: Change line 8 to: `size_t sVar1;` — still fails: redefinition of 'sVar1'
-- 10-20 18:17 [compile] that edit didn't help — undone.
-- 10-20 18:18 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:29 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — plan: Change line 7 to `long filteredValue = (long)FUN_001dbe84((undefined8 *)(param_1 + i * 0x28));` — still fails: C-style cast from 'void' to 'long' is not allowed
+- 10-20 19:30 [compile] C-style cast from 'void' to 'long' is not allowed — plan: Change line 7 to `long filteredValue = (long)FUN_001dbe84((undefined8 *)(param_1 + i * 0x28));` — still fails: C-style cast from 'void' to 'long long' is not allowed
 
-### Quarantined — 6 × no member named 'X' in 'X'
-
-All: FUN_00044518 (44518), FUN_001f9ca8 (1f9ca8), FUN_001fadc4 (1fadc4), FUN_0020e40c (20e40c), FUN_0021b1d8 (21b1d8), FUN_0021df24 (21df24)
-
-#### FUN_00044518 — funcs/__Z12FUN_00044518P11FilterStatei.cpp, Ghidra 44518, 6 model attempt(s)
+#### FUN_001ff028 — funcs/FUN_001ff028.cpp, Ghidra 1ff028, 6 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00044518P11FilterStatei.cpp:4:12: error: no member named 'state2' in 'FilterState'
-    4 |     state->state2 = 0.0f;
-      |     ~~~~~  ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00044518P11FilterStatei.cpp:5:12: error: no member named 'state2' in 'FilterState'
-    5 |     state->state2 = 0.0f;
-      |     ~~~~~  ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00044518P11FilterStatei.cpp:8:9: error: no matching function for call to 'FUN_00057184'
-    8 |         FUN_00057184(state, sample);
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001ff028.cpp:7:13: error: C-style cast from 'void' to 'long' is not allowed
+    7 |     lVar1 = (long)FUN_002066a0();
+      |             ^~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001ff028.cpp:9:28: error: no matching function for call to 'FUN_000b5390'
+    9 |     puVar2 = (undefined8 *)FUN_000b5390(param_1);
+      |                            ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:15481:6: note: candidate function not viable: requires 2 arguments, but 1 was provided
+ 15481 | void FUN_000b5390(long *, int);
+       |      ^            ~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001ff028.cpp:12:9: error: use of undeclared identifier 'FUN_002085e8'
+   12 |         FUN_002085e8(lVar1, (byte *)"Exception", puVar2);
       |         ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:7361:11: note: candidate function not viable: requires 1 argument, but 2 were provided
- 7361 | uint64_t *FUN_00057184(uint64_t *);
-      |           ^            ~~~~~~~~~~
 3 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-FilterState FUN_00044518(FilterState *state, int sample) {
-    state->state1 = 0;
-    state->state2 = 0.0f;
+void FUN_001ff028(long param_1) {
+    long lVar1;
+    undefined8 *puVar2;
 
-    if (sample != 0) {
-        FUN_00057184(state, sample);
+    lVar1 = FUN_002066a0();
+
+    puVar2 = (undefined8 *)FUN_000b5390(param_1);
+
+    if (lVar1 != 0) {
+        FUN_002085e8(lVar1, (byte *)"Exception", puVar2);
     }
-
-    return *state;
 }
 ```
 Notes:
-- 10-20 18:32 [compile] no member named 'state1' in 'FilterState' — plan: Change line 4 to: ` state->state1 = 0;` — still fails: no member named 'state1' in 'FilterState'
-- 10-20 18:32 [compile] that edit didn't help — undone.
-- 10-20 18:33 [compile] no member named 'state1' in 'FilterState' — plan: Change line 4 to: `state->state1 = 0;` — still fails: no member named 'state2' in 'FilterState'
-- 10-20 18:34 [compile] no member named 'state2' in 'FilterState' — plan: Change line 4 to: `state->state2 = 0.0f;` — still fails: no member named 'state1' in 'FilterState'
-- 10-20 18:34 [compile] that edit didn't help — undone.
+- 10-20 18:38 [compile] assigning to 'long' from incompatible type 'void' — plan: Change line 7 to: `long lVar1 = (long)FUN_002066a0();` — still fails: C-style cast from 'void' to 'long' is not allowed
+- 10-20 18:38 [compile] C-style cast from 'void' to 'long' is not allowed — plan: Change line 7 to: `long lVar1 = (long)FUN_002066a0();` — still fails: redefinition of 'lVar1'
+- 10-20 18:38 [compile] that edit didn't help — undone.
+- 10-20 18:39 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:39 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:40 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:40 [compile] the model suggested an edit that already failed — skipped.
 
-#### FUN_001f9ca8 — funcs/FUN_001f9ca8.cpp, Ghidra 1f9ca8, 6 model attempt(s)
+#### FUN_00208b9c — funcs/FUN_00208b9c.cpp, Ghidra 208b9c, 6 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001f9ca8.cpp:5:53: error: no member named 'b' in 'LowpassFilter'
-    5 |         input[i] = filter.alpha * input[i] + filter.b * (input[i - 1] + input[i - 2]);
-      |                                              ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208b9c.cpp:6:16: error: C-style cast from 'void' to 'long long' is not allowed
+    6 |   iVar1 = (int)(long long)FUN_00208bd4(param_1);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_001f9ca8(float *input, int length, LowpassFilter filter) {
-    for (int i = 0; i < length; i++) {
-        input[i] = filter.a * input[i] + filter.b * (input[i - 1] + input[i - 2]);
-    }
+bool FUN_00208b9c(uint64_t *param_1) {
+  int iVar1;
+
+  iVar1 = FUN_00208bd4(param_1);
+  return iVar1 != 0;
 }
 ```
 Notes:
-- 10-20 18:19 [compile] must use 'struct' tag to refer to type 'LowpassFilter' in this scope — plan: Change `void FUN_001f9ca8(float*input, int length, LowpassFilter filter)` to `void FUN_001f9ca8(float*input, int length, struct LowpassFilter filter)` — still fails: no member named 'a' in 'LowpassFilter'
-- 10-20 18:20 [compile] no member named 'a' in 'LowpassFilter' — plan: Change `filter.a` to `filter.alpha` in line 5. — still fails: no member named 'b' in 'LowpassFilter'
-- 10-20 18:20 [compile] no member named 'b' in 'LowpassFilter' — plan: Change `filter.b` to `filter.beta` in line 5. — still fails: no member named 'beta' in 'LowpassFilter'
-- 10-20 18:21 [compile] no member named 'beta' in 'LowpassFilter' — plan: Change `filter.beta` to `filter.b` in line 5. — still fails: no member named 'b' in 'LowpassFilter'
-- 10-20 18:21 [compile] no member named 'b' in 'LowpassFilter' — plan: Change `filter.b` to `filter.beta` in line 5. — still fails: no member named 'beta' in 'LowpassFilter'
-- 10-20 18:22 [compile] no member named 'beta' in 'LowpassFilter' — plan: Change `filter.beta` to `filter.b` in line 5. — still fails: no member named 'b' in 'LowpassFilter'
+- 10-20 18:29 [compile] assigning to 'int' from incompatible type 'void' — plan: Change `iVar1 = FUN_00208bd4(param_1);` to `iVar1 = (int)FUN_00208bd4(param_1);` — still fails: C-style cast from 'void' to 'int' is not allowed
+- 10-20 18:29 [compile] C-style cast from 'void' to 'int' is not allowed — plan: Change `iVar1 = (int)FUN_00208bd4(param_1);` to `iVar1 = (int)(long long)FUN_00208bd4(param_1);` — still fails: C-style cast from 'void' to 'long long' is not allowed
 
-#### FUN_001fadc4 — funcs/FUN_001fadc4.cpp, Ghidra 1fadc4, 6 model attempt(s)
+#### FUN_0021ea38 — funcs/FUN_0021ea38.cpp, Ghidra 21ea38, 10 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:5:28: error: no member named 'buffer' in 'LowpassFilter'
-    5 |         float sum = filter.buffer[filter.bufferSize - 1];
-      |                     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:5:42: error: no member named 'bufferSize' in 'LowpassFilter'
-    5 |         float sum = filter.buffer[filter.bufferSize - 1];
-      |                                   ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:6:32: error: no member named 'bufferSize' in 'LowpassFilter'
-    6 |         for (int j=0; j<filter.bufferSize - 1; j++) {
-      |                         ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:7:27: error: no member named 'input' in 'LowpassFilter'
-    7 |             sum += filter.input[i + j];
-      |                    ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:9:16: error: no member named 'output' in 'LowpassFilter'
-    9 |         filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
-      |         ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:9:42: error: no member named 'buffer' in 'LowpassFilter'
-    9 |         filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
-      |                                   ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:9:56: error: no member named 'bufferSize' in 'LowpassFilter'
-    9 |         filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
-      |                                                 ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:9:82: error: no member named 'bufferSize' in 'LowpassFilter'
-    9 |         filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
-      |                                                                           ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001fadc4.cpp:10:16: error: no member named 'buffer' in 'LowpassFilter'
-   10 |         filter.buffer[i] = input[i];
-      |         ~~~~~~ ^
-9 errors generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021ea38.cpp:18:18: error: C-style cast from 'void' to 'long long' is not allowed
+   18 |     iVar2 = (int)(long long)FUN_0021b7f4(param_2);
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021ea38.cpp:25:12: error: no matching function for call to 'FUN_00216668'
+   25 |   puVar4 = FUN_00216668("#StringBuffer",
+      |            ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:41971:7: note: candidate function not viable: no known conversion from 'const char[14]' to 'undefined8' (aka 'unsigned long long') for 1st argument
+ 41971 | void *FUN_00216668(undefined8, size_t);
+       |       ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021ea38.cpp:25:12: error: assigning to 'undefined2 *' (aka 'unsigned short *') from incompatible type 'void *'
+   25 |   puVar4 = FUN_00216668("#StringBuffer",
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   26 |                         -(ulong)(uVar1 >> 0x1f) & 0xfffffffe00000000 | (ulong)uVar1 << 1);
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021ea38.cpp:27:16: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'undefined2 *' (aka 'unsigned short *')
+   27 |   param_1[2] = puVar4;
+      |                ^~~~~~
+4 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_001fadc4(LowpassFilter &filter, float *input, float *output, int size) {
-    for (int i = 0; i < size; i++) {
-        float sum = filter.buffer[filter.bufferSize - 1];
-        for (int j = 0; j < filter.bufferSize - 1; j++) {
-            sum += filter.input[i + j];
+void FUN_0021ea38(undefined8 *param_1, short *param_2, uint param_3) {
+    uint64_t DAT_00444fc8 = 0; // auto-declared (undeclared in the rewrite)
+
+  uint uVar1;
+  int iVar2;
+  undefined8 *puVar3;
+  undefined2 *puVar4;
+  uint uVar5;
+
+  puVar3 = FUN_00219d24(param_1);
+  *puVar3 = (undefined8)&DAT_00444fc8;
+  if (param_2 == (short *)0x0) {
+    uVar5 = 1;
+  }
+  else {
+    iVar2 = (int)(long long)FUN_0021b7f4(param_2);
+    uVar5 = iVar2 + 1;
+  }
+  uVar1 = uVar5;
+  if (param_3 != 0xffffffff) {
+    uVar1 = param_3;
+  }
+  puVar4 = FUN_00216668("#StringBuffer",
+                        -(ulong)(uVar1 >> 0x1f) & 0xfffffffe00000000 | (ulong)uVar1 << 1);
+  param_1[2] = puVar4;
+  *(uint *)(param_1 + 3) = uVar1;
+  if (param_2 == (short *)0x0) {
+    *puVar4 = 0;
+  }
+  else {
+    FUN_00215e04(puVar4, param_2, (long)(int)uVar5 << 1);
+  }
+}
+```
+Notes:
+- 10-20 17:30 [compile] use of undeclared identifier 'FUN_00219d24' — plan: Change `puVar3 = FUN_00219d24(param_1);` to `puVar3 = (undefined2*)(param_1);` to fix the undeclared identifier error without altering functionality. — still fails: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from
+- 10-20 17:32 [compile] incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka ' — plan: Change `*puVar3 = &DAT_00444fc8;` to `*puVar3 = (undefined8)&DAT_00444fc8;` to fix the incompatible pointer to integer conversion error without altering functio — still fails: use of undeclared identifier 'FUN_0021b7f4'; did you mean 'FUN_0022bdf4'?
+- 10-20 17:32 [compile] use of undeclared identifier 'FUN_0021b7f4'; did you mean 'FUN_0022bdf4'? — plan: Change `iVar2 = FUN_0021b7f4(param_2);` to `iVar2 = FUN_0022bdf4(param_2);` to fix the use of undeclared identifier error without altering functionality. — still fails: no matching function for call to 'FUN_0022bdf4'
+- 10-20 17:33 [compile] no matching function for call to 'FUN_0022bdf4' — plan: Change `iVar2 = FUN_0022bdf4(param_2);` to `iVar2 = (long)FUN_0022bdf4((long)param_2);` to fix the no matching function error by casting the parameter to long, — still fails: use of undeclared identifier 'FUN_00216668'
+- 10-20 17:34 [compile] use of undeclared identifier 'FUN_00216668' — plan: Change `puVar4 = FUN_00216668("#StringBuffer",` to `puVar4 = (undefined8*)FUN_00216668("#StringBuffer",` to fix the use of undeclared identifier error by explic — still fails: use of undeclared identifier 'FUN_00216668'
+- 10-20 17:34 [compile] that edit didn't help — undone.
+- 10-20 17:55 [compile] incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka ' — plan: Change `*puVar3 = &DAT_00444fc8;` to `*puVar3 = (undefined8)&DAT_00444fc8;` to fix the incompatible pointer to integer conversion error by explicitly casting th — still fails: assigning to 'int' from incompatible type 'void'
+- 10-20 17:56 [compile] assigning to 'int' from incompatible type 'void' — plan: Change `iVar2 = FUN_0021b7f4(param_2);` to `iVar2 = (int)FUN_0021b7f4(param_2);` to fix the assigning to 'int' from incompatible type 'void' error by explicitly — still fails: C-style cast from 'void' to 'int' is not allowed
+- 10-20 17:57 [compile] C-style cast from 'void' to 'int' is not allowed — plan: Change `iVar2 = (int)FUN_0021b7f4(param_2);` to `iVar2 = (int)(long)FUN_0021b7f4(param_2);` to fix the C-style cast from 'void' to 'int' error by using a long c — still fails: C-style cast from 'void' to 'long' is not allowed
+- 10-20 17:58 [compile] C-style cast from 'void' to 'long' is not allowed — plan: Change `iVar2 = (int)(long)FUN_0021b7f4(param_2);` to `iVar2 = (int)(long long)FUN_0021b7f4(param_2);` to fix the C-style cast from 'void' to 'long' error using — still fails: C-style cast from 'void' to 'long long' is not allowed
+
+#### FUN_00223e50 — funcs/FUN_00223e50.cpp, Ghidra 223e50, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00223e50.cpp:15:26: error: C-style cast from 'void' to 'long long' is not allowed
+   15 |             lVar1 = (int)(long long)FUN_00037ecc((long)param_2);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00223e50(long *param_1, int param_2) {
+    long lVar1;
+
+    if (param_2 != (int)param_1[1]) {
+        if (*param_1 != 0) {
+            FUN_00037650((void *)*param_1);
+            *(undefined4 *)(param_1 + 1) = 0;
+            *param_1 = 0;
         }
-        filter.output[i] = (sum - filter.buffer[filter.bufferSize - 2]) / filter.bufferSize;
-        filter.buffer[i] = input[i];
+        if (param_2 != 0) {
+            *(undefined4 *)(param_1 + 1) = 0;
+            *param_1 = 0;
+            lVar1 = FUN_00037ecc((long)param_2);
+            *param_1 = lVar1;
+            *(int *)(param_1 + 1) = param_2;
+        }
     }
+    return;
 }
 ```
 Notes:
-- 10-20 18:21 [compile] must use 'struct' tag to refer to type 'LowpassFilter' in this scope — plan: Change line 3 from `void FUN_001fadc4(LowpassFilter &filter, float *input, float *output, int size) {` to `void FUN_001fadc4(struct LowpassFilter &filter, float — still fails: no member named 'buffer' in 'LowpassFilter'
-- 10-20 18:22 [compile] no member named 'buffer' in 'LowpassFilter' — plan: Change line 5 from `float sum = filter.buffer[filter.bufferSize - 1];` to `float sum = filter.buffer[filter.bufferSize - 2];` — still fails: no member named 'buffer' in 'LowpassFilter'
-- 10-20 18:22 [compile] that edit didn't help — undone.
-- 10-20 18:22 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:23 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:23 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:24 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:10 [compile] assigning to 'long' from incompatible type 'void' — plan: Change `long lVar1 = FUN_00037ecc((long)param_2);` to `int lVar1 = FUN_00037ecc((long)param_2);` — still fails: C-style cast from 'void' to 'int' is not allowed
+- 10-20 18:10 [compile] C-style cast from 'void' to 'int' is not allowed — plan: Change `int lVar1 = FUN_00037ecc((long)param_2);` to `int lVar1 = (int)(long)FUN_00037ecc((long)param_2);` — still fails: C-style cast from 'void' to 'long' is not allowed
+- 10-20 18:11 [compile] C-style cast from 'void' to 'long' is not allowed — plan: Change `lVar1 = (int)(long)FUN_00037ecc((long)param_2);` to `lVar1 = (int)(long long)FUN_00037ecc((long)param_2);` — still fails: C-style cast from 'void' to 'long long' is not allowed
 
-#### FUN_0020e40c — funcs/FUN_0020e40c.cpp, Ghidra 20e40c, 5 model attempt(s)
+#### FUN_0022afa8 — funcs/FUN_0022afa8.cpp, Ghidra 22afa8, 5 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0020e40c.cpp:11:16: error: no member named 'beta' in 'LowpassFilter'
-   11 |         filter.beta = 1.0f - filter.alpha;
-      |         ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0020e40c.cpp:12:62: error: no member named 'beta' in 'LowpassFilter'
-   12 |                 output[i] = filter.alpha * input[i] + filter.beta * (input[i - 1] + output[i - 1]);
-      |                                                       ~~~~~~ ^
-2 errors generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0022afa8.cpp:7:19: error: C-style cast from 'void' to 'long long' is not allowed
+    7 |     pvVar1 = (int)(long long)FUN_0022b04c(param_2);
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_0020e40c(float *input, float *output, int length) {
-    LowpassFilter filter;
-    filter.a = 0.95f;
-    filter.b = 1.0f - filter.a;
+void FUN_0022afa8(int *param_1, int param_2) {
+  void *pvVar1;
 
-    for (int i = 0; i < length; i++) {
-        output[i] = filter.a * input[i] + filter.b * (input[i - 1] + output[i - 1]);
+  if (*param_1 < param_2) {
+    pvVar1 = FUN_0022b04c((long)param_2);
+    if (param_1[1] != 0) {
+      FUN_0022b0c4(pvVar1, *(void **)(param_1 + 2), (long)param_1[1]);
     }
-}
-```
-Notes:
-- 10-20 18:25 [compile] must use 'struct' tag to refer to type 'LowpassFilter' in this scope — plan: Change line 4 from `LowpassFilter filter;` to `struct LowpassFilter filter;`. — still fails: no member named 'a' in 'LowpassFilter'
-- 10-20 18:26 [compile] no member named 'a' in 'LowpassFilter' — plan: Change line 5 from `float filter.a = 0.95f;` to `filter.alpha = 0.95f;`. — still fails: no member named 'b' in 'LowpassFilter'
-- 10-20 18:26 [compile] no member named 'b' in 'LowpassFilter' — plan: Change line 6 from `filter.b = 1.0f - filter.a;` to `filter.beta = 1.0f - filter.alpha;`. — still fails: no member named 'beta' in 'LowpassFilter'
-- 10-20 18:27 [compile] no member named 'beta' in 'LowpassFilter' — plan: Change line 6 from `filter.beta = 1.0f - filter.alpha;` to `beta = 1.0f - alpha;`. — still fails: use of undeclared identifier 'beta'
-- 10-20 18:27 [compile] no member named 'a' in 'LowpassFilter' — plan: Change line 8 from `beta = 1.0f - alpha;` to `filter.beta = 1.0f - filter.alpha;`. — still fails: no member named 'beta' in 'LowpassFilter'
-
-#### FUN_0021b1d8 — funcs/FUN_0021b1d8.cpp, Ghidra 21b1d8, 5 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021b1d8.cpp:7:28: error: no member named 'alpha' in 'LowPassFilter'
-    7 |         output[i] = filter.alpha * input[i] + (1.0f - alpha) * prevSample;
-      |                     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021b1d8.cpp:8:16: error: no member named 'prevSample' in 'LowPassFilter'
-    8 |         filter.prevSample = input[i];
-      |         ~~~~~~ ^
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0021b1d8(float *input, float *output, int length, LowPassFilter filter) {
-    for (int i = 0; i < length; ++i) {
-        output[i] = filter.alpha * input[i] + (1.0f - filter.alpha) * filter.prevSample;
-        filter.prevSample = input[i];
+    if (*param_1 != 0) {
+      FUN_0022aba0(*(void **)(param_1 + 2));
     }
+    *(void **)(param_1 + 2) = pvVar1;
+    *param_1 = param_2;
+  }
+  return;
 }
 ```
 Notes:
-- 10-20 18:33 [compile] no member named 'alpha' in 'LowPassFilter' — plan: Change line 5 to: `output[i] = filter.alpha * input[i] + (1.0f - alpha) * filter.prevSample;` — still fails: no member named 'alpha' in 'LowPassFilter'
-- 10-20 18:35 [compile] no member named 'alpha' in 'LowPassFilter' — plan: Change line 7 to: `output[i] = filter.alpha * input[i] + (1.0f - alpha) * filter.prevSample;` — still fails: no member named 'alpha' in 'LowPassFilter'
-- 10-20 18:35 [compile] that edit didn't help — undone.
-
-#### FUN_0021df24 — funcs/FUN_0021df24.cpp, Ghidra 21df24, 6 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021df24.cpp:5:24: error: no member named 'param2' in 'LowPassFilterParams'
-    5 |   int param2 = params->param2;
-      |                ~~~~~~  ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021df24.cpp:6:24: error: no member named 'param3' in 'LowPassFilterParams'
-    6 |   int param3 = params->param3;
-      |                ~~~~~~  ^
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0021df24(LowPassFilterParams *params) {
-  int param1 = params->param1;
-  int param2 = params->param2;
-  int param3 = params->param3;
-
-  std::cout << "Applying lowpass filter with params: "
-              << param1 << ", " << param2 << ", " << param3
-              << std::endl;
-}
-```
-Notes:
-- 10-20 18:06 [compile] no member named 'param1' in 'LowPassFilterParams' — plan: Change line 4 to `int param1 = params->cutoffFrequency;` — still fails: no member named 'param2' in 'LowPassFilterParams'
-- 10-20 18:06 [compile] no member named 'param2' in 'LowPassFilterParams' — plan: Change line 5 to `int param2 = params->param2;` — still fails: no member named 'param2' in 'LowPassFilterParams'
-- 10-20 18:06 [compile] that edit didn't help — undone.
+- 10-20 18:30 [compile] assigning to 'void *' from incompatible type 'void' — plan: Change `pvVar1 = FUN_0022b04c((long)param_2);` to `pvVar1 = (void *)FUN_0022b04c((long)param_2);` — still fails: cannot cast from type 'void' to pointer type 'void *'
+- 10-20 18:31 [compile] cannot cast from type 'void' to pointer type 'void *' — plan: Change `pvVar1 = (void *)FUN_0022b04c((long)param_2);` to `pvVar1 = FUN_0022b04c(param_2);` — still fails: assigning to 'void *' from incompatible type 'void'
+- 10-20 18:31 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-20 18:31 [compile] C-style cast from 'void' to 'int' is not allowed — plan: Change `pvVar1 = (int)FUN_0022b04c(param_2);` to `pvVar1 = (int)(long long)FUN_0022b04c(param_2);` — still fails: C-style cast from 'void' to 'long long' is not allowed
+- 10-20 18:32 [compile] C-style cast from 'void' to 'long long' is not allowed — plan: Change `pvVar1 = (int)(long long)FUN_0022b04c(param_2);` to `pvVar1 = (int)(long long)FUN_0022b04c((long)param_2);` — still fails: C-style cast from 'void' to 'long long' is not allowed
+- 10-20 18:32 [compile] that edit didn't help — undone.
+- 10-20 18:32 [compile] the model suggested an edit that already failed — skipped.
 
 ### Quarantined — 5 × assigning to 'X' from incompatible type 'X'
 
@@ -2324,227 +2572,269 @@ Notes:
 - 10-20 18:32 [compile] assigning to 'void *' from incompatible type 'void' — plan: Change `pvVar1 = FUN_000041f4(0x445200L);` to `pvVar1 = (void *)FUN_000041f4(0x445200L);` — still fails: cannot cast from type 'void' to pointer type 'void *'
 - 10-20 18:32 [compile] cannot cast from type 'void' to pointer type 'void *' — plan: Change `pvVar1 = (void *)FUN_000041f4(0x445200L);` to `pvVar1 = FUN_000041f4(0x445200L);` — still fails: assigning to 'void *' from incompatible type 'void'
 
-### Quarantined — 5 × C-style cast from 'X' to 'X' is not allowed
+### Quarantined — 4 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
 
-All: FUN_001ff028 (1ff028), FUN_00208b9c (208b9c), FUN_0021ea38 (21ea38), FUN_00223e50 (223e50), FUN_0022afa8 (22afa8)
+All: FUN_000c80a0 (c80a0), FUN_001dc350 (1dc350), FUN_001e2314 (1e2314), FUN_001e28b4 (1e28b4)
 
-#### FUN_001ff028 — funcs/FUN_001ff028.cpp, Ghidra 1ff028, 6 model attempt(s)
+#### FUN_000c80a0 — funcs/FUN_000c80a0.cpp, Ghidra c80a0, 5 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001ff028.cpp:7:13: error: C-style cast from 'void' to 'long' is not allowed
-    7 |     lVar1 = (long)FUN_002066a0();
-      |             ^~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001ff028.cpp:9:28: error: no matching function for call to 'FUN_000b5390'
-    9 |     puVar2 = (undefined8 *)FUN_000b5390(param_1);
-      |                            ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:15481:6: note: candidate function not viable: requires 2 arguments, but 1 was provided
- 15481 | void FUN_000b5390(long *, int);
-       |      ^            ~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001ff028.cpp:12:9: error: use of undeclared identifier 'FUN_002085e8'
-   12 |         FUN_002085e8(lVar1, (byte *)"Exception", puVar2);
-      |         ^~~~~~~~~~~~
-3 errors generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000c80a0.cpp:10:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+   10 |   puVar1 = (uint64_t *)FUN_000c8108(param_1 + 1,param_2);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000c80a0.cpp:12:3: error: no matching function for call to 'FUN_0011bf98'
+   12 |   FUN_0011bf98(lVar2,param_1);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:21043:6: note: candidate function not viable: no known conversion from 'uint64_t *' (aka 'unsigned long long *') to 'undefined8' (aka 'unsigned long long') for 2nd argument; dereference the argument with *
+ 21043 | void FUN_0011bf98(long, undefined8);
+       |      ^                  ~~~~~~~~~~
+2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_001ff028(long param_1) {
-    long lVar1;
-    undefined8 *puVar2;
+uint64_t * FUN_000c80a0(uint64_t *param_1,uint64_t param_2) {
+  uint64_t *puVar1;
+  long lVar2;
 
-    lVar1 = FUN_002066a0();
-
-    puVar2 = (undefined8 *)FUN_000b5390(param_1);
-
-    if (lVar1 != 0) {
-        FUN_002085e8(lVar1, (byte *)"Exception", puVar2);
-    }
+  *param_1 = &DAT_004368e8;
+  puVar1 = (uint64_t *)FUN_000c8108(param_1 + 1,param_2);
+  lVar2 = FUN_000c8128(puVar1);
+  FUN_0011bf98(lVar2,param_1);
+  return param_1;
 }
 ```
 Notes:
-- 10-20 18:38 [compile] assigning to 'long' from incompatible type 'void' — plan: Change line 7 to: `long lVar1 = (long)FUN_002066a0();` — still fails: C-style cast from 'void' to 'long' is not allowed
-- 10-20 18:38 [compile] C-style cast from 'void' to 'long' is not allowed — plan: Change line 7 to: `long lVar1 = (long)FUN_002066a0();` — still fails: redefinition of 'lVar1'
-- 10-20 18:38 [compile] that edit didn't help — undone.
-- 10-20 18:39 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:39 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:40 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:40 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:27 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'uint64_t *' (aka 'un — plan: Change `*param_1 = &DAT_004368e8;` to `*param_1 = (uint64_t)&DAT_004368e8;` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+- 10-20 19:27 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `*param_1 = (uint64_t)&DAT_004368e8;` to `*param_1 = (long*)&DAT_004368e8;` — still fails: cannot cast from type 'void' to pointer type 'long *'
+- 10-20 19:28 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `*param_1 = (long*)&DAT_004368e8;` to `*param_1 = (uint64_t*)&DAT_004368e8;` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+- 10-20 19:28 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `*param_1 = (uint64_t)&DAT_004368e8;` to `*param_1 = (long*)&DAT_004368e8;` — still fails: cannot cast from type 'void' to pointer type 'long *'
+- 10-20 19:28 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `*param_1 = (long*)&DAT_004368e8;` to `*param_1 = (uint64_t*)&DAT_004368e8;` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
 
-#### FUN_00208b9c — funcs/FUN_00208b9c.cpp, Ghidra 208b9c, 6 model attempt(s)
+#### FUN_001dc350 — funcs/FUN_001dc350.cpp, Ghidra 1dc350, 5 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208b9c.cpp:6:16: error: C-style cast from 'void' to 'long long' is not allowed
-    6 |   iVar1 = (int)(long long)FUN_00208bd4(param_1);
-      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001dc350.cpp:11:14: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+   11 |     pvVar1 = (uint64_t *)FUN_000041f4(0x443540L);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001dc350.cpp:12:14: error: incompatible integer to pointer conversion assigning to 'void *' from 'int'
+   12 |     pvVar1 = 1;
+      |              ^
+2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-bool FUN_00208b9c(uint64_t *param_1) {
-  int iVar1;
-
-  iVar1 = FUN_00208bd4(param_1);
-  return iVar1 != 0;
-}
-```
-Notes:
-- 10-20 18:29 [compile] assigning to 'int' from incompatible type 'void' — plan: Change `iVar1 = FUN_00208bd4(param_1);` to `iVar1 = (int)FUN_00208bd4(param_1);` — still fails: C-style cast from 'void' to 'int' is not allowed
-- 10-20 18:29 [compile] C-style cast from 'void' to 'int' is not allowed — plan: Change `iVar1 = (int)FUN_00208bd4(param_1);` to `iVar1 = (int)(long long)FUN_00208bd4(param_1);` — still fails: C-style cast from 'void' to 'long long' is not allowed
-
-#### FUN_0021ea38 — funcs/FUN_0021ea38.cpp, Ghidra 21ea38, 10 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021ea38.cpp:18:18: error: C-style cast from 'void' to 'long long' is not allowed
-   18 |     iVar2 = (int)(long long)FUN_0021b7f4(param_2);
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021ea38.cpp:25:12: error: no matching function for call to 'FUN_00216668'
-   25 |   puVar4 = FUN_00216668("#StringBuffer",
-      |            ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:41971:7: note: candidate function not viable: no known conversion from 'const char[14]' to 'undefined8' (aka 'unsigned long long') for 1st argument
- 41971 | void *FUN_00216668(undefined8, size_t);
-       |       ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021ea38.cpp:25:12: error: assigning to 'undefined2 *' (aka 'unsigned short *') from incompatible type 'void *'
-   25 |   puVar4 = FUN_00216668("#StringBuffer",
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   26 |                         -(ulong)(uVar1 >> 0x1f) & 0xfffffffe00000000 | (ulong)uVar1 << 1);
-      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021ea38.cpp:27:16: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'undefined2 *' (aka 'unsigned short *')
-   27 |   param_1[2] = puVar4;
-      |                ^~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0021ea38(undefined8 *param_1, short *param_2, uint param_3) {
-    uint64_t DAT_00444fc8 = 0; // auto-declared (undeclared in the rewrite)
-
-  uint uVar1;
-  int iVar2;
-  undefined8 *puVar3;
-  undefined2 *puVar4;
-  uint uVar5;
-
-  puVar3 = FUN_00219d24(param_1);
-  *puVar3 = (undefined8)&DAT_00444fc8;
-  if (param_2 == (short *)0x0) {
-    uVar5 = 1;
-  }
-  else {
-    iVar2 = (int)(long long)FUN_0021b7f4(param_2);
-    uVar5 = iVar2 + 1;
-  }
-  uVar1 = uVar5;
-  if (param_3 != 0xffffffff) {
-    uVar1 = param_3;
-  }
-  puVar4 = FUN_00216668("#StringBuffer",
-                        -(ulong)(uVar1 >> 0x1f) & 0xfffffffe00000000 | (ulong)uVar1 << 1);
-  param_1[2] = puVar4;
-  *(uint *)(param_1 + 3) = uVar1;
-  if (param_2 == (short *)0x0) {
-    *puVar4 = 0;
-  }
-  else {
-    FUN_00215e04(puVar4, param_2, (long)(int)uVar5 << 1);
-  }
-}
-```
-Notes:
-- 10-20 17:30 [compile] use of undeclared identifier 'FUN_00219d24' — plan: Change `puVar3 = FUN_00219d24(param_1);` to `puVar3 = (undefined2*)(param_1);` to fix the undeclared identifier error without altering functionality. — still fails: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from
-- 10-20 17:32 [compile] incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka ' — plan: Change `*puVar3 = &DAT_00444fc8;` to `*puVar3 = (undefined8)&DAT_00444fc8;` to fix the incompatible pointer to integer conversion error without altering functio — still fails: use of undeclared identifier 'FUN_0021b7f4'; did you mean 'FUN_0022bdf4'?
-- 10-20 17:32 [compile] use of undeclared identifier 'FUN_0021b7f4'; did you mean 'FUN_0022bdf4'? — plan: Change `iVar2 = FUN_0021b7f4(param_2);` to `iVar2 = FUN_0022bdf4(param_2);` to fix the use of undeclared identifier error without altering functionality. — still fails: no matching function for call to 'FUN_0022bdf4'
-- 10-20 17:33 [compile] no matching function for call to 'FUN_0022bdf4' — plan: Change `iVar2 = FUN_0022bdf4(param_2);` to `iVar2 = (long)FUN_0022bdf4((long)param_2);` to fix the no matching function error by casting the parameter to long, — still fails: use of undeclared identifier 'FUN_00216668'
-- 10-20 17:34 [compile] use of undeclared identifier 'FUN_00216668' — plan: Change `puVar4 = FUN_00216668("#StringBuffer",` to `puVar4 = (undefined8*)FUN_00216668("#StringBuffer",` to fix the use of undeclared identifier error by explic — still fails: use of undeclared identifier 'FUN_00216668'
-- 10-20 17:34 [compile] that edit didn't help — undone.
-- 10-20 17:55 [compile] incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka ' — plan: Change `*puVar3 = &DAT_00444fc8;` to `*puVar3 = (undefined8)&DAT_00444fc8;` to fix the incompatible pointer to integer conversion error by explicitly casting th — still fails: assigning to 'int' from incompatible type 'void'
-- 10-20 17:56 [compile] assigning to 'int' from incompatible type 'void' — plan: Change `iVar2 = FUN_0021b7f4(param_2);` to `iVar2 = (int)FUN_0021b7f4(param_2);` to fix the assigning to 'int' from incompatible type 'void' error by explicitly — still fails: C-style cast from 'void' to 'int' is not allowed
-- 10-20 17:57 [compile] C-style cast from 'void' to 'int' is not allowed — plan: Change `iVar2 = (int)FUN_0021b7f4(param_2);` to `iVar2 = (int)(long)FUN_0021b7f4(param_2);` to fix the C-style cast from 'void' to 'int' error by using a long c — still fails: C-style cast from 'void' to 'long' is not allowed
-- 10-20 17:58 [compile] C-style cast from 'void' to 'long' is not allowed — plan: Change `iVar2 = (int)(long)FUN_0021b7f4(param_2);` to `iVar2 = (int)(long long)FUN_0021b7f4(param_2);` to fix the C-style cast from 'void' to 'long' error using — still fails: C-style cast from 'void' to 'long long' is not allowed
-
-#### FUN_00223e50 — funcs/FUN_00223e50.cpp, Ghidra 223e50, 6 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00223e50.cpp:15:26: error: C-style cast from 'void' to 'long long' is not allowed
-   15 |             lVar1 = (int)(long long)FUN_00037ecc((long)param_2);
-      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00223e50(long *param_1, int param_2) {
-    long lVar1;
-
-    if (param_2 != (int)param_1[1]) {
-        if (*param_1 != 0) {
-            FUN_00037650((void *)*param_1);
-            *(undefined4 *)(param_1 + 1) = 0;
-            *param_1 = 0;
-        }
-        if (param_2 != 0) {
-            *(undefined4 *)(param_1 + 1) = 0;
-            *param_1 = 0;
-            lVar1 = FUN_00037ecc((long)param_2);
-            *param_1 = lVar1;
-            *(int *)(param_1 + 1) = param_2;
-        }
-    }
-    return;
-}
-```
-Notes:
-- 10-20 18:10 [compile] assigning to 'long' from incompatible type 'void' — plan: Change `long lVar1 = FUN_00037ecc((long)param_2);` to `int lVar1 = FUN_00037ecc((long)param_2);` — still fails: C-style cast from 'void' to 'int' is not allowed
-- 10-20 18:10 [compile] C-style cast from 'void' to 'int' is not allowed — plan: Change `int lVar1 = FUN_00037ecc((long)param_2);` to `int lVar1 = (int)(long)FUN_00037ecc((long)param_2);` — still fails: C-style cast from 'void' to 'long' is not allowed
-- 10-20 18:11 [compile] C-style cast from 'void' to 'long' is not allowed — plan: Change `lVar1 = (int)(long)FUN_00037ecc((long)param_2);` to `lVar1 = (int)(long long)FUN_00037ecc((long)param_2);` — still fails: C-style cast from 'void' to 'long long' is not allowed
-
-#### FUN_0022afa8 — funcs/FUN_0022afa8.cpp, Ghidra 22afa8, 5 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0022afa8.cpp:7:19: error: C-style cast from 'void' to 'long long' is not allowed
-    7 |     pvVar1 = (int)(long long)FUN_0022b04c(param_2);
-      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0022afa8(int *param_1, int param_2) {
+void * FUN_001dc350(uint64_t param_1) {
   void *pvVar1;
 
-  if (*param_1 < param_2) {
-    pvVar1 = FUN_0022b04c((long)param_2);
-    if (param_1[1] != 0) {
-      FUN_0022b0c4(pvVar1, *(void **)(param_1 + 2), (long)param_1[1]);
-    }
-    if (*param_1 != 0) {
-      FUN_0022aba0(*(void **)(param_1 + 2));
-    }
-    *(void **)(param_1 + 2) = pvVar1;
-    *param_1 = param_2;
+  if ((DAT_00453c20 & 1) == 0) {
+    pvVar1 = FUN_000041f4(0x443540);
+    pvVar1 = 1;
   }
-  return;
+  pvVar1 = FUN_0021608c(DAT_00453c18, param_1 * 0x28);
+  FUN_001dc3f0((long)pvVar1, param_1);
+  return pvVar1;
 }
 ```
 Notes:
-- 10-20 18:30 [compile] assigning to 'void *' from incompatible type 'void' — plan: Change `pvVar1 = FUN_0022b04c((long)param_2);` to `pvVar1 = (void *)FUN_0022b04c((long)param_2);` — still fails: cannot cast from type 'void' to pointer type 'void *'
-- 10-20 18:31 [compile] cannot cast from type 'void' to pointer type 'void *' — plan: Change `pvVar1 = (void *)FUN_0022b04c((long)param_2);` to `pvVar1 = FUN_0022b04c(param_2);` — still fails: assigning to 'void *' from incompatible type 'void'
-- 10-20 18:31 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-20 18:31 [compile] C-style cast from 'void' to 'int' is not allowed — plan: Change `pvVar1 = (int)FUN_0022b04c(param_2);` to `pvVar1 = (int)(long long)FUN_0022b04c(param_2);` — still fails: C-style cast from 'void' to 'long long' is not allowed
-- 10-20 18:32 [compile] C-style cast from 'void' to 'long long' is not allowed — plan: Change `pvVar1 = (int)(long long)FUN_0022b04c(param_2);` to `pvVar1 = (int)(long long)FUN_0022b04c((long)param_2);` — still fails: C-style cast from 'void' to 'long long' is not allowed
-- 10-20 18:32 [compile] that edit didn't help — undone.
-- 10-20 18:32 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:29 [compile] call to 'FUN_000041f4' is ambiguous — plan: Change `FUN_000041f4(0x443540);` to `FUN_000041f4(0x443540L);` — still fails: assigning to 'void *' from incompatible type 'void'
+- 10-20 19:30 [compile] assigning to 'void *' from incompatible type 'void' — plan: Change `pvVar1 = FUN_000041f4(0x443540L);` to `pvVar1 = (void *)FUN_000041f4(0x443540L);` — still fails: cannot cast from type 'void' to pointer type 'void *'
+- 10-20 19:30 [compile] cannot cast from type 'void' to pointer type 'void *' — plan: Change `pvVar1 = (void *)FUN_000041f4(0x443540L);` to `pvVar1 = (uint64_t *)FUN_000041f4(0x443540L);` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — plan: Change `pvVar1 = (uint64_t *)FUN_000041f4(0x443540L);` to `pvVar1 = (long *)FUN_000041f4(0x443540L);` — still fails: cannot cast from type 'void' to pointer type 'long *'
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'long *' — plan: Change `pvVar1 = (long *)FUN_000041f4(0x443540L);` to `pvVar1 = (uint64_t *)FUN_000041f4(0x443540L);` — still fails: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+
+#### FUN_001e2314 — funcs/FUN_001e2314.cpp, Ghidra 1e2314, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2314.cpp:17:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+   17 |   plVar4 = (uint64_t*)FUN_001e1ccc();
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2314.cpp:18:14: error: no matching function for call to 'FUN_001e23dc'
+   18 |   local_50 = FUN_001e23dc(param_1,param_2,lVar3,plVar4);
+      |              ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:37499:6: note: candidate function not viable: requires 3 arguments, but 4 were provided
+ 37499 | void FUN_001e23dc(float *, float *, int);
+       |      ^            ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2314.cpp:18:14: error: assigning to 'long' from incompatible type 'void'
+   18 |   local_50 = FUN_001e23dc(param_1,param_2,lVar3,plVar4);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2314.cpp:23:14: error: incompatible pointer types assigning to 'ulong *' (aka 'unsigned long *') from 'uint64_t *' (aka 'unsigned long long *')
+   23 |   local_48 = param_2;
+      |              ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2314.cpp:24:3: error: no matching function for call to 'FUN_001e24d4'
+   24 |   FUN_001e24d4(&local_50);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:37505:6: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
+ 37505 | long FUN_001e24d4(uint64_t *);
+       |      ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2314.cpp:25:11: error: no matching function for call to 'FUN_001e248c'
+   25 |   bVar2 = FUN_001e248c(uVar5,puVar1);
+      |           ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:37503:6: note: candidate function not viable: no known conversion from 'ulong *' (aka 'unsigned long *') to 'uint64_t *' (aka 'unsigned long long *') for 2nd argument
+ 37503 | bool FUN_001e248c(uint64_t, uint64_t *);
+       |      ^                      ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2314.cpp:31:14: error: incompatible pointer types assigning to 'ulong *' (aka 'unsigned long *') from 'uint64_t *' (aka 'unsigned long long *')
+   31 |   local_48 = param_2;
+      |              ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2314.cpp:32:3: error: no matching function for call to 'FUN_001e24d4'
+   32 |   FUN_001e24d4(&local_50);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:37505:6: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
+ 37505 | long FUN_001e24d4(uint64_t *);
+       |      ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2314.cpp:33:11: error: no matching function for call to 'FUN_001e248c'
+   33 |   bVar2 = FUN_001e248c(uVar5,puVar1);
+      |           ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:37503:6: note: candidate function not viable: no known conversion from 'ulong *' (aka 'unsigned long *') to 'uint64_t *' (aka 'unsigned long long *') for 2nd argument
+ 37503 | bool FUN_001e248c(uint64_t, uint64_t *);
+       |      ^                      ~~~~~~~~~~
+9 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint64_t FUN_001e2314(uint64_t param_1,uint64_t *param_2) {
+  ulong *puVar1;
+  bool bVar2;
+  long lVar3;
+  long *plVar4;
+  undefined8 uVar5;
+  long local_58;
+  long local_50;
+  ulong *local_48;
+  undefined8 uStack_40;
+
+  local_48 = param_2;
+  uStack_40 = param_1;
+  lVar3 = FUN_001e20d0();
+  plVar4 = (long *)FUN_001e1ccc();
+  local_50 = FUN_001e23dc(param_1,param_2,lVar3,plVar4);
+  local_58 = FUN_001e1ed8();
+  bVar2 = FUN_001e1f08(&local_50,&local_58);
+if (bVar2) {
+  uStack_40 = param_1;
+  local_48 = param_2;
+  FUN_001e24d4(&local_50);
+  bVar2 = FUN_001e248c(uVar5,puVar1);
+  if (!bVar2) {
+    return local_50;
+  }
+} else {
+  uStack_40 = param_1;
+  local_48 = param_2;
+  FUN_001e24d4(&local_50);
+  bVar2 = FUN_001e248c(uVar5,puVar1);
+  if (!bVar2) {
+    return local_50;
+  }
+}
+}
+```
+Notes:
+- 10-20 19:30 [compile] incompatible pointer types assigning to 'ulong *' (aka 'unsigned long *') from 'uint64_t *' (aka 'unsigned long long *') — plan: Change line 14 to `ulong *local_48 = (ulong *)param_2;` — still fails: redefinition of 'local_48'
+- 10-20 19:31 [compile] redefinition of 'local_48' — plan: Change line 14 to `undefined8 auVar2[16];` — still fails: cannot cast from type 'void' to pointer type 'long *'
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+
+#### FUN_001e28b4 — funcs/FUN_001e28b4.cpp, Ghidra 1e28b4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e28b4.cpp:11:14: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+   11 |   local_50 = (uint64_t*)FUN_001e2bac();
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e28b4.cpp:13:16: error: cannot cast from type 'void' to pointer type 'long *'
+   13 |     local_28 = (long *)FUN_001e1ccc();
+      |                ^~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e28b4.cpp:19:17: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+   19 |         uVar2 = FUN_001e2468();
+      |                 ^~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e28b4.cpp:20:17: error: no matching function for call to 'FUN_001e248c'
+   20 |         bVar1 = FUN_001e248c(uVar2, param_3);
+      |                 ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:37503:6: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 2nd argument
+ 37503 | bool FUN_001e248c(uint64_t, uint64_t *);
+       |      ^                      ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e28b4.cpp:24:11: error: void function 'FUN_001e28b4' should not return a value [-Wreturn-mismatch]
+   24 |           return local_48;
+      |           ^      ~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e28b4.cpp:29:15: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+   29 |       uVar2 = FUN_001e2468();
+      |               ^~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e28b4.cpp:30:15: error: no matching function for call to 'FUN_001e24f8'
+   30 |       bVar1 = FUN_001e24f8(uVar2, local_48 + 4, param_3);
+      |               ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:37507:6: note: candidate function not viable: no known conversion from 'undefined8' (aka 'unsigned long long') to 'ulong *' (aka 'unsigned long *') for 1st argument
+ 37507 | bool FUN_001e24f8(ulong *, ulong *, ulong *);
+       |      ^            ~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e28b4.cpp:33:9: error: void function 'FUN_001e28b4' should not return a value [-Wreturn-mismatch]
+   33 |         return local_50;
+      |         ^      ~~~~~~~~
+8 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001e28b4(long *param_1, long *param_2, long *param_3) {
+  bool bVar1;
+  undefined8 uVar2;
+  long *local_50;
+  long *local_48;
+  long *local_28;
+
+  local_48 = (long *)FUN_001e20d0();
+  local_50 = (long *)FUN_001e2bac();
+  if (local_48 == (long *)0x0) {
+    local_28 = (long *)FUN_001e1ccc();
+    *param_2 = (long)local_28;
+  }
+  else {
+    while( true ) {
+      while( true ) {
+        uVar2 = FUN_001e2468();
+        bVar1 = FUN_001e248c(uVar2, param_3);
+        if (!bVar1) break;
+        if (*local_48 == 0) {
+          *param_2 = (long)local_48;
+          return local_48;
+        }
+        local_50 = local_48;
+        local_48 = (long *)*local_48;
+      }
+      uVar2 = FUN_001e2468();
+      bVar1 = FUN_001e24f8(uVar2, local_48 + 4, param_3);
+      if (!bVar1) {
+        *param_2 = (long)local_48;
+        return local_50;
+      }
+      if (local_48[1] == 0) break;
+      local_50 = local_48 + 1;
+      local_48 = (long *)local_48[1];
+    }
+    *param_2 = (long)local_48;
+    local_28 = local_48 + 1;
+  }
+}
+```
+Notes:
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-20 19:31 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
 
 ### Quarantined — 3 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
 
@@ -2653,6 +2943,167 @@ Notes:
 - 10-20 18:39 [compile] cannot initialize a variable of type 'long *' with an rvalue of type 'void' — plan: Change `long *plVar1 = FUN_002231ac(param_1, (undefined8 *)&DAT_00873c40);` to `int *plVar1 = FUN_002231ac(param_1, (undefined8 *)&DAT_00873c40);` — still fails: cannot initialize a variable of type 'int *' with an rvalue of type 'void'
 - 10-20 18:39 [compile] cannot initialize a variable of type 'int *' with an rvalue of type 'void' — plan: Change `int *plVar1 = FUN_002231ac(param_1, (undefined8 *)&DAT_00873c40);` to `long *plVar1 = FUN_002231ac(param_1, (undefined8 *)&DAT_00873c40);` — still fails: cannot initialize a variable of type 'long *' with an rvalue of type 'void'
 - 10-20 18:40 [compile] cannot initialize a variable of type 'long *' with an rvalue of type 'void' — plan: Change `long *plVar1 = FUN_002231ac(param_1, (undefined8 *)&DAT_00873c40);` to `int *plVar1 = FUN_002231ac(param_1, (undefined8 *)&DAT_00873c40);` — still fails: cannot initialize a variable of type 'int *' with an rvalue of type 'void'
+
+### Quarantined — 3 × expected expression
+
+All: FUN_001dab18 (1dab18), FUN_00208454 (208454), FUN_002145e4 (2145e4)
+
+#### FUN_001dab18 — funcs/FUN_001dab18.cpp, Ghidra 1dab18, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001dab18.cpp:10:23: error: expected expression
+   10 |     plVar1 = *(code **)(*plVar1 + ((ulong)pcVar2 & 0xffffffff));
+      |                       ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001dab18.cpp:12:4: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
+   12 |   (*pcVar2)(plVar1, param_2, param_3);
+      |    ^~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001dab18(ulong *param_1, undefined8 param_2, undefined4 param_3) {
+  long *plVar1 = (long *)(param_1[2] + ((long)param_1[1] >> 1));
+  if ((param_1[1] & 1) != 0) {
+    plVar1 = *(code **)(*plVar1 + ((ulong)pcVar2 & 0xffffffff));
+  }
+  (*pcVar2)(plVar1, param_2, param_3);
+}
+```
+Notes:
+- 10-20 19:29 [compile] expected expression — plan: Change line 10 to: `plVar1 = *(code **)(*plVar1 + ((ulong)pcVar2 & 0xffffffff));` — still fails: expected expression
+- 10-20 19:29 [compile] that edit didn't help — undone.
+- 10-20 19:29 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:30 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:30 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:31 [compile] the model suggested an edit that already failed — skipped.
+
+#### FUN_00208454 — funcs/FUN_00208454.cpp, Ghidra 208454, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:14:23: error: expected expression
+   14 |     auVar1 = (*(code *)PTR____chkstk_darwin_004241d0)();
+      |                       ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:16:5: error: use of undeclared identifier '_vsnprintf'; did you mean 'vsnprintf'?
+   16 |     _vsnprintf((char *)abStack_1028,0x1000,param_3,&stack0x00000000);
+      |     ^~~~~~~~~~
+      |     vsnprintf
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h:442:6: note: 'vsnprintf' declared here
+  442 | int      vsnprintf(char * __restrict _LIBC_COUNT(__size) __str, size_t __size, const char * __restrict __format, va_list) __printflike(3, 0);
+      |          ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:16:52: error: cannot initialize a parameter of type '__va_list_tag *' with an rvalue of type 'uint64_t *' (aka 'unsigned long long *')
+   16 |     _vsnprintf((char *)abStack_1028,0x1000,param_3,&stack0x00000000);
+      |                                                    ^~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h:442:117: note: passing argument to parameter here
+  442 | int      vsnprintf(char * __restrict _LIBC_COUNT(__size) __str, size_t __size, const char * __restrict __format, va_list) __printflike(3, 0);
+      |                                                                                                                         ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:17:24: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   17 |     FUN_002084e8(auVar1._0_8_,auVar1._8_8_,abStack_1028);
+      |                  ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:17:37: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   17 |     FUN_002084e8(auVar1._0_8_,auVar1._8_8_,abStack_1028);
+      |                               ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:21:3: error: no matching function for call to '___stack_chk_fail'
+   21 |   ___stack_chk_fail();
+      |   ^~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1187:17: note: candidate function not viable: requires 2 arguments, but 0 were provided
+ 1187 | extern "C" void ___stack_chk_fail(uint64_t, uint32_t);
+      |                 ^                 ~~~~~~~~~~~~~~~~~~
+6 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00208454(undefined8 param_1,undefined8 param_2,char *param_3) {
+    undefined1 auVar1 [16];
+    byte abStack_1028 [4096];
+    long local_28;
+
+    auVar1 = (*(code *)PTR____chkstk_darwin_004241d0)();
+    local_28 = *(long *)PTR____stack_chk_guard_004241e8;
+    _vsnprintf((char *)abStack_1028,0x1000,param_3,&stack0x00000000);
+    FUN_002084e8(auVar1._0_8_,auVar1._8_8_,abStack_1028);
+    if (*(long *)PTR____stack_chk_guard_004241e8 == local_28) {
+        return;
+    }
+  ___stack_chk_fail();
+}
+```
+
+#### FUN_002145e4 — funcs/FUN_002145e4.cpp, Ghidra 2145e4, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_002145e4.cpp:29:5: error: expected expression
+   29 |     ```
+      |     ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_002145e4(uint64_t *param_1) {
+    long alStack_d0 [2];
+    undefined8 auStack_c0 [2];
+    long alStack_b0 [2];
+    long alStack_a0 [2];
+    long alStack_90 [2];
+    long alStack_80 [2];
+    long alStack_70 [2];
+    ID local_60;
+    ID local_58;
+    ID local_40;
+    long alStack_38 [2];
+    undefined8 *local_28;
+
+    local_28 = param_1;
+    FUN_0021a1f4(alStack_38,"(arm64)");
+    local_40 = NSDictionary::dictionaryWithContentsOfFile_
+                       ((ID)PTR__OBJC_CLASS___NSDictionary_00452e60,
+                        &cf__System_Library_CoreServices_SystemVersion_plist);
+  if (local_40 != 0) {
+    local_58 = NSDictionary::objectForKey_(local_40,&cf_ProductName);
+    local_60 = objc_stub::objectForKey_(local_40,&cf_ProductVersion);
+    if ((local_58 != 0) && (local_60 != 0)) {
+      FUN_00213f0c(alStack_a0,local_58);
+      FUN_0021a1f4(alStack_b0," ");
+      FUN_0021f558(alStack_90,alStack_a0,alStack_b0);
+      FUN_00213f0c(auStack_c0,local_60);
+      FUN_0021f558(alStack_80,alStack_90,auStack_c0);
+      FUN_0021a1f4(alStack_d0," ");
+      FUN_0021f558(alStack_70,alStack_80,alStack_d0);
+      FUN_0021f558(param_1,alStack_70,alStack_38);
+      FUN_000b50b8((long)alStack_70);
+      FUN_000b50b8((long)alStack_d0);
+      FUN_000b50b8((long)alStack_80);
+      FUN_000b50b8((long)auStack_c0);
+      FUN_000b50b8((long)alStack_90);
+      FUN_000b50b8((long)alStack_b0);
+      FUN_000b50b8((long)alStack_a0);
+      goto LAB_00214760;
+    }
+  }
+  FUN_0021a1f4(alStack_70,"Unknown Mac OS X Version ");
+  FUN_0021f558(param_1,alStack_70,alStack_38);
+  FUN_000b50b8((long)alStack_70);
+LAB_00214760:
+  FUN_000b50b8((long)alStack_38);
+  return;
+}
+```
+Notes:
+- 10-20 18:32 [compile] 'NSDictionary' is not a class, namespace, or enumeration — plan: Change line 29 to: ` local_40 = [NSDictionary dictionaryWithContentsOfFile_` — still fails: expected ',' or ']' in lambda capture list
+- 10-20 18:33 [compile] expected ',' or ']' in lambda capture list — plan: Change line 29 to: ` local_40 = [[NSDictionary dictionaryWithContentsOfFile_:` — still fails: expected expression
+- 10-20 18:33 [compile] expected expression — plan: Change line 29 to: ` local_40 = [[NSDictionary dictionaryWithContentsOfFile_:` — still fails: expected variable name or 'this' in lambda capture list
+- 10-20 18:33 [compile] that edit didn't help — undone.
+- 10-20 18:34 [compile] expected expression — plan: Change line 29 to: ` local_40 = [[NSDictionary dictionaryWithContentsOfFile_: PTR__OBJC_CLASS___NSDictionary_00452e60]; — still fails: expected variable name or 'this' in lambda capture list
+- 10-20 18:34 [compile] that edit didn't help — undone.
+- 10-20 18:34 [compile] the model suggested an edit that already failed — skipped.
 
 ### Quarantined — 3 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *
 
@@ -2821,6 +3272,88 @@ bool FUN_0020af54(undefined8 *param_1, undefined8 *param_2) {
 Notes:
 - 10-20 18:23 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'undefined8 *' (aka ' — plan: Change `local_30 = param_2;` to `puStack_28 = (uint64_t *)param_2;` — still fails: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from '
 
+### Quarantined — 3 × too many arguments to function call, expected N, have N
+
+All: FUN_00225de8 (225de8), _pthread_mutexattr_settype (38662c), _vsnprintf (3868c0)
+
+#### FUN_00225de8 — funcs/FUN_00225de8.cpp, Ghidra 225de8, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00225de8.cpp:4:31: error: too many arguments to function call, expected 0, have 1
+    4 |   (*(void (*)(void))*param_1)(param_1 + 1);
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00225de8(uint64_t *param_1) {
+  (*(void *)*param_1)(param_1 + 1);
+  return;
+}
+```
+Notes:
+- 10-20 18:24 [compile] ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference] — plan: Change `*(void *)*param_1` to `*(void (*)())*param_1`. — still fails: too many arguments to function call, expected 0, have 1
+- 10-20 18:24 [compile] too many arguments to function call, expected 0, have 1 — plan: Change `*(void (*)(void))*param_1(param_1 + 1);` to `(*(void (*)())*param_1)(param_1 + 1);`. — still fails: too many arguments to function call, expected 0, have 1
+- 10-20 18:24 [compile] that edit didn't help — undone.
+- 10-20 18:24 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:26 [compile] the model suggested an edit that already failed — skipped.
+
+#### _pthread_mutexattr_settype — funcs/_pthread_mutexattr_settype.cpp, Ghidra 38662c, 4 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/_pthread_mutexattr_settype.cpp:8:69: error: too many arguments to function call, expected 0, have 1
+    8 |   iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_settype_00450938)(param_1);
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+int _pthread_mutexattr_settype(pthread_mutexattr_t *param_1,int param_2) {
+  int iVar1;
+
+  iVar1 = (*(void *)PTR__pthread_mutexattr_settype_00450938)((int)param_1,param_2);
+  return iVar1;
+}
+```
+Notes:
+- 10-20 19:25 [compile] ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference] — plan: Change `PTR__pthread_mutexattr_settype_00450938` to `(int (*)(void))PTR__pthread_mutexattr_settype_00450938`. — still fails: too many arguments to function call, expected 0, have 2
+- 10-20 19:26 [compile] too many arguments to function call, expected 0, have 2 — plan: Change `iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_settype_00450938)(param_1,param_2);` to `iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_settype_0045093 — still fails: too many arguments to function call, expected 0, have 1
+
+#### _vsnprintf — funcs/_vsnprintf.cpp, Ghidra 3868c0, 4 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/_vsnprintf.cpp:8:53: error: too many arguments to function call, expected 0, have 1
+    8 |   iVar1 = (*(int (*)(void))PTR__vsnprintf_00450af0)((int)(uintptr_t)param_1);
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+int _vsnprintf(char *param_1,size_t param_2,char *param_3,va_list param_4) {
+  int iVar1;
+
+  iVar1 = (*(void *)PTR__vsnprintf_00450af0)((int)param_1);
+  return iVar1;
+}
+```
+Notes:
+- 10-20 18:34 [compile] ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference] — plan: Change `iVar1 = (*(void *)PTR__vsnprintf_00450af0)((int)(uintptr_t)param_1);` to `iVar1 = (*(int (*)(void))PTR__vsnprintf_00450af0)((int)(uintptr_t)param_1);` — still fails: too many arguments to function call, expected 0, have 1
+- 10-20 18:35 [compile] too many arguments to function call, expected 0, have 1 — plan: Change `iVar1 = (*(int (*)(void))PTR__vsnprintf_00450af0)((int)(uintptr_t)param_1);` to `iVar1 = (*(int (*)(void))PTR__vsnprintf_00450af0)(param_1);` — still fails: too many arguments to function call, expected 0, have 1
+- 10-20 18:35 [compile] that edit didn't help — undone.
+- 10-20 18:35 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:36 [compile] the model suggested an edit that already failed — skipped.
+
 ### Quarantined — 2 × expected unqualified-id
 
 All: getData (4410), string (385e64)
@@ -2883,6 +3416,216 @@ Notes:
 - 10-20 18:28 [compile] the model suggested an edit that already failed — skipped.
 - 10-20 18:28 [compile] the model suggested an edit that already failed — skipped.
 - 10-20 18:28 [compile] the model suggested an edit that already failed — skipped.
+
+### Quarantined — 2 × cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'
+
+All: FUN_00005000 (5000), FUN_001e2054 (1e2054)
+
+#### FUN_00005000 — funcs/__Z12FUN_00005000Py.cpp, Ghidra 5000, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00005000Py.cpp:7:15: error: cannot initialize a variable of type 'uint64_t *' (aka 'unsigned long long *') with an rvalue of type 'void'
+    7 |     uint64_t* outputBuffer = FUN_000050fc(inputBuffer);
+      |               ^              ~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00005000Py.cpp:8:21: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &
+    8 |     *outputBuffer = &DAT_00424ce0;
+      |                     ^~~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00005000(undefined8 * inputBuffer)
+{
+    undefined8* outputBuffer = FUN_000050fc(inputBuffer);
+    *outputBuffer = &DAT_00424ce0;
+}
+```
+Notes:
+- 10-20 19:27 [compile] cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of type 'void' — plan: Change line 7 to `uint64_t* outputBuffer = FUN_000050fc(inputBuffer);` — still fails: cannot initialize a variable of type 'uint64_t *' (aka 'unsigned long long *') with an rvalue of typ
+
+#### FUN_001e2054 — funcs/FUN_001e2054.cpp, Ghidra 1e2054, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2054.cpp:9:14: error: cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'void'
+    9 |     uint64_t uVar1 = FUN_001e2118();
+      |              ^       ~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001e2054(uint64_t param_1,uint64_t *param_2) {
+  undefined8 uVar1;
+
+  if (param_2 != (undefined8 *)0x0) {
+    FUN_001e2054(param_1,(undefined8 *)*param_2);
+    FUN_001e2054(param_1,(undefined8 *)param_2[1]);
+    uVar1 = FUN_001e2118();
+    FUN_001e2148();
+    FUN_001e213c();
+    FUN_001e2168(uVar1,param_2,1);
+  }
+}
+```
+Notes:
+- 10-20 19:31 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 9 from `int uVar1 = FUN_001e2118();` to `undefined8 uVar1 = FUN_001e2118();`. — still fails: cannot initialize a variable of type 'undefined8' (aka 'unsigned long long') with an rvalue of type
+- 10-20 19:31 [compile] cannot initialize a variable of type 'undefined8' (aka 'unsigned long long') with an rvalue of type 'void' — plan: Change line 9 from `undefined8 uVar1 = FUN_001e2118();` to `uint64_t uVar1 = FUN_001e2118();`. — still fails: cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v
+
+### Quarantined — 2 × assigning to 'X' (aka 'X') from incompatible type 'X'
+
+All: FUN_00008858 (8858), FUN_001e1c28 (1e1c28)
+
+#### FUN_00008858 — funcs/__Z12FUN_00008858m.cpp, Ghidra 8858, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00008858m.cpp:13:24: error: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
+   13 |         DAT_00453278 = FUN_000041f4(0x425378L);
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00008858m.cpp:17:5: error: no matching function for call to 'FUN_000088f8'
+   17 |     FUN_000088f8();
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:2159:6: note: candidate function not viable: requires 3 arguments, but 0 were provided
+ 2159 | void FUN_000088f8(float *, float *, int);
+      |      ^            ~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void *FUN_00008858(size_t param_1)
+{
+    void *pvVar1;
+
+    if ((DAT_00453280 & 1) == 0)
+    {
+        DAT_00453278 = FUN_000041f4(0x425378);
+        DAT_00453280 = 1;
+    }
+    pvVar1 = FUN_0021608c(DAT_00453278, param_1);
+    FUN_000088f8();
+    return pvVar1;
+}
+```
+Notes:
+- 10-20 18:12 [compile] call to 'FUN_000041f4' is ambiguous — plan: Change line 13 from `DAT_00453278 = FUN_000041f4(0x425378);` to `DAT_00453278 = FUN_000041f4(0x425378L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 18:13 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 13 from `DAT_00453278 = FUN_000041f4(0x425378L);` to `DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);` — still fails: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+- 10-20 18:13 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — plan: Change line 13 from `DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);` to `DAT_00453278 = FUN_000041f4(0x425378L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 18:14 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 13 from `DAT_00453278 = FUN_000041f4(0x425378L);` to `DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);` — still fails: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+- 10-20 18:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — plan: Change line 13 from `DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);` to `DAT_00453278 = FUN_000041f4(0x425378L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
+
+#### FUN_001e1c28 — funcs/FUN_001e1c28.cpp, Ghidra 1e1c28, 4 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e1c28.cpp:15:11: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+   15 |   uVar1 = FUN_001e1ccc();
+      |           ^~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e1c28.cpp:16:12: error: cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *')
+   16 |   puVar2 = (undefined8 *)FUN_001e1cf4();
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+long FUN_001e1c28(long param_1,uint64_t param_2) {
+  undefined8 uVar1;
+  undefined8 *puVar2;
+  int local_34;
+  undefined8 local_30;
+  long lStack_28;
+
+  local_34 = param_2;
+  lStack_28 = param_1;
+  FUN_001e1c88((undefined8 *)(param_1 + 8));
+  local_34 = 0;
+  FUN_001e1ca8((long *)(param_1 + 0x10), &local_34);
+  uVar1 = FUN_001e1ccc();
+  puVar2 = (undefined8 *)FUN_001e1cf4();
+  *puVar2 = uVar1;
+  return param_1;
+}
+```
+Notes:
+- 10-20 19:31 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 15 from `uVar1 = FUN_001e1ccc();` to `uVar1 = (undefined8)FUN_001e1ccc();`. — still fails: C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed
+- 10-20 19:32 [compile] C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed — plan: Change line 15 from `uVar1 = FUN_001e1ccc();` to `uVar1 = (undefined8)FUN_001e1ccc();`. — still fails: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 19:32 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 15 from `uVar1 = FUN_001e1ccc();` to `uVar1 = (undefined8)FUN_001e1ccc();`. — still fails: C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed
+- 10-20 19:32 [compile] C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-20 19:33 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 15 from `uVar1 = FUN_001e1ccc();` to `uVar1 = (undefined8)FUN_001e1ccc();`. — still fails: C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed
+- 10-20 19:33 [compile] C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+
+### Quarantined — 2 × C-style cast from 'X' to 'X' (aka 'X') is not allowed
+
+All: FUN_0011f0c0 (11f0c0), FUN_001e2cac (1e2cac)
+
+#### FUN_0011f0c0 — funcs/FUN_0011f0c0.cpp, Ghidra 11f0c0, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0011f0c0.cpp:11:20: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+   11 |     DAT_00453678 = (uint64_t)FUN_000041f4(0x43ccc0L);
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void * FUN_0011f0c0(uint64_t param_1) {
+void *pvVar1;
+
+if ((DAT_00453680 & 1) == 0) {
+    DAT_00453678 = FUN_000041f4(0x43ccc0);
+    DAT_00453680 = 1;
+}
+pvVar1 = FUN_0021608c(DAT_00453678,param_1 << 3);
+FUN_0011f15c((long)pvVar1,param_1);
+return pvVar1;
+}
+```
+Notes:
+- 10-20 19:27 [compile] call to 'FUN_000041f4' is ambiguous — plan: Change `FUN_000041f4(0x43ccc0);` to `FUN_000041f4(0x43ccc0L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 19:27 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — plan: Change `FUN_000041f4(0x43ccc0L);` to `FUN_000041f4((uint64_t)0x43ccc0L);` — still fails: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+- 10-20 19:27 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — plan: Change `FUN_000041f4(0x43ccc0L);` to `FUN_000041f4((uint64_t)0x43ccc0L);` — still fails: call to 'FUN_000041f4' is ambiguous
+- 10-20 19:28 [compile] call to 'FUN_000041f4' is ambiguous — plan: Change `FUN_000041f4((uint64_t)0x43ccc0L);` to `FUN_000041f4(0x43ccc0L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 19:28 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — plan: Change `FUN_000041f4(0x43ccc0L);` to `FUN_000041f4((uint64_t)0x43ccc0L);` — still fails: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+
+#### FUN_001e2cac — funcs/FUN_001e2cac.cpp, Ghidra 1e2cac, 5 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001e2cac.cpp:9:20: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+    9 |     DAT_00453c28 = (uint64_t)FUN_000041f4(0x443fc0L);
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001e2cac(undefined8 param_1, long param_2) {
+  if ((DAT_00453c30 & 1) == 0) {
+    DAT_00453c28 = FUN_000041f4(0x443fc0);
+    DAT_00453c30 = 1;
+  }
+  FUN_00216668(DAT_00453c28, param_2 * 0x30);
+  return;
+}
+```
+Notes:
+- 10-20 19:31 [compile] call to 'FUN_000041f4' is ambiguous — plan: Change `FUN_000041f4(0x443fc0);` to `FUN_000041f4(0x443fc0L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 19:32 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — plan: Change `DAT_00453c28 = FUN_000041f4(0x443fc0L);` to `DAT_00453c28 = (uint64_t)FUN_000041f4(0x443fc0L);` — still fails: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+- 10-20 19:32 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — plan: Change `DAT_00453c28 = (uint64_t)FUN_000041f4(0x443fc0L);` to `DAT_00453c28 = FUN_000041f4((uint64_t)0x443fc0L);` — still fails: call to 'FUN_000041f4' is ambiguous
+- 10-20 19:33 [compile] call to 'FUN_000041f4' is ambiguous — plan: Change `DAT_00453c28 = FUN_000041f4((uint64_t)0x443fc0L);` to `DAT_00453c28 = FUN_000041f4(0x443fc0L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 19:33 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — plan: Change `DAT_00453c28 = FUN_000041f4(0x443fc0L);` to `DAT_00453c28 = (uint64_t)FUN_000041f4(0x443fc0L);` — still fails: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
 
 ### Quarantined — 2 × variable has incomplete type 'X'
 
@@ -3154,135 +3897,6 @@ Notes:
 - 10-20 18:16 [compile] the model suggested an edit that already failed — skipped.
 - 10-20 18:17 [compile] the model suggested an edit that already failed — skipped.
 - 10-20 18:17 [compile] the model suggested an edit that already failed — skipped.
-
-### Quarantined — 2 × expected expression
-
-All: FUN_00208454 (208454), FUN_002145e4 (2145e4)
-
-#### FUN_00208454 — funcs/FUN_00208454.cpp, Ghidra 208454, 5 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:14:23: error: expected expression
-   14 |     auVar1 = (*(code *)PTR____chkstk_darwin_004241d0)();
-      |                       ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:16:5: error: use of undeclared identifier '_vsnprintf'; did you mean 'vsnprintf'?
-   16 |     _vsnprintf((char *)abStack_1028,0x1000,param_3,&stack0x00000000);
-      |     ^~~~~~~~~~
-      |     vsnprintf
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h:442:6: note: 'vsnprintf' declared here
-  442 | int      vsnprintf(char * __restrict _LIBC_COUNT(__size) __str, size_t __size, const char * __restrict __format, va_list) __printflike(3, 0);
-      |          ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:16:52: error: cannot initialize a parameter of type '__va_list_tag *' with an rvalue of type 'uint64_t *' (aka 'unsigned long long *')
-   16 |     _vsnprintf((char *)abStack_1028,0x1000,param_3,&stack0x00000000);
-      |                                                    ^~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h:442:117: note: passing argument to parameter here
-  442 | int      vsnprintf(char * __restrict _LIBC_COUNT(__size) __str, size_t __size, const char * __restrict __format, va_list) __printflike(3, 0);
-      |                                                                                                                         ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:17:24: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   17 |     FUN_002084e8(auVar1._0_8_,auVar1._8_8_,abStack_1028);
-      |                  ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:17:37: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   17 |     FUN_002084e8(auVar1._0_8_,auVar1._8_8_,abStack_1028);
-      |                               ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208454.cpp:21:3: error: no matching function for call to '___stack_chk_fail'
-   21 |   ___stack_chk_fail();
-      |   ^~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1187:17: note: candidate function not viable: requires 2 arguments, but 0 were provided
- 1187 | extern "C" void ___stack_chk_fail(uint64_t, uint32_t);
-      |                 ^                 ~~~~~~~~~~~~~~~~~~
-6 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00208454(undefined8 param_1,undefined8 param_2,char *param_3) {
-    undefined1 auVar1 [16];
-    byte abStack_1028 [4096];
-    long local_28;
-
-    auVar1 = (*(code *)PTR____chkstk_darwin_004241d0)();
-    local_28 = *(long *)PTR____stack_chk_guard_004241e8;
-    _vsnprintf((char *)abStack_1028,0x1000,param_3,&stack0x00000000);
-    FUN_002084e8(auVar1._0_8_,auVar1._8_8_,abStack_1028);
-    if (*(long *)PTR____stack_chk_guard_004241e8 == local_28) {
-        return;
-    }
-  ___stack_chk_fail();
-}
-```
-
-#### FUN_002145e4 — funcs/FUN_002145e4.cpp, Ghidra 2145e4, 5 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_002145e4.cpp:29:5: error: expected expression
-   29 |     ```
-      |     ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_002145e4(uint64_t *param_1) {
-    long alStack_d0 [2];
-    undefined8 auStack_c0 [2];
-    long alStack_b0 [2];
-    long alStack_a0 [2];
-    long alStack_90 [2];
-    long alStack_80 [2];
-    long alStack_70 [2];
-    ID local_60;
-    ID local_58;
-    ID local_40;
-    long alStack_38 [2];
-    undefined8 *local_28;
-
-    local_28 = param_1;
-    FUN_0021a1f4(alStack_38,"(arm64)");
-    local_40 = NSDictionary::dictionaryWithContentsOfFile_
-                       ((ID)PTR__OBJC_CLASS___NSDictionary_00452e60,
-                        &cf__System_Library_CoreServices_SystemVersion_plist);
-  if (local_40 != 0) {
-    local_58 = NSDictionary::objectForKey_(local_40,&cf_ProductName);
-    local_60 = objc_stub::objectForKey_(local_40,&cf_ProductVersion);
-    if ((local_58 != 0) && (local_60 != 0)) {
-      FUN_00213f0c(alStack_a0,local_58);
-      FUN_0021a1f4(alStack_b0," ");
-      FUN_0021f558(alStack_90,alStack_a0,alStack_b0);
-      FUN_00213f0c(auStack_c0,local_60);
-      FUN_0021f558(alStack_80,alStack_90,auStack_c0);
-      FUN_0021a1f4(alStack_d0," ");
-      FUN_0021f558(alStack_70,alStack_80,alStack_d0);
-      FUN_0021f558(param_1,alStack_70,alStack_38);
-      FUN_000b50b8((long)alStack_70);
-      FUN_000b50b8((long)alStack_d0);
-      FUN_000b50b8((long)alStack_80);
-      FUN_000b50b8((long)auStack_c0);
-      FUN_000b50b8((long)alStack_90);
-      FUN_000b50b8((long)alStack_b0);
-      FUN_000b50b8((long)alStack_a0);
-      goto LAB_00214760;
-    }
-  }
-  FUN_0021a1f4(alStack_70,"Unknown Mac OS X Version ");
-  FUN_0021f558(param_1,alStack_70,alStack_38);
-  FUN_000b50b8((long)alStack_70);
-LAB_00214760:
-  FUN_000b50b8((long)alStack_38);
-  return;
-}
-```
-Notes:
-- 10-20 18:32 [compile] 'NSDictionary' is not a class, namespace, or enumeration — plan: Change line 29 to: ` local_40 = [NSDictionary dictionaryWithContentsOfFile_` — still fails: expected ',' or ']' in lambda capture list
-- 10-20 18:33 [compile] expected ',' or ']' in lambda capture list — plan: Change line 29 to: ` local_40 = [[NSDictionary dictionaryWithContentsOfFile_:` — still fails: expected expression
-- 10-20 18:33 [compile] expected expression — plan: Change line 29 to: ` local_40 = [[NSDictionary dictionaryWithContentsOfFile_:` — still fails: expected variable name or 'this' in lambda capture list
-- 10-20 18:33 [compile] that edit didn't help — undone.
-- 10-20 18:34 [compile] expected expression — plan: Change line 29 to: ` local_40 = [[NSDictionary dictionaryWithContentsOfFile_: PTR__OBJC_CLASS___NSDictionary_00452e60]; — still fails: expected variable name or 'this' in lambda capture list
-- 10-20 18:34 [compile] that edit didn't help — undone.
-- 10-20 18:34 [compile] the model suggested an edit that already failed — skipped.
 
 ### Quarantined — 2 × unknown type name 'X'
 
@@ -3683,63 +4297,60 @@ Notes:
 - 10-20 18:17 [compile] the model suggested an edit that already failed — skipped.
 - 10-20 18:18 [compile] the model suggested an edit that already failed — skipped.
 
-### Quarantined — 2 × too many arguments to function call, expected N, have N
+### Quarantined — 1 × type 'X' does not provide a subscript operator
 
-All: FUN_00225de8 (225de8), _vsnprintf (3868c0)
+All: FUN_00004424 (4424)
 
-#### FUN_00225de8 — funcs/FUN_00225de8.cpp, Ghidra 225de8, 6 model attempt(s)
+#### FUN_00004424 — funcs/__Z12FUN_00004424Phj.cpp, Ghidra 4424, 9 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00225de8.cpp:4:31: error: too many arguments to function call, expected 0, have 1
-    4 |   (*(void (*)(void))*param_1)(param_1 + 1);
-      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00004424Phj.cpp:5:42: error: type 'FilterData' does not provide a subscript operator
+    5 |         data[i] = (data[i] + DAT_00424998[i]) / 2;
+      |                              ~~~~~~~~~~~~^~
 1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_00225de8(uint64_t *param_1) {
-  (*(void *)*param_1)(param_1 + 1);
-  return;
+void FUN_00004424(uint8_t* data, uint32_t size) {
+    for (uint32_t i = 0; i < size; ++i) {
+        data[i] = (data[i] + DAT_00424998[i]) / 2;
+    }
 }
 ```
 Notes:
-- 10-20 18:24 [compile] ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference] — plan: Change `*(void *)*param_1` to `*(void (*)())*param_1`. — still fails: too many arguments to function call, expected 0, have 1
-- 10-20 18:24 [compile] too many arguments to function call, expected 0, have 1 — plan: Change `*(void (*)(void))*param_1(param_1 + 1);` to `(*(void (*)())*param_1)(param_1 + 1);`. — still fails: too many arguments to function call, expected 0, have 1
-- 10-20 18:24 [compile] that edit didn't help — undone.
-- 10-20 18:24 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:25 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:25 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:26 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:43 [compile] no member named 'data' in 'FilterData' — plan: Change line 5 to: `data[i] = (data[i] + DAT_00424998[i]) / 2;` — still fails: type 'FilterData' does not provide a subscript operator
 
-#### _vsnprintf — funcs/_vsnprintf.cpp, Ghidra 3868c0, 4 model attempt(s)
+### Quarantined — 1 × cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')
+
+All: FUN_000050fc (50fc)
+
+#### FUN_000050fc — funcs/__Z12FUN_000050fcPy.cpp, Ghidra 50fc, 5 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/_vsnprintf.cpp:8:53: error: too many arguments to function call, expected 0, have 1
-    8 |   iVar1 = (*(int (*)(void))PTR__vsnprintf_00450af0)((int)(uintptr_t)param_1);
-      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000050fcPy.cpp:6:14: error: cannot initialize a variable of type 'uint8_t *' (aka 'unsigned char *') with an rvalue of type 'uint8_t' (aka 'unsigned char')
+    6 |     uint8_t* result = FUN_000b50b8(*param_1);
+      |              ^        ~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000050fcPy.cpp:7:15: error: incompatible pointer to integer conversion assigning to 'uint8_t' (aka 'unsigned char') from 'uint64_t *' (aka 'unsigned long long *')
+    7 |     *result = &DAT_00424d60;
+      |               ^~~~~~~~~~~~~
+2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-int _vsnprintf(char *param_1,size_t param_2,char *param_3,va_list param_4) {
-  int iVar1;
-
-  iVar1 = (*(void *)PTR__vsnprintf_00450af0)((int)param_1);
-  return iVar1;
+void FUN_000050fc(undefined8 * param_1) {
+    undefined8* result = FUN_000b50b8(param_1);
+    *result = &DAT_00424d60;
 }
 ```
 Notes:
-- 10-20 18:34 [compile] ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference] — plan: Change `iVar1 = (*(void *)PTR__vsnprintf_00450af0)((int)(uintptr_t)param_1);` to `iVar1 = (*(int (*)(void))PTR__vsnprintf_00450af0)((int)(uintptr_t)param_1);` — still fails: too many arguments to function call, expected 0, have 1
-- 10-20 18:35 [compile] too many arguments to function call, expected 0, have 1 — plan: Change `iVar1 = (*(int (*)(void))PTR__vsnprintf_00450af0)((int)(uintptr_t)param_1);` to `iVar1 = (*(int (*)(void))PTR__vsnprintf_00450af0)(param_1);` — still fails: too many arguments to function call, expected 0, have 1
-- 10-20 18:35 [compile] that edit didn't help — undone.
-- 10-20 18:35 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:36 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:27 [compile] no matching function for call to 'FUN_000b50b8' — plan: Change line 6 to: `undefined8* result = FUN_000b50b8(*param_1);` — still fails: cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of t
+- 10-20 19:27 [compile] cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of type 'uint8_t' (aka ' — plan: Change line 6 to: `undefined8* result = FUN_000b50b8(*param_1);` — still fails: cannot initialize a variable of type 'uint8_t *' (aka 'unsigned char *') with an rvalue of type 'uin
 
 ### Quarantined — 1 × 'X' does not name a template but is followed by template arguments; did you mean 'X'?
 
@@ -3852,49 +4463,104 @@ Notes:
 - 10-20 18:12 [compile] arithmetic on a pointer to void — plan: Change line 5 to `float * param_2 = (float *)(param_1 + 0x18);` — still fails: arithmetic on a pointer to void
 - 10-20 18:12 [compile] that edit didn't help — undone.
 
-### Quarantined — 1 × assigning to 'X' (aka 'X') from incompatible type 'X'
+### Quarantined — 1 × subscript of pointer to incomplete type 'X'
 
-All: FUN_00008858 (8858)
+All: FUN_000f80f4 (f80f4)
 
-#### FUN_00008858 — funcs/__Z12FUN_00008858m.cpp, Ghidra 8858, 5 model attempt(s)
+#### FUN_000f80f4 — funcs/FUN_000f80f4.cpp, Ghidra f80f4, 9 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00008858m.cpp:13:24: error: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
-   13 |         DAT_00453278 = FUN_000041f4(0x425378L);
-      |                        ^~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00008858m.cpp:17:5: error: no matching function for call to 'FUN_000088f8'
-   17 |     FUN_000088f8();
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:2159:6: note: candidate function not viable: requires 3 arguments, but 0 were provided
- 2159 | void FUN_000088f8(float *, float *, int);
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000f80f4.cpp:16:39: error: subscript of pointer to incomplete type 'void'
+   16 |         float sum = b[0] * inputBuffer[i];
+      |                            ~~~~~~~~~~~^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000f80f4.cpp:18:38: error: subscript of pointer to incomplete type 'void'
+   18 |             sum += b[j] * inputBuffer[i - j];
+      |                           ~~~~~~~~~~~^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000f80f4.cpp:20:21: error: subscript of pointer to incomplete type 'void'
+   20 |         outputBuffer[i] = sum / (1.0f + a[0]);
+      |         ~~~~~~~~~~~~^
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000f80f4(void* inputBuffer, int sampleRate, int filterOrder) {
+    float b[filterOrder + 1];
+        memset(b, 0, sizeof(float) * (filterOrder + 1));
+    float a[filterOrder + 1] = {1.0, -2.5};
+
+    void* outputBuffer = malloc(sampleRate * sizeof(float));
+
+    for (int i = 0; i < sampleRate; i++) {
+        outputBuffer[i] = 0.0f;
+    }
+
+    for (int i = 0; i < sampleRate; i++) {
+        float sum = b[0] * inputBuffer[i];
+        for (int j = 1; j <= filterOrder; j++) {
+            sum += b[j] * inputBuffer[i - j];
+        }
+        outputBuffer[i] = sum / (1.0f + a[0]);
+    }
+
+    free(inputBuffer);
+
+    memcpy(inputBuffer, outputBuffer, sampleRate * sizeof(float));
+}
+```
+Notes:
+- 10-20 18:43 [compile] expected expression — plan: Change line 4 to `float b[filterOrder + 1] = {0.5, -0.25};` — still fails: variable-sized object may not be initialized
+- 10-20 18:43 [compile] variable-sized object may not be initialized — plan: Change line 4 to `float b[filterOrder + 1] = {0.5, -0.25};` — still fails: expected expression
+- 10-20 18:44 [compile] expected expression — plan: Change line 6 to `float a[filterOrder + 1] = {1.0, -2.5};` — still fails: variable-sized object may not be initialized
+- 10-20 19:24 [compile] variable-sized object may not be initialized — plan: Change line 6 to `float a[filterOrder + 1];` and add `memset(a, 0, sizeof(float) * (filterOrder + 1));` before line 6. — still fails: subscript of pointer to incomplete type 'void'
+- 10-20 19:24 [compile] subscript of pointer to incomplete type 'void' — plan: Change line 12 to `outputBuffer[i] = 0.0f;` — still fails: subscript of pointer to incomplete type 'void'
+
+### Quarantined — 1 × static_cast from 'X' to 'X' is not allowed
+
+All: FUN_0011eee8 (11eee8)
+
+#### FUN_0011eee8 — funcs/FUN_0011eee8.cpp, Ghidra 11eee8, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0011eee8.cpp:8:26: error: static_cast from 'int *' to 'long' is not allowed
+    8 |     for (long i = 0; i < static_cast<long>(ptr) - param_1; ++i){
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0011eee8.cpp:12:20: error: invalid operands to binary expression ('int' and 'int *')
+   12 |     int mean = sum / (ptr - 1);
+      |                ~~~ ^ ~~~~~~~~~
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void *FUN_00008858(size_t param_1)
-{
-    void *pvVar1;
+void FUN_0011eee8(long *param_1) {
+  if (*param_1 != 0) {
+    int *ptr = (int *)param_1;
 
-    if ((DAT_00453280 & 1) == 0)
-    {
-        DAT_00453278 = FUN_000041f4(0x425378);
-        DAT_00453280 = 1;
+    int sum = 0;
+    for (int i = 0; i < ptr - 1; ++i) {
+      sum += *ptr;
     }
-    pvVar1 = FUN_0021608c(DAT_00453278, param_1);
-    FUN_000088f8();
-    return pvVar1;
+
+    int mean = sum / (ptr - 1);
+
+    float filteredValue = mean * (1.0 - std::exp(-mean / 256.0));
+
+    *param_1 = (long)filteredValue;
+  }
+
+  return;
 }
 ```
 Notes:
-- 10-20 18:12 [compile] call to 'FUN_000041f4' is ambiguous — plan: Change line 13 from `DAT_00453278 = FUN_000041f4(0x425378);` to `DAT_00453278 = FUN_000041f4(0x425378L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
-- 10-20 18:13 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 13 from `DAT_00453278 = FUN_000041f4(0x425378L);` to `DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);` — still fails: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-- 10-20 18:13 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — plan: Change line 13 from `DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);` to `DAT_00453278 = FUN_000041f4(0x425378L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
-- 10-20 18:14 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 13 from `DAT_00453278 = FUN_000041f4(0x425378L);` to `DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);` — still fails: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-- 10-20 18:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — plan: Change line 13 from `DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);` to `DAT_00453278 = FUN_000041f4(0x425378L);` — still fails: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
+- 10-20 19:27 [compile] comparison between pointer and integer ('int' and 'int *') — plan: Change line 8 to `for (int i = 0; i < ptr - param_1; ++i)`. — still fails: 'int *' and 'long *' are not pointers to compatible types
+- 10-20 19:28 [compile] 'int *' and 'long *' are not pointers to compatible types — plan: Change line 8 to `for (int i = 0; i < ptr - param_1; ++i)`. — still fails: 'int *' and 'long *' are not pointers to compatible types
+- 10-20 19:28 [compile] that edit didn't help — undone.
+- 10-20 19:29 [compile] 'int *' and 'long *' are not pointers to compatible types — plan: Change line 8 to `for (long i = 0; i < ptr - param_1; ++i)` to cast `ptr` to a `long` before subtracting from `param_1`. — still fails: static_cast from 'int *' to 'long' is not allowed
 
 ### Quarantined — 1 × array type 'X' (aka 'X') is not assignable
 
@@ -4678,6 +5344,52 @@ Notes:
 - 10-20 18:18 [compile] cannot initialize a parameter of type 'size_t' (aka 'unsigned long') with an rvalue of type 'void *' — plan: Change `__cxxabiv1::__cxa_allocate_exception(0x18);` to `__cxxabiv1::__cxa_allocate_exception((void *)0x18);` — still fails: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from
 - 10-20 18:19 [compile] incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'void *' — plan: Change `__cxxabiv1::__cxa_allocate_exception(0x18);` to `__cxxabiv1::__cxa_allocate_exception((void *)0x18);` — still fails: cannot initialize a parameter of type 'size_t' (aka 'unsigned long') with an rvalue of type 'void *'
 
+### Quarantined — 1 × invalid operands to binary expression ('X' and 'X' (aka 'X'))
+
+All: FUN_00208990 (208990)
+
+#### FUN_00208990 — funcs/FUN_00208990.cpp, Ghidra 208990, 6 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00208990.cpp:4:61: error: invalid operands to binary expression ('basic_ostream<char, std::char_traits<char>>' and 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t'))
+    4 |     std::cout << "Processing lowpass filter with param_1: " << *param_1 << std::endl;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:349:55: note: candidate function template not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'char' for 2nd argument
+  349 | _LIBCPP_HIDE_FROM_ABI basic_ostream<_CharT, _Traits>& operator<<(basic_ostream<_CharT, _Traits>& __os, char __cn) {
+      |                                                       ^                                                ~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:376:53: note: candidate function template not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'char' for 2nd argument
+  376 | _LIBCPP_HIDE_FROM_ABI basic_ostream<char, _Traits>& operator<<(basic_ostream<char, _Traits>& __os, char __c) {
+      |                                                     ^                                              ~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:381:53: note: candidate function template not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'signed char' for 2nd argument
+  381 | _LIBCPP_HIDE_FROM_ABI basic_ostream<char, _Traits>& operator<<(basic_ostream<char, _Traits>& __os, signed char __c) {
+      |                                                     ^                                              ~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:386:53: note: candidate function template not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'unsigned char' for 2nd argument
+  386 | _LIBCPP_HIDE_FROM_ABI basic_ostream<char, _Traits>& operator<<(basic_ostream<char, _Traits>& __os, unsigned char __c) {
+      |                                                     ^                                              ~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:398:1: note: candidate function template not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'const char *' for 2nd argument
+  398 | operator<<(basic_ostream<_CharT, _Traits>& __os, const char* __strn) {
+      | ^                                                ~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:437:53: note: candidate function template not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'const char *' for 2nd argument
+  437 | _LIBCPP_HIDE_FROM_ABI basic_ostream<char, _Traits>& operator<<(basic_ostream<char, _Traits>& __os, const char* __str) {
+      |                                                     ^                                              ~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/
+...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:168:40: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'nullptr_t' (aka 'std::nullptr_t') for 1st argument
+  168 |   _LIBCPP_HIDE_FROM_ABI basic_ostream& operator<<(nullptr_t) { return *this << "nullptr"; }
+      |                                        ^          ~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00208990(pthread_mutex_t *param_1) {
+    std::cout << "Processing lowpass filter with param_1: " << *param_1 << std::endl;
+}
+```
+
 ### Quarantined — 1 × redefinition of 'X' with a different type: 'X' vs 'X'
 
 All: FUN_0020a438 (20a438)
@@ -4825,6 +5537,51 @@ Notes:
 - 10-20 18:40 [compile] use of undeclared identifier '___cxa_allocate_exception'; did you mean '__cxxabiv1::__cxa_allocate_exception'? — plan: Change line 19 to: `local_40 = (long *)__cxxabiv1::__cxa_allocate_exception(0x18);` — still fails: use of undeclared identifier '___cxa_allocate_exception'; did you mean '__cxxabiv1::__cxa_allocate_e
 - 10-20 18:40 [compile] use of undeclared identifier '___cxa_allocate_exception'; did you mean '__cxxabiv1::__cxa_allocate_exception'? — plan: Change line 21 to: `plVar1 = (long *)__cxxabiv1::__cxa_allocate_exception(0x18);` — still fails: use of undeclared label 'LAB_00216120'
 - 10-20 18:41 [compile] use of undeclared label 'LAB_00216120' — plan: Change line 15 to: `plVar1 = (long *)__cxxabiv1::__cxa_allocate_exception(0x18);` — still fails: use of undeclared label 'LAB_00216120'
+
+### Quarantined — 1 × use of undeclared identifier 'X'; did you mean 'X'?
+
+All: FUN_0021a1f4 (21a1f4)
+
+#### FUN_0021a1f4 — funcs/FUN_0021a1f4.cpp, Ghidra 21a1f4, 10 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021a1f4.cpp:4:3: error: use of undeclared identifier 'FUN_0021rbf4'; did you mean 'FUN_0021abf4'?
+    4 |   FUN_0021rbf4((uint64_t *)param_1,param_2);
+      |   ^~~~~~~~~~~~
+      |   FUN_0021abf4
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42495:6: note: 'FUN_0021abf4' declared here
+ 42495 | void FUN_0021abf4(float *, LowPassFilter &);
+       |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0021a1f4.cpp:4:16: error: cannot initialize a parameter of type 'float *' with an rvalue of type 'uint64_t *' (aka 'unsigned long long *')
+    4 |   FUN_0021rbf4((uint64_t *)param_1,param_2);
+      |                ^~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42495:26: note: passing argument to parameter here
+ 42495 | void FUN_0021abf4(float *, LowPassFilter &);
+       |                          ^
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0021a1f4(long *param_1,char *param_2) {
+  FUN_0021rbf4((uint64_t *)param_1,param_2);
+  return;
+}
+```
+Notes:
+- 10-20 18:42 [compile] no matching function for call to 'FUN_0021abf4' — plan: Change `param_1` to `(uint64_t *)param_1` in line 4. — still fails: use of undeclared identifier 'FUN_0021rbf4'; did you mean 'FUN_0021abf4'?
+- 10-20 18:43 [compile] use of undeclared identifier 'FUN_0021rbf4'; did you mean 'FUN_0021abf4'? — plan: Change line 4 from `FUN_0021rbf4((uint64_t *)param_1,param_2);` to `FUN_0021rbf4(param_1,param_2);`. — still fails: use of undeclared identifier 'FUN_0021rbf4'; did you mean 'FUN_0021abf4'?
+- 10-20 18:43 [compile] that edit didn't help — undone.
+- 10-20 18:43 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 18:44 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:24 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:24 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:25 [compile] the model suggested an edit that already failed — skipped.
+- 10-20 19:26 [compile] the model suggested an edit that already failed — skipped.
 
 ### Quarantined — 1 × member reference base type 'X' is not a structure or union
 
@@ -5084,38 +5841,38 @@ Notes:
 - 10-20 18:27 [compile] assigning to 'int' from incompatible type 'void' — plan: Change line 7 to `iVar1 = (int)((*(void (*)(int))PTR__stat_004509f8)((uintptr_t)param_1));` — still fails: C-style cast from 'void' to 'int' is not allowed
 - 10-20 18:27 [compile] C-style cast from 'void' to 'int' is not allowed — plan: Change line 7 to `iVar1 = (int)((*(void (*)(int))PTR__stat_004509f8)((uintptr_t)param_1));` — still fails: cannot initialize a parameter of type 'int' with an lvalue of type 'char *'
 
-## Not compiling yet: 12980 function(s), by first error
+## Not compiling yet: 12915 function(s), by first error
 
--   3395 × no matching function for call to 'X'
--   2971 × use of undeclared identifier 'X'
--    907 × use of undeclared identifier 'X'; did you mean 'X'?
--    743 × no member named 'X' in 'X'
--    478 × assigning to 'X' from incompatible type 'X'
--    378 × assigning to 'X' (aka 'X') from incompatible type 'X'
--    363 × cannot cast from type 'X' to pointer type 'X'
--    298 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
+-   3371 × no matching function for call to 'X'
+-   2963 × use of undeclared identifier 'X'
+-    900 × use of undeclared identifier 'X'; did you mean 'X'?
+-    739 × no member named 'X' in 'X'
+-    477 × assigning to 'X' from incompatible type 'X'
+-    375 × assigning to 'X' (aka 'X') from incompatible type 'X'
+-    360 × cannot cast from type 'X' to pointer type 'X'
 -    297 × expected 'X' after top level declarator
--    296 × must use 'X' tag to refer to type 'X' in this scope
+-    295 × must use 'X' tag to refer to type 'X' in this scope
+-    294 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
 -    235 × unknown type name 'X'
 -    219 × void function 'X' should not return a value [-Wreturn-mismatch]
 -    217 × ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]
--    203 × no matching constructor for initialization of 'X'
+-    201 × no matching constructor for initialization of 'X'
 -    175 × unknown type name 'X'; did you mean 'X'?
 -    156 × redefinition of 'X'
--     91 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
--     88 × brackets are not allowed here; to declare an array, place the brackets after the name
+-     90 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
+-     87 × brackets are not allowed here; to declare an array, place the brackets after the name
 -     84 × member reference base type 'X' (aka 'X') is not a structure or union
 -     81 × expected unqualified-id
 -     70 × expected expression
 -     63 × indirection requires pointer operand ('X' (aka 'X') invalid)
--     62 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
+-     63 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
 -     57 × indirection requires pointer operand ('X' invalid)
 -     56 × incompatible pointer to integer conversion assigning to 'X' from 'X'; dereference with *
 -     43 × invalid operands to binary expression ('X' and 'X')
 -     42 × variable has incomplete type 'X'
 -     41 × subscripted value is not an array, pointer, or vector
 -     36 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *
--     34 × array type 'X' (aka 'X') is not assignable
+-     35 × array type 'X' (aka 'X') is not assignable
 -     34 × function definition is not allowed here
 -     28 × arithmetic on a pointer to void
 -     26 × unexpected type name 'X': expected expression
@@ -5126,13 +5883,13 @@ Notes:
 -     22 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'
 -     20 × member reference base type 'X' is not a structure or union
 -     19 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
--     19 × incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')
 -     17 × call to 'X' is ambiguous
 -     17 × no member named 'X' in namespace 'X'
+-     17 × incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')
 -     16 × called object type 'X' is not a function or function pointer
 -     16 × N errors generated.
--     14 × cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'
 -     13 × functions that differ only in their return type cannot be overloaded
+-     13 × cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'
 -     12 × out-of-line definition of 'X' does not match any declaration in 'X'
 -     11 × no viable overloaded 'X'
 -     11 × cannot initialize a variable of type 'X' with an lvalue of type 'X' (aka 'X')
@@ -5161,25 +5918,24 @@ Notes:
 -      7 × cannot initialize a parameter of type 'X' with an lvalue of type 'X'
 -      6 × comparison between pointer and integer ('X' (aka 'X') and 'X')
 -      6 × expected 'X'
--      6 × comparison between pointer and integer ('X' and 'X')
 -      6 × expected 'X' after expression
 -      6 × redefinition of label 'X'
 -      6 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')
 -      6 × incompatible pointer types assigning to 'X' from 'X'
 -      5 × type 'X' does not provide a call operator
--      5 × variable-sized object may not be initialized
+-      5 × comparison between pointer and integer ('X' and 'X')
 -      5 × incompatible pointer to integer conversion assigning to 'X' from 'X'
 -      5 × incompatible pointer to integer conversion assigning to 'X' from 'X' (aka 'X')
 -      5 × cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')
--      5 × N error generated.
 -      4 × cannot initialize a member subobject of type 'X' with an lvalue of type 'X'
 -      4 × incompatible pointer types assigning to 'X' (aka 'X') from 'X'
+-      4 × variable-sized object may not be initialized
 -      4 × invalid digit 'X' in decimal constant
 -      4 × invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))
 -      4 × redefinition of 'X' with a different type: 'X' vs 'X'
+-      4 × N error generated.
 -      4 × incompatible integer to pointer conversion assigning to 'X' from 'X'
 -      4 × expected 'X' in do/while loop
--      3 × type 'X' does not provide a subscript operator
 -      3 × no member named 'X' in namespace 'X'; did you mean simply 'X'?
 -      3 × no template named 'X'; did you mean 'X'?
 -      3 × redefinition of parameter 'X'
@@ -5192,6 +5948,7 @@ Notes:
 -      3 × cannot initialize a parameter of type 'X' (aka 'X') with an lvalue of type 'X' (aka 'X')
 -      3 × cannot initialize a variable of type 'X' (aka 'X') with an lvalue of type 'X' (aka 'X')
 -      3 × comparison of distinct pointer types ('X' (aka 'X') and 'X' (aka 'X'))
+-      2 × type 'X' does not provide a subscript operator
 -      2 × cannot initialize a parameter of type 'X' (aka 'X') with an lvalue of type 'X'
 -      2 × static_cast from 'X' to 'X' casts away qualifiers
 -      2 × cannot initialize a variable of type 'X' (aka 'X') with an lvalue of type 'X'
@@ -5240,7 +5997,6 @@ Notes:
 -      1 × assigning to 'X' from incompatible type 'X'; dereference with *
 -      1 × non-const lvalue reference to type 'X' cannot bind to a temporary of type 'X'
 -      1 × invalid use of non-static data member 'X'
--      1 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); remove &
 -      1 × function cannot return array type 'X' (aka 'X')
 -      1 × fatal error: too many errors emitted, stopping now [-ferror-limit=]
 -      1 × incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')
@@ -5258,9 +6014,9 @@ Notes:
 -      1 × no matching conversion for C-style cast from 'X' (aka 'X') to 'X'
 -      1 × assigning to 'X' (aka 'X') from 'X' converts between pointers to integer types with different sign
 
-### Not compiling yet — 3395 × no matching function for call to 'X'
+### Not compiling yet — 3371 × no matching function for call to 'X'
 
-All: FUN_00001a3c (1a3c), processAndFilterInput (3214), FUN_000033bc (33bc), FUN_000033e0 (33e0), FUN_00003438 (3438), processInput2 (349c), FUN_000034cc (34cc), FUN_00003750 (3750), FUN_000038a0 (38a0), processInputData (38c0), processValue (38e0), isConditionMet (39d4), FUN_000039f0 (39f0), initializeAndApplyFilters (3bb0), processAndWriteData (3c74), FUN_00003c94 (3c94), FUN_00003d30 (3d30), main2 (3d80), FUN_00003dd0 (3dd0), FUN_00004478 (4478), FUN_00004500 (4500), FUN_00004520 (4520), FUN_000045dc (45dc), FUN_000047d4 (47d4), FUN_000047f4 (47f4), FUN_00004814 (4814), rotateVector2 (488c), FUN_000048c4 (48c4), FUN_00004b88 (4b88), processAndExecuteFunction (4bd4), processValues (4d30), processVector (4de8), main4 (4e90), processAndExecute (4ec4), FUN_00004f0c (4f0c), FUN_00004f64 (4f64), FUN_00004fd8 (4fd8), FUN_00005070 (5070), FUN_00005090 (5090), FUN_000050d8 (50d8), FUN_000050fc (50fc), FUN_00005358 (5358), FUN_00005414 (5414), processFilterData (5498), main6 (5878), processInputData2 (5898), FUN_000058ac (58ac), main7 (5994), FUN_000059a8 (59a8), FUN_00005a6c (5a6c), processInput14 (610c), FUN_000061a0 (61a0), processInput15 (6218), processInput16 (627c), FUN_000066dc (66dc), FUN_000066fc (66fc), FUN_0000699c (699c), FUN_000069bc (69bc), FUN_00006cd0 (6cd0), FUN_00006d64 (6d64), FUN_00006d94 (6d94), FUN_00007104 (7104), FUN_00007120 (7120), calculateAndOutputResults (7514), _VSTPluginMain (7640), FUN_00007ecc (7ecc), FUN_00007f58 (7f58), FUN_0000809c (809c), FUN_0000813c (813c), FUN_000083c0 (83c0), FUN_00008748 (8748), FUN_00008a18 (8a18), processInput25 (92c8), FUN_00009448 (9448), FUN_0000959c (959c), FUN_000095cc (95cc), FUN_0000967c (967c), FUN_000096bc (96bc), processInput24 (96dc), FUN_00009780 (9780), processValues2 (9900), FUN_00009cd4 (9cd4), main9 (9d0c), processValues3 (9d1c), FUN_00009f9c (9f9c), FUN_0000a04c (a04c), FUN_0000a2b4 (a2b4), FUN_0000a45c (a45c), FUN_0000a670 (a670), FUN_0000a79c (a79c), FUN_0000a854 (a854), processValues4 (a9c0), FUN_0000b0a8 (b0a8), FUN_0000b154 (b154), FUN_0000b3dc (b3dc), FUN_0000b488 (b488), FUN_0000b73c (b73c), FUN_0000b8c4 (b8c4), FUN_0000b92c (b92c), FUN_0000bbf8 (bbf8), FUN_0000bc38 (bc38), FUN_0000bd84 (bd84), FUN_0000bdac (bdac), FUN_0000be68 (be68), FUN_0000bf9c (bf9c), FUN_0000c300 (c300), FUN_0000c394 (c394), FUN_0000c468 (c468), FUN_0000c5c0 (c5c0), FUN_0000c694 (c694), FUN_0000c6c8 (c6c8), FUN_0000c730 (c730), FUN_0000c7fc (c7fc), FUN_0000c884 (c884), processArray3 (c8a8), FUN_0000c9a4 (c9a4), FUN_0000c9c8 (c9c8), processValues5 (cbac), FUN_0000cd34 (cd34), FUN_0000ce78 (ce78), FUN_0000dcec (dcec), FUN_0000ddd4 (ddd4), processInput27 (e054), FUN_0000e774 (e774), FUN_0000ee7c (ee7c), FUN_0000f258 (f258), FUN_0000f78c (f78c), FUN_0000fbb8 (fbb8), FUN_00010198 (10198), FUN_0001098c (1098c), FUN_000119f4 (119f4), processAndDisplayData (11c38), FUN_00011d14 (11d14), FUN_00012390 (12390), FUN_000125cc (125cc), FUN_000126c0 (126c0), FUN_00012d48 (12d48), FUN_00012d94 (12d94), FUN_00012de4 (12de4), FUN_00012f88 (12f88), FUN_0001304c (1304c), FUN_000133ac (133ac), FUN_000135c0 (135c0), FUN_0001362c (1362c), FUN_00013b28 (13b28), FUN_00013b7c (13b7c), FUN_00013bdc (13bdc), FUN_00013c58 (13c58), FUN_00013e68 (13e68), FUN_00013f40 (13f40), FUN_00013fd8 (13fd8), processVector3 (14174), FUN_000147f8 (147f8), FUN_00014858 (14858), FUN_00014970 (14970), processInput35 (149a0), FUN_00014a20 (14a20), FUN_00014ab0 (14ab0), FUN_00014b28 (14b28), FUN_00015d94 (15d94), FUN_00015df0 (15df0), FUN_00015e58 (15e58), FUN_00015f28 (15f28), FUN_0001603c (1603c), FUN_000163bc (163bc), FUN_00016420 (16420), FUN_00016524 (16524), FUN_00016668 (16668), FUN_0001695c (1695c), FUN_000169dc (169dc), applyFilterChain (16a28), FUN_00016a74 (16a74), FUN_00016ac8 (16ac8), processInput37 (170e8), FUN_00017174 (17174), FUN_00018478 (18478), FUN_00018744 (18744), FUN_00018830 (18830), FUN_00018e80 (18e80), FUN_00018f48 (18f48), FUN_000191b0 (191b0), FUN_000192e4 (192e4), FUN_000198fc (198fc), FUN_00019a3c (19a3c), processInput40 (19a7c), processImages (19cc0), FUN_0001a084 (1a084), FUN_0001a4b0 (1a4b0), FUN_0001b16c (1b16c), FUN_0001be04 (1be04), glitchProgram (1c200), FUN_0001c528 (1c528), FUN_0001c554 (1c554), FUN_0001d314 (1d314), FUN_0001d3c8 (1d3c8), FUN_0001df18 (1df18), FUN_0001df38 (1df38), FUN_0001df58 (1df58), FUN_0001df98 (1df98), FUN_0001dfb8 (1dfb8), FUN_0001dfd8 (1dfd8), FUN_0001e0b8 (1e0b8), FUN_0001e0d8 (1e0d8), FUN_0001e118 (1e118), FUN_0001e5b0 (1e5b0), FUN_0001eeac (1eeac), FUN_0001ef1c (1ef1c), FUN_0001f500 (1f500), FUN_0001f64c (1f64c), processValues9 (1f7b8), FUN_00020628 (20628), FUN_000206f0 (206f0), FUN_00020dc0 (20dc0), FUN_00020f5c (20f5c), FUN_00021364 (21364), FUN_00021ba0 (21ba0), FUN_00021bd4 (21bd4), FUN_00021c08 (21c08), handleData (21cd8), processArray6 (21e40), FUN_0002239c (2239c), setAndProcessData2 (2246c), processValues10 (2269c), FUN_00022800 (22800), FUN_000228bc (228bc), FUN_00023e68 (23e68), FUN_00027aac (27aac), FUN_00027b94 (27b94), FUN_00027c70 (27c70), FUN_00027d70 (27d70), FUN_00027db0 (27db0), FUN_00027f90 (27f90), FUN_00028008 (28008), FUN_0002806c (2806c), FUN_000280c4 (280c4), FUN_00028328 (28328), FUN_00028a84 (28a84), FUN_00028b48 (28b48), FUN_00028e28 (28e28), FUN_00028fdc (28fdc), FUN_00029080 (29080), FUN_00029120 (29120), FUN_00029850 (29850), FUN_00029f0c (29f0c), FUN_0002a53c (2a53c), rotateAndTransformVector (2a6e4), FUN_0002aab0 (2aab0), FUN_0002abcc (2abcc), FUN_0002aca8 (2aca8), FUN_0002ae50 (2ae50), FUN_0002afcc (2afcc), FUN_0002b0e4 (2b0e4), FUN_0002b488 (2b488), FUN_0002b4f8 (2b4f8), processInput44 (2b5e0), FUN_0002b684 (2b684), FUN_0002ba94 (2ba94), FUN_0002bed8 (2bed8), FUN_0002bf58 (2bf58), FUN_0002c0e8 (2c0e8), FUN_0002cd78 (2cd78), FUN_0002ce9c (2ce9c), FUN_0002cf38 (2cf38), FUN_0002d218 (2d218), FUN_0002d558 (2d558), FUN_0002dc48 (2dc48), FUN_0002dfc0 (2dfc0), FUN_0002e268 (2e268), FUN_0002e828 (2e828), FUN_0002ecc4 (2ecc4), FUN_0002f0a0 (2f0a0), FUN_0002fe6c (2fe6c), FUN_0002fef0 (2fef0), FUN_00030060 (30060), FUN_0003016c (3016c), FUN_000303c8 (303c8), FUN_00030a20 (30a20), FUN_00030a88 (30a88), FUN_000315b0 (315b0), FUN_000319ac (319ac), FUN_00031f58 (31f58), FUN_00031f7c (31f7c), FUN_0003205c (3205c), FUN_00032090 (32090), FUN_0003239c (3239c), FUN_0003243c (3243c), FUN_00032880 (32880), FUN_00032bac (32bac), FUN_00032c6c (32c6c), FUN_000334a4 (334a4), FUN_00033530 (33530), FUN_00033578 (33578), FUN_000343d0 (343d0), FUN_00034460 (34460), FUN_0003455c (3455c), FUN_0003481c (3481c), FUN_000351fc (351fc), FUN_0003523c (3523c), FUN_00035294 (35294), FUN_0003584c (3584c), FUN_0003586c (3586c), FUN_000359bc (359bc), FUN_00035b74 (35b74), FUN_00035d20 (35d20), FUN_00035e5c (35e5c), FUN_00035fdc (35fdc), FUN_00036648 (36648), FUN_000368fc (368fc), FUN_0003693c (3693c), FUN_00036de8 (36de8), FUN_00036f00 (36f00), FUN_00037460 (37460), FUN_00037474 (37474), FUN_000375bc (375bc), FUN_00037784 (37784), FUN_000378d0 (378d0), FUN_00037b58 (37b58), FUN_00037dac (37dac), FUN_00037f44 (37f44), FUN_00037fbc (37fbc), FUN_000380bc (380bc), FUN_000381f4 (381f4), FUN_00038214 (38214), FUN_00038238 (38238), FUN_0003825c (3825c), FUN_00038280 (38280), FUN_00038354 (38354), processInputAndGenerateStrings (383e0), FUN_00038688 (38688), FUN_00038d84 (38d84), FUN_0003901c (3901c), FUN_0003904c (3904c), FUN_00039114 (39114), FUN_00039128 (39128), FUN_0003913c (3913c), FUN_000391c0 (391c0), FUN_00039788 (39788), FUN_000397b8 (397b8), FUN_000397f0 (397f0), FUN_00039840 (39840), FUN_00039c30 (39c30), FUN_00039cb8 (39cb8), FUN_00039d04 (39d04), FUN_0003b4e4 (3b4e4), FUN_0003b5a0 (3b5a0), FUN_0003b60c (3b60c), FUN_0003b63c (3b63c), FUN_0003b67c (3b67c), FUN_0003b6d4 (3b6d4), FUN_0003b798 (3b798), FUN_0003c290 (3c290), FUN_0003c2dc (3c2dc), FUN_0003c304 (3c304), FUN_0003cc0c (3cc0c), FUN_0003cc64 (3cc64), FUN_0003cc8c (3cc8c), FUN_0003cd60 (3cd60), FUN_0003cff8 (3cff8), FUN_0003d078 (3d078), FUN_0003d1e0 (3d1e0), FUN_0003d4dc (3d4dc), FUN_0003d528 (3d528), FUN_0003d700 (3d700), FUN_0003d804 (3d804), FUN_0003d828 (3d828), FUN_0003d880 (3d880), FUN_0003d970 (3d970), FUN_0003da30 (3da30), FUN_0003e740 (3e740), FUN_0003ecbc (3ecbc), FUN_0003ece0 (3ece0), FUN_0003f5d0 (3f5d0), FUN_0003f928 (3f928), FUN_0003f94c (3f94c), FUN_0003f9b8 (3f9b8), FUN_00040360 (40360), FUN_00040414 (40414), FUN_000404d0 (404d0), FUN_00040790 (40790), FUN_00040d14 (40d14), FUN_00040f24 (40f24), FUN_00040f58 (40f58), FUN_00041010 (41010), FUN_000410a0 (410a0), FUN_000414b0 (414b0), FUN_00041588 (41588), FUN_00041670 (41670), FUN_00041744 (41744), FUN_000419ec (419ec), FUN_000421c4 (421c4), FUN_00042278 (42278), FUN_00042384 (42384), FUN_00042434 (42434), FUN_000424d4 (424d4), FUN_0004278c (4278c), FUN_00042a58 (42a58), FUN_00042a8c (42a8c), FUN_00042aa0 (42aa0), FUN_00042c2c (42c2c), FUN_000436b8 (436b8), FUN_0004379c (4379c), FUN_00043970 (?), FUN_0004402c (4402c), FUN_000440c8 (440c8), FUN_00044370 (44370), FUN_00045124 (45124), FUN_000451d0 (451d0), FUN_00045bf4 (45bf4), FUN_00045d04 (45d04), FUN_000460a4 (460a4), FUN_00047124 (47124), FUN_0004743c (4743c), FUN_00047914 (47914), FUN_000479f0 (479f0), FUN_00047a94 (47a94), FUN_00047f8c (47f8c), FUN_000484cc (484cc), FUN_00048510 (48510), FUN_00048a48 (48a48), FUN_000497c8 (497c8), FUN_000499bc (499bc), FUN_00049b98 (49b98), FUN_00049c40 (49c40), FUN_0004a428 (4a428), FUN_0004a6c8 (4a6c8), FUN_0004aa64 (4aa64), FUN_0004aa94 (4aa94), FUN_0004aab8 (4aab8), FUN_0004b068 (4b068), FUN_0004b2ac (4b2ac), FUN_0004b2dc (4b2dc), FUN_0004b314 (4b314), FUN_0004b63c (4b63c), FUN_0004e3c0 (4e3c0), FUN_0004e3f0 (4e3f0), FUN_0004e418 (4e418), FUN_0004e4a8 (4e4a8), FUN_0004e590 (4e590), FUN_0004e5f8 (4e5f8), FUN_0004eecc (4eecc), FUN_0004eef4 (4eef4), FUN_0004ef20 (4ef20), FUN_0004efb8 (4efb8), FUN_0004effc (4effc), FUN_0004f038 (4f038), FUN_0004f15c (4f15c), FUN_0004f71c (4f71c), FUN_0004f744 (4f744), FUN_0004f76c (4f76c), FUN_0004f7b8 (4f7b8), FUN_0004f804 (4f804), FUN_0004f82c (4f82c), FUN_0004f854 (4f854), FUN_0004f87c (4f87c), FUN_0004f8cc (4f8cc), FUN_0004f8f8 (4f8f8), FUN_0004f92c (4f92c), FUN_0004f954 (4f954), FUN_0004f97c (4f97c), FUN_0004f99c (4f99c), FUN_0004fd30 (4fd30), FUN_0004fe68 (4fe68), FUN_00050200 (50200), FUN_00050264 (50264), FUN_000511cc (511cc), FUN_0005182c (5182c), FUN_00051e10 (51e10), FUN_00051e44 (51e44), FUN_00051edc (51edc), FUN_00051efc (51efc), FUN_00051f20 (51f20), FUN_0005215c (5215c), FUN_00052e68 (52e68), FUN_00053f84 (53f84), FUN_00053fa4 (53fa4), FUN_00054b24 (54b24), FUN_000550d0 (550d0), FUN_00055144 (55144), FUN_000552b8 (552b8), FUN_000553d8 (553d8), FUN_000553f8 (553f8), FUN_00055e70 (55e70), FUN_00055f28 (55f28), FUN_00056690 (56690), FUN_00056c3c (56c3c), FUN_00056c90 (56c90), FUN_00056df4 (56df4), FUN_00056f24 (56f24), FUN_00056f68 (56f68), FUN_00056fac (56fac), FUN_00057034 (57034), FUN_00057238 (57238), FUN_0005739c (5739c), FUN_00057418 (57418), FUN_00057424 (57424), FUN_000577e0 (577e0), FUN_00057950 (57950), FUN_00058754 (58754), FUN_00058c20 (58c20), FUN_00059818 (59818), FUN_000599e4 (599e4), FUN_00059a28 (59a28), FUN_00059a6c (59a6c), FUN_00059c94 (59c94), FUN_00059f0c (59f0c), FUN_00059f20 (59f20), FUN_0005a084 (5a084), FUN_0005a130 (5a130), FUN_000a1390 (a1390), FUN_000a1678 (a1678), FUN_000a1698 (a1698), FUN_000a2034 (a2034), FUN_000a2080 (a2080), FUN_000a34a8 (a34a8), FUN_000a46ec (a46ec), FUN_000a5058 (a5058), FUN_000a5298 (a5298), FUN_000a52b8 (a52b8), FUN_000a5534 (a5534), FUN_000a5734 (a5734), FUN_000a5c88 (a5c88), FUN_000a5e1c (a5e1c), FUN_000a61d8 (a61d8), FUN_000a7960 (a7960), FUN_000a7980 (a7980), FUN_000a7a14 (a7a14), FUN_000a7b50 (a7b50), FUN_000a7bf4 (a7bf4), FUN_000a7e64 (a7e64), FUN_000a8868 (a8868), FUN_000a8c04 (a8c04), FUN_000a8d30 (a8d30), FUN_000a97c0 (a97c0), FUN_000a98c8 (a98c8), FUN_000a99a0 (a99a0), FUN_000a99c4 (a99c4), FUN_000a9b90 (a9b90), FUN_000a9c18 (a9c18), FUN_000a9c7c (a9c7c), FUN_000aa088 (aa088), FUN_000aa200 (aa200), FUN_000aa488 (aa488), FUN_000aa558 (aa558), FUN_000aa6f0 (aa6f0), FUN_000aa7b0 (aa7b0), FUN_000aacd0 (aacd0), FUN_000aad14 (aad14), FUN_000aad5c (aad5c), FUN_000aafa0 (aafa0), FUN_000aafc4 (aafc4), FUN_000ab0f0 (ab0f0), FUN_000ab124 (ab124), FUN_000ab67c (ab67c), FUN_000abb5c (abb5c), FUN_000abe14 (abe14), FUN_000abe6c (abe6c), FUN_000abf60 (abf60), FUN_000ac094 (ac094), FUN_000ac184 (ac184), FUN_000ac590 (ac590), FUN_000adac4 (adac4), FUN_000adbec (adbec), FUN_000af368 (af368), FUN_000af8e0 (af8e0), FUN_000b038c (b038c), FUN_000b042c (b042c), FUN_000b0614 (b0614), FUN_000b08a4 (b08a4), FUN_000b08d0 (b08d0), FUN_000b0d54 (b0d54), FUN_000b10fc (b10fc), FUN_000b131c (b131c), FUN_000b1520 (b1520), FUN_000b1b7c (b1b7c), FUN_000b1ea4 (b1ea4), FUN_000b1f00 (b1f00), FUN_000b1f44 (b1f44), FUN_000b22cc (b22cc), FUN_000b253c (b253c), FUN_000b3be8 (b3be8), FUN_000b3cc4 (b3cc4), FUN_000b3ce4 (b3ce4), FUN_000b3e2c (b3e2c), FUN_000b40a4 (b40a4), FUN_000b43a8 (b43a8), FUN_000b4568 (b4568), FUN_000b47e4 (b47e4), FUN_000b4abc (b4abc), FUN_000b5158 (b5158), FUN_000b5390 (b5390), FUN_000b5afc (b5afc), FUN_000b5da4 (b5da4), FUN_000b6104 (b6104), FUN_000b62a8 (b62a8), FUN_000b6420 (b6420), FUN_000b6738 (b6738), FUN_000b67d8 (b67d8), FUN_000b7024 (b7024), FUN_000b82e0 (b82e0), FUN_000b8afc (b8afc), FUN_000b92d0 (b92d0), FUN_000b92f0 (b92f0), FUN_000b9310 (b9310), FUN_000b9448 (b9448), FUN_000b9d58 (b9d58), FUN_000b9ec8 (b9ec8), FUN_000ba0c8 (ba0c8), FUN_000ba454 (ba454), FUN_000ba720 (ba720), FUN_000ba9d4 (ba9d4), FUN_000baaf4 (baaf4), FUN_000babbc (babbc), FUN_000bb158 (bb158), FUN_000bb38c (bb38c), FUN_000bbed0 (bbed0), FUN_000bc234 (bc234), FUN_000bc370 (bc370), FUN_000bc42c (bc42c), FUN_000bc794 (bc794), FUN_000bc7c4 (bc7c4), FUN_000bcd84 (bcd84), FUN_000bce80 (bce80), FUN_000bcf20 (bcf20), FUN_000bd018 (bd018), FUN_000bd038 (bd038), FUN_000bd534 (bd534), FUN_000bd964 (bd964), FUN_000bd988 (bd988), FUN_000bdb6c (bdb6c), FUN_000be300 (be300), FUN_000be918 (be918), FUN_000bf474 (bf474), FUN_000bf928 (bf928), FUN_000c028c (c028c), FUN_000c0384 (c0384), FUN_000c0558 (c0558), FUN_000c06fc (c06fc), FUN_000c092c (c092c), FUN_000c09d8 (c09d8), FUN_000c0a54 (c0a54), FUN_000c0b1c (c0b1c), FUN_000c0b9c (c0b9c), FUN_000c0c34 (c0c34), FUN_000c1084 (c1084), FUN_000c120c (c120c), FUN_000c12e0 (c12e0), FUN_000c1470 (c1470), FUN_000c14ec (c14ec), FUN_000c17e8 (c17e8), FUN_000c1918 (c1918), FUN_000c22b0 (c22b0), FUN_000c2480 (c2480), FUN_000c24dc (c24dc), FUN_000c2530 (c2530), FUN_000c2b84 (c2b84), FUN_000c32cc (c32cc), FUN_000c3624 (c3624), FUN_000c3960 (c3960), FUN_000c3af4 (c3af4), FUN_000c3d08 (c3d08), FUN_000c3ea8 (c3ea8), FUN_000c3f84 (c3f84), FUN_000c43d0 (c43d0), FUN_000c44dc (c44dc), FUN_000c47bc (c47bc), FUN_00265fd0 (265fd0), FUN_0027ee24 (27ee24), FUN_0027efb8 (27efb8), FUN_0027f2cc (27f2cc), FUN_0027f844 (27f844), FUN_0027f8a0 (27f8a0), FUN_0027fcac (27fcac), FUN_0027fd20 (27fd20), FUN_0027fe98 (27fe98), FUN_0027fee4 (27fee4), FUN_0027ff4c (27ff4c), FUN_0027ffc0 (27ffc0), FUN_00280494 (280494), FUN_0028081c (28081c), FUN_00280c04 (280c04), FUN_00280c40 (280c40), FUN_0028104c (28104c), FUN_00281214 (281214), FUN_00281414 (281414), FUN_002817b8 (2817b8), FUN_0028195c (28195c), FUN_0028198c (28198c), FUN_002819a0 (2819a0), FUN_00281a48 (281a48), FUN_00281aa0 (281aa0), FUN_00281bc8 (281bc8), FUN_00281c30 (281c30), FUN_00281d0c (281d0c), FUN_00281d6c (281d6c), FUN_0028213c (28213c), FUN_00282150 (282150), FUN_002823b0 (2823b0), FUN_002823c4 (2823c4), FUN_00282930 (282930), FUN_0028304c (28304c), FUN_00283480 (283480), FUN_00283c24 (283c24), FUN_002848dc (2848dc), FUN_00286918 (286918), FUN_00286a78 (286a78), FUN_002892f0 (2892f0), FUN_0028ac90 (28ac90), FUN_0028d4ac (28d4ac), FUN_0028d524 (28d524), FUN_0028d59c (28d59c), FUN_0028d988 (28d988), FUN_0028d9fc (28d9fc), FUN_0028da6c (28da6c), FUN_0028dc64 (28dc64), FUN_0028ddc4 (28ddc4), FUN_0028ddd8 (28ddd8), FUN_0028dfa8 (28dfa8), FUN_0028e024 (28e024), FUN_0028e114 (28e114), FUN_0028e3a8 (28e3a8), FUN_0028e428 (28e428), FUN_0028e604 (28e604), FUN_0028f80c (28f80c), FUN_002908e4 (2908e4), FUN_00290c5c (290c5c), FUN_00290cdc (290cdc), FUN_00290d3c (290d3c), FUN_00290e38 (290e38), FUN_00290f78 (290f78), FUN_00291238 (291238), FUN_00292018 (292018), FUN_00292dac (292dac), FUN_00292f28 (292f28), FUN_00293e08 (293e08), FUN_00296190 (296190), FUN_00296314 (296314), FUN_00299954 (299954), FUN_0029a020 (29a020), FUN_0029d170 (29d170), FUN_0029d278 (29d278), FUN_0029d4fc (29d4fc), FUN_0029f668 (29f668), FUN_0029fa5c (29fa5c), FUN_0029fa70 (29fa70), FUN_0029fadc (29fadc), FUN_0029fc5c (29fc5c), FUN_002a0054 (2a0054), FUN_002a00dc (2a00dc), FUN_002a0154 (2a0154), FUN_002a0258 (2a0258), FUN_002a05fc (2a05fc), FUN_002a0740 (2a0740), FUN_002a076c (2a076c), FUN_002a0800 (2a0800), FUN_002a0994 (2a0994), FUN_002a0b48 (2a0b48), FUN_002a0bf0 (2a0bf0), FUN_002a11d0 (2a11d0), FUN_002a1468 (2a1468), FUN_002a15b4 (2a15b4), FUN_002a1904 (2a1904), FUN_002a1c94 (2a1c94), FUN_002a1e40 (2a1e40), FUN_002a1f70 (2a1f70), FUN_002a2460 (2a2460), FUN_002a3274 (2a3274), FUN_002a337c (2a337c), FUN_002a407c (2a407c), FUN_002a49b0 (2a49b0), FUN_002c2794 (2c2794), FUN_002c6388 (2c6388), FUN_002c6aec (2c6aec), FUN_002c7100 (2c7100), FUN_002c7fb0 (2c7fb0), FUN_002c90b4 (2c90b4), FUN_002cb90c (2cb90c), FUN_0035ad2c (35ad2c), FUN_0035b3b4 (35b3b4), FUN_0035bbf4 (35bbf4), FUN_0035be84 (35be84), FUN_0035cecc (35cecc), FUN_0035cf10 (35cf10), FUN_0035ddc4 (35ddc4), FUN_0035e3ec (35e3ec), FUN_0035f434 (35f434), FUN_0035fb54 (35fb54), FUN_0035fcc0 (35fcc0), FUN_0035fde4 (35fde4), FUN_003611c8 (3611c8), FUN_003625bc (3625bc), FUN_0036265c (36265c), FUN_00365050 (365050), FUN_00365ce4 (365ce4), FUN_0005b1b0 (5b1b0), FUN_0005b2b0 (5b2b0), FUN_0005b34c (5b34c), FUN_0005bd3c (5bd3c), FUN_0005bd8c (5bd8c), FUN_0005c26c (5c26c), FUN_0005cf24 (5cf24), FUN_0005cfcc (5cfcc), FUN_0005d278 (5d278), FUN_0005e49c (5e49c), FUN_0005e4e4 (5e4e4), FUN_0005e8b4 (5e8b4), FUN_0005f0e4 (5f0e4), FUN_0005f164 (5f164), FUN_0005f4cc (5f4cc), FUN_0005f61c (5f61c), FUN_0005f650 (5f650), FUN_0005f810 (5f810), FUN_0005f830 (5f830), FUN_0005f860 (5f860), FUN_0005f8ac (5f8ac), FUN_0005f9bc (5f9bc), FUN_0005f9f4 (5f9f4), FUN_0005fc54 (5fc54), FUN_000615bc (615bc), FUN_000617cc (617cc), FUN_00061b14 (61b14), FUN_000622b0 (622b0), FUN_00062348 (62348), FUN_00062938 (62938), FUN_00063724 (63724), FUN_00063798 (63798), FUN_00063818 (63818), FUN_000638cc (638cc), FUN_000638f0 (638f0), FUN_000648e8 (648e8), FUN_00064938 (64938), FUN_00064bc0 (64bc0), FUN_00064c40 (64c40), FUN_00064c54 (64c54), FUN_00064d58 (64d58), FUN_00064e8c (64e8c), FUN_00065330 (65330), FUN_00065370 (65370), FUN_0006537c (6537c), FUN_000653dc (653dc), FUN_00065448 (65448), FUN_0006549c (6549c), FUN_000655c4 (655c4), FUN_00065624 (65624), FUN_00065678 (65678), FUN_000658c4 (658c4), FUN_0006594c (6594c), FUN_0006781c (6781c), FUN_000679c0 (679c0), FUN_00067a58 (67a58), FUN_00067cb4 (67cb4), FUN_00067ce4 (67ce4), FUN_00067d08 (67d08), FUN_00067d74 (67d74), FUN_00067dfc (67dfc), FUN_00067e8c (67e8c), FUN_00067f58 (67f58), FUN_0006802c (6802c), FUN_0006806c (6806c), FUN_0006824c (6824c), FUN_000683a0 (683a0), FUN_000683e8 (683e8), FUN_000684d4 (684d4), FUN_000689bc (689bc), FUN_00068a4c (68a4c), FUN_00068b18 (68b18), FUN_00068b3c (68b3c), FUN_00068bdc (68bdc), FUN_00068c70 (68c70), FUN_00068cd4 (68cd4), FUN_00068cf8 (68cf8), FUN_00068d6c (68d6c), FUN_00068ee8 (68ee8), FUN_00068f28 (68f28), FUN_00069170 (69170), FUN_00069790 (69790), FUN_00069828 (69828), FUN_000698e0 (698e0), FUN_000699a8 (699a8), FUN_000699b8 (699b8), FUN_00069a68 (69a68), FUN_00069af4 (69af4), FUN_00069b18 (69b18), FUN_00069e58 (69e58), FUN_00069f50 (69f50), FUN_00069f90 (69f90), FUN_00069ff8 (69ff8), FUN_0006a140 (6a140), FUN_0006a1d0 (6a1d0), FUN_0006a1f8 (6a1f8), FUN_0006a270 (6a270), FUN_0006a2e4 (6a2e4), FUN_0006a3dc (6a3dc), FUN_0006a410 (6a410), FUN_0006a4d4 (6a4d4), FUN_0006a754 (6a754), FUN_0006a80c (6a80c), FUN_0006a840 (6a840), FUN_0006a8bc (6a8bc), FUN_0006a910 (6a910), FUN_0006aaac (6aaac), FUN_0006ab28 (6ab28), FUN_0006ab90 (6ab90), FUN_0006abb0 (6abb0), FUN_0006abf0 (6abf0), FUN_0006acf4 (6acf4), FUN_0006ad20 (6ad20), FUN_0006b284 (6b284), FUN_0006b3d8 (6b3d8), FUN_0006b46c (6b46c), FUN_0006b558 (6b558), FUN_0006b610 (6b610), FUN_0006b64c (6b64c), FUN_0006b6d4 (6b6d4), FUN_0006b850 (6b850), FUN_0006b980 (6b980), FUN_0006bae4 (6bae4), FUN_0006bbdc (6bbdc), FUN_0006bc68 (6bc68), FUN_0006be94 (6be94), FUN_0006bec8 (6bec8), FUN_0006bf80 (6bf80), FUN_0006c128 (6c128), FUN_0006c168 (6c168), FUN_0006c1f8 (6c1f8), FUN_0006c298 (6c298), FUN_0006c440 (6c440), FUN_0006c464 (6c464), FUN_0006c4f4 (6c4f4), FUN_0006c5e0 (6c5e0), FUN_0006c6cc (6c6cc), FUN_0006c990 (6c990), FUN_0006c9f4 (6c9f4), FUN_0006cbdc (6cbdc), FUN_0006ccec (6ccec), FUN_0006cd80 (6cd80), FUN_0006cfc0 (6cfc0), FUN_0006cff8 (6cff8), FUN_0006d1a0 (6d1a0), FUN_0006d264 (6d264), FUN_0006d29c (6d29c), FUN_0006d3d8 (6d3d8), FUN_0006d4f0 (6d4f0), FUN_0006d534 (6d534), FUN_0006d580 (6d580), FUN_0006e258 (6e258), FUN_0006e278 (6e278), FUN_0006e298 (6e298), FUN_0006e52c (6e52c), FUN_0006e5a4 (6e5a4), FUN_0006f128 (6f128), FUN_0006f318 (6f318), FUN_0006f398 (6f398), FUN_00070120 (70120), FUN_00070418 (70418), FUN_00070fd4 (70fd4), FUN_00070ff4 (70ff4), FUN_00071018 (71018), FUN_00071860 (71860), FUN_000719f4 (719f4), FUN_00071ab0 (71ab0), FUN_00071ce4 (71ce4), FUN_00071d64 (71d64), FUN_00072390 (72390), FUN_0007273c (7273c), FUN_00072824 (72824), FUN_00072d64 (72d64), FUN_00072da4 (72da4), FUN_00072ecc (72ecc), FUN_00072f40 (72f40), FUN_00072f84 (72f84), FUN_00073004 (73004), FUN_0007329c (7329c), FUN_000733ac (733ac), FUN_00073600 (73600), FUN_0007371c (7371c), FUN_0007394c (7394c), FUN_00073a64 (73a64), FUN_00073b0c (73b0c), FUN_00073d68 (73d68), FUN_00074384 (74384), FUN_00074498 (74498), FUN_000744b8 (744b8), processAudioData7 (74514), FUN_0007498c (7498c), FUN_00074a2c (74a2c), FUN_00074b38 (74b38), FUN_00074c2c (74c2c), FUN_00074d18 (74d18), FUN_00075274 (75274), FUN_00075298 (75298), FUN_00075334 (75334), FUN_00075bd4 (75bd4), FUN_00075c10 (75c10), FUN_00075c64 (75c64), FUN_00075e54 (75e54), FUN_00075e68 (75e68), FUN_00076058 (76058), FUN_0007621c (7621c), FUN_000762ec (762ec), FUN_00076478 (76478), FUN_00076548 (76548), FUN_00076554 (76554), FUN_000765d8 (765d8), FUN_0007660c (7660c), FUN_000766e0 (766e0), FUN_000766f8 (766f8), FUN_00076788 (76788), FUN_0007682c (7682c), FUN_00076ac0 (76ac0), FUN_00076b0c (76b0c), FUN_00076bd0 (76bd0), FUN_00076cb8 (76cb8), FUN_00076e6c (76e6c), FUN_00076e8c (76e8c), FUN_00076fc8 (76fc8), FUN_00077020 (77020), FUN_000770c0 (770c0), FUN_00077124 (77124), FUN_00077190 (77190), FUN_000771a8 (771a8), FUN_00077470 (77470), FUN_000775bc (775bc), FUN_000777ec (777ec), FUN_0007798c (7798c), FUN_00077ad4 (77ad4), FUN_00077af4 (77af4), FUN_00077e3c (77e3c), FUN_00077ea8 (77ea8), FUN_000780b0 (780b0), FUN_00078148 (78148), FUN_00078158 (78158), FUN_000781b0 (781b0), FUN_000782dc (782dc), FUN_00078324 (78324), FUN_000783c8 (783c8), FUN_00078410 (78410), FUN_000784e0 (784e0), FUN_0007850c (7850c), FUN_00078540 (78540), FUN_00078650 (78650), FUN_000786fc (786fc), FUN_00078864 (78864), FUN_00078994 (78994), FUN_000789d8 (789d8), FUN_00078a18 (78a18), FUN_00078a58 (78a58), FUN_00078a94 (78a94), FUN_00078b38 (78b38), FUN_00078bf8 (78bf8), FUN_00078cd4 (78cd4), FUN_00078d08 (78d08), FUN_00078e44 (78e44), FUN_00078eb4 (78eb4), FUN_00078fd4 (78fd4), FUN_000791e4 (791e4), FUN_0007972c (7972c), FUN_00079780 (79780), FUN_00079834 (79834), FUN_00079854 (79854), FUN_00079864 (79864), FUN_000799fc (799fc), FUN_00079b0c (79b0c), FUN_00079b7c (79b7c), FUN_00079bcc (79bcc), FUN_00079c24 (79c24), FUN_00079c5c (79c5c), FUN_00079ce8 (79ce8), FUN_00079ed0 (79ed0), FUN_00079f84 (79f84), FUN_0007a008 (7a008), FUN_0007a028 (7a028), FUN_0007a1a0 (7a1a0), FUN_0007a2ac (7a2ac), FUN_0007a378 (7a378), FUN_0007a67c (7a67c), FUN_0007a7fc (7a7fc), FUN_0007a918 (7a918), FUN_0007aa10 (7aa10), FUN_0007aa34 (7aa34), FUN_0007aa54 (7aa54), FUN_0007ab38 (7ab38), FUN_0007aca4 (7aca4), FUN_0007adb4 (7adb4), FUN_0007adbc (7adbc), FUN_0007adc8 (7adc8), FUN_0007ae74 (7ae74), FUN_0007af48 (7af48), FUN_0007af88 (7af88), FUN_0007b064 (7b064), FUN_0007b10c (7b10c), FUN_0007b1e0 (7b1e0), FUN_0007b204 (7b204), FUN_0007b2b8 (7b2b8), FUN_0007b480 (7b480), FUN_0007b524 (7b524), FUN_0007b584 (7b584), FUN_0007b5b4 (7b5b4), FUN_0007b5e8 (7b5e8), FUN_0007b6c0 (7b6c0), FUN_0007b778 (7b778), FUN_0007b7d4 (7b7d4), FUN_0007b87c (7b87c), FUN_0007b8fc (7b8fc), FUN_0007b980 (7b980), FUN_0007b9b0 (7b9b0), FUN_0007bac4 (7bac4), FUN_0007bbe4 (7bbe4), FUN_0007be8c (7be8c), FUN_0007c128 (7c128), FUN_0007c2f8 (7c2f8), FUN_0007c31c (7c31c), FUN_0007c3f4 (7c3f4), FUN_0007c414 (7c414), FUN_0007c52c (7c52c), FUN_0007c678 (7c678), LowPassFilter686 (7c718), FUN_0007c788 (7c788), FUN_0007c948 (7c948), FUN_0007c9ac (7c9ac), FUN_0007cacc (7cacc), FUN_0007cc0c (7cc0c), FUN_0007ccac (7ccac), FUN_0007ccd8 (7ccd8), FUN_0007cd94 (7cd94), FUN_0007ce9c (7ce9c), FUN_0007cec8 (7cec8), FUN_0007cf4c (7cf4c), applyFilter7 (7cf7c), FUN_0007d044 (7d044), FUN_0007d2c8 (7d2c8), FUN_0007d490 (7d490), FUN_0007d714 (7d714), FUN_0007d7a0 (7d7a0), FUN_0007d850 (7d850), FUN_0007d990 (7d990), FUN_0007dcd4 (7dcd4), FUN_0007ddc4 (7ddc4), FUN_0007de34 (7de34), FUN_0007de54 (7de54), FUN_0007de74 (7de74), FUN_0007def8 (7def8), FUN_0007e020 (7e020), FUN_0007e160 (7e160), FUN_0007e394 (7e394), FUN_0007e3c8 (7e3c8), FUN_0007e430 (7e430), FUN_0007e640 (7e640), FUN_0007e848 (7e848), FUN_0007ec40 (7ec40), FUN_0007ec64 (7ec64), FUN_0007eccc (7eccc), FUN_0007edb8 (7edb8), FUN_0007f298 (7f298), FUN_0007f344 (7f344), FUN_0007f53c (7f53c), FUN_0007f574 (7f574), FUN_0007f598 (7f598), FUN_0007f854 (7f854), FUN_0007f9a0 (7f9a0), FUN_0007fc7c (7fc7c), FUN_00080278 (80278), FUN_00080674 (80674), FUN_000807a8 (807a8), FUN_000807f0 (807f0), FUN_00080818 (80818), FUN_0008087c (8087c), FUN_000808d0 (808d0), FUN_00080ad4 (80ad4), FUN_00080c20 (80c20), FUN_00080efc (80efc), FUN_00081050 (81050), FUN_00081500 (81500), FUN_0008160c (8160c), FUN_00081900 (81900), FUN_00081db4 (81db4), FUN_00081e58 (81e58), FUN_000844b8 (844b8), FUN_00084a78 (84a78), FUN_00085150 (85150), FUN_0008547c (8547c), FUN_0008550c (8550c), FUN_00085548 (85548), FUN_000855fc (855fc), FUN_00085670 (85670), FUN_000856b8 (856b8), FUN_00085874 (85874), FUN_000858d0 (858d0), FUN_00085938 (85938), FUN_00085ab8 (85ab8), FUN_00085d14 (85d14), processAndWriteData14 (85e58), FUN_00085ecc (85ecc), FUN_00086ca4 (86ca4), FUN_00086dc8 (86dc8), FUN_00087298 (87298), processInput49 (87308), processAndModifyData (873a4), FUN_00087784 (87784), FUN_000877f4 (877f4), FUN_00087838 (87838), FUN_000878cc (878cc), FUN_00087a18 (87a18), FUN_00087b3c (87b3c), FUN_00087db0 (87db0), FUN_00087e6c (87e6c), FUN_00088084 (88084), FUN_000883a4 (883a4), FUN_00088440 (88440), FUN_000885e0 (885e0), FUN_0008886c (8886c), FUN_000891b8 (891b8), FUN_0008937c (8937c), FUN_00089538 (89538), FUN_00089f44 (89f44), FUN_0008a4fc (8a4fc), FUN_0008a790 (8a790), processArray9 (8a7b0), FUN_0008a8f4 (8a8f4), FUN_0008ac3c (8ac3c), FUN_0008ad44 (8ad44), FUN_0008b100 (8b100), FUN_0008b214 (8b214), processInput53 (8b23c), FUN_0008b958 (8b958), FUN_0008b9e8 (8b9e8), FUN_0008bd90 (8bd90), FUN_0008c470 (8c470), FUN_0008c768 (8c768), FUN_0008cd94 (8cd94), FUN_0008d7bc (8d7bc), FUN_0008d850 (8d850), FUN_0008df08 (8df08), FUN_0008df68 (8df68), FUN_0008ef30 (8ef30), FUN_0008f05c (8f05c), FUN_00091b6c (91b6c), FUN_00091c48 (91c48), FUN_00091c70 (91c70), FUN_00091de8 (91de8), FUN_00091ecc (91ecc), FUN_00092454 (92454), FUN_00092704 (92704), FUN_00093650 (93650), FUN_000936e8 (936e8), FUN_00093808 (93808), FUN_00093960 (93960), FUN_00093994 (93994), FUN_000939c8 (939c8), FUN_00093b48 (93b48), FUN_00094b50 (94b50), FUN_00094b70 (94b70), FUN_00094e64 (94e64), FUN_00095be4 (95be4), FUN_00096574 (96574), processVectorAndRotate2 (96774), FUN_00096fb4 (96fb4), FUN_00097a6c (97a6c), FUN_00098324 (98324), FUN_000985f4 (985f4), FUN_00098724 (98724), FUN_0009895c (9895c), FUN_00098a28 (98a28), FUN_0009938c (9938c), FUN_00099a08 (99a08), FUN_0009ae08 (9ae08), FUN_0009b1f4 (9b1f4), FUN_0009c240 (9c240), FUN_0009c96c (9c96c), FUN_0009ca10 (9ca10), FUN_0009ca24 (9ca24), FUN_0009ca44 (9ca44), FUN_0009ca78 (9ca78), FUN_0009cb00 (9cb00), FUN_0009cd94 (9cd94), FUN_0009ce10 (9ce10), FUN_0009d144 (9d144), FUN_0009d2f8 (9d2f8), FUN_0009d45c (9d45c), FUN_0009d600 (9d600), FUN_0009df28 (9df28), FUN_0009eb00 (9eb00), FUN_0009f660 (9f660), FUN_000a0adc (a0adc), FUN_000c4c68 (c4c68), FUN_000c4d4c (c4d4c), FUN_000c4eec (c4eec), FUN_000c4fac (c4fac), FUN_000c51a8 (c51a8), FUN_000c5258 (c5258), FUN_000c535c (c535c), FUN_000c53dc (c53dc), FUN_000c5588 (c5588), FUN_000c5808 (c5808), FUN_000c5d3c (c5d3c), FUN_000c6a8c (c6a8c), FUN_000c6e6c (c6e6c), FUN_000c6eb8 (c6eb8), FUN_000c7e04 (c7e04), FUN_000c7f44 (c7f44), FUN_000c7fa8 (c7fa8), FUN_000c8b10 (c8b10), FUN_000c91cc (c91cc), FUN_000c9240 (c9240), FUN_000c9428 (c9428), FUN_000c94d8 (c94d8), FUN_000c9544 (c9544), FUN_000c972c (c972c), FUN_000c998c (c998c), FUN_000c99b8 (c99b8), FUN_000c9c20 (c9c20), FUN_000c9dd4 (c9dd4), FUN_000c9e44 (c9e44), FUN_000ca00c (ca00c), FUN_000ca044 (ca044), FUN_000ca134 (ca134), FUN_000ca15c (ca15c), FUN_000ca288 (ca288), FUN_000ca2d8 (ca2d8), FUN_000ca724 (ca724), FUN_000ca850 (ca850), FUN_000ca8cc (ca8cc), FUN_000ca9ac (ca9ac), FUN_000cb798 (cb798), FUN_000cb860 (cb860), FUN_000cba08 (cba08), FUN_000cc6f0 (cc6f0), FUN_000ccb60 (ccb60), FUN_000cced8 (cced8), FUN_000cf1d4 (cf1d4), FUN_000cf7bc (cf7bc), FUN_000cf7e0 (cf7e0), FUN_000d0430 (d0430), FUN_000d06c4 (d06c4), FUN_000d119c (d119c), FUN_000d122c (d122c), FUN_000d13f4 (d13f4), FUN_000d15ac (d15ac), FUN_000d17f4 (d17f4), FUN_000d2384 (d2384), FUN_000d2730 (d2730), FUN_000d2e00 (d2e00), FUN_000d3a2c (d3a2c), FUN_000d4730 (d4730), FUN_000d4c88 (d4c88), FUN_000d5230 (d5230), FUN_000d52e0 (d52e0), FUN_000d5f14 (d5f14), FUN_000d6b3c (d6b3c), FUN_000d6bbc (d6bbc), FUN_000d6f70 (d6f70), FUN_000d7048 (d7048), FUN_000d8494 (d8494), FUN_000d8768 (d8768), FUN_000d8dd4 (d8dd4), FUN_000d8e90 (d8e90), FUN_000d8f88 (d8f88), FUN_000d9008 (d9008), FUN_000d918c (d918c), FUN_000d9438 (d9438), FUN_000d9500 (d9500), FUN_000d9a08 (d9a08), FUN_000da1fc (da1fc), FUN_000da2c8 (da2c8), FUN_000da2f8 (da2f8), FUN_000da58c (da58c), FUN_000da5ec (da5ec), FUN_000da60c (da60c), FUN_000da62c (da62c), FUN_000dab70 (dab70), FUN_000daba0 (daba0), FUN_000dad1c (dad1c), FUN_000dad60 (dad60), FUN_000dadd0 (dadd0), FUN_000db014 (db014), FUN_000db6e0 (db6e0), FUN_000dbbc4 (dbbc4), FUN_000dc2d8 (dc2d8), FUN_000dc3f8 (dc3f8), FUN_000dc720 (dc720), FUN_000dca18 (dca18), FUN_000dcb10 (dcb10), FUN_000dd65c (dd65c), FUN_000ddcac (ddcac), FUN_000de13c (de13c), FUN_000de4d8 (de4d8), FUN_000df094 (df094), FUN_000df460 (df460), FUN_000dfca0 (dfca0), FUN_000dfde4 (dfde4), FUN_000dffac (dffac), FUN_000e0244 (e0244), FUN_000e02e8 (e02e8), FUN_000e06ac (e06ac), FUN_000e108c (e108c), FUN_000e1190 (e1190), FUN_000e1468 (e1468), FUN_000e223c (e223c), FUN_000e2c4c (e2c4c), FUN_000e3360 (e3360), FUN_000e341c (e341c), FUN_000e34a8 (e34a8), FUN_000e3790 (e3790), FUN_000e3a28 (e3a28), FUN_000e3a88 (e3a88), FUN_000e3db4 (e3db4), FUN_000e3eb4 (e3eb4), FUN_000e407c (e407c), FUN_000e4264 (e4264), FUN_000e4278 (e4278), FUN_000e49c0 (e49c0), FUN_000e4b14 (e4b14), FUN_000e5140 (e5140), FUN_000e52e8 (e52e8), FUN_000e53e0 (e53e0), FUN_000e5698 (e5698), FUN_000e5708 (e5708), FUN_000e5ca8 (e5ca8), FUN_000e61e0 (e61e0), FUN_000e69f4 (e69f4), FUN_000e7014 (e7014), FUN_000e7aec (e7aec), FUN_000e7b0c (e7b0c), FUN_000e7c54 (e7c54), FUN_000e7e84 (e7e84), FUN_000e8394 (e8394), FUN_000e878c (e878c), FUN_000e87f4 (e87f4), FUN_000e8968 (e8968), FUN_000e89f4 (e89f4), FUN_000e8da8 (e8da8), FUN_000e8de8 (e8de8), FUN_000e8f58 (e8f58), FUN_000e904c (e904c), FUN_000e9110 (e9110), FUN_000e92ec (e92ec), FUN_000e9a48 (e9a48), FUN_000e9a88 (e9a88), FUN_000e9c60 (e9c60), FUN_000e9cd4 (e9cd4), FUN_000e9d54 (e9d54), FUN_000ea1f4 (ea1f4), FUN_000ea6d0 (ea6d0), FUN_000eaec8 (eaec8), FUN_000eb65c (eb65c), FUN_000ebd50 (ebd50), FUN_000ebe0c (ebe0c), FUN_000ec20c (ec20c), FUN_000ec2dc (ec2dc), FUN_000ec2fc (ec2fc), FUN_000ec3c4 (ec3c4), FUN_000ec444 (ec444), FUN_000ec458 (ec458), FUN_000ec4ac (ec4ac), FUN_000ec674 (ec674), FUN_000ec8d8 (ec8d8), FUN_000ecac0 (ecac0), FUN_000ecae0 (ecae0), FUN_000ed598 (ed598), FUN_000ed6c4 (ed6c4), FUN_000ed744 (ed744), FUN_000ed7a4 (ed7a4), FUN_000ed818 (ed818), FUN_000ed874 (ed874), FUN_000ed894 (ed894), FUN_000ed8b4 (ed8b4), FUN_000ed954 (ed954), FUN_000ed974 (ed974), FUN_000edd8c (edd8c), FUN_000eddf8 (eddf8), FUN_000ede64 (ede64), FUN_000eded0 (eded0), FUN_000eec38 (eec38), FUN_000eed64 (eed64), FUN_000ef1cc (ef1cc), FUN_000ef3bc (ef3bc), FUN_000ef424 (ef424), FUN_000ef5b8 (ef5b8), FUN_000ef960 (ef960), FUN_000ef980 (ef980), FUN_000ef9c4 (ef9c4), FUN_000eff40 (eff40), FUN_000effac (effac), FUN_000f02dc (f02dc), FUN_000f0750 (f0750), FUN_000f0a20 (f0a20), FUN_000f0b20 (f0b20), FUN_000f0de8 (f0de8), FUN_000f0f6c (f0f6c), FUN_000f1204 (f1204), FUN_000f128c (f128c), FUN_000f1338 (f1338), FUN_000f1360 (f1360), FUN_000f13b8 (f13b8), FUN_000f1450 (f1450), FUN_000f1568 (f1568), FUN_000f1684 (f1684), FUN_000f17a8 (f17a8), FUN_000f1ba8 (f1ba8), FUN_000f1d98 (f1d98), FUN_000f21fc (f21fc), FUN_000f2814 (f2814), FUN_000f2d6c (f2d6c), FUN_000f2da0 (f2da0), FUN_000f2de8 (f2de8), FUN_000f2fc8 (f2fc8), FUN_000f33b8 (f33b8), FUN_000f385c (f385c), FUN_000f38d8 (f38d8), FUN_000f3954 (f3954), FUN_000f3b4c (f3b4c), FUN_000f3b6c (f3b6c), FUN_000f3b9c (f3b9c), FUN_000f3df4 (f3df4), FUN_000f54f4 (f54f4), FUN_000f5514 (f5514), FUN_000f5534 (f5534), FUN_000f5564 (f5564), FUN_000f5594 (f5594), FUN_000f55e4 (f55e4), FUN_000f5844 (f5844), FUN_000f5d40 (f5d40), FUN_000f6120 (f6120), FUN_000f6354 (f6354), FUN_000f6424 (f6424), FUN_000f6ae8 (f6ae8), FUN_000f6e28 (f6e28), FUN_000f6f74 (f6f74), FUN_000f759c (f759c), FUN_000f7a84 (f7a84), FUN_000f7cb4 (f7cb4), FUN_000f7d00 (f7d00), FUN_000f7dec (f7dec), FUN_000f7e38 (f7e38), FUN_000f7e78 (f7e78), FUN_000f8078 (f8078), FUN_000f81a0 (f81a0), FUN_000f8278 (f8278), FUN_000f8a90 (f8a90), FUN_000f8d4c (f8d4c), FUN_000f8d8c (f8d8c), FUN_000f8de4 (f8de4), FUN_000f90d8 (f90d8), FUN_000fdb50 (fdb50), FUN_000ff2a8 (ff2a8), FUN_000ff7e4 (ff7e4), FUN_000ffa08 (ffa08), FUN_00100548 (100548), FUN_00101a84 (101a84), FUN_001047d0 (1047d0), FUN_00104ee8 (104ee8), FUN_001069c0 (1069c0), FUN_00106a78 (106a78), FUN_00106ac4 (106ac4), FUN_00106e28 (106e28), FUN_001071d4 (1071d4), FUN_00107224 (107224), FUN_00107478 (107478), FUN_00108a48 (108a48), FUN_00108be0 (108be0), FUN_00109774 (109774), FUN_00109cc0 (109cc0), FUN_0010a360 (10a360), FUN_0010a594 (10a594), FUN_0010a5fc (10a5fc), FUN_0010a768 (10a768), FUN_0010a7b4 (10a7b4), FUN_0010cdcc (10cdcc), FUN_0010ce0c (10ce0c), FUN_0010dea0 (10dea0), FUN_0010ec04 (10ec04), FUN_0010f59c (10f59c), FUN_0010f9b0 (10f9b0), FUN_0010fa24 (10fa24), FUN_0010fbd8 (10fbd8), FUN_00111de8 (111de8), FUN_00112128 (112128), FUN_0011288c (11288c), FUN_00113050 (113050), FUN_00113998 (113998), FUN_001139c8 (1139c8), FUN_00113b0c (113b0c), FUN_00113ba0 (113ba0), FUN_00113c68 (113c68), FUN_00113d5c (113d5c), FUN_001140e4 (1140e4), FUN_00114124 (114124), FUN_00114144 (114144), FUN_00114164 (114164), FUN_001141e4 (1141e4), FUN_00114244 (114244), FUN_00114414 (114414), FUN_00114500 (114500), FUN_00114790 (114790), FUN_00114908 (114908), FUN_00114f44 (114f44), FUN_00114fb8 (114fb8), FUN_001150cc (1150cc), FUN_0011519c (11519c), FUN_0011551c (11551c), FUN_001157e8 (1157e8), FUN_00115814 (115814), FUN_00115a80 (115a80), FUN_00115ab0 (115ab0), FUN_00115ae0 (115ae0), FUN_00116980 (116980), FUN_001169a0 (1169a0), FUN_00117b80 (117b80), FUN_00117bd8 (117bd8), FUN_00117ea4 (117ea4), FUN_001180dc (1180dc), FUN_00118130 (118130), FUN_0011828c (11828c), FUN_00118304 (118304), FUN_00118b20 (118b20), FUN_00118f18 (118f18), FUN_00118f64 (118f64), FUN_00119098 (119098), FUN_00119494 (119494), FUN_00119608 (119608), FUN_00119668 (119668), FUN_00119790 (119790), FUN_00119940 (119940), FUN_00119fc4 (119fc4), FUN_00119ff8 (119ff8), FUN_0011a690 (11a690), FUN_0011a6b4 (11a6b4), FUN_0011b114 (11b114), FUN_0011b230 (11b230), FUN_0011b3cc (11b3cc), FUN_0011b43c (11b43c), FUN_0011b6b8 (11b6b8), FUN_0011b6d8 (11b6d8), FUN_0011b884 (11b884), FUN_0011b8c8 (11b8c8), FUN_0011bcf4 (11bcf4), FUN_0011bf98 (11bf98), FUN_0011c078 (11c078), FUN_0011c800 (11c800), FUN_0011cf9c (11cf9c), FUN_0011d040 (11d040), FUN_0011d780 (11d780), FUN_0011d874 (11d874), FUN_0011dba8 (11dba8), FUN_0011dc30 (11dc30), FUN_0011dcb0 (11dcb0), FUN_0011e75c (11e75c), FUN_0011f078 (11f078), FUN_0011f9cc (11f9cc), FUN_0011fda0 (11fda0), FUN_0011fe74 (11fe74), FUN_0011fe94 (11fe94), FUN_0011feb4 (11feb4), FUN_001201c8 (1201c8), FUN_001207c8 (1207c8), FUN_00120ae0 (120ae0), FUN_00120c90 (120c90), FUN_00120e10 (120e10), FUN_00121434 (121434), FUN_0012180c (12180c), FUN_00121954 (121954), FUN_00121c4c (121c4c), FUN_00121ec8 (121ec8), FUN_00122a94 (122a94), FUN_00122fd0 (122fd0), FUN_0012315c (12315c), FUN_00123470 (123470), FUN_00123e8c (123e8c), FUN_001240b0 (1240b0), FUN_001249f0 (1249f0), FUN_00124a3c (124a3c), FUN_001257f8 (1257f8), FUN_00125a3c (125a3c), FUN_00125ea8 (125ea8), FUN_00125ec8 (125ec8), FUN_00125f28 (125f28), FUN_00125f48 (125f48), FUN_00125fb4 (125fb4), FUN_001268a8 (1268a8), FUN_00126ba4 (126ba4), FUN_00126e24 (126e24), FUN_00126f68 (126f68), FUN_00126fd8 (126fd8), FUN_001271e8 (1271e8), FUN_001273b8 (1273b8), FUN_001273e4 (1273e4), FUN_00127640 (127640), FUN_00127738 (127738), FUN_00127978 (127978), FUN_001279d8 (1279d8), FUN_00127a58 (127a58), FUN_00127c98 (127c98), FUN_00127eac (127eac), FUN_00127ecc (127ecc), FUN_0012803c (12803c), FUN_00128060 (128060), FUN_00128098 (128098), FUN_00128120 (128120), FUN_0012882c (12882c), FUN_00128a2c (128a2c), FUN_00128ad8 (128ad8), FUN_00128d20 (128d20), FUN_00128f80 (128f80), FUN_0012928c (12928c), FUN_0012951c (12951c), FUN_0012971c (12971c), FUN_00129740 (129740), FUN_00129b70 (129b70), FUN_00129c44 (129c44), FUN_00129e00 (129e00), FUN_0012a0c4 (12a0c4), FUN_0012a1d4 (12a1d4), FUN_0012a228 (12a228), FUN_0012a348 (12a348), FUN_0012b504 (12b504), FUN_0012b6c8 (12b6c8), FUN_0012b908 (12b908), FUN_0012bba4 (12bba4), FUN_0012bc40 (12bc40), FUN_0012c210 (12c210), FUN_0012c600 (12c600), FUN_0012c68c (12c68c), FUN_0012c858 (12c858), FUN_0012c8e4 (12c8e4), FUN_0012ca30 (12ca30), FUN_0012cce0 (12cce0), FUN_0012cd98 (12cd98), FUN_0012cf5c (12cf5c), FUN_0012cf7c (12cf7c), FUN_0012d2d0 (12d2d0), FUN_0012d49c (12d49c), FUN_0012d72c (12d72c), FUN_0012da78 (12da78), FUN_0012db44 (12db44), FUN_0012db74 (12db74), FUN_0012dc30 (12dc30), FUN_0012dea8 (12dea8), FUN_0012dfc8 (12dfc8), FUN_0012e338 (12e338), FUN_0012e45c (12e45c), FUN_0012e62c (12e62c), FUN_0012e82c (12e82c), FUN_0012e8fc (12e8fc), FUN_0012e920 (12e920), FUN_0012ed88 (12ed88), FUN_0012ef48 (12ef48), FUN_0012f118 (12f118), FUN_0012f318 (12f318), FUN_0012f3c0 (12f3c0), FUN_0012f77c (12f77c), FUN_0012f830 (12f830), FUN_001301a8 (1301a8), FUN_00130504 (130504), FUN_001305ec (1305ec), FUN_00130724 (130724), FUN_00130cf4 (130cf4), FUN_00130d50 (130d50), FUN_00130e90 (130e90), FUN_00131bcc (131bcc), FUN_00131e14 (131e14), FUN_00131e48 (131e48), FUN_00132074 (132074), FUN_001327c4 (1327c4), FUN_00132804 (132804), FUN_00132ae4 (132ae4), FUN_00132b24 (132b24), FUN_00133b4c (133b4c), FUN_00135198 (135198), FUN_00136360 (136360), FUN_00136474 (136474), FUN_0013665c (13665c), FUN_001366bc (1366bc), FUN_0013675c (13675c), FUN_001370fc (1370fc), FUN_00137258 (137258), FUN_00137828 (137828), FUN_0013797c (13797c), FUN_00137cb8 (137cb8), FUN_00137e04 (137e04), FUN_00137e5c (137e5c), FUN_00137e9c (137e9c), FUN_00137f40 (137f40), FUN_0013815c (13815c), FUN_001381c0 (1381c0), FUN_00138348 (138348), FUN_001384d8 (1384d8), FUN_001389c4 (1389c4), FUN_00138cf8 (138cf8), FUN_00139924 (139924), FUN_00139944 (139944), FUN_00139a14 (139a14), FUN_00139c54 (139c54), FUN_0013a0f0 (13a0f0), FUN_0013a118 (13a118), FUN_0013a260 (13a260), FUN_0013a2ec (13a2ec), FUN_0013a41c (13a41c), FUN_0013a548 (13a548), FUN_0013a61c (13a61c), FUN_0013a644 (13a644), FUN_0013aa7c (13aa7c), FUN_0013abf0 (13abf0), FUN_0013ac68 (13ac68), FUN_0013ac7c (13ac7c), FUN_0013acd4 (13acd4), FUN_0013ada0 (13ada0), FUN_0013afac (13afac), FUN_0013afd0 (13afd0), FUN_0013b044 (13b044), FUN_0013b090 (13b090), FUN_0013b40c (13b40c), FUN_0013bc98 (13bc98), FUN_0013bcf0 (13bcf0), FUN_0013c81c (13c81c), FUN_0013ca48 (13ca48), FUN_0013e154 (13e154), FUN_0013e43c (13e43c), FUN_0013f330 (13f330), FUN_0013fb50 (13fb50), FUN_0014024c (14024c), FUN_0014026c (14026c), FUN_00140364 (140364), FUN_00140448 (140448), FUN_0014052c (14052c), FUN_00140e78 (140e78), FUN_00140ea0 (140ea0), FUN_00140f48 (140f48), FUN_00141018 (141018), FUN_001410a0 (1410a0), FUN_00141338 (141338), FUN_00141360 (141360), FUN_00141474 (141474), FUN_00141634 (141634), FUN_001417e4 (1417e4), FUN_001419b8 (1419b8), FUN_00141a84 (141a84), FUN_00141b28 (141b28), FUN_00141b84 (141b84), FUN_00141c84 (141c84), FUN_00141ccc (141ccc), FUN_0014230c (14230c), FUN_00142928 (142928), FUN_0014318c (14318c), FUN_0014352c (14352c), FUN_001439c0 (1439c0), FUN_00143a04 (143a04), FUN_00143aa4 (143aa4), FUN_00143de4 (143de4), FUN_00143e18 (143e18), FUN_00143ec0 (143ec0), FUN_00143f54 (143f54), FUN_00144204 (144204), FUN_0014422c (14422c), FUN_00144824 (144824), FUN_00145954 (145954), FUN_00145ae0 (145ae0), FUN_00145ba4 (145ba4), FUN_0014620c (14620c), FUN_00146634 (146634), FUN_00146920 (146920), FUN_00147044 (147044), FUN_001478d4 (1478d4), FUN_00147b9c (147b9c), FUN_0014837c (14837c), FUN_001489f8 (1489f8), FUN_00149950 (149950), FUN_00149bc4 (149bc4), FUN_0014a144 (14a144), FUN_0014a710 (14a710), FUN_0014a7d4 (14a7d4), FUN_0014b8d8 (14b8d8), FUN_0014bb4c (14bb4c), FUN_0014cbc4 (14cbc4), FUN_0014cca0 (14cca0), FUN_0014d218 (14d218), FUN_0014d8d0 (14d8d0), FUN_0014de14 (14de14), FUN_0014df64 (14df64), FUN_0014e0b4 (14e0b4), FUN_0014e594 (14e594), FUN_0014ea60 (14ea60), FUN_0014ec7c (14ec7c), FUN_0014eebc (14eebc), FUN_0014f128 (14f128), FUN_0014f5fc (14f5fc), FUN_0014f6c4 (14f6c4), FUN_0014fd14 (14fd14), FUN_0014fd68 (14fd68), FUN_0014fd90 (14fd90), FUN_0014fde0 (14fde0), FUN_0014ff2c (14ff2c), FUN_00150058 (150058), FUN_001502e0 (1502e0), FUN_00150300 (150300), FUN_00150320 (150320), FUN_00150548 (150548), FUN_00150744 (150744), FUN_001508ac (1508ac), FUN_00150980 (150980), FUN_00150e78 (150e78), FUN_00150f10 (150f10), FUN_00151204 (151204), FUN_00151264 (151264), FUN_00151290 (151290), FUN_001514f8 (1514f8), FUN_0015151c (15151c), FUN_00151828 (151828), FUN_0015189c (15189c), FUN_00151bd8 (151bd8), FUN_00151c84 (151c84), FUN_00151d50 (151d50), FUN_00151e30 (151e30), FUN_00152114 (152114), FUN_00152cc8 (152cc8), FUN_00152d04 (152d04), FUN_0015327c (15327c), FUN_00153410 (153410), FUN_00153544 (153544), FUN_00153598 (153598), FUN_00153934 (153934), FUN_00153bd4 (153bd4), FUN_00153d80 (153d80), FUN_00154514 (154514), FUN_0015488c (15488c), FUN_001558c4 (1558c4), FUN_00155924 (155924), FUN_001559d0 (1559d0), FUN_00155aec (155aec), FUN_00155c30 (155c30), FUN_00155ca4 (155ca4), FUN_00155cc8 (155cc8), FUN_00155e28 (155e28), FUN_00156230 (156230), FUN_00156a70 (156a70), FUN_00156b20 (156b20), FUN_00156b54 (156b54), FUN_00156cec (156cec), FUN_00156d9c (156d9c), FUN_00156ea0 (156ea0), FUN_0015743c (15743c), FUN_0015750c (15750c), FUN_001580bc (1580bc), FUN_0015852c (15852c), FUN_001587b4 (1587b4), FUN_00158abc (158abc), FUN_00158b98 (158b98), FUN_00158bcc (158bcc), FUN_00158d80 (158d80), FUN_00158ea4 (158ea4), FUN_001590ec (1590ec), FUN_001591f8 (1591f8), FUN_001592a8 (1592a8), FUN_001593a4 (1593a4), FUN_00159bb0 (159bb0), FUN_00159c8c (159c8c), FUN_00159d6c (159d6c), FUN_0015acd0 (15acd0), FUN_0015ae38 (15ae38), FUN_0015b1fc (15b1fc), FUN_0015b284 (15b284), FUN_0015b428 (15b428), FUN_0015b448 (15b448), FUN_00163064 (163064), FUN_00163110 (163110), FUN_00163454 (163454), FUN_001635f8 (1635f8), FUN_0016398c (16398c), FUN_001639b0 (1639b0), FUN_00163f20 (163f20), FUN_00164c48 (164c48), FUN_00164cf4 (164cf4), FUN_00164e64 (164e64), FUN_00164e90 (164e90), FUN_00165148 (165148), FUN_00165290 (165290), FUN_00165554 (165554), FUN_00165e18 (165e18), FUN_0016606c (16606c), FUN_0016615c (16615c), FUN_00166870 (166870), FUN_00166994 (166994), FUN_00166d6c (166d6c), FUN_0016729c (16729c), dealloc__168970 (168970), FUN_0016a7cc (16a7cc), FUN_0016e718 (16e718), FUN_0016e73c (16e73c), FUN_0016e7a0 (16e7a0), FUN_0016ea24 (16ea24), FUN_0016ee64 (16ee64), FUN_0016f000 (16f000), FUN_0016f308 (16f308), FUN_0016f460 (16f460), FUN_0016f680 (16f680), FUN_0016f85c (16f85c), FUN_0016f97c (16f97c), FUN_0016f9a8 (16f9a8), FUN_0016fb58 (16fb58), FUN_0017033c (17033c), FUN_001703c8 (1703c8), FUN_001706e4 (1706e4), FUN_00170898 (170898), FUN_00170ad8 (170ad8), FUN_00170e70 (170e70), FUN_0017146c (17146c), FUN_00171638 (171638), FUN_00171e34 (171e34), FUN_00172064 (172064), FUN_00173af4 (173af4), FUN_00175140 (175140), FUN_001751ac (1751ac), FUN_0017591c (17591c), FUN_0017648c (17648c), FUN_00176668 (176668), FUN_00177c60 (177c60), FUN_001785fc (1785fc), FUN_0017861c (17861c), FUN_0017863c (17863c), FUN_0017869c (17869c), FUN_0017875c (17875c), FUN_00179228 (179228), FUN_001799f4 (1799f4), FUN_00179b78 (179b78), FUN_00179c5c (179c5c), FUN_00179ecc (179ecc), FUN_0017a000 (17a000), FUN_0017a134 (17a134), FUN_0017a1dc (17a1dc), FUN_0017a25c (17a25c), FUN_0017a2b4 (17a2b4), FUN_0017a314 (17a314), FUN_0017a50c (17a50c), FUN_0017a674 (17a674), FUN_0017ac8c (17ac8c), FUN_0017b17c (17b17c), FUN_0017b274 (17b274), FUN_0017b79c (17b79c), FUN_0017bbd0 (17bbd0), FUN_0017bc50 (17bc50), FUN_0017ce9c (17ce9c), FUN_0017d188 (17d188), FUN_0017df88 (17df88), FUN_0017e094 (17e094), FUN_0017e55c (17e55c), FUN_0017e8cc (17e8cc), FUN_0017e9d8 (17e9d8), FUN_0017f170 (17f170), FUN_0017f338 (17f338), FUN_0017f7cc (17f7cc), FUN_0017f890 (17f890), FUN_0017f8b4 (17f8b4), FUN_0017f998 (17f998), FUN_0017f9b8 (17f9b8), FUN_0017fa38 (17fa38), FUN_0017fa58 (17fa58), FUN_0017fad4 (17fad4), FUN_0017fb18 (17fb18), FUN_0017fb78 (17fb78), FUN_0017fc7c (17fc7c), FUN_0017fd4c (17fd4c), FUN_00180264 (180264), FUN_00180420 (180420), FUN_00180d18 (180d18), FUN_00180d84 (180d84), FUN_00180e08 (180e08), FUN_00180e4c (180e4c), FUN_00180f34 (180f34), FUN_00180fb8 (180fb8), FUN_00180ffc (180ffc), FUN_001810c8 (1810c8), FUN_00181334 (181334), FUN_00181bc8 (181bc8), FUN_00181e88 (181e88), FUN_0018202c (18202c), FUN_001823c0 (1823c0), FUN_00182534 (182534), FUN_001829d4 (1829d4), FUN_001832f4 (1832f4), FUN_001838e8 (1838e8), FUN_00183abc (183abc), FUN_00183b40 (183b40), FUN_001841a4 (1841a4), FUN_001843f0 (1843f0), FUN_00184564 (184564), FUN_0018466c (18466c), FUN_001846b0 (1846b0), FUN_00184ca0 (184ca0), FUN_00184d08 (184d08), FUN_00184d4c (184d4c), FUN_0018533c (18533c), FUN_001853ec (1853ec), FUN_001856bc (1856bc), FUN_00185700 (185700), FUN_001857a4 (1857a4), FUN_001857c8 (1857c8), FUN_001858b8 (1858b8), FUN_00185e34 (185e34), FUN_00185f94 (185f94), FUN_00186210 (186210), FUN_00186234 (186234), FUN_001865bc (1865bc), FUN_001865dc (1865dc), FUN_00186600 (186600), FUN_00186c04 (186c04), FUN_00186d40 (186d40), FUN_00186eb4 (186eb4), FUN_00186fbc (186fbc), FUN_001872e8 (1872e8), FUN_0018738c (18738c), FUN_001873b0 (1873b0), FUN_00187b0c (187b0c), FUN_00187c80 (187c80), FUN_00188038 (188038), FUN_00189214 (189214), FUN_001893ac (1893ac), FUN_00189834 (189834), FUN_00189b8c (189b8c), FUN_00189e3c (189e3c), FUN_0018a27c (18a27c), FUN_0018a2a4 (18a2a4), FUN_0018a2e8 (18a2e8), FUN_0018a36c (18a36c), FUN_0018a3b0 (18a3b0), FUN_0018a474 (18a474), FUN_0018a498 (18a498), FUN_0018a53c (18a53c), FUN_0018a560 (18a560), FUN_0018a5e4 (18a5e4), FUN_0018a63c (18a63c), FUN_0018a8f0 (18a8f0), FUN_0018ac54 (18ac54), FUN_0018ad3c (18ad3c), FUN_0018af6c (18af6c), FUN_0018c1c4 (18c1c4), FUN_0018c4f4 (18c4f4), FUN_0018c538 (18c538), FUN_0018c5dc (18c5dc), FUN_0018c6f0 (18c6f0), FUN_0018cd44 (18cd44), FUN_0018ceb8 (18ceb8), FUN_0018d004 (18d004), FUN_0018d5f4 (18d5f4), FUN_0018d65c (18d65c), FUN_0018d6a0 (18d6a0), FUN_0018dfe0 (18dfe0), FUN_0018e024 (18e024), FUN_0018e0a8 (18e0a8), FUN_0018e0ec (18e0ec), FUN_0018e6f0 (18e6f0), FUN_0018e820 (18e820), FUN_0018ed80 (18ed80), FUN_0018ee48 (18ee48), FUN_0018ee68 (18ee68), FUN_0018ee8c (18ee8c), FUN_0018f490 (18f490), FUN_0018f5cc (18f5cc), FUN_0018f740 (18f740), FUN_0018f848 (18f848), FUN_0018f870 (18f870), FUN_0018fb30 (18fb30), FUN_0018fb74 (18fb74), FUN_0018fc18 (18fc18), FUN_0018fc3c (18fc3c), FUN_00190240 (190240), FUN_00190398 (190398), FUN_0019050c (19050c), FUN_00190614 (190614), FUN_001908a4 (1908a4), FUN_001908c4 (1908c4), FUN_00191c38 (191c38), FUN_00191f70 (191f70), FUN_001920c0 (1920c0), FUN_001923b0 (1923b0), FUN_00192aa0 (192aa0), FUN_00192ae8 (192ae8), FUN_00192b0c (192b0c), FUN_00192b90 (192b90), FUN_00192bb0 (192bb0), FUN_00192bd4 (192bd4), FUN_00192c78 (192c78), FUN_00192c98 (192c98), FUN_00192cbc (192cbc), FUN_00192d40 (192d40), FUN_00192d60 (192d60), FUN_00192d84 (192d84), FUN_00192e60 (192e60), FUN_00192f48 (192f48), FUN_00193114 (193114), FUN_001938d0 (1938d0), FUN_001939b8 (1939b8), FUN_00193c5c (193c5c), FUN_00193d44 (193d44), FUN_001945b8 (1945b8), FUN_001945e0 (1945e0), FUN_00194e78 (194e78), FUN_00194efc (194efc), FUN_00194f1c (194f1c), FUN_00194f40 (194f40), FUN_00195030 (195030), FUN_00195544 (195544), FUN_00195690 (195690), FUN_00195804 (195804), FUN_0019590c (19590c), FUN_00195950 (195950), FUN_00195a2c (195a2c), FUN_00195a54 (195a54), FUN_00195f40 (195f40), FUN_00195fa8 (195fa8), FUN_00195fec (195fec), FUN_00196070 (196070), FUN_001965dc (1965dc), FUN_00196644 (196644), FUN_0019692c (19692c), FUN_00196970 (196970), FUN_00196a14 (196a14), FUN_00196a38 (196a38), FUN_00196fe0 (196fe0), FUN_001970a4 (1970a4), FUN_00197168 (197168), FUN_001973e4 (1973e4), FUN_00197408 (197408), FUN_001976c8 (1976c8), FUN_0019770c (19770c), FUN_001977b0 (1977b0), FUN_001977d4 (1977d4), FUN_00197d4c (197d4c), FUN_00197dd8 (197dd8), FUN_00197e40 (197e40), FUN_00197f0c (197f0c), FUN_00197ff4 (197ff4), FUN_00198080 (198080), FUN_00198188 (198188), FUN_001984b4 (1984b4), FUN_00198538 (198538), FUN_00198558 (198558), FUN_0019857c (19857c), FUN_0019866c (19866c), FUN_00198be8 (198be8), FUN_00198cd4 (198cd4), FUN_00198f50 (198f50), FUN_001991e0 (1991e0), FUN_00199200 (199200), FUN_00199870 (199870), FUN_001998e4 (1998e4), FUN_0019a370 (19a370), FUN_0019a3d4 (19a3d4), FUN_0019a56c (19a56c), FUN_0019acd4 (19acd4), FUN_0019ad9c (19ad9c), FUN_0019af20 (19af20), FUN_0019afe8 (19afe8), FUN_0019b48c (19b48c), FUN_0019b4d4 (19b4d4), FUN_0019b4f8 (19b4f8), FUN_0019b57c (19b57c), FUN_0019b59c (19b59c), FUN_0019b5c0 (19b5c0), FUN_0019b684 (19b684), FUN_0019b6a8 (19b6a8), FUN_0019b72c (19b72c), FUN_0019b74c (19b74c), FUN_0019b770 (19b770), FUN_0019b84c (19b84c), FUN_0019bfcc (19bfcc), FUN_0019c2e4 (19c2e4), FUN_0019c66c (19c66c), FUN_0019cfc8 (19cfc8), FUN_0019d84c (19d84c), FUN_0019d890 (19d890), FUN_0019d934 (19d934), FUN_0019d958 (19d958), FUN_0019d9dc (19d9dc), FUN_0019e09c (19e09c), FUN_0019e318 (19e318), FUN_0019e35c (19e35c), FUN_0019e438 (19e438), FUN_0019e9b4 (19e9b4), FUN_0019e9f8 (19e9f8), FUN_0019ea7c (19ea7c), FUN_0019ead4 (19ead4), FUN_0019f050 (19f050), FUN_0019f338 (19f338), FUN_0019f37c (19f37c), FUN_0019f420 (19f420), FUN_0019f444 (19f444), FUN_0019f9ec (19f9ec), FUN_0019fa18 (19fa18), FUN_0019fab0 (19fab0), FUN_0019fb68 (19fb68), FUN_0019fde4 (19fde4), FUN_001a010c (1a010c), FUN_001a0190 (1a0190), FUN_001a01d4 (1a01d4), FUN_001a0900 (1a0900), FUN_001a0a74 (1a0a74), FUN_001a0b7c (1a0b7c), FUN_001a0e64 (1a0e64), FUN_001a0ea8 (1a0ea8), FUN_001a0f4c (1a0f4c), FUN_001a0f70 (1a0f70), FUN_001a15dc (1a15dc), FUN_001a16b4 (1a16b4), FUN_001a179c (1a179c), FUN_001a1980 (1a1980), FUN_001a1a58 (1a1a58), FUN_001a28bc (1a28bc), FUN_001a2aa4 (1a2aa4), FUN_001a2ac8 (1a2ac8), FUN_001a2b58 (1a2b58), FUN_001a30e4 (1a30e4), FUN_001a3234 (1a3234), FUN_001a39a8 (1a39a8), FUN_001a39d0 (1a39d0), FUN_001a3d78 (1a3d78), FUN_001a3ddc (1a3ddc), FUN_001a6724 (1a6724), FUN_001a67e4 (1a67e4), FUN_001a680c (1a680c), FUN_001a6858 (1a6858), FUN_001a68a0 (1a68a0), FUN_001a68ec (1a68ec), FUN_001a6b78 (1a6b78), FUN_001a6b9c (1a6b9c), FUN_001a6c10 (1a6c10), FUN_001a6d4c (1a6d4c), FUN_001a7080 (1a7080), FUN_001a769c (1a769c), FUN_001a7704 (1a7704), FUN_001a775c (1a775c), FUN_001a7a14 (1a7a14), FUN_001a7aa4 (1a7aa4), FUN_001a7c28 (1a7c28), FUN_001a7c78 (1a7c78), FUN_001a7f30 (1a7f30), FUN_001a80f4 (1a80f4), FUN_001a84dc (1a84dc), FUN_001a9a3c (1a9a3c), FUN_001a9ac0 (1a9ac0), FUN_001a9e08 (1a9e08), FUN_001a9e74 (1a9e74), FUN_001a9fa8 (1a9fa8), FUN_001aa188 (1aa188), FUN_001aa1c8 (1aa1c8), FUN_001aa208 (1aa208), FUN_001aa28c (1aa28c), FUN_001aa498 (1aa498), FUN_001aa5dc (1aa5dc), FUN_001aa654 (1aa654), FUN_001aa888 (1aa888), FUN_001aa8c0 (1aa8c0), FUN_001aa954 (1aa954), FUN_001aab6c (1aab6c), FUN_001aad8c (1aad8c), FUN_001aaef4 (1aaef4), FUN_001ab8cc (1ab8cc), FUN_001ab930 (1ab930), FUN_001ab958 (1ab958), FUN_001aba88 (1aba88), FUN_001abab4 (1abab4), FUN_001abb40 (1abb40), FUN_001abba8 (1abba8), FUN_001ac418 (1ac418), FUN_001acc68 (1acc68), FUN_001acf90 (1acf90), FUN_001ae388 (1ae388), FUN_001ae3f0 (1ae3f0), FUN_001ae46c (1ae46c), FUN_001aeb58 (1aeb58), FUN_001aec6c (1aec6c), FUN_001af234 (1af234), FUN_001af45c (1af45c), FUN_001af62c (1af62c), FUN_001af758 (1af758), FUN_001b042c (1b042c), FUN_001b0a58 (1b0a58), FUN_001b1c00 (1b1c00), FUN_001b2dbc (1b2dbc), FUN_001b2e08 (1b2e08), FUN_001b3be0 (1b3be0), FUN_001b3d44 (1b3d44), FUN_001b4600 (1b4600), FUN_001b4b2c (1b4b2c), FUN_001b4d44 (1b4d44), FUN_001b4d70 (1b4d70), FUN_001b5d5c (1b5d5c), FUN_001b6164 (1b6164), FUN_001b6ffc (1b6ffc), FUN_001b772c (1b772c), FUN_001b77ec (1b77ec), FUN_001b7bf0 (1b7bf0), FUN_001b8134 (1b8134), FUN_001b81b4 (1b81b4), FUN_001b849c (1b849c), FUN_001b8a34 (1b8a34), FUN_001b8a64 (1b8a64), FUN_001b8ee8 (1b8ee8), FUN_001b90a8 (1b90a8), FUN_001b9540 (1b9540), FUN_001b95f0 (1b95f0), FUN_001b9648 (1b9648), FUN_001ba140 (1ba140), FUN_001ba28c (1ba28c), FUN_001ba7a4 (1ba7a4), FUN_001ba80c (1ba80c), FUN_001ba980 (1ba980), FUN_001baa0c (1baa0c), FUN_001baaf8 (1baaf8), FUN_001bac98 (1bac98), FUN_001badd0 (1badd0), FUN_001baf38 (1baf38), FUN_001baf88 (1baf88), FUN_001bb6a4 (1bb6a4), FUN_001bb73c (1bb73c), FUN_001bb7f4 (1bb7f4), FUN_001bbd64 (1bbd64), FUN_001bbde8 (1bbde8), FUN_001bbe18 (1bbe18), FUN_001bbebc (1bbebc), FUN_001bc2f0 (1bc2f0), FUN_001bc674 (1bc674), FUN_001bc71c (1bc71c), FUN_001bc898 (1bc898), FUN_001bd5a8 (1bd5a8), FUN_001bd5d0 (1bd5d0), FUN_001bec88 (1bec88), FUN_001bee10 (1bee10), FUN_001bf7d4 (1bf7d4), FUN_001bf838 (1bf838), FUN_001bf9e0 (1bf9e0), FUN_001bfab0 (1bfab0), FUN_001bfe24 (1bfe24), FUN_001bff0c (1bff0c), FUN_001c01f8 (1c01f8), FUN_001c0540 (1c0540), FUN_001c05d4 (1c05d4), FUN_001c06c4 (1c06c4), FUN_001c09cc (1c09cc), FUN_001c0dd4 (1c0dd4), FUN_001c0f94 (1c0f94), FUN_001c11b0 (1c11b0), FUN_001c14cc (1c14cc), FUN_001c1634 (1c1634), FUN_001c1674 (1c1674), FUN_001c1c24 (1c1c24), FUN_001c1ec4 (1c1ec4), FUN_001c2074 (1c2074), FUN_001c298c (1c298c), FUN_001c2a3c (1c2a3c), FUN_001c2be8 (1c2be8), FUN_001c30e8 (1c30e8), FUN_001c31fc (1c31fc), FUN_001c33ac (1c33ac), FUN_001c35b4 (1c35b4), FUN_001c39e0 (1c39e0), FUN_001c3be4 (1c3be4), FUN_001c3ec0 (1c3ec0), FUN_001c3f6c (1c3f6c), FUN_001c3f90 (1c3f90), FUN_001c41f0 (1c41f0), FUN_001c47b0 (1c47b0), FUN_001c4e64 (1c4e64), FUN_001c52f8 (1c52f8), FUN_001c54c4 (1c54c4), FUN_001c59f0 (1c59f0), FUN_001c5b2c (1c5b2c), FUN_001c5b60 (1c5b60), FUN_001c5b94 (1c5b94), FUN_001c5bfc (1c5bfc), FUN_001c5d64 (1c5d64), FUN_001c61a0 (1c61a0), FUN_001c6438 (1c6438), FUN_001c6818 (1c6818), FUN_001c6b4c (1c6b4c), FUN_001c6e98 (1c6e98), FUN_001c711c (1c711c), FUN_001c882c (1c882c), FUN_001c8b2c (1c8b2c), FUN_001c8cd8 (1c8cd8), FUN_001ca768 (1ca768), FUN_001cb7bc (1cb7bc), FUN_001cb868 (1cb868), FUN_001cb9e4 (1cb9e4), FUN_001cc1ec (1cc1ec), FUN_001cc234 (1cc234), FUN_001cc3f8 (1cc3f8), FUN_001cc6c8 (1cc6c8), FUN_001ccc44 (1ccc44), FUN_001ccf7c (1ccf7c), FUN_001cd140 (1cd140), FUN_001cd6ac (1cd6ac), FUN_001cdb98 (1cdb98), FUN_001cdbdc (1cdbdc), FUN_001cdfcc (1cdfcc), FUN_001ce1a4 (1ce1a4), FUN_001ce21c (1ce21c), FUN_001ce230 (1ce230), FUN_001ce3cc (1ce3cc), FUN_001ce830 (1ce830), FUN_001ce948 (1ce948), FUN_001ceddc (1ceddc), FUN_001cee5c (1cee5c), FUN_001cf020 (1cf020), FUN_001cf15c (1cf15c), FUN_001cf2b0 (1cf2b0), FUN_001cf2f4 (1cf2f4), FUN_001cf354 (1cf354), FUN_001cf594 (1cf594), FUN_001cf7c8 (1cf7c8), FUN_001cf7e8 (1cf7e8), FUN_001cf808 (1cf808), FUN_001cff24 (1cff24), FUN_001d03bc (1d03bc), FUN_001d06d0 (1d06d0), FUN_001d0b0c (1d0b0c), FUN_001d1024 (1d1024), FUN_001d19a0 (1d19a0), FUN_001d2414 (1d2414), FUN_001d3254 (1d3254), FUN_001d4160 (1d4160), FUN_001d41d0 (1d41d0), FUN_001d41f0 (1d41f0), FUN_001d4240 (1d4240), FUN_001d42dc (1d42dc), FUN_001d450c (1d450c), FUN_001d47b0 (1d47b0), FUN_001d4808 (1d4808), FUN_001d4884 (1d4884), FUN_001d48e8 (1d48e8), FUN_001d4974 (1d4974), FUN_001d4bb4 (1d4bb4), FUN_001d4e50 (1d4e50), FUN_001d4f58 (1d4f58), FUN_001d5474 (1d5474), FUN_001d54b8 (1d54b8), FUN_001d58a8 (1d58a8), FUN_001d5910 (1d5910), FUN_001d5a84 (1d5a84), FUN_001d5b10 (1d5b10), FUN_001d5b68 (1d5b68), FUN_001d5d60 (1d5d60), FUN_001d5d98 (1d5d98), FUN_001d6038 (1d6038), FUN_001d6480 (1d6480), FUN_001d6500 (1d6500), FUN_001d66c4 (1d66c4), FUN_001d69f4 (1d69f4), FUN_001d6b04 (1d6b04), FUN_001d6c50 (1d6c50), FUN_001d6ff8 (1d6ff8), FUN_001d798c (1d798c), FUN_001d7be8 (1d7be8), FUN_001d7d58 (1d7d58), FUN_001d7f88 (1d7f88), FUN_001d8128 (1d8128), FUN_001d8250 (1d8250), FUN_001d8320 (1d8320), FUN_001d83a0 (1d83a0), FUN_001d8684 (1d8684), FUN_001d880c (1d880c), FUN_001d8e90 (1d8e90), FUN_001d90c4 (1d90c4), FUN_001d9850 (1d9850), FUN_001d99b8 (1d99b8), FUN_001d9e48 (1d9e48), FUN_001da27c (1da27c), FUN_001da7f4 (1da7f4), FUN_001da808 (1da808), FUN_001dad10 (1dad10), FUN_001dae70 (1dae70), FUN_001db424 (1db424), FUN_001db444 (1db444), FUN_001db490 (1db490), FUN_001db684 (1db684), FUN_001db8d0 (1db8d0), FUN_001dbc44 (1dbc44), FUN_001dbe84 (1dbe84), FUN_001dc568 (1dc568), FUN_001dc678 (1dc678), FUN_001dc82c (1dc82c), FUN_001dcd7c (1dcd7c), FUN_001dcdfc (1dcdfc), FUN_001dcfa4 (1dcfa4), FUN_001dd0c8 (1dd0c8), FUN_001dd36c (1dd36c), FUN_001dd708 (1dd708), FUN_001de558 (1de558), FUN_001de600 (1de600), FUN_001de7c8 (1de7c8), FUN_001df278 (1df278), FUN_001df2ac (1df2ac), FUN_001df7e0 (1df7e0), FUN_001dfc68 (1dfc68), FUN_001e0d04 (1e0d04), FUN_001e0d4c (1e0d4c), FUN_001e113c (1e113c), FUN_001e12dc (1e12dc), FUN_001e13b4 (1e13b4), FUN_001e1450 (1e1450), FUN_001e1a60 (1e1a60), FUN_001e1abc (1e1abc), FUN_001e1db0 (1e1db0), FUN_001e1f48 (1e1f48), FUN_001e22b8 (1e22b8), FUN_001e262c (1e262c), FUN_001e2740 (1e2740), FUN_001e2784 (1e2784), FUN_001e27c8 (1e27c8), FUN_001e2b88 (1e2b88), FUN_001e2bf0 (1e2bf0), FUN_001e2c18 (1e2c18), FUN_001e2d64 (1e2d64), FUN_001e2df0 (1e2df0), FUN_001e31e0 (1e31e0), FUN_001e3578 (1e3578), FUN_001e37c0 (1e37c0), FUN_001e39a4 (1e39a4), FUN_001e39d0 (1e39d0), FUN_001e3b84 (1e3b84), FUN_001e3d1c (1e3d1c), FUN_001e3ed0 (1e3ed0), FUN_001e40a4 (1e40a4), FUN_001e47c4 (1e47c4), FUN_001e482c (1e482c), FUN_001e4854 (1e4854), FUN_001e49a0 (1e49a0), FUN_001e4a2c (1e4a2c), FUN_001e4c20 (1e4c20), FUN_001e4c7c (1e4c7c), FUN_001e4d58 (1e4d58), FUN_001e51d0 (1e51d0), FUN_001e5258 (1e5258), FUN_001e5918 (1e5918), FUN_001e5b8c (1e5b8c), FUN_001e5d0c (1e5d0c), FUN_001e5dfc (1e5dfc), FUN_001e688c (1e688c), FUN_001e6ee0 (1e6ee0), FUN_001e6f24 (1e6f24), FUN_001e7288 (1e7288), FUN_001e72fc (1e72fc), FUN_001e733c (1e733c), FUN_001e75e4 (1e75e4), FUN_001e7b4c (1e7b4c), FUN_001e7cf8 (1e7cf8), FUN_001e8284 (1e8284), FUN_001e83f8 (1e83f8), FUN_001e8484 (1e8484), FUN_001e85a8 (1e85a8), FUN_001e8a88 (1e8a88), FUN_001e8e98 (1e8e98), FUN_001e90b0 (1e90b0), FUN_001e9174 (1e9174), FUN_001e91d4 (1e91d4), FUN_001e940c (1e940c), FUN_001e9558 (1e9558), FUN_001e9988 (1e9988), FUN_001e9a84 (1e9a84), FUN_001ea00c (1ea00c), FUN_001eaec4 (1eaec4), FUN_001eb81c (1eb81c), FUN_001ebad8 (1ebad8), FUN_001ebb9c (1ebb9c), FUN_001ebbec (1ebbec), FUN_001ebdc4 (1ebdc4), FUN_001ec234 (1ec234), FUN_001ec4c0 (1ec4c0), FUN_001ec8d0 (1ec8d0), FUN_001ec954 (1ec954), FUN_001ec974 (1ec974), FUN_001eca74 (1eca74), FUN_001ecb58 (1ecb58), FUN_001ecb90 (1ecb90), FUN_001ecc30 (1ecc30), FUN_001ece4c (1ece4c), FUN_001ecfe0 (1ecfe0), FUN_001ed17c (1ed17c), FUN_001ed2c0 (1ed2c0), FUN_001ed964 (1ed964), FUN_001edb38 (1edb38), FUN_001edc1c (1edc1c), FUN_001edca0 (1edca0), FUN_001ee2d4 (1ee2d4), FUN_001ef42c (1ef42c), FUN_001ef53c (1ef53c), FUN_001ef594 (1ef594), FUN_001ef694 (1ef694), FUN_001ef850 (1ef850), FUN_001efa6c (1efa6c), FUN_001efc7c (1efc7c), FUN_001eff3c (1eff3c), FUN_001f0218 (1f0218), FUN_001f02d0 (1f02d0), FUN_001f056c (1f056c), FUN_001f05cc (1f05cc), FUN_001f0bcc (1f0bcc), FUN_001f1444 (1f1444), FUN_001f1d38 (1f1d38), FUN_001f30d0 (1f30d0), FUN_001f5014 (1f5014), FUN_001f51e8 (1f51e8), FUN_001f527c (1f527c), FUN_001f538c (1f538c), FUN_001f56e4 (1f56e4), FUN_001f5dc0 (1f5dc0), FUN_001f6448 (1f6448), FUN_001f6468 (1f6468), FUN_001f65bc (1f65bc), FUN_001f66ac (1f66ac), FUN_001f7100 (1f7100), FUN_001f7170 (1f7170), FUN_001f7190 (1f7190), FUN_001f71b4 (1f71b4), FUN_001f7414 (1f7414), FUN_001f74b8 (1f74b8), FUN_001f750c (1f750c), FUN_001f7550 (1f7550), FUN_001f75f8 (1f75f8), FUN_001f7f78 (1f7f78), FUN_001f8158 (1f8158), FUN_001f89c0 (1f89c0), FUN_001f8a50 (1f8a50), FUN_001fa0bc (1fa0bc), FUN_001fa958 (1fa958), FUN_001fb270 (1fb270), FUN_001fb2b8 (1fb2b8), FUN_001fbef4 (1fbef4), FUN_001fc3e8 (1fc3e8), FUN_001fc6c0 (1fc6c0), FUN_001fc7b0 (1fc7b0), FUN_001fcac4 (1fcac4), FUN_001fcbb0 (1fcbb0), FUN_001fdb0c (1fdb0c), FUN_001fe118 (1fe118), FUN_001fe53c (1fe53c), FUN_001fe5f0 (1fe5f0), FUN_001fe674 (1fe674), FUN_001fe7f4 (1fe7f4), FUN_001fe8b8 (1fe8b8), FUN_001fe8dc (1fe8dc), FUN_001fe970 (1fe970), FUN_001fe990 (1fe990), FUN_001fec1c (1fec1c), FUN_001fef18 (1fef18), FUN_001ff618 (1ff618), FUN_001ff6f4 (1ff6f4), FUN_001ff734 (1ff734), FUN_001ffc70 (1ffc70), FUN_001ffdb4 (1ffdb4), FUN_001ffeb4 (1ffeb4), FUN_001ffed4 (1ffed4), FUN_00200178 (200178), FUN_0020022c (20022c), FUN_00200d90 (200d90), FUN_00201240 (201240), FUN_0020134c (20134c), FUN_0020157c (20157c), FUN_002015a4 (2015a4), FUN_00201660 (201660), FUN_00201acc (201acc), FUN_00202134 (202134), FUN_00202200 (202200), FUN_002025e4 (2025e4), FUN_0020283c (20283c), FUN_002028b8 (2028b8), FUN_00202d34 (202d34), FUN_00203440 (203440), FUN_00203464 (203464), FUN_002034a8 (2034a8), FUN_002037b8 (2037b8), FUN_00203848 (203848), FUN_00203c18 (203c18), FUN_00204324 (204324), FUN_002045dc (2045dc), FUN_0020466c (20466c), FUN_00204a3c (204a3c), FUN_00204fc4 (204fc4), FUN_002055bc (2055bc), FUN_00205900 (205900), FUN_00205990 (205990), FUN_00205bf0 (205bf0), FUN_00205d94 (205d94), FUN_00205f70 (205f70), FUN_002063b8 (2063b8), FUN_00206430 (206430), FUN_00206660 (206660), FUN_002087c0 (2087c0), FUN_002088b8 (2088b8), FUN_0020895c (20895c), FUN_00208e58 (208e58), FUN_00209c84 (209c84), FUN_00209e84 (209e84), FUN_0020a1ec (20a1ec), FUN_0020a568 (20a568), FUN_0020afdc (20afdc), FUN_0020bc04 (20bc04), FUN_0020c468 (20c468), FUN_0020cac0 (20cac0), FUN_0020cae0 (20cae0), FUN_0020cc04 (20cc04), FUN_0020d2ac (20d2ac), FUN_0020d3fc (20d3fc), FUN_0020d54c (20d54c), FUN_0020d83c (20d83c), FUN_0020df3c (20df3c), FUN_0020e54c (20e54c), FUN_0020e6bc (20e6bc), FUN_0020e774 (20e774), FUN_0020ea2c (20ea2c), FUN_0020f008 (20f008), FUN_00210050 (210050), FUN_002100a8 (2100a8), FUN_002102a8 (2102a8), FUN_00211640 (211640), FUN_002117c4 (2117c4), FUN_00211868 (211868), FUN_00211acc (211acc), FUN_00211c90 (211c90), FUN_00211cd8 (211cd8), FUN_00212114 (212114), FUN_0021217c (21217c), FUN_0021227c (21227c), FUN_00212538 (212538), FUN_002126c0 (2126c0), FUN_002128d4 (2128d4), FUN_00212bac (212bac), FUN_00212e4c (212e4c), FUN_00212e84 (212e84), FUN_00214ae0 (214ae0), FUN_002155ec (2155ec), FUN_00215758 (215758), FUN_00215e78 (215e78), FUN_00215ea0 (215ea0), FUN_00216eb8 (216eb8), FUN_0021717c (21717c), FUN_00217574 (217574), FUN_0021789c (21789c), FUN_00218068 (218068), FUN_002182ac (2182ac), FUN_0021830c (21830c), FUN_00218d44 (218d44), FUN_00218dd4 (218dd4), FUN_00218f68 (218f68), FUN_00218fb8 (218fb8), FUN_00218fec (218fec), FUN_00219294 (219294), FUN_00219458 (219458), FUN_002194a0 (2194a0), FUN_002196bc (2196bc), FUN_002198e8 (2198e8), FUN_00219984 (219984), FUN_00219b4c (219b4c), FUN_00219fc8 (219fc8), FUN_0021a31c (21a31c), FUN_0021ad3c (21ad3c), FUN_0021b088 (21b088), FUN_0021b4fc (21b4fc), FUN_0021c448 (21c448), FUN_0021c4b4 (21c4b4), FUN_0021d1fc (21d1fc), FUN_0021d304 (21d304), FUN_0021d474 (21d474), FUN_0021dd58 (21dd58), FUN_0021e0e8 (21e0e8), FUN_0021e270 (21e270), FUN_0021e314 (21e314), FUN_0021e420 (21e420), FUN_0021e5ac (21e5ac), FUN_0021e864 (21e864), FUN_0021e924 (21e924), FUN_0021eca8 (21eca8), FUN_0021f360 (21f360), FUN_0021f478 (21f478), FUN_0021f758 (21f758), FUN_0021fa40 (21fa40), FUN_0021fdfc (21fdfc), FUN_002210ec (2210ec), FUN_002214c8 (2214c8), FUN_00223b7c (223b7c), FUN_00223c04 (223c04), FUN_00223fd8 (223fd8), FUN_00224840 (224840), FUN_00224d4c (224d4c), FUN_00225140 (225140), FUN_00225208 (225208), FUN_00225724 (225724), FUN_002258ac (2258ac), FUN_002260bc (2260bc), FUN_002262a8 (2262a8), FUN_00226588 (226588), FUN_00226774 (226774), FUN_002269e8 (2269e8), FUN_00226af8 (226af8), FUN_00227010 (227010), FUN_002270e0 (2270e0), FUN_00227368 (227368), FUN_002273c0 (2273c0), FUN_00227464 (227464), FUN_00227838 (227838), FUN_00227e28 (227e28), FUN_00227e68 (227e68), FUN_00227f8c (227f8c), FUN_002280c8 (2280c8), FUN_00228110 (228110), FUN_00228134 (228134), FUN_002282d8 (2282d8), FUN_00228330 (228330), FUN_002286b4 (2286b4), FUN_00228878 (228878), FUN_00228aec (228aec), FUN_00228c28 (228c28), FUN_00228da4 (228da4), FUN_00228de8 (228de8), FUN_002290d4 (2290d4), FUN_002293cc (2293cc), FUN_00229678 (229678), FUN_0022a570 (22a570), FUN_0022a5e4 (22a5e4), FUN_0022a608 (22a608), FUN_0022a67c (22a67c), FUN_0022ab2c (22ab2c), FUN_0022ad14 (22ad14), FUN_0022b2d0 (22b2d0), FUN_0022b4d8 (22b4d8), FUN_0022b744 (22b744), FUN_0022b9a4 (22b9a4), FUN_0022ba04 (22ba04), FUN_0022baf4 (22baf4), FUN_0022bbe0 (22bbe0), FUN_0022bc84 (22bc84), FUN_0022be28 (22be28), FUN_0022bf10 (22bf10), FUN_0022bf8c (22bf8c), FUN_0022c058 (22c058), FUN_0022c84c (22c84c), FUN_0022c91c (22c91c), FUN_0022c9b8 (22c9b8), FUN_0022c9dc (22c9dc), FUN_0022ca5c (22ca5c), FUN_0022cb4c (22cb4c), FUN_0022cc88 (22cc88), FUN_0022d198 (22d198), FUN_0022d200 (22d200), FUN_0022d228 (22d228), FUN_0022d3fc (22d3fc), FUN_0022da68 (22da68), FUN_0022db48 (22db48), FUN_0022dcac (22dcac), FUN_0022df2c (22df2c), FUN_0022e200 (22e200), FUN_0022e2e8 (22e2e8), FUN_0022f710 (22f710), FUN_00230ce8 (230ce8), FUN_00230e70 (230e70), FUN_00230ea4 (230ea4), FUN_00232190 (232190), FUN_00232b6c (232b6c), FUN_00232e64 (232e64), FUN_0023339c (23339c), FUN_00233ce0 (233ce0), FUN_002340c8 (2340c8), FUN_002348f8 (2348f8), FUN_00234948 (234948), FUN_00234f14 (234f14), FUN_00234fa0 (234fa0), FUN_00235104 (235104), FUN_00235c8c (235c8c), FUN_00235ee4 (235ee4), FUN_00235fe4 (235fe4), FUN_002365cc (2365cc), FUN_00237f30 (237f30), FUN_00238a28 (238a28), FUN_00239d7c (239d7c), FUN_0023a824 (23a824), FUN_0023a894 (23a894), FUN_0023cd10 (23cd10), FUN_0023d760 (23d760), FUN_0023d910 (23d910), FUN_0023f67c (23f67c), FUN_00240100 (240100), FUN_002411d8 (2411d8), FUN_00241c44 (241c44), FUN_002425bc (2425bc), FUN_002429d0 (2429d0), FUN_00242af0 (242af0), FUN_00242f1c (242f1c), FUN_00243e4c (243e4c), FUN_002440b8 (2440b8), FUN_00244530 (244530), FUN_002445e0 (2445e0), FUN_002446a8 (2446a8), FUN_00244bf4 (244bf4), FUN_00244cc4 (244cc4), FUN_00245278 (245278), FUN_002455dc (2455dc), FUN_00245840 (245840), FUN_0024764c (24764c), FUN_0024798c (24798c), FUN_00247ec4 (247ec4), FUN_00248f04 (248f04), FUN_00249074 (249074), FUN_00249654 (249654), FUN_0024a8ac (24a8ac), FUN_0024bb38 (24bb38), FUN_0024bfec (24bfec), FUN_0024d5bc (24d5bc), FUN_0024ef74 (24ef74), FUN_0024f778 (24f778), FUN_0024f794 (24f794), FUN_0024f9ac (24f9ac), FUN_002501f8 (2501f8), FUN_00250214 (250214), FUN_002502f8 (2502f8), FUN_002506cc (2506cc), FUN_002506e8 (2506e8), FUN_002509bc (2509bc), FUN_00250a54 (250a54), FUN_00250e28 (250e28), FUN_00250ff8 (250ff8), FUN_00251aa0 (251aa0), FUN_00251fc8 (251fc8), FUN_002535f4 (2535f4), FUN_00253840 (253840), FUN_00253994 (253994), FUN_00253f7c (253f7c), FUN_00254a58 (254a58), FUN_00254d84 (254d84), FUN_002567e4 (2567e4), FUN_0025736c (25736c), FUN_00258338 (258338), FUN_00258444 (258444), FUN_002586c0 (2586c0), FUN_00259340 (259340), FUN_002593d0 (2593d0), FUN_0025a4e4 (25a4e4), FUN_0025acdc (25acdc), FUN_0025be8c (25be8c), FUN_0025c2c4 (25c2c4), FUN_0025c5ac (25c5ac), FUN_0025cc34 (25cc34), FUN_00260a1c (260a1c), FUN_00261504 (261504), FUN_00261744 (261744), FUN_00261e3c (261e3c), FUN_00262554 (262554), FUN_00262e10 (262e10), FUN_00263418 (263418), FUN_00263a38 (263a38), FUN_00265a3c (265a3c), FUN_00265b64 (265b64), FUN_00268810 (268810), FUN_0026aa2c (26aa2c), FUN_0026b904 (26b904), FUN_0026bbe4 (26bbe4), FUN_0026d470 (26d470), FUN_0026ebf0 (26ebf0), FUN_0026f794 (26f794), FUN_0026fc58 (26fc58), FUN_00270568 (270568), FUN_00270a14 (270a14), FUN_00270e44 (270e44), FUN_00270f54 (270f54), FUN_00271ddc (271ddc), FUN_00271e10 (271e10), FUN_00271e30 (271e30), FUN_00273030 (273030), FUN_00274b98 (274b98), FUN_00274c28 (274c28), FUN_00274d4c (274d4c), FUN_00275b50 (275b50), FUN_00275fc0 (275fc0), FUN_00276824 (276824), FUN_002771f8 (2771f8), FUN_002798c0 (2798c0), FUN_0027c190 (27c190), FUN_0027c308 (27c308), FUN_0027d01c (27d01c), FUN_0027d238 (27d238), FUN_0027d610 (27d610), FUN_002a8548 (2a8548), FUN_002ab724 (2ab724), FUN_002b545c (2b545c), FUN_002b657c (2b657c), FUN_002b717c (2b717c), FUN_002cbdb8 (2cbdb8), FUN_002cbde8 (2cbde8), FUN_002cbec4 (2cbec4), FUN_002cdd98 (2cdd98), FUN_002d1688 (2d1688), FUN_002d3f74 (2d3f74), FUN_002d404c (2d404c), FUN_002d419c (2d419c), FUN_002d424c (2d424c), FUN_002d4378 (2d4378), FUN_002d4428 (2d4428), FUN_002d45f4 (2d45f4), FUN_002d469c (2d469c), FUN_002d481c (2d481c), FUN_002d49fc (2d49fc), FUN_002d4acc (2d4acc), FUN_002d4b48 (2d4b48), FUN_002d4e40 (2d4e40), FUN_002d4f98 (2d4f98), FUN_002d506c (2d506c), FUN_002d520c (2d520c), FUN_002d52a8 (2d52a8), FUN_002d5318 (2d5318), FUN_002d5510 (2d5510), FUN_002d55d0 (2d55d0), FUN_002d5604 (2d5604), FUN_002d569c (2d569c), FUN_002d56c0 (2d56c0), FUN_002d5730 (2d5730), FUN_002d57a0 (2d57a0), FUN_002d5c10 (2d5c10), FUN_002db308 (2db308), FUN_002e54ec (2e54ec), FUN_002e9114 (2e9114), FUN_002e97bc (2e97bc), validateImageDimensions (2ea114), FUN_002ea514 (2ea514), FUN_002ea6f4 (2ea6f4), FUN_002ea83c (2ea83c), FUN_002eaa50 (2eaa50), FUN_002eac7c (2eac7c), FUN_002eac9c (2eac9c), FUN_002eb540 (2eb540), FUN_002f029c (2f029c), FUN_002f0308 (2f0308), FUN_002f0cdc (2f0cdc), FUN_002f0d4c (2f0d4c), FUN_002f1364 (2f1364), FUN_002f253c (2f253c), FUN_002f2b84 (2f2b84), FUN_002f339c (2f339c), FUN_002f53cc (2f53cc), FUN_002f55c8 (2f55c8), FUN_002f5904 (2f5904), FUN_002f5a94 (2f5a94), FUN_002f5f68 (2f5f68), FUN_002f62dc (2f62dc), FUN_002f76a8 (2f76a8), FUN_002f85c4 (2f85c4), FUN_002f8f4c (2f8f4c), FUN_002fa290 (2fa290), FUN_002fa7a0 (2fa7a0), FUN_002fa8f0 (2fa8f0), FUN_002fb270 (2fb270), FUN_002fb4c4 (2fb4c4), FUN_002fb880 (2fb880), FUN_002fb9a8 (2fb9a8), FUN_002fd054 (2fd054), FUN_002fd4f4 (2fd4f4), FUN_002ff934 (2ff934), FUN_002ffd08 (2ffd08), FUN_002ffe70 (2ffe70), FUN_002fff30 (2fff30), FUN_0030006c (30006c), FUN_003001d8 (3001d8), FUN_00300268 (300268), FUN_003014dc (3014dc), FUN_00301508 (301508), FUN_0030159c (30159c), FUN_00301fdc (301fdc), FUN_00303284 (303284), FUN_00304a10 (304a10), FUN_00305c5c (305c5c), FUN_0030692c (30692c), FUN_00306a70 (306a70), FUN_0030a228 (30a228), FUN_0030a7c4 (30a7c4), FUN_0030a924 (30a924), FUN_0030cc98 (30cc98), FUN_0030d74c (30d74c), FUN_0030db38 (30db38), FUN_0030ed58 (30ed58), FUN_0030ef4c (30ef4c), FUN_0030f994 (30f994), FUN_003101d0 (3101d0), FUN_0031040c (31040c), FUN_003107bc (3107bc), FUN_003132e0 (3132e0), FUN_0031330c (31330c), FUN_00313364 (313364), FUN_00313aa4 (313aa4), FUN_003140c8 (3140c8), FUN_00315318 (315318), FUN_00315958 (315958), FUN_00315988 (315988), FUN_00316048 (316048), FUN_0031995c (31995c), FUN_00319bec (319bec), FUN_00319f5c (319f5c), FUN_0031b8f8 (31b8f8), FUN_0031ba6c (31ba6c), FUN_0031bac4 (31bac4), FUN_0031bc38 (31bc38), FUN_0031bcb4 (31bcb4), FUN_0031bd14 (31bd14), FUN_0031c448 (31c448), FUN_0031c6e8 (31c6e8), FUN_0031c870 (31c870), FUN_0031c8c8 (31c8c8), FUN_0031c93c (31c93c), FUN_0031cc40 (31cc40), FUN_0031d3ec (31d3ec), FUN_0031dad0 (31dad0), FUN_0031e098 (31e098), FUN_0031e140 (31e140), FUN_0031e9cc (31e9cc), FUN_0031ea20 (31ea20), FUN_0031ea34 (31ea34), FUN_0031eb50 (31eb50), FUN_0031ed28 (31ed28), FUN_0031ed7c (31ed7c), FUN_0031efe4 (31efe4), FUN_0031eff8 (31eff8), FUN_0031f038 (31f038), FUN_0031f574 (31f574), FUN_0031fa14 (31fa14), FUN_00320094 (320094), FUN_003200a8 (3200a8), FUN_00320110 (320110), FUN_003203c0 (3203c0), FUN_003205e8 (3205e8), FUN_00320b04 (320b04), FUN_00320cd8 (320cd8), FUN_003214a4 (3214a4), FUN_003215f0 (3215f0), FUN_00321648 (321648), FUN_0032204c (32204c), FUN_003225f4 (3225f4), FUN_003226b0 (3226b0), FUN_003227c4 (3227c4), FUN_00322848 (322848), FUN_00322968 (322968), FUN_00323358 (323358), FUN_00323914 (323914), FUN_00323994 (323994), FUN_003239d0 (3239d0), FUN_00323ae4 (323ae4), FUN_00323c88 (323c88), FUN_00323f80 (323f80), FUN_0032422c (32422c), FUN_00324a88 (324a88), FUN_00324e1c (324e1c), FUN_0032549c (32549c), FUN_00325c18 (325c18), FUN_00325cf0 (325cf0), FUN_00326258 (326258), FUN_00326280 (326280), FUN_00326584 (326584), FUN_00326c54 (326c54), FUN_00326c90 (326c90), FUN_00327214 (327214), FUN_00327228 (327228), FUN_0032733c (32733c), FUN_0032770c (32770c), FUN_00327844 (327844), FUN_00327a38 (327a38), FUN_00327b34 (327b34), FUN_00327c34 (327c34), FUN_00328118 (328118), FUN_00328208 (328208), FUN_00328344 (328344), FUN_00328590 (328590), FUN_003290b0 (3290b0), FUN_003292e8 (3292e8), FUN_003295a4 (3295a4), FUN_00329660 (329660), FUN_00329d1c (329d1c), FUN_00329e24 (329e24), FUN_0032ba84 (32ba84), FUN_0032bda8 (32bda8), FUN_0032c054 (32c054), FUN_0032c198 (32c198), FUN_0032c710 (32c710), FUN_0032c778 (32c778), FUN_0033006c (33006c), FUN_00330488 (330488), FUN_003309dc (3309dc), FUN_00330aa4 (330aa4), FUN_00331364 (331364), FUN_00331464 (331464), FUN_00331ad0 (331ad0), FUN_0033448c (33448c), FUN_00334940 (334940), FUN_00334cc4 (334cc4), FUN_003351d4 (3351d4), FUN_00335248 (335248), FUN_00335cf0 (335cf0), FUN_00335fcc (335fcc), FUN_003367bc (3367bc), FUN_00336858 (336858), FUN_003368f0 (3368f0), FUN_00336ae8 (336ae8), FUN_00336b38 (336b38), FUN_00336c14 (336c14), FUN_003370b0 (3370b0), FUN_0033780c (33780c), FUN_00337acc (337acc), FUN_003388d4 (3388d4), FUN_00339cd0 (339cd0), FUN_0033a464 (33a464), FUN_0033b6c4 (33b6c4), FUN_0033e43c (33e43c), FUN_0033fac0 (33fac0), FUN_00340790 (340790), FUN_00340f30 (340f30), FUN_0034129c (34129c), FUN_003412f0 (3412f0), FUN_00341680 (341680), FUN_00342990 (342990), FUN_003432ec (3432ec), FUN_00343a8c (343a8c), FUN_00344438 (344438), FUN_00344760 (344760), FUN_00344af0 (344af0), FUN_003455e0 (3455e0), FUN_00345fec (345fec), FUN_0034625c (34625c), FUN_00346704 (346704), FUN_00346758 (346758), FUN_00347510 (347510), FUN_00347bf4 (347bf4), FUN_00347da0 (347da0), FUN_00347e14 (347e14), FUN_003482a0 (3482a0), FUN_00348618 (348618), FUN_00348718 (348718), FUN_003495b8 (3495b8), FUN_003499a8 (3499a8), FUN_00349e00 (349e00), FUN_0034a450 (34a450), FUN_0034b070 (34b070), FUN_0034b3e8 (34b3e8), FUN_0034bee8 (34bee8), FUN_0034c2ac (34c2ac), FUN_0034c440 (34c440), FUN_0034cd60 (34cd60), FUN_0034cdb4 (34cdb4), FUN_0034eab4 (34eab4), FUN_0034f804 (34f804), FUN_00351798 (351798), FUN_003517e8 (3517e8), FUN_00352a78 (352a78), FUN_00352de0 (352de0), FUN_00353508 (353508), FUN_00353718 (353718), FUN_003538d8 (3538d8), FUN_00353ba4 (353ba4), FUN_00353c58 (353c58), FUN_00354168 (354168), FUN_003565d0 (3565d0), FUN_0035689c (35689c), FUN_00356c10 (356c10), FUN_00356edc (356edc), FUN_00357228 (357228), FUN_0035775c (35775c), FUN_00357978 (357978), FUN_00357ce4 (357ce4), FUN_00357df0 (357df0), FUN_00357e88 (357e88), FUN_003580a8 (3580a8), FUN_003587dc (3587dc), FUN_003599a4 (3599a4), FUN_00359a98 (359a98), FUN_00366714 (366714), FUN_00367884 (367884), FUN_00368554 (368554), FUN_00369490 (369490), FUN_00369834 (369834), FUN_0036ad68 (36ad68), FUN_0036c058 (36c058), FUN_0036d07c (36d07c), FUN_0036eae0 (36eae0), FUN_00373c78 (373c78), FUN_00373d4c (373d4c), FUN_00374e74 (374e74), FUN_00375ed4 (375ed4), FUN_003780ec (3780ec), FUN_003783e8 (3783e8), FUN_0037a528 (37a528), FUN_0037c474 (37c474), FUN_0037e614 (37e614), FUN_0037ee1c (37ee1c), FUN_0037f78c (37f78c), FUN_00381a38 (381a38), FUN_003841d8 (3841d8), FUN_00384390 (384390), FUN_00384458 (384458), FUN_00384958 (384958), FUN_003849a8 (3849a8), FUN_00384e80 (384e80), FUN_00385510 (385510), FUN_00385538 (385538), FUN_00385718 (385718)
+All: FUN_00001a3c (1a3c), processAndFilterInput (3214), processInput2 (349c), FUN_00003750 (3750), FUN_000038a0 (38a0), processInputData (38c0), processValue (38e0), isConditionMet (39d4), FUN_000039f0 (39f0), initializeAndApplyFilters (3bb0), processAndWriteData (3c74), FUN_00003c94 (3c94), FUN_00003d30 (3d30), main2 (3d80), FUN_00003dd0 (3dd0), FUN_00004478 (4478), FUN_00004500 (4500), FUN_00004520 (4520), FUN_000045dc (45dc), FUN_000047d4 (47d4), FUN_000047f4 (47f4), FUN_00004814 (4814), rotateVector2 (488c), FUN_000048c4 (48c4), processAndExecuteFunction (4bd4), processVector (4de8), main4 (4e90), processAndExecute (4ec4), FUN_00004f0c (4f0c), FUN_00004f64 (4f64), FUN_00004fd8 (4fd8), FUN_00005070 (5070), FUN_00005090 (5090), FUN_000050d8 (50d8), FUN_00005414 (5414), processFilterData (5498), main6 (5878), processInputData2 (5898), main7 (5994), FUN_00005a6c (5a6c), processInput14 (610c), FUN_000061a0 (61a0), processInput15 (6218), processInput16 (627c), FUN_000066dc (66dc), FUN_000066fc (66fc), FUN_0000699c (699c), FUN_000069bc (69bc), FUN_00006cd0 (6cd0), FUN_00006d64 (6d64), FUN_00006d94 (6d94), FUN_00007104 (7104), FUN_00007120 (7120), calculateAndOutputResults (7514), _VSTPluginMain (7640), FUN_00007ecc (7ecc), FUN_00007f58 (7f58), FUN_0000809c (809c), FUN_0000813c (813c), FUN_000083c0 (83c0), FUN_00008748 (8748), FUN_00008a18 (8a18), processInput25 (92c8), FUN_00009448 (9448), FUN_0000959c (959c), FUN_000095cc (95cc), FUN_0000967c (967c), FUN_000096bc (96bc), processInput24 (96dc), FUN_00009780 (9780), processValues2 (9900), FUN_00009cd4 (9cd4), main9 (9d0c), processValues3 (9d1c), FUN_00009f9c (9f9c), FUN_0000a04c (a04c), FUN_0000a2b4 (a2b4), FUN_0000a45c (a45c), FUN_0000a670 (a670), FUN_0000a79c (a79c), FUN_0000a854 (a854), processValues4 (a9c0), FUN_0000b0a8 (b0a8), FUN_0000b154 (b154), FUN_0000b3dc (b3dc), FUN_0000b488 (b488), FUN_0000b73c (b73c), FUN_0000b8c4 (b8c4), FUN_0000b92c (b92c), FUN_0000bbf8 (bbf8), FUN_0000bc38 (bc38), FUN_0000bd84 (bd84), FUN_0000bdac (bdac), FUN_0000be68 (be68), FUN_0000bf9c (bf9c), FUN_0000c300 (c300), FUN_0000c394 (c394), FUN_0000c468 (c468), FUN_0000c5c0 (c5c0), FUN_0000c694 (c694), FUN_0000c6c8 (c6c8), FUN_0000c730 (c730), FUN_0000c7fc (c7fc), FUN_0000c884 (c884), processArray3 (c8a8), FUN_0000c9a4 (c9a4), FUN_0000c9c8 (c9c8), processValues5 (cbac), FUN_0000cd34 (cd34), FUN_0000ce78 (ce78), FUN_0000dcec (dcec), FUN_0000ddd4 (ddd4), processInput27 (e054), FUN_0000e774 (e774), FUN_0000ee7c (ee7c), FUN_0000f258 (f258), FUN_0000f78c (f78c), FUN_0000fbb8 (fbb8), FUN_00010198 (10198), FUN_0001098c (1098c), FUN_000119f4 (119f4), processAndDisplayData (11c38), FUN_00011d14 (11d14), FUN_00012390 (12390), FUN_000125cc (125cc), FUN_000126c0 (126c0), FUN_00012d48 (12d48), FUN_00012d94 (12d94), FUN_00012de4 (12de4), FUN_00012f88 (12f88), FUN_0001304c (1304c), FUN_000133ac (133ac), FUN_000135c0 (135c0), FUN_0001362c (1362c), FUN_00013b28 (13b28), FUN_00013b7c (13b7c), FUN_00013bdc (13bdc), FUN_00013c58 (13c58), FUN_00013e68 (13e68), FUN_00013f40 (13f40), FUN_00013fd8 (13fd8), processVector3 (14174), FUN_000147f8 (147f8), FUN_00014858 (14858), FUN_00014970 (14970), processInput35 (149a0), FUN_00014a20 (14a20), FUN_00014ab0 (14ab0), FUN_00014b28 (14b28), FUN_00015d94 (15d94), FUN_00015df0 (15df0), FUN_00015e58 (15e58), FUN_00015f28 (15f28), FUN_0001603c (1603c), FUN_000163bc (163bc), FUN_00016420 (16420), FUN_00016524 (16524), FUN_00016668 (16668), FUN_0001695c (1695c), FUN_000169dc (169dc), applyFilterChain (16a28), FUN_00016a74 (16a74), FUN_00016ac8 (16ac8), processInput37 (170e8), FUN_00017174 (17174), FUN_00018478 (18478), FUN_00018744 (18744), FUN_00018830 (18830), FUN_00018e80 (18e80), FUN_00018f48 (18f48), FUN_000191b0 (191b0), FUN_000192e4 (192e4), FUN_000198fc (198fc), FUN_00019a3c (19a3c), processInput40 (19a7c), processImages (19cc0), FUN_0001a084 (1a084), FUN_0001a4b0 (1a4b0), FUN_0001b16c (1b16c), FUN_0001be04 (1be04), glitchProgram (1c200), FUN_0001c528 (1c528), FUN_0001c554 (1c554), FUN_0001d314 (1d314), FUN_0001d3c8 (1d3c8), FUN_0001df18 (1df18), FUN_0001df38 (1df38), FUN_0001df58 (1df58), FUN_0001df98 (1df98), FUN_0001dfb8 (1dfb8), FUN_0001dfd8 (1dfd8), FUN_0001e0b8 (1e0b8), FUN_0001e0d8 (1e0d8), FUN_0001e118 (1e118), FUN_0001e5b0 (1e5b0), FUN_0001eeac (1eeac), FUN_0001ef1c (1ef1c), FUN_0001f500 (1f500), FUN_0001f64c (1f64c), processValues9 (1f7b8), FUN_00020628 (20628), FUN_000206f0 (206f0), FUN_00020dc0 (20dc0), FUN_00020f5c (20f5c), FUN_00021364 (21364), FUN_00021ba0 (21ba0), FUN_00021bd4 (21bd4), FUN_00021c08 (21c08), handleData (21cd8), processArray6 (21e40), FUN_0002239c (2239c), setAndProcessData2 (2246c), processValues10 (2269c), FUN_00022800 (22800), FUN_000228bc (228bc), FUN_00023e68 (23e68), FUN_00027aac (27aac), FUN_00027b94 (27b94), FUN_00027c70 (27c70), FUN_00027d70 (27d70), FUN_00027db0 (27db0), FUN_00027f90 (27f90), FUN_00028008 (28008), FUN_0002806c (2806c), FUN_000280c4 (280c4), FUN_00028328 (28328), FUN_00028a84 (28a84), FUN_00028b48 (28b48), FUN_00028e28 (28e28), FUN_00028fdc (28fdc), FUN_00029080 (29080), FUN_00029120 (29120), FUN_00029850 (29850), FUN_00029f0c (29f0c), FUN_0002a53c (2a53c), rotateAndTransformVector (2a6e4), FUN_0002aab0 (2aab0), FUN_0002abcc (2abcc), FUN_0002aca8 (2aca8), FUN_0002ae50 (2ae50), FUN_0002afcc (2afcc), FUN_0002b0e4 (2b0e4), FUN_0002b488 (2b488), FUN_0002b4f8 (2b4f8), processInput44 (2b5e0), FUN_0002b684 (2b684), FUN_0002ba94 (2ba94), FUN_0002bed8 (2bed8), FUN_0002bf58 (2bf58), FUN_0002c0e8 (2c0e8), FUN_0002cd78 (2cd78), FUN_0002ce9c (2ce9c), FUN_0002cf38 (2cf38), FUN_0002d218 (2d218), FUN_0002d558 (2d558), FUN_0002dc48 (2dc48), FUN_0002dfc0 (2dfc0), FUN_0002e268 (2e268), FUN_0002e828 (2e828), FUN_0002ecc4 (2ecc4), FUN_0002f0a0 (2f0a0), FUN_0002fe6c (2fe6c), FUN_0002fef0 (2fef0), FUN_00030060 (30060), FUN_0003016c (3016c), FUN_000303c8 (303c8), FUN_00030a20 (30a20), FUN_00030a88 (30a88), FUN_000315b0 (315b0), FUN_000319ac (319ac), FUN_00031f58 (31f58), FUN_00031f7c (31f7c), FUN_0003205c (3205c), FUN_00032090 (32090), FUN_0003239c (3239c), FUN_0003243c (3243c), FUN_00032880 (32880), FUN_00032bac (32bac), FUN_00032c6c (32c6c), FUN_000334a4 (334a4), FUN_00033530 (33530), FUN_00033578 (33578), FUN_000343d0 (343d0), FUN_00034460 (34460), FUN_0003455c (3455c), FUN_0003481c (3481c), FUN_000351fc (351fc), FUN_0003523c (3523c), FUN_00035294 (35294), FUN_0003584c (3584c), FUN_0003586c (3586c), FUN_000359bc (359bc), FUN_00035b74 (35b74), FUN_00035d20 (35d20), FUN_00035e5c (35e5c), FUN_00035fdc (35fdc), FUN_00036648 (36648), FUN_000368fc (368fc), FUN_0003693c (3693c), FUN_00036de8 (36de8), FUN_00036f00 (36f00), FUN_00037460 (37460), FUN_00037474 (37474), FUN_000375bc (375bc), FUN_00037784 (37784), FUN_000378d0 (378d0), FUN_00037b58 (37b58), FUN_00037dac (37dac), FUN_00037f44 (37f44), FUN_00037fbc (37fbc), FUN_000380bc (380bc), FUN_000381f4 (381f4), FUN_00038214 (38214), FUN_00038238 (38238), FUN_0003825c (3825c), FUN_00038280 (38280), FUN_00038354 (38354), processInputAndGenerateStrings (383e0), FUN_00038688 (38688), FUN_00038d84 (38d84), FUN_0003901c (3901c), FUN_0003904c (3904c), FUN_00039114 (39114), FUN_00039128 (39128), FUN_0003913c (3913c), FUN_000391c0 (391c0), FUN_00039788 (39788), FUN_000397b8 (397b8), FUN_000397f0 (397f0), FUN_00039840 (39840), FUN_00039c30 (39c30), FUN_00039cb8 (39cb8), FUN_00039d04 (39d04), FUN_0003b4e4 (3b4e4), FUN_0003b5a0 (3b5a0), FUN_0003b60c (3b60c), FUN_0003b63c (3b63c), FUN_0003b67c (3b67c), FUN_0003b6d4 (3b6d4), FUN_0003b798 (3b798), FUN_0003c290 (3c290), FUN_0003c2dc (3c2dc), FUN_0003c304 (3c304), FUN_0003cc0c (3cc0c), FUN_0003cc64 (3cc64), FUN_0003cc8c (3cc8c), FUN_0003cd60 (3cd60), FUN_0003cff8 (3cff8), FUN_0003d078 (3d078), FUN_0003d1e0 (3d1e0), FUN_0003d4dc (3d4dc), FUN_0003d528 (3d528), FUN_0003d700 (3d700), FUN_0003d804 (3d804), FUN_0003d828 (3d828), FUN_0003d880 (3d880), FUN_0003d970 (3d970), FUN_0003da30 (3da30), FUN_0003e740 (3e740), FUN_0003ecbc (3ecbc), FUN_0003ece0 (3ece0), FUN_0003f5d0 (3f5d0), FUN_0003f928 (3f928), FUN_0003f94c (3f94c), FUN_0003f9b8 (3f9b8), FUN_00040360 (40360), FUN_00040414 (40414), FUN_000404d0 (404d0), FUN_00040790 (40790), FUN_00040d14 (40d14), FUN_00040f24 (40f24), FUN_00040f58 (40f58), FUN_00041010 (41010), FUN_000410a0 (410a0), FUN_000414b0 (414b0), FUN_00041588 (41588), FUN_00041670 (41670), FUN_00041744 (41744), FUN_000419ec (419ec), FUN_000421c4 (421c4), FUN_00042278 (42278), FUN_00042384 (42384), FUN_00042434 (42434), FUN_000424d4 (424d4), FUN_0004278c (4278c), FUN_00042a58 (42a58), FUN_00042a8c (42a8c), FUN_00042aa0 (42aa0), FUN_00042c2c (42c2c), FUN_000436b8 (436b8), FUN_0004379c (4379c), FUN_00043970 (?), FUN_0004402c (4402c), FUN_000440c8 (440c8), FUN_00044370 (44370), FUN_00045124 (45124), FUN_000451d0 (451d0), FUN_00045bf4 (45bf4), FUN_00045d04 (45d04), FUN_000460a4 (460a4), FUN_00047124 (47124), FUN_0004743c (4743c), FUN_00047914 (47914), FUN_000479f0 (479f0), FUN_00047a94 (47a94), FUN_00047f8c (47f8c), FUN_000484cc (484cc), FUN_00048510 (48510), FUN_00048a48 (48a48), FUN_000497c8 (497c8), FUN_000499bc (499bc), FUN_00049b98 (49b98), FUN_00049c40 (49c40), FUN_0004a428 (4a428), FUN_0004a6c8 (4a6c8), FUN_0004aa64 (4aa64), FUN_0004aa94 (4aa94), FUN_0004aab8 (4aab8), FUN_0004b068 (4b068), FUN_0004b2ac (4b2ac), FUN_0004b2dc (4b2dc), FUN_0004b314 (4b314), FUN_0004b63c (4b63c), FUN_0004e3c0 (4e3c0), FUN_0004e3f0 (4e3f0), FUN_0004e418 (4e418), FUN_0004e4a8 (4e4a8), FUN_0004e590 (4e590), FUN_0004e5f8 (4e5f8), FUN_0004eecc (4eecc), FUN_0004eef4 (4eef4), FUN_0004ef20 (4ef20), FUN_0004efb8 (4efb8), FUN_0004effc (4effc), FUN_0004f038 (4f038), FUN_0004f15c (4f15c), FUN_0004f71c (4f71c), FUN_0004f744 (4f744), FUN_0004f76c (4f76c), FUN_0004f7b8 (4f7b8), FUN_0004f804 (4f804), FUN_0004f82c (4f82c), FUN_0004f854 (4f854), FUN_0004f87c (4f87c), FUN_0004f8cc (4f8cc), FUN_0004f8f8 (4f8f8), FUN_0004f92c (4f92c), FUN_0004f954 (4f954), FUN_0004f97c (4f97c), FUN_0004f99c (4f99c), FUN_0004fd30 (4fd30), FUN_0004fe68 (4fe68), FUN_00050200 (50200), FUN_00050264 (50264), FUN_000511cc (511cc), FUN_0005182c (5182c), FUN_00051e10 (51e10), FUN_00051e44 (51e44), FUN_00051edc (51edc), FUN_00051efc (51efc), FUN_00051f20 (51f20), FUN_0005215c (5215c), FUN_00052e68 (52e68), FUN_00053f84 (53f84), FUN_00053fa4 (53fa4), FUN_00054b24 (54b24), FUN_000550d0 (550d0), FUN_00055144 (55144), FUN_000552b8 (552b8), FUN_000553d8 (553d8), FUN_000553f8 (553f8), FUN_00055e70 (55e70), FUN_00055f28 (55f28), FUN_00056690 (56690), FUN_00056c3c (56c3c), FUN_00056c90 (56c90), FUN_00056df4 (56df4), FUN_00056f24 (56f24), FUN_00056f68 (56f68), FUN_00056fac (56fac), FUN_00057034 (57034), FUN_00057238 (57238), FUN_0005739c (5739c), FUN_00057418 (57418), FUN_00057424 (57424), FUN_000577e0 (577e0), FUN_00057950 (57950), FUN_00058754 (58754), FUN_00058c20 (58c20), FUN_00059818 (59818), FUN_000599e4 (599e4), FUN_00059a28 (59a28), FUN_00059a6c (59a6c), FUN_00059c94 (59c94), FUN_00059f0c (59f0c), FUN_00059f20 (59f20), FUN_0005a084 (5a084), FUN_0005a130 (5a130), FUN_000a1390 (a1390), FUN_000a1678 (a1678), FUN_000a1698 (a1698), FUN_000a2034 (a2034), FUN_000a2080 (a2080), FUN_000a34a8 (a34a8), FUN_000a46ec (a46ec), FUN_000a5058 (a5058), FUN_000a5298 (a5298), FUN_000a52b8 (a52b8), FUN_000a5534 (a5534), FUN_000a5734 (a5734), FUN_000a5c88 (a5c88), FUN_000a5e1c (a5e1c), FUN_000a61d8 (a61d8), FUN_000a7960 (a7960), FUN_000a7980 (a7980), FUN_000a7a14 (a7a14), FUN_000a7b50 (a7b50), FUN_000a7bf4 (a7bf4), FUN_000a7e64 (a7e64), FUN_000a8868 (a8868), FUN_000a8c04 (a8c04), FUN_000a8d30 (a8d30), FUN_000a97c0 (a97c0), FUN_000a98c8 (a98c8), FUN_000a99a0 (a99a0), FUN_000a99c4 (a99c4), FUN_000a9b90 (a9b90), FUN_000a9c18 (a9c18), FUN_000a9c7c (a9c7c), FUN_000aa088 (aa088), FUN_000aa200 (aa200), FUN_000aa488 (aa488), FUN_000aa558 (aa558), FUN_000aa6f0 (aa6f0), FUN_000aa7b0 (aa7b0), FUN_000aacd0 (aacd0), FUN_000aad14 (aad14), FUN_000aad5c (aad5c), FUN_000aafa0 (aafa0), FUN_000aafc4 (aafc4), FUN_000ab0f0 (ab0f0), FUN_000ab124 (ab124), FUN_000ab67c (ab67c), FUN_000abb5c (abb5c), FUN_000abe14 (abe14), FUN_000abe6c (abe6c), FUN_000abf60 (abf60), FUN_000ac094 (ac094), FUN_000ac184 (ac184), FUN_000ac590 (ac590), FUN_000adac4 (adac4), FUN_000adbec (adbec), FUN_000af368 (af368), FUN_000af8e0 (af8e0), FUN_000b038c (b038c), FUN_000b042c (b042c), FUN_000b0614 (b0614), FUN_000b08a4 (b08a4), FUN_000b08d0 (b08d0), FUN_000b0d54 (b0d54), FUN_000b10fc (b10fc), FUN_000b131c (b131c), FUN_000b1520 (b1520), FUN_000b1b7c (b1b7c), FUN_000b1ea4 (b1ea4), FUN_000b1f00 (b1f00), FUN_000b1f44 (b1f44), FUN_000b22cc (b22cc), FUN_000b253c (b253c), FUN_000b3be8 (b3be8), FUN_000b3cc4 (b3cc4), FUN_000b3ce4 (b3ce4), FUN_000b3e2c (b3e2c), FUN_000b40a4 (b40a4), FUN_000b43a8 (b43a8), FUN_000b4568 (b4568), FUN_000b47e4 (b47e4), FUN_000b4abc (b4abc), FUN_000b5158 (b5158), FUN_000b5390 (b5390), FUN_000b5afc (b5afc), FUN_000b5da4 (b5da4), FUN_000b6104 (b6104), FUN_000b62a8 (b62a8), FUN_000b6420 (b6420), FUN_000b6738 (b6738), FUN_000b67d8 (b67d8), FUN_000b7024 (b7024), FUN_000b82e0 (b82e0), FUN_000b8afc (b8afc), FUN_000b92d0 (b92d0), FUN_000b92f0 (b92f0), FUN_000b9310 (b9310), FUN_000b9448 (b9448), FUN_000b9d58 (b9d58), FUN_000b9ec8 (b9ec8), FUN_000ba0c8 (ba0c8), FUN_000ba454 (ba454), FUN_000ba720 (ba720), FUN_000ba9d4 (ba9d4), FUN_000baaf4 (baaf4), FUN_000babbc (babbc), FUN_000bb158 (bb158), FUN_000bb38c (bb38c), FUN_000bbed0 (bbed0), FUN_000bc234 (bc234), FUN_000bc370 (bc370), FUN_000bc42c (bc42c), FUN_000bc794 (bc794), FUN_000bc7c4 (bc7c4), FUN_000bcd84 (bcd84), FUN_000bce80 (bce80), FUN_000bcf20 (bcf20), FUN_000bd018 (bd018), FUN_000bd038 (bd038), FUN_000bd534 (bd534), FUN_000bd964 (bd964), FUN_000bd988 (bd988), FUN_000bdb6c (bdb6c), FUN_000be300 (be300), FUN_000be918 (be918), FUN_000bf474 (bf474), FUN_000bf928 (bf928), FUN_000c028c (c028c), FUN_000c0384 (c0384), FUN_000c0558 (c0558), FUN_000c06fc (c06fc), FUN_000c092c (c092c), FUN_000c09d8 (c09d8), FUN_000c0a54 (c0a54), FUN_000c0b1c (c0b1c), FUN_000c0b9c (c0b9c), FUN_000c0c34 (c0c34), FUN_000c1084 (c1084), FUN_000c120c (c120c), FUN_000c12e0 (c12e0), FUN_000c1470 (c1470), FUN_000c14ec (c14ec), FUN_000c17e8 (c17e8), FUN_000c1918 (c1918), FUN_000c22b0 (c22b0), FUN_000c2480 (c2480), FUN_000c24dc (c24dc), FUN_000c2530 (c2530), FUN_000c2b84 (c2b84), FUN_000c32cc (c32cc), FUN_000c3624 (c3624), FUN_000c3960 (c3960), FUN_000c3af4 (c3af4), FUN_000c3d08 (c3d08), FUN_000c3ea8 (c3ea8), FUN_000c3f84 (c3f84), FUN_000c43d0 (c43d0), FUN_000c44dc (c44dc), FUN_000c47bc (c47bc), FUN_00265fd0 (265fd0), FUN_0027ee24 (27ee24), FUN_0027efb8 (27efb8), FUN_0027f2cc (27f2cc), FUN_0027f844 (27f844), FUN_0027f8a0 (27f8a0), FUN_0027fcac (27fcac), FUN_0027fd20 (27fd20), FUN_0027fe98 (27fe98), FUN_0027fee4 (27fee4), FUN_0027ff4c (27ff4c), FUN_0027ffc0 (27ffc0), FUN_00280494 (280494), FUN_0028081c (28081c), FUN_00280c04 (280c04), FUN_00280c40 (280c40), FUN_0028104c (28104c), FUN_00281214 (281214), FUN_00281414 (281414), FUN_002817b8 (2817b8), FUN_0028195c (28195c), FUN_0028198c (28198c), FUN_002819a0 (2819a0), FUN_00281a48 (281a48), FUN_00281aa0 (281aa0), FUN_00281bc8 (281bc8), FUN_00281c30 (281c30), FUN_00281d0c (281d0c), FUN_00281d6c (281d6c), FUN_0028213c (28213c), FUN_00282150 (282150), FUN_002823b0 (2823b0), FUN_002823c4 (2823c4), FUN_00282930 (282930), FUN_0028304c (28304c), FUN_00283480 (283480), FUN_00283c24 (283c24), FUN_002848dc (2848dc), FUN_00286918 (286918), FUN_00286a78 (286a78), FUN_002892f0 (2892f0), FUN_0028ac90 (28ac90), FUN_0028d4ac (28d4ac), FUN_0028d524 (28d524), FUN_0028d59c (28d59c), FUN_0028d988 (28d988), FUN_0028d9fc (28d9fc), FUN_0028da6c (28da6c), FUN_0028dc64 (28dc64), FUN_0028ddc4 (28ddc4), FUN_0028ddd8 (28ddd8), FUN_0028dfa8 (28dfa8), FUN_0028e024 (28e024), FUN_0028e114 (28e114), FUN_0028e3a8 (28e3a8), FUN_0028e428 (28e428), FUN_0028e604 (28e604), FUN_0028f80c (28f80c), FUN_002908e4 (2908e4), FUN_00290c5c (290c5c), FUN_00290cdc (290cdc), FUN_00290d3c (290d3c), FUN_00290e38 (290e38), FUN_00290f78 (290f78), FUN_00291238 (291238), FUN_00292018 (292018), FUN_00292dac (292dac), FUN_00292f28 (292f28), FUN_00293e08 (293e08), FUN_00296190 (296190), FUN_00296314 (296314), FUN_00299954 (299954), FUN_0029a020 (29a020), FUN_0029d170 (29d170), FUN_0029d278 (29d278), FUN_0029d4fc (29d4fc), FUN_0029f668 (29f668), FUN_0029fa5c (29fa5c), FUN_0029fa70 (29fa70), FUN_0029fadc (29fadc), FUN_0029fc5c (29fc5c), FUN_002a0054 (2a0054), FUN_002a00dc (2a00dc), FUN_002a0154 (2a0154), FUN_002a0258 (2a0258), FUN_002a05fc (2a05fc), FUN_002a0740 (2a0740), FUN_002a076c (2a076c), FUN_002a0800 (2a0800), FUN_002a0994 (2a0994), FUN_002a0b48 (2a0b48), FUN_002a0bf0 (2a0bf0), FUN_002a11d0 (2a11d0), FUN_002a1468 (2a1468), FUN_002a15b4 (2a15b4), FUN_002a1904 (2a1904), FUN_002a1c94 (2a1c94), FUN_002a1e40 (2a1e40), FUN_002a1f70 (2a1f70), FUN_002a2460 (2a2460), FUN_002a3274 (2a3274), FUN_002a337c (2a337c), FUN_002a407c (2a407c), FUN_002a49b0 (2a49b0), FUN_002c2794 (2c2794), FUN_002c6388 (2c6388), FUN_002c6aec (2c6aec), FUN_002c7100 (2c7100), FUN_002c7fb0 (2c7fb0), FUN_002c90b4 (2c90b4), FUN_002cb90c (2cb90c), FUN_0035ad2c (35ad2c), FUN_0035b3b4 (35b3b4), FUN_0035bbf4 (35bbf4), FUN_0035be84 (35be84), FUN_0035cecc (35cecc), FUN_0035cf10 (35cf10), FUN_0035ddc4 (35ddc4), FUN_0035e3ec (35e3ec), FUN_0035f434 (35f434), FUN_0035fb54 (35fb54), FUN_0035fcc0 (35fcc0), FUN_0035fde4 (35fde4), FUN_003611c8 (3611c8), FUN_003625bc (3625bc), FUN_0036265c (36265c), FUN_00365050 (365050), FUN_00365ce4 (365ce4), FUN_0005b1b0 (5b1b0), FUN_0005b2b0 (5b2b0), FUN_0005b34c (5b34c), FUN_0005bd3c (5bd3c), FUN_0005bd8c (5bd8c), FUN_0005c26c (5c26c), FUN_0005cf24 (5cf24), FUN_0005cfcc (5cfcc), FUN_0005d278 (5d278), FUN_0005e49c (5e49c), FUN_0005e4e4 (5e4e4), FUN_0005e8b4 (5e8b4), FUN_0005f0e4 (5f0e4), FUN_0005f164 (5f164), FUN_0005f4cc (5f4cc), FUN_0005f61c (5f61c), FUN_0005f650 (5f650), FUN_0005f810 (5f810), FUN_0005f830 (5f830), FUN_0005f860 (5f860), FUN_0005f8ac (5f8ac), FUN_0005f9bc (5f9bc), FUN_0005f9f4 (5f9f4), FUN_0005fc54 (5fc54), FUN_000615bc (615bc), FUN_000617cc (617cc), FUN_00061b14 (61b14), FUN_000622b0 (622b0), FUN_00062348 (62348), FUN_00062938 (62938), FUN_00063724 (63724), FUN_00063798 (63798), FUN_00063818 (63818), FUN_000638cc (638cc), FUN_000638f0 (638f0), FUN_000648e8 (648e8), FUN_00064938 (64938), FUN_00064bc0 (64bc0), FUN_00064c40 (64c40), FUN_00064c54 (64c54), FUN_00064d58 (64d58), FUN_00064e8c (64e8c), FUN_00065330 (65330), FUN_00065370 (65370), FUN_0006537c (6537c), FUN_000653dc (653dc), FUN_00065448 (65448), FUN_0006549c (6549c), FUN_000655c4 (655c4), FUN_00065624 (65624), FUN_00065678 (65678), FUN_000658c4 (658c4), FUN_0006594c (6594c), FUN_0006781c (6781c), FUN_000679c0 (679c0), FUN_00067a58 (67a58), FUN_00067cb4 (67cb4), FUN_00067ce4 (67ce4), FUN_00067d08 (67d08), FUN_00067d74 (67d74), FUN_00067dfc (67dfc), FUN_00067e8c (67e8c), FUN_00067f58 (67f58), FUN_0006802c (6802c), FUN_0006806c (6806c), FUN_0006824c (6824c), FUN_000683a0 (683a0), FUN_000683e8 (683e8), FUN_000684d4 (684d4), FUN_000689bc (689bc), FUN_00068a4c (68a4c), FUN_00068b18 (68b18), FUN_00068b3c (68b3c), FUN_00068bdc (68bdc), FUN_00068c70 (68c70), FUN_00068cd4 (68cd4), FUN_00068cf8 (68cf8), FUN_00068d6c (68d6c), FUN_00068ee8 (68ee8), FUN_00068f28 (68f28), FUN_00069170 (69170), FUN_00069790 (69790), FUN_00069828 (69828), FUN_000698e0 (698e0), FUN_000699a8 (699a8), FUN_000699b8 (699b8), FUN_00069a68 (69a68), FUN_00069af4 (69af4), FUN_00069b18 (69b18), FUN_00069e58 (69e58), FUN_00069f50 (69f50), FUN_00069f90 (69f90), FUN_00069ff8 (69ff8), FUN_0006a140 (6a140), FUN_0006a1d0 (6a1d0), FUN_0006a1f8 (6a1f8), FUN_0006a270 (6a270), FUN_0006a2e4 (6a2e4), FUN_0006a3dc (6a3dc), FUN_0006a410 (6a410), FUN_0006a4d4 (6a4d4), FUN_0006a754 (6a754), FUN_0006a80c (6a80c), FUN_0006a840 (6a840), FUN_0006a8bc (6a8bc), FUN_0006a910 (6a910), FUN_0006aaac (6aaac), FUN_0006ab28 (6ab28), FUN_0006ab90 (6ab90), FUN_0006abb0 (6abb0), FUN_0006abf0 (6abf0), FUN_0006acf4 (6acf4), FUN_0006ad20 (6ad20), FUN_0006b284 (6b284), FUN_0006b3d8 (6b3d8), FUN_0006b46c (6b46c), FUN_0006b558 (6b558), FUN_0006b610 (6b610), FUN_0006b64c (6b64c), FUN_0006b6d4 (6b6d4), FUN_0006b850 (6b850), FUN_0006b980 (6b980), FUN_0006bae4 (6bae4), FUN_0006bbdc (6bbdc), FUN_0006bc68 (6bc68), FUN_0006be94 (6be94), FUN_0006bec8 (6bec8), FUN_0006bf80 (6bf80), FUN_0006c128 (6c128), FUN_0006c168 (6c168), FUN_0006c1f8 (6c1f8), FUN_0006c298 (6c298), FUN_0006c440 (6c440), FUN_0006c464 (6c464), FUN_0006c4f4 (6c4f4), FUN_0006c5e0 (6c5e0), FUN_0006c6cc (6c6cc), FUN_0006c990 (6c990), FUN_0006c9f4 (6c9f4), FUN_0006cbdc (6cbdc), FUN_0006ccec (6ccec), FUN_0006cd80 (6cd80), FUN_0006cfc0 (6cfc0), FUN_0006cff8 (6cff8), FUN_0006d1a0 (6d1a0), FUN_0006d264 (6d264), FUN_0006d29c (6d29c), FUN_0006d3d8 (6d3d8), FUN_0006d4f0 (6d4f0), FUN_0006d534 (6d534), FUN_0006d580 (6d580), FUN_0006e258 (6e258), FUN_0006e278 (6e278), FUN_0006e298 (6e298), FUN_0006e52c (6e52c), FUN_0006e5a4 (6e5a4), FUN_0006f128 (6f128), FUN_0006f318 (6f318), FUN_0006f398 (6f398), FUN_00070120 (70120), FUN_00070418 (70418), FUN_00070fd4 (70fd4), FUN_00070ff4 (70ff4), FUN_00071018 (71018), FUN_00071860 (71860), FUN_000719f4 (719f4), FUN_00071ab0 (71ab0), FUN_00071ce4 (71ce4), FUN_00071d64 (71d64), FUN_00072390 (72390), FUN_0007273c (7273c), FUN_00072824 (72824), FUN_00072d64 (72d64), FUN_00072da4 (72da4), FUN_00072ecc (72ecc), FUN_00072f40 (72f40), FUN_00072f84 (72f84), FUN_00073004 (73004), FUN_0007329c (7329c), FUN_000733ac (733ac), FUN_00073600 (73600), FUN_0007371c (7371c), FUN_0007394c (7394c), FUN_00073a64 (73a64), FUN_00073b0c (73b0c), FUN_00073d68 (73d68), FUN_00074384 (74384), FUN_00074498 (74498), FUN_000744b8 (744b8), processAudioData7 (74514), FUN_0007498c (7498c), FUN_00074a2c (74a2c), FUN_00074b38 (74b38), FUN_00074c2c (74c2c), FUN_00074d18 (74d18), FUN_00075274 (75274), FUN_00075298 (75298), FUN_00075334 (75334), FUN_00075bd4 (75bd4), FUN_00075c10 (75c10), FUN_00075c64 (75c64), FUN_00075e54 (75e54), FUN_00075e68 (75e68), FUN_00076058 (76058), FUN_0007621c (7621c), FUN_000762ec (762ec), FUN_00076478 (76478), FUN_00076548 (76548), FUN_00076554 (76554), FUN_000765d8 (765d8), FUN_0007660c (7660c), FUN_000766e0 (766e0), FUN_000766f8 (766f8), FUN_00076788 (76788), FUN_0007682c (7682c), FUN_00076ac0 (76ac0), FUN_00076b0c (76b0c), FUN_00076bd0 (76bd0), FUN_00076cb8 (76cb8), FUN_00076e6c (76e6c), FUN_00076e8c (76e8c), FUN_00076fc8 (76fc8), FUN_00077020 (77020), FUN_000770c0 (770c0), FUN_00077124 (77124), FUN_00077190 (77190), FUN_000771a8 (771a8), FUN_00077470 (77470), FUN_000775bc (775bc), FUN_000777ec (777ec), FUN_0007798c (7798c), FUN_00077ad4 (77ad4), FUN_00077af4 (77af4), FUN_00077e3c (77e3c), FUN_00077ea8 (77ea8), FUN_000780b0 (780b0), FUN_00078148 (78148), FUN_00078158 (78158), FUN_000781b0 (781b0), FUN_000782dc (782dc), FUN_00078324 (78324), FUN_000783c8 (783c8), FUN_00078410 (78410), FUN_000784e0 (784e0), FUN_0007850c (7850c), FUN_00078540 (78540), FUN_00078650 (78650), FUN_000786fc (786fc), FUN_00078864 (78864), FUN_00078994 (78994), FUN_000789d8 (789d8), FUN_00078a18 (78a18), FUN_00078a58 (78a58), FUN_00078a94 (78a94), FUN_00078b38 (78b38), FUN_00078bf8 (78bf8), FUN_00078cd4 (78cd4), FUN_00078d08 (78d08), FUN_00078e44 (78e44), FUN_00078eb4 (78eb4), FUN_00078fd4 (78fd4), FUN_000791e4 (791e4), FUN_0007972c (7972c), FUN_00079780 (79780), FUN_00079834 (79834), FUN_00079854 (79854), FUN_00079864 (79864), FUN_000799fc (799fc), FUN_00079b0c (79b0c), FUN_00079b7c (79b7c), FUN_00079bcc (79bcc), FUN_00079c24 (79c24), FUN_00079c5c (79c5c), FUN_00079ce8 (79ce8), FUN_00079ed0 (79ed0), FUN_00079f84 (79f84), FUN_0007a008 (7a008), FUN_0007a028 (7a028), FUN_0007a1a0 (7a1a0), FUN_0007a2ac (7a2ac), FUN_0007a378 (7a378), FUN_0007a67c (7a67c), FUN_0007a7fc (7a7fc), FUN_0007a918 (7a918), FUN_0007aa10 (7aa10), FUN_0007aa34 (7aa34), FUN_0007aa54 (7aa54), FUN_0007ab38 (7ab38), FUN_0007aca4 (7aca4), FUN_0007adb4 (7adb4), FUN_0007adbc (7adbc), FUN_0007adc8 (7adc8), FUN_0007ae74 (7ae74), FUN_0007af48 (7af48), FUN_0007af88 (7af88), FUN_0007b064 (7b064), FUN_0007b10c (7b10c), FUN_0007b1e0 (7b1e0), FUN_0007b204 (7b204), FUN_0007b2b8 (7b2b8), FUN_0007b480 (7b480), FUN_0007b524 (7b524), FUN_0007b584 (7b584), FUN_0007b5b4 (7b5b4), FUN_0007b5e8 (7b5e8), FUN_0007b6c0 (7b6c0), FUN_0007b778 (7b778), FUN_0007b7d4 (7b7d4), FUN_0007b87c (7b87c), FUN_0007b8fc (7b8fc), FUN_0007b980 (7b980), FUN_0007b9b0 (7b9b0), FUN_0007bac4 (7bac4), FUN_0007bbe4 (7bbe4), FUN_0007be8c (7be8c), FUN_0007c128 (7c128), FUN_0007c2f8 (7c2f8), FUN_0007c31c (7c31c), FUN_0007c3f4 (7c3f4), FUN_0007c414 (7c414), FUN_0007c52c (7c52c), FUN_0007c678 (7c678), LowPassFilter686 (7c718), FUN_0007c788 (7c788), FUN_0007c948 (7c948), FUN_0007c9ac (7c9ac), FUN_0007cacc (7cacc), FUN_0007cc0c (7cc0c), FUN_0007ccac (7ccac), FUN_0007ccd8 (7ccd8), FUN_0007cd94 (7cd94), FUN_0007ce9c (7ce9c), FUN_0007cec8 (7cec8), FUN_0007cf4c (7cf4c), applyFilter7 (7cf7c), FUN_0007d044 (7d044), FUN_0007d2c8 (7d2c8), FUN_0007d490 (7d490), FUN_0007d714 (7d714), FUN_0007d7a0 (7d7a0), FUN_0007d850 (7d850), FUN_0007d990 (7d990), FUN_0007dcd4 (7dcd4), FUN_0007ddc4 (7ddc4), FUN_0007de34 (7de34), FUN_0007de54 (7de54), FUN_0007de74 (7de74), FUN_0007def8 (7def8), FUN_0007e020 (7e020), FUN_0007e160 (7e160), FUN_0007e394 (7e394), FUN_0007e3c8 (7e3c8), FUN_0007e430 (7e430), FUN_0007e640 (7e640), FUN_0007e848 (7e848), FUN_0007ec40 (7ec40), FUN_0007ec64 (7ec64), FUN_0007eccc (7eccc), FUN_0007edb8 (7edb8), FUN_0007f298 (7f298), FUN_0007f344 (7f344), FUN_0007f53c (7f53c), FUN_0007f574 (7f574), FUN_0007f598 (7f598), FUN_0007f854 (7f854), FUN_0007f9a0 (7f9a0), FUN_0007fc7c (7fc7c), FUN_00080278 (80278), FUN_00080674 (80674), FUN_000807a8 (807a8), FUN_000807f0 (807f0), FUN_00080818 (80818), FUN_0008087c (8087c), FUN_000808d0 (808d0), FUN_00080ad4 (80ad4), FUN_00080c20 (80c20), FUN_00080efc (80efc), FUN_00081050 (81050), FUN_00081500 (81500), FUN_0008160c (8160c), FUN_00081900 (81900), FUN_00081db4 (81db4), FUN_00081e58 (81e58), FUN_000844b8 (844b8), FUN_00084a78 (84a78), FUN_00085150 (85150), FUN_0008547c (8547c), FUN_0008550c (8550c), FUN_00085548 (85548), FUN_000855fc (855fc), FUN_00085670 (85670), FUN_000856b8 (856b8), FUN_00085874 (85874), FUN_000858d0 (858d0), FUN_00085938 (85938), FUN_00085ab8 (85ab8), FUN_00085d14 (85d14), processAndWriteData14 (85e58), FUN_00085ecc (85ecc), FUN_00086ca4 (86ca4), FUN_00086dc8 (86dc8), FUN_00087298 (87298), processInput49 (87308), processAndModifyData (873a4), FUN_00087784 (87784), FUN_000877f4 (877f4), FUN_00087838 (87838), FUN_000878cc (878cc), FUN_00087a18 (87a18), FUN_00087b3c (87b3c), FUN_00087db0 (87db0), FUN_00087e6c (87e6c), FUN_00088084 (88084), FUN_000883a4 (883a4), FUN_00088440 (88440), FUN_000885e0 (885e0), FUN_0008886c (8886c), FUN_000891b8 (891b8), FUN_0008937c (8937c), FUN_00089538 (89538), FUN_00089f44 (89f44), FUN_0008a4fc (8a4fc), FUN_0008a790 (8a790), processArray9 (8a7b0), FUN_0008a8f4 (8a8f4), FUN_0008ac3c (8ac3c), FUN_0008ad44 (8ad44), FUN_0008b100 (8b100), FUN_0008b214 (8b214), processInput53 (8b23c), FUN_0008b958 (8b958), FUN_0008b9e8 (8b9e8), FUN_0008bd90 (8bd90), FUN_0008c470 (8c470), FUN_0008c768 (8c768), FUN_0008cd94 (8cd94), FUN_0008d7bc (8d7bc), FUN_0008d850 (8d850), FUN_0008df08 (8df08), FUN_0008df68 (8df68), FUN_0008ef30 (8ef30), FUN_0008f05c (8f05c), FUN_00091b6c (91b6c), FUN_00091c48 (91c48), FUN_00091c70 (91c70), FUN_00091de8 (91de8), FUN_00091ecc (91ecc), FUN_00092454 (92454), FUN_00092704 (92704), FUN_00093650 (93650), FUN_000936e8 (936e8), FUN_00093808 (93808), FUN_00093960 (93960), FUN_00093994 (93994), FUN_000939c8 (939c8), FUN_00093b48 (93b48), FUN_00094b50 (94b50), FUN_00094b70 (94b70), FUN_00094e64 (94e64), FUN_00095be4 (95be4), FUN_00096574 (96574), processVectorAndRotate2 (96774), FUN_00096fb4 (96fb4), FUN_00097a6c (97a6c), FUN_00098324 (98324), FUN_000985f4 (985f4), FUN_00098724 (98724), FUN_0009895c (9895c), FUN_00098a28 (98a28), FUN_0009938c (9938c), FUN_00099a08 (99a08), FUN_0009ae08 (9ae08), FUN_0009b1f4 (9b1f4), FUN_0009c240 (9c240), FUN_0009c96c (9c96c), FUN_0009ca10 (9ca10), FUN_0009ca24 (9ca24), FUN_0009ca44 (9ca44), FUN_0009ca78 (9ca78), FUN_0009cb00 (9cb00), FUN_0009cd94 (9cd94), FUN_0009ce10 (9ce10), FUN_0009d144 (9d144), FUN_0009d2f8 (9d2f8), FUN_0009d45c (9d45c), FUN_0009d600 (9d600), FUN_0009df28 (9df28), FUN_0009eb00 (9eb00), FUN_0009f660 (9f660), FUN_000a0adc (a0adc), FUN_000c4c68 (c4c68), FUN_000c4d4c (c4d4c), FUN_000c4eec (c4eec), FUN_000c4fac (c4fac), FUN_000c51a8 (c51a8), FUN_000c5258 (c5258), FUN_000c535c (c535c), FUN_000c53dc (c53dc), FUN_000c5588 (c5588), FUN_000c5808 (c5808), FUN_000c5d3c (c5d3c), FUN_000c6a8c (c6a8c), FUN_000c6e6c (c6e6c), FUN_000c6eb8 (c6eb8), FUN_000c7e04 (c7e04), FUN_000c7f44 (c7f44), FUN_000c7fa8 (c7fa8), FUN_000c8b10 (c8b10), FUN_000c91cc (c91cc), FUN_000c9240 (c9240), FUN_000c9428 (c9428), FUN_000c94d8 (c94d8), FUN_000c9544 (c9544), FUN_000c972c (c972c), FUN_000c998c (c998c), FUN_000c99b8 (c99b8), FUN_000c9c20 (c9c20), FUN_000c9dd4 (c9dd4), FUN_000c9e44 (c9e44), FUN_000ca00c (ca00c), FUN_000ca044 (ca044), FUN_000ca134 (ca134), FUN_000ca15c (ca15c), FUN_000ca288 (ca288), FUN_000ca2d8 (ca2d8), FUN_000ca724 (ca724), FUN_000ca850 (ca850), FUN_000ca8cc (ca8cc), FUN_000ca9ac (ca9ac), FUN_000cb798 (cb798), FUN_000cb860 (cb860), FUN_000cba08 (cba08), FUN_000cc6f0 (cc6f0), FUN_000ccb60 (ccb60), FUN_000cced8 (cced8), FUN_000cf1d4 (cf1d4), FUN_000cf7bc (cf7bc), FUN_000cf7e0 (cf7e0), FUN_000d0430 (d0430), FUN_000d06c4 (d06c4), FUN_000d119c (d119c), FUN_000d122c (d122c), FUN_000d13f4 (d13f4), FUN_000d15ac (d15ac), FUN_000d17f4 (d17f4), FUN_000d2384 (d2384), FUN_000d2730 (d2730), FUN_000d2e00 (d2e00), FUN_000d3a2c (d3a2c), FUN_000d4730 (d4730), FUN_000d4c88 (d4c88), FUN_000d5230 (d5230), FUN_000d52e0 (d52e0), FUN_000d5f14 (d5f14), FUN_000d6b3c (d6b3c), FUN_000d6bbc (d6bbc), FUN_000d6f70 (d6f70), FUN_000d7048 (d7048), FUN_000d8494 (d8494), FUN_000d8768 (d8768), FUN_000d8dd4 (d8dd4), FUN_000d8e90 (d8e90), FUN_000d8f88 (d8f88), FUN_000d9008 (d9008), FUN_000d918c (d918c), FUN_000d9438 (d9438), FUN_000d9500 (d9500), FUN_000d9a08 (d9a08), FUN_000da1fc (da1fc), FUN_000da2c8 (da2c8), FUN_000da2f8 (da2f8), FUN_000da58c (da58c), FUN_000da5ec (da5ec), FUN_000da60c (da60c), FUN_000da62c (da62c), FUN_000dab70 (dab70), FUN_000daba0 (daba0), FUN_000dad1c (dad1c), FUN_000dad60 (dad60), FUN_000dadd0 (dadd0), FUN_000db014 (db014), FUN_000db6e0 (db6e0), FUN_000dbbc4 (dbbc4), FUN_000dc2d8 (dc2d8), FUN_000dc3f8 (dc3f8), FUN_000dc720 (dc720), FUN_000dca18 (dca18), FUN_000dcb10 (dcb10), FUN_000dd65c (dd65c), FUN_000ddcac (ddcac), FUN_000de13c (de13c), FUN_000de4d8 (de4d8), FUN_000df094 (df094), FUN_000df460 (df460), FUN_000dfca0 (dfca0), FUN_000dfde4 (dfde4), FUN_000dffac (dffac), FUN_000e0244 (e0244), FUN_000e02e8 (e02e8), FUN_000e06ac (e06ac), FUN_000e108c (e108c), FUN_000e1190 (e1190), FUN_000e1468 (e1468), FUN_000e223c (e223c), FUN_000e2c4c (e2c4c), FUN_000e3360 (e3360), FUN_000e341c (e341c), FUN_000e34a8 (e34a8), FUN_000e3790 (e3790), FUN_000e3a28 (e3a28), FUN_000e3a88 (e3a88), FUN_000e3db4 (e3db4), FUN_000e3eb4 (e3eb4), FUN_000e407c (e407c), FUN_000e4264 (e4264), FUN_000e4278 (e4278), FUN_000e49c0 (e49c0), FUN_000e4b14 (e4b14), FUN_000e5140 (e5140), FUN_000e52e8 (e52e8), FUN_000e53e0 (e53e0), FUN_000e5698 (e5698), FUN_000e5708 (e5708), FUN_000e5ca8 (e5ca8), FUN_000e61e0 (e61e0), FUN_000e69f4 (e69f4), FUN_000e7014 (e7014), FUN_000e7aec (e7aec), FUN_000e7b0c (e7b0c), FUN_000e7c54 (e7c54), FUN_000e7e84 (e7e84), FUN_000e8394 (e8394), FUN_000e878c (e878c), FUN_000e87f4 (e87f4), FUN_000e8968 (e8968), FUN_000e89f4 (e89f4), FUN_000e8da8 (e8da8), FUN_000e8de8 (e8de8), FUN_000e8f58 (e8f58), FUN_000e904c (e904c), FUN_000e9110 (e9110), FUN_000e92ec (e92ec), FUN_000e9a48 (e9a48), FUN_000e9a88 (e9a88), FUN_000e9c60 (e9c60), FUN_000e9cd4 (e9cd4), FUN_000e9d54 (e9d54), FUN_000ea1f4 (ea1f4), FUN_000ea6d0 (ea6d0), FUN_000eaec8 (eaec8), FUN_000eb65c (eb65c), FUN_000ebd50 (ebd50), FUN_000ebe0c (ebe0c), FUN_000ec20c (ec20c), FUN_000ec2dc (ec2dc), FUN_000ec2fc (ec2fc), FUN_000ec3c4 (ec3c4), FUN_000ec444 (ec444), FUN_000ec458 (ec458), FUN_000ec4ac (ec4ac), FUN_000ec674 (ec674), FUN_000ec8d8 (ec8d8), FUN_000ecac0 (ecac0), FUN_000ecae0 (ecae0), FUN_000ed598 (ed598), FUN_000ed6c4 (ed6c4), FUN_000ed744 (ed744), FUN_000ed7a4 (ed7a4), FUN_000ed818 (ed818), FUN_000ed874 (ed874), FUN_000ed894 (ed894), FUN_000ed8b4 (ed8b4), FUN_000ed954 (ed954), FUN_000ed974 (ed974), FUN_000edd8c (edd8c), FUN_000eddf8 (eddf8), FUN_000ede64 (ede64), FUN_000eded0 (eded0), FUN_000eec38 (eec38), FUN_000eed64 (eed64), FUN_000ef1cc (ef1cc), FUN_000ef3bc (ef3bc), FUN_000ef424 (ef424), FUN_000ef5b8 (ef5b8), FUN_000ef960 (ef960), FUN_000ef980 (ef980), FUN_000ef9c4 (ef9c4), FUN_000eff40 (eff40), FUN_000effac (effac), FUN_000f02dc (f02dc), FUN_000f0750 (f0750), FUN_000f0a20 (f0a20), FUN_000f0b20 (f0b20), FUN_000f0de8 (f0de8), FUN_000f0f6c (f0f6c), FUN_000f1204 (f1204), FUN_000f128c (f128c), FUN_000f1338 (f1338), FUN_000f1360 (f1360), FUN_000f13b8 (f13b8), FUN_000f1450 (f1450), FUN_000f1568 (f1568), FUN_000f1684 (f1684), FUN_000f17a8 (f17a8), FUN_000f1ba8 (f1ba8), FUN_000f1d98 (f1d98), FUN_000f21fc (f21fc), FUN_000f2814 (f2814), FUN_000f2d6c (f2d6c), FUN_000f2da0 (f2da0), FUN_000f2de8 (f2de8), FUN_000f2fc8 (f2fc8), FUN_000f33b8 (f33b8), FUN_000f385c (f385c), FUN_000f38d8 (f38d8), FUN_000f3954 (f3954), FUN_000f3b4c (f3b4c), FUN_000f3b6c (f3b6c), FUN_000f3b9c (f3b9c), FUN_000f3df4 (f3df4), FUN_000f54f4 (f54f4), FUN_000f5514 (f5514), FUN_000f5534 (f5534), FUN_000f5564 (f5564), FUN_000f5594 (f5594), FUN_000f55e4 (f55e4), FUN_000f5844 (f5844), FUN_000f5d40 (f5d40), FUN_000f6120 (f6120), FUN_000f6354 (f6354), FUN_000f6424 (f6424), FUN_000f6ae8 (f6ae8), FUN_000f6e28 (f6e28), FUN_000f6f74 (f6f74), FUN_000f759c (f759c), FUN_000f7a84 (f7a84), FUN_000f7cb4 (f7cb4), FUN_000f7d00 (f7d00), FUN_000f7dec (f7dec), FUN_000f7e38 (f7e38), FUN_000f7e78 (f7e78), FUN_000f8078 (f8078), FUN_000f81a0 (f81a0), FUN_000f8278 (f8278), FUN_000f8a90 (f8a90), FUN_000f8d4c (f8d4c), FUN_000f8d8c (f8d8c), FUN_000f8de4 (f8de4), FUN_000f90d8 (f90d8), FUN_000fdb50 (fdb50), FUN_000ff2a8 (ff2a8), FUN_000ff7e4 (ff7e4), FUN_000ffa08 (ffa08), FUN_00100548 (100548), FUN_00101a84 (101a84), FUN_001047d0 (1047d0), FUN_00104ee8 (104ee8), FUN_001069c0 (1069c0), FUN_00106a78 (106a78), FUN_00106ac4 (106ac4), FUN_00106e28 (106e28), FUN_001071d4 (1071d4), FUN_00107224 (107224), FUN_00107478 (107478), FUN_00108a48 (108a48), FUN_00108be0 (108be0), FUN_00109774 (109774), FUN_00109cc0 (109cc0), FUN_0010a360 (10a360), FUN_0010a594 (10a594), FUN_0010a5fc (10a5fc), FUN_0010a768 (10a768), FUN_0010a7b4 (10a7b4), FUN_0010cdcc (10cdcc), FUN_0010ce0c (10ce0c), FUN_0010dea0 (10dea0), FUN_0010ec04 (10ec04), FUN_0010f59c (10f59c), FUN_0010f9b0 (10f9b0), FUN_0010fa24 (10fa24), FUN_0010fbd8 (10fbd8), FUN_00111de8 (111de8), FUN_00112128 (112128), FUN_0011288c (11288c), FUN_00113050 (113050), FUN_00113998 (113998), FUN_001139c8 (1139c8), FUN_00113b0c (113b0c), FUN_00113ba0 (113ba0), FUN_00113c68 (113c68), FUN_00113d5c (113d5c), FUN_001140e4 (1140e4), FUN_00114124 (114124), FUN_00114144 (114144), FUN_00114164 (114164), FUN_001141e4 (1141e4), FUN_00114244 (114244), FUN_00114414 (114414), FUN_00114500 (114500), FUN_00114790 (114790), FUN_00114908 (114908), FUN_00114f44 (114f44), FUN_00114fb8 (114fb8), FUN_001150cc (1150cc), FUN_0011519c (11519c), FUN_0011551c (11551c), FUN_001157e8 (1157e8), FUN_00115814 (115814), FUN_00115a80 (115a80), FUN_00115ab0 (115ab0), FUN_00115ae0 (115ae0), FUN_00116980 (116980), FUN_001169a0 (1169a0), FUN_00117b80 (117b80), FUN_00117bd8 (117bd8), FUN_00117ea4 (117ea4), FUN_001180dc (1180dc), FUN_00118130 (118130), FUN_0011828c (11828c), FUN_00118304 (118304), FUN_00118b20 (118b20), FUN_00118f18 (118f18), FUN_00118f64 (118f64), FUN_00119098 (119098), FUN_00119494 (119494), FUN_00119608 (119608), FUN_00119668 (119668), FUN_00119790 (119790), FUN_00119940 (119940), FUN_00119fc4 (119fc4), FUN_00119ff8 (119ff8), FUN_0011a690 (11a690), FUN_0011a6b4 (11a6b4), FUN_0011b114 (11b114), FUN_0011b230 (11b230), FUN_0011b3cc (11b3cc), FUN_0011b43c (11b43c), FUN_0011b6b8 (11b6b8), FUN_0011b6d8 (11b6d8), FUN_0011b884 (11b884), FUN_0011b8c8 (11b8c8), FUN_0011bcf4 (11bcf4), FUN_0011c078 (11c078), FUN_0011c800 (11c800), FUN_0011cf9c (11cf9c), FUN_0011d040 (11d040), FUN_0011d780 (11d780), FUN_0011d874 (11d874), FUN_0011dba8 (11dba8), FUN_0011dc30 (11dc30), FUN_0011dcb0 (11dcb0), FUN_0011e75c (11e75c), FUN_0011f9cc (11f9cc), FUN_0011fda0 (11fda0), FUN_0011fe74 (11fe74), FUN_0011fe94 (11fe94), FUN_0011feb4 (11feb4), FUN_001201c8 (1201c8), FUN_001207c8 (1207c8), FUN_00120ae0 (120ae0), FUN_00120c90 (120c90), FUN_00120e10 (120e10), FUN_00121434 (121434), FUN_0012180c (12180c), FUN_00121954 (121954), FUN_00121c4c (121c4c), FUN_00121ec8 (121ec8), FUN_00122a94 (122a94), FUN_00122fd0 (122fd0), FUN_0012315c (12315c), FUN_00123470 (123470), FUN_00123e8c (123e8c), FUN_001240b0 (1240b0), FUN_001249f0 (1249f0), FUN_00124a3c (124a3c), FUN_001257f8 (1257f8), FUN_00125a3c (125a3c), FUN_00125ea8 (125ea8), FUN_00125ec8 (125ec8), FUN_00125f28 (125f28), FUN_00125f48 (125f48), FUN_00125fb4 (125fb4), FUN_001268a8 (1268a8), FUN_00126ba4 (126ba4), FUN_00126e24 (126e24), FUN_00126f68 (126f68), FUN_00126fd8 (126fd8), FUN_001271e8 (1271e8), FUN_001273b8 (1273b8), FUN_001273e4 (1273e4), FUN_00127640 (127640), FUN_00127738 (127738), FUN_00127978 (127978), FUN_001279d8 (1279d8), FUN_00127a58 (127a58), FUN_00127c98 (127c98), FUN_00127eac (127eac), FUN_00127ecc (127ecc), FUN_0012803c (12803c), FUN_00128060 (128060), FUN_00128098 (128098), FUN_00128120 (128120), FUN_0012882c (12882c), FUN_00128a2c (128a2c), FUN_00128ad8 (128ad8), FUN_00128d20 (128d20), FUN_00128f80 (128f80), FUN_0012928c (12928c), FUN_0012951c (12951c), FUN_0012971c (12971c), FUN_00129740 (129740), FUN_00129b70 (129b70), FUN_00129c44 (129c44), FUN_00129e00 (129e00), FUN_0012a0c4 (12a0c4), FUN_0012a1d4 (12a1d4), FUN_0012a228 (12a228), FUN_0012a348 (12a348), FUN_0012b504 (12b504), FUN_0012b6c8 (12b6c8), FUN_0012b908 (12b908), FUN_0012bba4 (12bba4), FUN_0012bc40 (12bc40), FUN_0012c210 (12c210), FUN_0012c600 (12c600), FUN_0012c68c (12c68c), FUN_0012c858 (12c858), FUN_0012c8e4 (12c8e4), FUN_0012ca30 (12ca30), FUN_0012cce0 (12cce0), FUN_0012cd98 (12cd98), FUN_0012cf5c (12cf5c), FUN_0012cf7c (12cf7c), FUN_0012d2d0 (12d2d0), FUN_0012d49c (12d49c), FUN_0012d72c (12d72c), FUN_0012da78 (12da78), FUN_0012db44 (12db44), FUN_0012db74 (12db74), FUN_0012dc30 (12dc30), FUN_0012dea8 (12dea8), FUN_0012dfc8 (12dfc8), FUN_0012e338 (12e338), FUN_0012e45c (12e45c), FUN_0012e62c (12e62c), FUN_0012e82c (12e82c), FUN_0012e8fc (12e8fc), FUN_0012e920 (12e920), FUN_0012ed88 (12ed88), FUN_0012ef48 (12ef48), FUN_0012f118 (12f118), FUN_0012f318 (12f318), FUN_0012f3c0 (12f3c0), FUN_0012f77c (12f77c), FUN_0012f830 (12f830), FUN_001301a8 (1301a8), FUN_00130504 (130504), FUN_001305ec (1305ec), FUN_00130724 (130724), FUN_00130cf4 (130cf4), FUN_00130d50 (130d50), FUN_00130e90 (130e90), FUN_00131bcc (131bcc), FUN_00131e14 (131e14), FUN_00131e48 (131e48), FUN_00132074 (132074), FUN_001327c4 (1327c4), FUN_00132804 (132804), FUN_00132ae4 (132ae4), FUN_00132b24 (132b24), FUN_00133b4c (133b4c), FUN_00135198 (135198), FUN_00136360 (136360), FUN_00136474 (136474), FUN_0013665c (13665c), FUN_001366bc (1366bc), FUN_0013675c (13675c), FUN_001370fc (1370fc), FUN_00137258 (137258), FUN_00137828 (137828), FUN_0013797c (13797c), FUN_00137cb8 (137cb8), FUN_00137e04 (137e04), FUN_00137e5c (137e5c), FUN_00137e9c (137e9c), FUN_00137f40 (137f40), FUN_0013815c (13815c), FUN_001381c0 (1381c0), FUN_00138348 (138348), FUN_001384d8 (1384d8), FUN_001389c4 (1389c4), FUN_00138cf8 (138cf8), FUN_00139924 (139924), FUN_00139944 (139944), FUN_00139a14 (139a14), FUN_00139c54 (139c54), FUN_0013a0f0 (13a0f0), FUN_0013a118 (13a118), FUN_0013a260 (13a260), FUN_0013a2ec (13a2ec), FUN_0013a41c (13a41c), FUN_0013a548 (13a548), FUN_0013a61c (13a61c), FUN_0013a644 (13a644), FUN_0013aa7c (13aa7c), FUN_0013abf0 (13abf0), FUN_0013ac68 (13ac68), FUN_0013ac7c (13ac7c), FUN_0013acd4 (13acd4), FUN_0013ada0 (13ada0), FUN_0013afac (13afac), FUN_0013afd0 (13afd0), FUN_0013b044 (13b044), FUN_0013b090 (13b090), FUN_0013b40c (13b40c), FUN_0013bc98 (13bc98), FUN_0013bcf0 (13bcf0), FUN_0013c81c (13c81c), FUN_0013ca48 (13ca48), FUN_0013e154 (13e154), FUN_0013e43c (13e43c), FUN_0013f330 (13f330), FUN_0013fb50 (13fb50), FUN_0014024c (14024c), FUN_0014026c (14026c), FUN_00140364 (140364), FUN_00140448 (140448), FUN_0014052c (14052c), FUN_00140e78 (140e78), FUN_00140ea0 (140ea0), FUN_00140f48 (140f48), FUN_00141018 (141018), FUN_001410a0 (1410a0), FUN_00141338 (141338), FUN_00141360 (141360), FUN_00141474 (141474), FUN_00141634 (141634), FUN_001417e4 (1417e4), FUN_001419b8 (1419b8), FUN_00141a84 (141a84), FUN_00141b28 (141b28), FUN_00141b84 (141b84), FUN_00141c84 (141c84), FUN_00141ccc (141ccc), FUN_0014230c (14230c), FUN_00142928 (142928), FUN_0014318c (14318c), FUN_0014352c (14352c), FUN_001439c0 (1439c0), FUN_00143a04 (143a04), FUN_00143aa4 (143aa4), FUN_00143de4 (143de4), FUN_00143e18 (143e18), FUN_00143ec0 (143ec0), FUN_00143f54 (143f54), FUN_00144204 (144204), FUN_0014422c (14422c), FUN_00144824 (144824), FUN_00145954 (145954), FUN_00145ae0 (145ae0), FUN_00145ba4 (145ba4), FUN_0014620c (14620c), FUN_00146634 (146634), FUN_00146920 (146920), FUN_00147044 (147044), FUN_001478d4 (1478d4), FUN_00147b9c (147b9c), FUN_0014837c (14837c), FUN_001489f8 (1489f8), FUN_00149950 (149950), FUN_00149bc4 (149bc4), FUN_0014a144 (14a144), FUN_0014a710 (14a710), FUN_0014a7d4 (14a7d4), FUN_0014b8d8 (14b8d8), FUN_0014bb4c (14bb4c), FUN_0014cbc4 (14cbc4), FUN_0014cca0 (14cca0), FUN_0014d218 (14d218), FUN_0014d8d0 (14d8d0), FUN_0014de14 (14de14), FUN_0014df64 (14df64), FUN_0014e0b4 (14e0b4), FUN_0014e594 (14e594), FUN_0014ea60 (14ea60), FUN_0014ec7c (14ec7c), FUN_0014eebc (14eebc), FUN_0014f128 (14f128), FUN_0014f5fc (14f5fc), FUN_0014f6c4 (14f6c4), FUN_0014fd14 (14fd14), FUN_0014fd68 (14fd68), FUN_0014fd90 (14fd90), FUN_0014fde0 (14fde0), FUN_0014ff2c (14ff2c), FUN_00150058 (150058), FUN_001502e0 (1502e0), FUN_00150300 (150300), FUN_00150320 (150320), FUN_00150548 (150548), FUN_00150744 (150744), FUN_001508ac (1508ac), FUN_00150980 (150980), FUN_00150e78 (150e78), FUN_00150f10 (150f10), FUN_00151204 (151204), FUN_00151264 (151264), FUN_00151290 (151290), FUN_001514f8 (1514f8), FUN_0015151c (15151c), FUN_00151828 (151828), FUN_0015189c (15189c), FUN_00151bd8 (151bd8), FUN_00151c84 (151c84), FUN_00151d50 (151d50), FUN_00151e30 (151e30), FUN_00152114 (152114), FUN_00152cc8 (152cc8), FUN_00152d04 (152d04), FUN_0015327c (15327c), FUN_00153410 (153410), FUN_00153544 (153544), FUN_00153598 (153598), FUN_00153934 (153934), FUN_00153bd4 (153bd4), FUN_00153d80 (153d80), FUN_00154514 (154514), FUN_0015488c (15488c), FUN_001558c4 (1558c4), FUN_00155924 (155924), FUN_001559d0 (1559d0), FUN_00155aec (155aec), FUN_00155c30 (155c30), FUN_00155ca4 (155ca4), FUN_00155cc8 (155cc8), FUN_00155e28 (155e28), FUN_00156230 (156230), FUN_00156a70 (156a70), FUN_00156b20 (156b20), FUN_00156b54 (156b54), FUN_00156cec (156cec), FUN_00156d9c (156d9c), FUN_00156ea0 (156ea0), FUN_0015743c (15743c), FUN_0015750c (15750c), FUN_001580bc (1580bc), FUN_0015852c (15852c), FUN_001587b4 (1587b4), FUN_00158abc (158abc), FUN_00158b98 (158b98), FUN_00158bcc (158bcc), FUN_00158d80 (158d80), FUN_00158ea4 (158ea4), FUN_001590ec (1590ec), FUN_001591f8 (1591f8), FUN_001592a8 (1592a8), FUN_001593a4 (1593a4), FUN_00159bb0 (159bb0), FUN_00159c8c (159c8c), FUN_00159d6c (159d6c), FUN_0015acd0 (15acd0), FUN_0015ae38 (15ae38), FUN_0015b1fc (15b1fc), FUN_0015b284 (15b284), FUN_0015b428 (15b428), FUN_0015b448 (15b448), FUN_00163064 (163064), FUN_00163110 (163110), FUN_00163454 (163454), FUN_001635f8 (1635f8), FUN_0016398c (16398c), FUN_001639b0 (1639b0), FUN_00163f20 (163f20), FUN_00164c48 (164c48), FUN_00164cf4 (164cf4), FUN_00164e64 (164e64), FUN_00164e90 (164e90), FUN_00165148 (165148), FUN_00165290 (165290), FUN_00165554 (165554), FUN_00165e18 (165e18), FUN_0016606c (16606c), FUN_0016615c (16615c), FUN_00166870 (166870), FUN_00166994 (166994), FUN_00166d6c (166d6c), FUN_0016729c (16729c), dealloc__168970 (168970), FUN_0016a7cc (16a7cc), FUN_0016e718 (16e718), FUN_0016e73c (16e73c), FUN_0016e7a0 (16e7a0), FUN_0016ea24 (16ea24), FUN_0016ee64 (16ee64), FUN_0016f000 (16f000), FUN_0016f308 (16f308), FUN_0016f460 (16f460), FUN_0016f680 (16f680), FUN_0016f85c (16f85c), FUN_0016f97c (16f97c), FUN_0016f9a8 (16f9a8), FUN_0016fb58 (16fb58), FUN_0017033c (17033c), FUN_001703c8 (1703c8), FUN_001706e4 (1706e4), FUN_00170898 (170898), FUN_00170ad8 (170ad8), FUN_00170e70 (170e70), FUN_0017146c (17146c), FUN_00171638 (171638), FUN_00171e34 (171e34), FUN_00172064 (172064), FUN_00173af4 (173af4), FUN_00175140 (175140), FUN_001751ac (1751ac), FUN_0017591c (17591c), FUN_0017648c (17648c), FUN_00176668 (176668), FUN_00177c60 (177c60), FUN_001785fc (1785fc), FUN_0017861c (17861c), FUN_0017863c (17863c), FUN_0017869c (17869c), FUN_0017875c (17875c), FUN_00179228 (179228), FUN_001799f4 (1799f4), FUN_00179b78 (179b78), FUN_00179c5c (179c5c), FUN_00179ecc (179ecc), FUN_0017a000 (17a000), FUN_0017a134 (17a134), FUN_0017a1dc (17a1dc), FUN_0017a25c (17a25c), FUN_0017a2b4 (17a2b4), FUN_0017a314 (17a314), FUN_0017a50c (17a50c), FUN_0017a674 (17a674), FUN_0017ac8c (17ac8c), FUN_0017b17c (17b17c), FUN_0017b274 (17b274), FUN_0017b79c (17b79c), FUN_0017bbd0 (17bbd0), FUN_0017bc50 (17bc50), FUN_0017ce9c (17ce9c), FUN_0017d188 (17d188), FUN_0017df88 (17df88), FUN_0017e094 (17e094), FUN_0017e55c (17e55c), FUN_0017e8cc (17e8cc), FUN_0017e9d8 (17e9d8), FUN_0017f170 (17f170), FUN_0017f338 (17f338), FUN_0017f7cc (17f7cc), FUN_0017f890 (17f890), FUN_0017f8b4 (17f8b4), FUN_0017f998 (17f998), FUN_0017f9b8 (17f9b8), FUN_0017fa38 (17fa38), FUN_0017fa58 (17fa58), FUN_0017fad4 (17fad4), FUN_0017fb18 (17fb18), FUN_0017fb78 (17fb78), FUN_0017fc7c (17fc7c), FUN_0017fd4c (17fd4c), FUN_00180264 (180264), FUN_00180420 (180420), FUN_00180d18 (180d18), FUN_00180d84 (180d84), FUN_00180e08 (180e08), FUN_00180e4c (180e4c), FUN_00180f34 (180f34), FUN_00180fb8 (180fb8), FUN_00180ffc (180ffc), FUN_001810c8 (1810c8), FUN_00181334 (181334), FUN_00181bc8 (181bc8), FUN_00181e88 (181e88), FUN_0018202c (18202c), FUN_001823c0 (1823c0), FUN_00182534 (182534), FUN_001829d4 (1829d4), FUN_001832f4 (1832f4), FUN_001838e8 (1838e8), FUN_00183abc (183abc), FUN_00183b40 (183b40), FUN_001841a4 (1841a4), FUN_001843f0 (1843f0), FUN_00184564 (184564), FUN_0018466c (18466c), FUN_001846b0 (1846b0), FUN_00184ca0 (184ca0), FUN_00184d08 (184d08), FUN_00184d4c (184d4c), FUN_0018533c (18533c), FUN_001853ec (1853ec), FUN_001856bc (1856bc), FUN_00185700 (185700), FUN_001857a4 (1857a4), FUN_001857c8 (1857c8), FUN_001858b8 (1858b8), FUN_00185e34 (185e34), FUN_00185f94 (185f94), FUN_00186210 (186210), FUN_00186234 (186234), FUN_001865bc (1865bc), FUN_001865dc (1865dc), FUN_00186600 (186600), FUN_00186c04 (186c04), FUN_00186d40 (186d40), FUN_00186eb4 (186eb4), FUN_00186fbc (186fbc), FUN_001872e8 (1872e8), FUN_0018738c (18738c), FUN_001873b0 (1873b0), FUN_00187b0c (187b0c), FUN_00187c80 (187c80), FUN_00188038 (188038), FUN_00189214 (189214), FUN_001893ac (1893ac), FUN_00189834 (189834), FUN_00189b8c (189b8c), FUN_00189e3c (189e3c), FUN_0018a27c (18a27c), FUN_0018a2a4 (18a2a4), FUN_0018a2e8 (18a2e8), FUN_0018a36c (18a36c), FUN_0018a3b0 (18a3b0), FUN_0018a474 (18a474), FUN_0018a498 (18a498), FUN_0018a53c (18a53c), FUN_0018a560 (18a560), FUN_0018a5e4 (18a5e4), FUN_0018a63c (18a63c), FUN_0018a8f0 (18a8f0), FUN_0018ac54 (18ac54), FUN_0018ad3c (18ad3c), FUN_0018af6c (18af6c), FUN_0018c1c4 (18c1c4), FUN_0018c4f4 (18c4f4), FUN_0018c538 (18c538), FUN_0018c5dc (18c5dc), FUN_0018c6f0 (18c6f0), FUN_0018cd44 (18cd44), FUN_0018ceb8 (18ceb8), FUN_0018d004 (18d004), FUN_0018d5f4 (18d5f4), FUN_0018d65c (18d65c), FUN_0018d6a0 (18d6a0), FUN_0018dfe0 (18dfe0), FUN_0018e024 (18e024), FUN_0018e0a8 (18e0a8), FUN_0018e0ec (18e0ec), FUN_0018e6f0 (18e6f0), FUN_0018e820 (18e820), FUN_0018ed80 (18ed80), FUN_0018ee48 (18ee48), FUN_0018ee68 (18ee68), FUN_0018ee8c (18ee8c), FUN_0018f490 (18f490), FUN_0018f5cc (18f5cc), FUN_0018f740 (18f740), FUN_0018f848 (18f848), FUN_0018f870 (18f870), FUN_0018fb30 (18fb30), FUN_0018fb74 (18fb74), FUN_0018fc18 (18fc18), FUN_0018fc3c (18fc3c), FUN_00190240 (190240), FUN_00190398 (190398), FUN_0019050c (19050c), FUN_00190614 (190614), FUN_001908a4 (1908a4), FUN_001908c4 (1908c4), FUN_00191c38 (191c38), FUN_00191f70 (191f70), FUN_001920c0 (1920c0), FUN_001923b0 (1923b0), FUN_00192aa0 (192aa0), FUN_00192ae8 (192ae8), FUN_00192b0c (192b0c), FUN_00192b90 (192b90), FUN_00192bb0 (192bb0), FUN_00192bd4 (192bd4), FUN_00192c78 (192c78), FUN_00192c98 (192c98), FUN_00192cbc (192cbc), FUN_00192d40 (192d40), FUN_00192d60 (192d60), FUN_00192d84 (192d84), FUN_00192e60 (192e60), FUN_00192f48 (192f48), FUN_00193114 (193114), FUN_001938d0 (1938d0), FUN_001939b8 (1939b8), FUN_00193c5c (193c5c), FUN_00193d44 (193d44), FUN_001945b8 (1945b8), FUN_001945e0 (1945e0), FUN_00194e78 (194e78), FUN_00194efc (194efc), FUN_00194f1c (194f1c), FUN_00194f40 (194f40), FUN_00195030 (195030), FUN_00195544 (195544), FUN_00195690 (195690), FUN_00195804 (195804), FUN_0019590c (19590c), FUN_00195950 (195950), FUN_00195a2c (195a2c), FUN_00195a54 (195a54), FUN_00195f40 (195f40), FUN_00195fa8 (195fa8), FUN_00195fec (195fec), FUN_00196070 (196070), FUN_001965dc (1965dc), FUN_00196644 (196644), FUN_0019692c (19692c), FUN_00196970 (196970), FUN_00196a14 (196a14), FUN_00196a38 (196a38), FUN_00196fe0 (196fe0), FUN_001970a4 (1970a4), FUN_00197168 (197168), FUN_001973e4 (1973e4), FUN_00197408 (197408), FUN_001976c8 (1976c8), FUN_0019770c (19770c), FUN_001977b0 (1977b0), FUN_001977d4 (1977d4), FUN_00197d4c (197d4c), FUN_00197dd8 (197dd8), FUN_00197e40 (197e40), FUN_00197f0c (197f0c), FUN_00197ff4 (197ff4), FUN_00198080 (198080), FUN_00198188 (198188), FUN_001984b4 (1984b4), FUN_00198538 (198538), FUN_00198558 (198558), FUN_0019857c (19857c), FUN_0019866c (19866c), FUN_00198be8 (198be8), FUN_00198cd4 (198cd4), FUN_00198f50 (198f50), FUN_001991e0 (1991e0), FUN_00199200 (199200), FUN_00199870 (199870), FUN_001998e4 (1998e4), FUN_0019a370 (19a370), FUN_0019a3d4 (19a3d4), FUN_0019a56c (19a56c), FUN_0019acd4 (19acd4), FUN_0019ad9c (19ad9c), FUN_0019af20 (19af20), FUN_0019afe8 (19afe8), FUN_0019b48c (19b48c), FUN_0019b4d4 (19b4d4), FUN_0019b4f8 (19b4f8), FUN_0019b57c (19b57c), FUN_0019b59c (19b59c), FUN_0019b5c0 (19b5c0), FUN_0019b684 (19b684), FUN_0019b6a8 (19b6a8), FUN_0019b72c (19b72c), FUN_0019b74c (19b74c), FUN_0019b770 (19b770), FUN_0019b84c (19b84c), FUN_0019bfcc (19bfcc), FUN_0019c2e4 (19c2e4), FUN_0019c66c (19c66c), FUN_0019cfc8 (19cfc8), FUN_0019d84c (19d84c), FUN_0019d890 (19d890), FUN_0019d934 (19d934), FUN_0019d958 (19d958), FUN_0019d9dc (19d9dc), FUN_0019e09c (19e09c), FUN_0019e318 (19e318), FUN_0019e35c (19e35c), FUN_0019e438 (19e438), FUN_0019e9b4 (19e9b4), FUN_0019e9f8 (19e9f8), FUN_0019ea7c (19ea7c), FUN_0019ead4 (19ead4), FUN_0019f050 (19f050), FUN_0019f338 (19f338), FUN_0019f37c (19f37c), FUN_0019f420 (19f420), FUN_0019f444 (19f444), FUN_0019f9ec (19f9ec), FUN_0019fa18 (19fa18), FUN_0019fab0 (19fab0), FUN_0019fb68 (19fb68), FUN_0019fde4 (19fde4), FUN_001a010c (1a010c), FUN_001a0190 (1a0190), FUN_001a01d4 (1a01d4), FUN_001a0900 (1a0900), FUN_001a0a74 (1a0a74), FUN_001a0b7c (1a0b7c), FUN_001a0e64 (1a0e64), FUN_001a0ea8 (1a0ea8), FUN_001a0f4c (1a0f4c), FUN_001a0f70 (1a0f70), FUN_001a15dc (1a15dc), FUN_001a16b4 (1a16b4), FUN_001a179c (1a179c), FUN_001a1980 (1a1980), FUN_001a1a58 (1a1a58), FUN_001a28bc (1a28bc), FUN_001a2aa4 (1a2aa4), FUN_001a2ac8 (1a2ac8), FUN_001a2b58 (1a2b58), FUN_001a30e4 (1a30e4), FUN_001a3234 (1a3234), FUN_001a39a8 (1a39a8), FUN_001a39d0 (1a39d0), FUN_001a3d78 (1a3d78), FUN_001a3ddc (1a3ddc), FUN_001a6724 (1a6724), FUN_001a67e4 (1a67e4), FUN_001a680c (1a680c), FUN_001a6858 (1a6858), FUN_001a68a0 (1a68a0), FUN_001a68ec (1a68ec), FUN_001a6b78 (1a6b78), FUN_001a6b9c (1a6b9c), FUN_001a6c10 (1a6c10), FUN_001a6d4c (1a6d4c), FUN_001a7080 (1a7080), FUN_001a769c (1a769c), FUN_001a7704 (1a7704), FUN_001a775c (1a775c), FUN_001a7a14 (1a7a14), FUN_001a7aa4 (1a7aa4), FUN_001a7c28 (1a7c28), FUN_001a7c78 (1a7c78), FUN_001a7f30 (1a7f30), FUN_001a80f4 (1a80f4), FUN_001a84dc (1a84dc), FUN_001a9a3c (1a9a3c), FUN_001a9ac0 (1a9ac0), FUN_001a9e08 (1a9e08), FUN_001a9e74 (1a9e74), FUN_001a9fa8 (1a9fa8), FUN_001aa188 (1aa188), FUN_001aa1c8 (1aa1c8), FUN_001aa208 (1aa208), FUN_001aa28c (1aa28c), FUN_001aa498 (1aa498), FUN_001aa5dc (1aa5dc), FUN_001aa654 (1aa654), FUN_001aa888 (1aa888), FUN_001aa8c0 (1aa8c0), FUN_001aa954 (1aa954), FUN_001aab6c (1aab6c), FUN_001aad8c (1aad8c), FUN_001aaef4 (1aaef4), FUN_001ab8cc (1ab8cc), FUN_001ab930 (1ab930), FUN_001ab958 (1ab958), FUN_001aba88 (1aba88), FUN_001abab4 (1abab4), FUN_001abb40 (1abb40), FUN_001abba8 (1abba8), FUN_001ac418 (1ac418), FUN_001acc68 (1acc68), FUN_001acf90 (1acf90), FUN_001ae388 (1ae388), FUN_001ae3f0 (1ae3f0), FUN_001ae46c (1ae46c), FUN_001aeb58 (1aeb58), FUN_001aec6c (1aec6c), FUN_001af234 (1af234), FUN_001af45c (1af45c), FUN_001af62c (1af62c), FUN_001af758 (1af758), FUN_001b042c (1b042c), FUN_001b0a58 (1b0a58), FUN_001b1c00 (1b1c00), FUN_001b2dbc (1b2dbc), FUN_001b2e08 (1b2e08), FUN_001b3be0 (1b3be0), FUN_001b3d44 (1b3d44), FUN_001b4600 (1b4600), FUN_001b4b2c (1b4b2c), FUN_001b4d44 (1b4d44), FUN_001b4d70 (1b4d70), FUN_001b5d5c (1b5d5c), FUN_001b6164 (1b6164), FUN_001b6ffc (1b6ffc), FUN_001b772c (1b772c), FUN_001b77ec (1b77ec), FUN_001b7bf0 (1b7bf0), FUN_001b8134 (1b8134), FUN_001b81b4 (1b81b4), FUN_001b849c (1b849c), FUN_001b8a34 (1b8a34), FUN_001b8a64 (1b8a64), FUN_001b8ee8 (1b8ee8), FUN_001b90a8 (1b90a8), FUN_001b9540 (1b9540), FUN_001b95f0 (1b95f0), FUN_001b9648 (1b9648), FUN_001ba140 (1ba140), FUN_001ba28c (1ba28c), FUN_001ba7a4 (1ba7a4), FUN_001ba80c (1ba80c), FUN_001ba980 (1ba980), FUN_001baa0c (1baa0c), FUN_001baaf8 (1baaf8), FUN_001bac98 (1bac98), FUN_001badd0 (1badd0), FUN_001baf38 (1baf38), FUN_001baf88 (1baf88), FUN_001bb6a4 (1bb6a4), FUN_001bb73c (1bb73c), FUN_001bb7f4 (1bb7f4), FUN_001bbd64 (1bbd64), FUN_001bbde8 (1bbde8), FUN_001bbe18 (1bbe18), FUN_001bbebc (1bbebc), FUN_001bc2f0 (1bc2f0), FUN_001bc674 (1bc674), FUN_001bc71c (1bc71c), FUN_001bc898 (1bc898), FUN_001bd5a8 (1bd5a8), FUN_001bd5d0 (1bd5d0), FUN_001bec88 (1bec88), FUN_001bee10 (1bee10), FUN_001bf7d4 (1bf7d4), FUN_001bf838 (1bf838), FUN_001bf9e0 (1bf9e0), FUN_001bfab0 (1bfab0), FUN_001bfe24 (1bfe24), FUN_001bff0c (1bff0c), FUN_001c01f8 (1c01f8), FUN_001c0540 (1c0540), FUN_001c05d4 (1c05d4), FUN_001c06c4 (1c06c4), FUN_001c09cc (1c09cc), FUN_001c0dd4 (1c0dd4), FUN_001c0f94 (1c0f94), FUN_001c11b0 (1c11b0), FUN_001c14cc (1c14cc), FUN_001c1634 (1c1634), FUN_001c1674 (1c1674), FUN_001c1c24 (1c1c24), FUN_001c1ec4 (1c1ec4), FUN_001c2074 (1c2074), FUN_001c298c (1c298c), FUN_001c2a3c (1c2a3c), FUN_001c2be8 (1c2be8), FUN_001c30e8 (1c30e8), FUN_001c31fc (1c31fc), FUN_001c33ac (1c33ac), FUN_001c35b4 (1c35b4), FUN_001c39e0 (1c39e0), FUN_001c3be4 (1c3be4), FUN_001c3ec0 (1c3ec0), FUN_001c3f6c (1c3f6c), FUN_001c3f90 (1c3f90), FUN_001c41f0 (1c41f0), FUN_001c47b0 (1c47b0), FUN_001c4e64 (1c4e64), FUN_001c52f8 (1c52f8), FUN_001c54c4 (1c54c4), FUN_001c59f0 (1c59f0), FUN_001c5b2c (1c5b2c), FUN_001c5b60 (1c5b60), FUN_001c5b94 (1c5b94), FUN_001c5bfc (1c5bfc), FUN_001c5d64 (1c5d64), FUN_001c61a0 (1c61a0), FUN_001c6438 (1c6438), FUN_001c6818 (1c6818), FUN_001c6b4c (1c6b4c), FUN_001c6e98 (1c6e98), FUN_001c711c (1c711c), FUN_001c882c (1c882c), FUN_001c8b2c (1c8b2c), FUN_001c8cd8 (1c8cd8), FUN_001ca768 (1ca768), FUN_001cb7bc (1cb7bc), FUN_001cb868 (1cb868), FUN_001cb9e4 (1cb9e4), FUN_001cc1ec (1cc1ec), FUN_001cc234 (1cc234), FUN_001cc3f8 (1cc3f8), FUN_001cc6c8 (1cc6c8), FUN_001ccc44 (1ccc44), FUN_001ccf7c (1ccf7c), FUN_001cd140 (1cd140), FUN_001cd6ac (1cd6ac), FUN_001cdb98 (1cdb98), FUN_001cdbdc (1cdbdc), FUN_001cdfcc (1cdfcc), FUN_001ce1a4 (1ce1a4), FUN_001ce21c (1ce21c), FUN_001ce230 (1ce230), FUN_001ce3cc (1ce3cc), FUN_001ce830 (1ce830), FUN_001ce948 (1ce948), FUN_001ceddc (1ceddc), FUN_001cee5c (1cee5c), FUN_001cf020 (1cf020), FUN_001cf15c (1cf15c), FUN_001cf2b0 (1cf2b0), FUN_001cf2f4 (1cf2f4), FUN_001cf354 (1cf354), FUN_001cf594 (1cf594), FUN_001cf7c8 (1cf7c8), FUN_001cf7e8 (1cf7e8), FUN_001cf808 (1cf808), FUN_001cff24 (1cff24), FUN_001d03bc (1d03bc), FUN_001d06d0 (1d06d0), FUN_001d0b0c (1d0b0c), FUN_001d1024 (1d1024), FUN_001d19a0 (1d19a0), FUN_001d2414 (1d2414), FUN_001d3254 (1d3254), FUN_001d4160 (1d4160), FUN_001d41d0 (1d41d0), FUN_001d41f0 (1d41f0), FUN_001d4240 (1d4240), FUN_001d42dc (1d42dc), FUN_001d450c (1d450c), FUN_001d47b0 (1d47b0), FUN_001d4808 (1d4808), FUN_001d4884 (1d4884), FUN_001d48e8 (1d48e8), FUN_001d4974 (1d4974), FUN_001d4bb4 (1d4bb4), FUN_001d4e50 (1d4e50), FUN_001d4f58 (1d4f58), FUN_001d5474 (1d5474), FUN_001d54b8 (1d54b8), FUN_001d58a8 (1d58a8), FUN_001d5910 (1d5910), FUN_001d5a84 (1d5a84), FUN_001d5b10 (1d5b10), FUN_001d5b68 (1d5b68), FUN_001d5d60 (1d5d60), FUN_001d5d98 (1d5d98), FUN_001d6038 (1d6038), FUN_001d6480 (1d6480), FUN_001d6500 (1d6500), FUN_001d66c4 (1d66c4), FUN_001d69f4 (1d69f4), FUN_001d6b04 (1d6b04), FUN_001d6c50 (1d6c50), FUN_001d6ff8 (1d6ff8), FUN_001d798c (1d798c), FUN_001d7be8 (1d7be8), FUN_001d7d58 (1d7d58), FUN_001d7f88 (1d7f88), FUN_001d8128 (1d8128), FUN_001d8250 (1d8250), FUN_001d8320 (1d8320), FUN_001d83a0 (1d83a0), FUN_001d8684 (1d8684), FUN_001d880c (1d880c), FUN_001d8e90 (1d8e90), FUN_001d90c4 (1d90c4), FUN_001d9850 (1d9850), FUN_001d99b8 (1d99b8), FUN_001d9e48 (1d9e48), FUN_001da27c (1da27c), FUN_001da7f4 (1da7f4), FUN_001da808 (1da808), FUN_001dad10 (1dad10), FUN_001dae70 (1dae70), FUN_001db424 (1db424), FUN_001db444 (1db444), FUN_001db490 (1db490), FUN_001db684 (1db684), FUN_001dbc44 (1dbc44), FUN_001dc568 (1dc568), FUN_001dc678 (1dc678), FUN_001dc82c (1dc82c), FUN_001dcd7c (1dcd7c), FUN_001dcdfc (1dcdfc), FUN_001dcfa4 (1dcfa4), FUN_001dd0c8 (1dd0c8), FUN_001dd36c (1dd36c), FUN_001dd708 (1dd708), FUN_001de558 (1de558), FUN_001de600 (1de600), FUN_001de7c8 (1de7c8), FUN_001df278 (1df278), FUN_001df2ac (1df2ac), FUN_001df7e0 (1df7e0), FUN_001dfc68 (1dfc68), FUN_001e0d04 (1e0d04), FUN_001e0d4c (1e0d4c), FUN_001e113c (1e113c), FUN_001e12dc (1e12dc), FUN_001e13b4 (1e13b4), FUN_001e1450 (1e1450), FUN_001e16d0 (1e16d0), FUN_001e1a60 (1e1a60), FUN_001e1abc (1e1abc), FUN_001e1f48 (1e1f48), FUN_001e262c (1e262c), FUN_001e2740 (1e2740), FUN_001e27c8 (1e27c8), FUN_001e31e0 (1e31e0), FUN_001e3578 (1e3578), FUN_001e37c0 (1e37c0), FUN_001e39a4 (1e39a4), FUN_001e39d0 (1e39d0), FUN_001e3b84 (1e3b84), FUN_001e3d1c (1e3d1c), FUN_001e3ed0 (1e3ed0), FUN_001e40a4 (1e40a4), FUN_001e47c4 (1e47c4), FUN_001e482c (1e482c), FUN_001e4854 (1e4854), FUN_001e49a0 (1e49a0), FUN_001e4a2c (1e4a2c), FUN_001e4c20 (1e4c20), FUN_001e4c7c (1e4c7c), FUN_001e4d58 (1e4d58), FUN_001e51d0 (1e51d0), FUN_001e5258 (1e5258), FUN_001e5918 (1e5918), FUN_001e5b8c (1e5b8c), FUN_001e5d0c (1e5d0c), FUN_001e5dfc (1e5dfc), FUN_001e688c (1e688c), FUN_001e6ee0 (1e6ee0), FUN_001e6f24 (1e6f24), FUN_001e7288 (1e7288), FUN_001e72fc (1e72fc), FUN_001e733c (1e733c), FUN_001e75e4 (1e75e4), FUN_001e7b4c (1e7b4c), FUN_001e7cf8 (1e7cf8), FUN_001e8284 (1e8284), FUN_001e83f8 (1e83f8), FUN_001e8484 (1e8484), FUN_001e85a8 (1e85a8), FUN_001e8a88 (1e8a88), FUN_001e8e98 (1e8e98), FUN_001e90b0 (1e90b0), FUN_001e9174 (1e9174), FUN_001e91d4 (1e91d4), FUN_001e940c (1e940c), FUN_001e9558 (1e9558), FUN_001e9988 (1e9988), FUN_001e9a84 (1e9a84), FUN_001ea00c (1ea00c), FUN_001eaec4 (1eaec4), FUN_001eb81c (1eb81c), FUN_001ebad8 (1ebad8), FUN_001ebb9c (1ebb9c), FUN_001ebbec (1ebbec), FUN_001ebdc4 (1ebdc4), FUN_001ec234 (1ec234), FUN_001ec4c0 (1ec4c0), FUN_001ec8d0 (1ec8d0), FUN_001ec954 (1ec954), FUN_001ec974 (1ec974), FUN_001eca74 (1eca74), FUN_001ecb58 (1ecb58), FUN_001ecb90 (1ecb90), FUN_001ecc30 (1ecc30), FUN_001ece4c (1ece4c), FUN_001ecfe0 (1ecfe0), FUN_001ed17c (1ed17c), FUN_001ed2c0 (1ed2c0), FUN_001ed964 (1ed964), FUN_001edb38 (1edb38), FUN_001edc1c (1edc1c), FUN_001edca0 (1edca0), FUN_001ee2d4 (1ee2d4), FUN_001ef42c (1ef42c), FUN_001ef53c (1ef53c), FUN_001ef594 (1ef594), FUN_001ef694 (1ef694), FUN_001ef850 (1ef850), FUN_001efa6c (1efa6c), FUN_001efc7c (1efc7c), FUN_001eff3c (1eff3c), FUN_001f0218 (1f0218), FUN_001f02d0 (1f02d0), FUN_001f056c (1f056c), FUN_001f05cc (1f05cc), FUN_001f0bcc (1f0bcc), FUN_001f1444 (1f1444), FUN_001f1d38 (1f1d38), FUN_001f30d0 (1f30d0), FUN_001f5014 (1f5014), FUN_001f51e8 (1f51e8), FUN_001f527c (1f527c), FUN_001f538c (1f538c), FUN_001f56e4 (1f56e4), FUN_001f5dc0 (1f5dc0), FUN_001f6448 (1f6448), FUN_001f6468 (1f6468), FUN_001f65bc (1f65bc), FUN_001f66ac (1f66ac), FUN_001f7100 (1f7100), FUN_001f7170 (1f7170), FUN_001f7190 (1f7190), FUN_001f71b4 (1f71b4), FUN_001f7414 (1f7414), FUN_001f74b8 (1f74b8), FUN_001f750c (1f750c), FUN_001f7550 (1f7550), FUN_001f75f8 (1f75f8), FUN_001f7f78 (1f7f78), FUN_001f8158 (1f8158), FUN_001f89c0 (1f89c0), FUN_001f8a50 (1f8a50), FUN_001fa0bc (1fa0bc), FUN_001fa958 (1fa958), FUN_001fb270 (1fb270), FUN_001fb2b8 (1fb2b8), FUN_001fbef4 (1fbef4), FUN_001fc3e8 (1fc3e8), FUN_001fc6c0 (1fc6c0), FUN_001fc7b0 (1fc7b0), FUN_001fcac4 (1fcac4), FUN_001fcbb0 (1fcbb0), FUN_001fdb0c (1fdb0c), FUN_001fe118 (1fe118), FUN_001fe53c (1fe53c), FUN_001fe5f0 (1fe5f0), FUN_001fe674 (1fe674), FUN_001fe7f4 (1fe7f4), FUN_001fe8b8 (1fe8b8), FUN_001fe8dc (1fe8dc), FUN_001fe970 (1fe970), FUN_001fe990 (1fe990), FUN_001fef18 (1fef18), FUN_001ff618 (1ff618), FUN_001ff6f4 (1ff6f4), FUN_001ff734 (1ff734), FUN_001ffc70 (1ffc70), FUN_001ffdb4 (1ffdb4), FUN_001ffeb4 (1ffeb4), FUN_001ffed4 (1ffed4), FUN_00200178 (200178), FUN_0020022c (20022c), FUN_00200d90 (200d90), FUN_00201240 (201240), FUN_0020134c (20134c), FUN_002015a4 (2015a4), FUN_00201660 (201660), FUN_00201acc (201acc), FUN_00202134 (202134), FUN_00202200 (202200), FUN_002025e4 (2025e4), FUN_0020283c (20283c), FUN_002028b8 (2028b8), FUN_00202d34 (202d34), FUN_00203440 (203440), FUN_00203464 (203464), FUN_002034a8 (2034a8), FUN_002037b8 (2037b8), FUN_00203848 (203848), FUN_00203c18 (203c18), FUN_00204324 (204324), FUN_002045dc (2045dc), FUN_0020466c (20466c), FUN_00204a3c (204a3c), FUN_00204fc4 (204fc4), FUN_002055bc (2055bc), FUN_00205900 (205900), FUN_00205990 (205990), FUN_00205bf0 (205bf0), FUN_00205d94 (205d94), FUN_00205f70 (205f70), FUN_002063b8 (2063b8), FUN_00206430 (206430), FUN_00206660 (206660), FUN_002087c0 (2087c0), FUN_002088b8 (2088b8), FUN_0020895c (20895c), FUN_00208e58 (208e58), FUN_00209c84 (209c84), FUN_00209e84 (209e84), FUN_0020a1ec (20a1ec), FUN_0020a568 (20a568), FUN_0020afdc (20afdc), FUN_0020bc04 (20bc04), FUN_0020c468 (20c468), FUN_0020cac0 (20cac0), FUN_0020cae0 (20cae0), FUN_0020cc04 (20cc04), FUN_0020d2ac (20d2ac), FUN_0020d3fc (20d3fc), FUN_0020d54c (20d54c), FUN_0020d83c (20d83c), FUN_0020df3c (20df3c), FUN_0020e54c (20e54c), FUN_0020e6bc (20e6bc), FUN_0020e774 (20e774), FUN_0020ea2c (20ea2c), FUN_0020f008 (20f008), FUN_00210050 (210050), FUN_002100a8 (2100a8), FUN_002102a8 (2102a8), FUN_00211640 (211640), FUN_002117c4 (2117c4), FUN_00211868 (211868), FUN_00211acc (211acc), FUN_00211c90 (211c90), FUN_00211cd8 (211cd8), FUN_00212114 (212114), FUN_0021217c (21217c), FUN_0021227c (21227c), FUN_00212538 (212538), FUN_002126c0 (2126c0), FUN_002128d4 (2128d4), FUN_00212bac (212bac), FUN_00212e4c (212e4c), FUN_00212e84 (212e84), FUN_00214ae0 (214ae0), FUN_002155ec (2155ec), FUN_00215758 (215758), FUN_00215e78 (215e78), FUN_00215ea0 (215ea0), FUN_00216eb8 (216eb8), FUN_0021717c (21717c), FUN_00217574 (217574), FUN_0021789c (21789c), FUN_00218068 (218068), FUN_002182ac (2182ac), FUN_0021830c (21830c), FUN_00218d44 (218d44), FUN_00218dd4 (218dd4), FUN_00218f68 (218f68), FUN_00218fb8 (218fb8), FUN_00218fec (218fec), FUN_00219294 (219294), FUN_00219458 (219458), FUN_002194a0 (2194a0), FUN_002196bc (2196bc), FUN_002198e8 (2198e8), FUN_00219984 (219984), FUN_00219b4c (219b4c), FUN_00219fc8 (219fc8), FUN_0021a31c (21a31c), FUN_0021b088 (21b088), FUN_0021b4fc (21b4fc), FUN_0021c448 (21c448), FUN_0021c4b4 (21c4b4), FUN_0021d1fc (21d1fc), FUN_0021d304 (21d304), FUN_0021d474 (21d474), FUN_0021dd58 (21dd58), FUN_0021e0e8 (21e0e8), FUN_0021e270 (21e270), FUN_0021e314 (21e314), FUN_0021e420 (21e420), FUN_0021e5ac (21e5ac), FUN_0021e864 (21e864), FUN_0021e924 (21e924), FUN_0021eca8 (21eca8), FUN_0021f360 (21f360), FUN_0021f478 (21f478), FUN_0021f758 (21f758), FUN_0021fa40 (21fa40), FUN_0021fdfc (21fdfc), FUN_002210ec (2210ec), FUN_002214c8 (2214c8), FUN_00223b7c (223b7c), FUN_00223c04 (223c04), FUN_00223fd8 (223fd8), FUN_00224840 (224840), FUN_00224d4c (224d4c), FUN_00225140 (225140), FUN_00225208 (225208), FUN_00225724 (225724), FUN_002258ac (2258ac), FUN_002260bc (2260bc), FUN_002262a8 (2262a8), FUN_00226588 (226588), FUN_00226774 (226774), FUN_002269e8 (2269e8), FUN_00226af8 (226af8), FUN_00227010 (227010), FUN_002270e0 (2270e0), FUN_00227368 (227368), FUN_002273c0 (2273c0), FUN_00227464 (227464), FUN_00227838 (227838), FUN_00227e28 (227e28), FUN_00227e68 (227e68), FUN_00227f8c (227f8c), FUN_002280c8 (2280c8), FUN_00228110 (228110), FUN_00228134 (228134), FUN_002282d8 (2282d8), FUN_00228330 (228330), FUN_002286b4 (2286b4), FUN_00228878 (228878), FUN_00228aec (228aec), FUN_00228c28 (228c28), FUN_00228da4 (228da4), FUN_00228de8 (228de8), FUN_002290d4 (2290d4), FUN_002293cc (2293cc), FUN_00229678 (229678), FUN_0022a570 (22a570), FUN_0022a5e4 (22a5e4), FUN_0022a608 (22a608), FUN_0022a67c (22a67c), FUN_0022ab2c (22ab2c), FUN_0022ad14 (22ad14), FUN_0022b2d0 (22b2d0), FUN_0022b4d8 (22b4d8), FUN_0022b744 (22b744), FUN_0022b9a4 (22b9a4), FUN_0022ba04 (22ba04), FUN_0022baf4 (22baf4), FUN_0022bbe0 (22bbe0), FUN_0022bc84 (22bc84), FUN_0022be28 (22be28), FUN_0022bf10 (22bf10), FUN_0022bf8c (22bf8c), FUN_0022c058 (22c058), FUN_0022c84c (22c84c), FUN_0022c91c (22c91c), FUN_0022c9b8 (22c9b8), FUN_0022c9dc (22c9dc), FUN_0022ca5c (22ca5c), FUN_0022cb4c (22cb4c), FUN_0022cc88 (22cc88), FUN_0022d198 (22d198), FUN_0022d200 (22d200), FUN_0022d228 (22d228), FUN_0022d3fc (22d3fc), FUN_0022da68 (22da68), FUN_0022db48 (22db48), FUN_0022dcac (22dcac), FUN_0022df2c (22df2c), FUN_0022e200 (22e200), FUN_0022e2e8 (22e2e8), FUN_0022f710 (22f710), FUN_00230ce8 (230ce8), FUN_00230e70 (230e70), FUN_00230ea4 (230ea4), FUN_00232190 (232190), FUN_00232b6c (232b6c), FUN_00232e64 (232e64), FUN_0023339c (23339c), FUN_00233ce0 (233ce0), FUN_002340c8 (2340c8), FUN_002348f8 (2348f8), FUN_00234948 (234948), FUN_00234f14 (234f14), FUN_00234fa0 (234fa0), FUN_00235104 (235104), FUN_00235c8c (235c8c), FUN_00235ee4 (235ee4), FUN_00235fe4 (235fe4), FUN_002365cc (2365cc), FUN_00237f30 (237f30), FUN_00238a28 (238a28), FUN_00239d7c (239d7c), FUN_0023a824 (23a824), FUN_0023a894 (23a894), FUN_0023cd10 (23cd10), FUN_0023d760 (23d760), FUN_0023d910 (23d910), FUN_0023f67c (23f67c), FUN_00240100 (240100), FUN_002411d8 (2411d8), FUN_00241c44 (241c44), FUN_002425bc (2425bc), FUN_002429d0 (2429d0), FUN_00242af0 (242af0), FUN_00242f1c (242f1c), FUN_00243e4c (243e4c), FUN_002440b8 (2440b8), FUN_00244530 (244530), FUN_002445e0 (2445e0), FUN_002446a8 (2446a8), FUN_00244bf4 (244bf4), FUN_00244cc4 (244cc4), FUN_00245278 (245278), FUN_002455dc (2455dc), FUN_00245840 (245840), FUN_0024764c (24764c), FUN_0024798c (24798c), FUN_00247ec4 (247ec4), FUN_00248f04 (248f04), FUN_00249074 (249074), FUN_00249654 (249654), FUN_0024a8ac (24a8ac), FUN_0024bb38 (24bb38), FUN_0024bfec (24bfec), FUN_0024d5bc (24d5bc), FUN_0024ef74 (24ef74), FUN_0024f778 (24f778), FUN_0024f794 (24f794), FUN_0024f9ac (24f9ac), FUN_002501f8 (2501f8), FUN_00250214 (250214), FUN_002502f8 (2502f8), FUN_002506cc (2506cc), FUN_002506e8 (2506e8), FUN_002509bc (2509bc), FUN_00250a54 (250a54), FUN_00250e28 (250e28), FUN_00250ff8 (250ff8), FUN_00251aa0 (251aa0), FUN_00251fc8 (251fc8), FUN_002535f4 (2535f4), FUN_00253840 (253840), FUN_00253994 (253994), FUN_00253f7c (253f7c), FUN_00254a58 (254a58), FUN_00254d84 (254d84), FUN_002567e4 (2567e4), FUN_0025736c (25736c), FUN_00258338 (258338), FUN_00258444 (258444), FUN_002586c0 (2586c0), FUN_00259340 (259340), FUN_002593d0 (2593d0), FUN_0025a4e4 (25a4e4), FUN_0025acdc (25acdc), FUN_0025be8c (25be8c), FUN_0025c2c4 (25c2c4), FUN_0025c5ac (25c5ac), FUN_0025cc34 (25cc34), FUN_00260a1c (260a1c), FUN_00261504 (261504), FUN_00261744 (261744), FUN_00261e3c (261e3c), FUN_00262554 (262554), FUN_00262e10 (262e10), FUN_00263418 (263418), FUN_00263a38 (263a38), FUN_00265a3c (265a3c), FUN_00265b64 (265b64), FUN_00268810 (268810), FUN_0026aa2c (26aa2c), FUN_0026b904 (26b904), FUN_0026bbe4 (26bbe4), FUN_0026d470 (26d470), FUN_0026ebf0 (26ebf0), FUN_0026f794 (26f794), FUN_0026fc58 (26fc58), FUN_00270568 (270568), FUN_00270a14 (270a14), FUN_00270e44 (270e44), FUN_00270f54 (270f54), FUN_00271ddc (271ddc), FUN_00271e10 (271e10), FUN_00271e30 (271e30), FUN_00273030 (273030), FUN_00274b98 (274b98), FUN_00274c28 (274c28), FUN_00274d4c (274d4c), FUN_00275b50 (275b50), FUN_00275fc0 (275fc0), FUN_00276824 (276824), FUN_002771f8 (2771f8), FUN_002798c0 (2798c0), FUN_0027c190 (27c190), FUN_0027c308 (27c308), FUN_0027d01c (27d01c), FUN_0027d238 (27d238), FUN_0027d610 (27d610), FUN_002a8548 (2a8548), FUN_002ab724 (2ab724), FUN_002b545c (2b545c), FUN_002b657c (2b657c), FUN_002b717c (2b717c), FUN_002cbdb8 (2cbdb8), FUN_002cbde8 (2cbde8), FUN_002cbec4 (2cbec4), FUN_002cdd98 (2cdd98), FUN_002d1688 (2d1688), FUN_002d3f74 (2d3f74), FUN_002d404c (2d404c), FUN_002d419c (2d419c), FUN_002d424c (2d424c), FUN_002d4378 (2d4378), FUN_002d4428 (2d4428), FUN_002d45f4 (2d45f4), FUN_002d469c (2d469c), FUN_002d481c (2d481c), FUN_002d49fc (2d49fc), FUN_002d4acc (2d4acc), FUN_002d4b48 (2d4b48), FUN_002d4e40 (2d4e40), FUN_002d4f98 (2d4f98), FUN_002d506c (2d506c), FUN_002d520c (2d520c), FUN_002d52a8 (2d52a8), FUN_002d5318 (2d5318), FUN_002d5510 (2d5510), FUN_002d55d0 (2d55d0), FUN_002d5604 (2d5604), FUN_002d569c (2d569c), FUN_002d56c0 (2d56c0), FUN_002d5730 (2d5730), FUN_002d57a0 (2d57a0), FUN_002d5c10 (2d5c10), FUN_002db308 (2db308), FUN_002e54ec (2e54ec), FUN_002e9114 (2e9114), FUN_002e97bc (2e97bc), validateImageDimensions (2ea114), FUN_002ea514 (2ea514), FUN_002ea6f4 (2ea6f4), FUN_002ea83c (2ea83c), FUN_002eaa50 (2eaa50), FUN_002eac7c (2eac7c), FUN_002eac9c (2eac9c), FUN_002eb540 (2eb540), FUN_002f029c (2f029c), FUN_002f0308 (2f0308), FUN_002f0cdc (2f0cdc), FUN_002f0d4c (2f0d4c), FUN_002f1364 (2f1364), FUN_002f253c (2f253c), FUN_002f2b84 (2f2b84), FUN_002f339c (2f339c), FUN_002f53cc (2f53cc), FUN_002f55c8 (2f55c8), FUN_002f5904 (2f5904), FUN_002f5a94 (2f5a94), FUN_002f5f68 (2f5f68), FUN_002f62dc (2f62dc), FUN_002f76a8 (2f76a8), FUN_002f85c4 (2f85c4), FUN_002f8f4c (2f8f4c), FUN_002fa290 (2fa290), FUN_002fa7a0 (2fa7a0), FUN_002fa8f0 (2fa8f0), FUN_002fb270 (2fb270), FUN_002fb4c4 (2fb4c4), FUN_002fb880 (2fb880), FUN_002fb9a8 (2fb9a8), FUN_002fd054 (2fd054), FUN_002fd4f4 (2fd4f4), FUN_002ff934 (2ff934), FUN_002ffd08 (2ffd08), FUN_002ffe70 (2ffe70), FUN_002fff30 (2fff30), FUN_0030006c (30006c), FUN_003001d8 (3001d8), FUN_00300268 (300268), FUN_003014dc (3014dc), FUN_00301508 (301508), FUN_0030159c (30159c), FUN_00301fdc (301fdc), FUN_00303284 (303284), FUN_00304a10 (304a10), FUN_00305c5c (305c5c), FUN_0030692c (30692c), FUN_00306a70 (306a70), FUN_0030a228 (30a228), FUN_0030a7c4 (30a7c4), FUN_0030a924 (30a924), FUN_0030cc98 (30cc98), FUN_0030d74c (30d74c), FUN_0030db38 (30db38), FUN_0030ed58 (30ed58), FUN_0030ef4c (30ef4c), FUN_0030f994 (30f994), FUN_003101d0 (3101d0), FUN_0031040c (31040c), FUN_003107bc (3107bc), FUN_003132e0 (3132e0), FUN_0031330c (31330c), FUN_00313364 (313364), FUN_00313aa4 (313aa4), FUN_003140c8 (3140c8), FUN_00315318 (315318), FUN_00315958 (315958), FUN_00315988 (315988), FUN_00316048 (316048), FUN_0031995c (31995c), FUN_00319bec (319bec), FUN_00319f5c (319f5c), FUN_0031b8f8 (31b8f8), FUN_0031ba6c (31ba6c), FUN_0031bac4 (31bac4), FUN_0031bc38 (31bc38), FUN_0031bcb4 (31bcb4), FUN_0031bd14 (31bd14), FUN_0031c448 (31c448), FUN_0031c6e8 (31c6e8), FUN_0031c870 (31c870), FUN_0031c8c8 (31c8c8), FUN_0031c93c (31c93c), FUN_0031cc40 (31cc40), FUN_0031d3ec (31d3ec), FUN_0031dad0 (31dad0), FUN_0031e098 (31e098), FUN_0031e140 (31e140), FUN_0031e9cc (31e9cc), FUN_0031ea20 (31ea20), FUN_0031ea34 (31ea34), FUN_0031eb50 (31eb50), FUN_0031ed28 (31ed28), FUN_0031ed7c (31ed7c), FUN_0031efe4 (31efe4), FUN_0031eff8 (31eff8), FUN_0031f038 (31f038), FUN_0031f574 (31f574), FUN_0031fa14 (31fa14), FUN_00320094 (320094), FUN_003200a8 (3200a8), FUN_00320110 (320110), FUN_003203c0 (3203c0), FUN_003205e8 (3205e8), FUN_00320b04 (320b04), FUN_00320cd8 (320cd8), FUN_003214a4 (3214a4), FUN_003215f0 (3215f0), FUN_00321648 (321648), FUN_0032204c (32204c), FUN_003225f4 (3225f4), FUN_003226b0 (3226b0), FUN_003227c4 (3227c4), FUN_00322848 (322848), FUN_00322968 (322968), FUN_00323358 (323358), FUN_00323914 (323914), FUN_00323994 (323994), FUN_003239d0 (3239d0), FUN_00323ae4 (323ae4), FUN_00323c88 (323c88), FUN_00323f80 (323f80), FUN_0032422c (32422c), FUN_00324a88 (324a88), FUN_00324e1c (324e1c), FUN_0032549c (32549c), FUN_00325c18 (325c18), FUN_00325cf0 (325cf0), FUN_00326258 (326258), FUN_00326280 (326280), FUN_00326584 (326584), FUN_00326c54 (326c54), FUN_00326c90 (326c90), FUN_00327214 (327214), FUN_00327228 (327228), FUN_0032733c (32733c), FUN_0032770c (32770c), FUN_00327844 (327844), FUN_00327a38 (327a38), FUN_00327b34 (327b34), FUN_00327c34 (327c34), FUN_00328118 (328118), FUN_00328208 (328208), FUN_00328344 (328344), FUN_00328590 (328590), FUN_003290b0 (3290b0), FUN_003292e8 (3292e8), FUN_003295a4 (3295a4), FUN_00329660 (329660), FUN_00329d1c (329d1c), FUN_00329e24 (329e24), FUN_0032ba84 (32ba84), FUN_0032bda8 (32bda8), FUN_0032c054 (32c054), FUN_0032c198 (32c198), FUN_0032c710 (32c710), FUN_0032c778 (32c778), FUN_0033006c (33006c), FUN_00330488 (330488), FUN_003309dc (3309dc), FUN_00330aa4 (330aa4), FUN_00331364 (331364), FUN_00331464 (331464), FUN_00331ad0 (331ad0), FUN_0033448c (33448c), FUN_00334940 (334940), FUN_00334cc4 (334cc4), FUN_003351d4 (3351d4), FUN_00335248 (335248), FUN_00335cf0 (335cf0), FUN_00335fcc (335fcc), FUN_003367bc (3367bc), FUN_00336858 (336858), FUN_003368f0 (3368f0), FUN_00336ae8 (336ae8), FUN_00336b38 (336b38), FUN_00336c14 (336c14), FUN_003370b0 (3370b0), FUN_0033780c (33780c), FUN_00337acc (337acc), FUN_003388d4 (3388d4), FUN_00339cd0 (339cd0), FUN_0033a464 (33a464), FUN_0033b6c4 (33b6c4), FUN_0033e43c (33e43c), FUN_0033fac0 (33fac0), FUN_00340790 (340790), FUN_00340f30 (340f30), FUN_0034129c (34129c), FUN_003412f0 (3412f0), FUN_00341680 (341680), FUN_00342990 (342990), FUN_003432ec (3432ec), FUN_00343a8c (343a8c), FUN_00344438 (344438), FUN_00344760 (344760), FUN_00344af0 (344af0), FUN_003455e0 (3455e0), FUN_00345fec (345fec), FUN_0034625c (34625c), FUN_00346704 (346704), FUN_00346758 (346758), FUN_00347510 (347510), FUN_00347bf4 (347bf4), FUN_00347da0 (347da0), FUN_00347e14 (347e14), FUN_003482a0 (3482a0), FUN_00348618 (348618), FUN_00348718 (348718), FUN_003495b8 (3495b8), FUN_003499a8 (3499a8), FUN_00349e00 (349e00), FUN_0034a450 (34a450), FUN_0034b070 (34b070), FUN_0034b3e8 (34b3e8), FUN_0034bee8 (34bee8), FUN_0034c2ac (34c2ac), FUN_0034c440 (34c440), FUN_0034cd60 (34cd60), FUN_0034cdb4 (34cdb4), FUN_0034eab4 (34eab4), FUN_0034f804 (34f804), FUN_00351798 (351798), FUN_003517e8 (3517e8), FUN_00352a78 (352a78), FUN_00352de0 (352de0), FUN_00353508 (353508), FUN_00353718 (353718), FUN_003538d8 (3538d8), FUN_00353ba4 (353ba4), FUN_00353c58 (353c58), FUN_00354168 (354168), FUN_003565d0 (3565d0), FUN_0035689c (35689c), FUN_00356c10 (356c10), FUN_00356edc (356edc), FUN_00357228 (357228), FUN_0035775c (35775c), FUN_00357978 (357978), FUN_00357ce4 (357ce4), FUN_00357df0 (357df0), FUN_00357e88 (357e88), FUN_003580a8 (3580a8), FUN_003587dc (3587dc), FUN_003599a4 (3599a4), FUN_00359a98 (359a98), FUN_00366714 (366714), FUN_00367884 (367884), FUN_00368554 (368554), FUN_00369490 (369490), FUN_00369834 (369834), FUN_0036ad68 (36ad68), FUN_0036c058 (36c058), FUN_0036d07c (36d07c), FUN_0036eae0 (36eae0), FUN_00373c78 (373c78), FUN_00373d4c (373d4c), FUN_00374e74 (374e74), FUN_00375ed4 (375ed4), FUN_003780ec (3780ec), FUN_003783e8 (3783e8), FUN_0037a528 (37a528), FUN_0037c474 (37c474), FUN_0037e614 (37e614), FUN_0037ee1c (37ee1c), FUN_0037f78c (37f78c), FUN_00381a38 (381a38), FUN_003841d8 (3841d8), FUN_00384390 (384390), FUN_00384458 (384458), FUN_00384958 (384958), FUN_003849a8 (3849a8), FUN_00384e80 (384e80), FUN_00385510 (385510), FUN_00385538 (385538), FUN_00385718 (385718)
 
 #### FUN_00001a3c — funcs/__Z12FUN_00001a3cPfS_i.cpp, Ghidra 1a3c, 0 model attempt(s)
 
@@ -5372,81 +6128,6 @@ int processAndFilterInput() {
 }
 ```
 
-#### FUN_000033bc — funcs/__Z12FUN_000033bcPfi.cpp, Ghidra 33bc, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000033bcPfi.cpp:4:3: error: no matching function for call to 'processVectorAndRotateFunction'
-    4 |   processVectorAndRotateFunction(data, data);
-      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:13425:6: note: candidate function not viable: no known conversion from 'float *' to 'long *' for 1st argument
- 13425 | void processVectorAndRotateFunction(long *, double);
-       |      ^                              ~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000033bc(float *data, int filterSize) {
-  processVectorAndRotateFunction(data, data);
-}
-```
-Notes:
-- 10-20 18:44 [compile] use of undeclared identifier 'updateFilter' — plan: Change line 4 from `updateFilter(data, filterSize);` to `processVectorAndRotateFunction(data, data);`. — still fails: no matching function for call to 'processVectorAndRotateFunction'
-
-#### FUN_000033e0 — funcs/__Z12FUN_000033e0m.cpp, Ghidra 33e0, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000033e0m.cpp:4:3: error: no matching function for call to 'FUN_00216668'
-    4 |   FUN_00216668("TLinkedViewValue", value);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:41971:7: note: candidate function not viable: no known conversion from 'const char[17]' to 'undefined8' (aka 'unsigned long long') for 1st argument
- 41971 | void *FUN_00216668(undefined8, size_t);
-       |       ^            ~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000033e0(size_t value) {
-  FUN_00216668("TLinkedViewValue", value);
-}
-```
-Notes:
-- 10-20 18:44 [compile] no matching function for call to 'FUN_00216668' — plan: Change line 4 to: `FUN_00216668("TLinkedViewValue", (size_t)value);` — still fails: no matching function for call to 'FUN_00216668'
-- 10-20 18:44 [compile] that edit didn't help — undone.
-- 10-20 18:44 [compile] the model suggested an edit that already failed — skipped.
-
-#### FUN_00003438 — funcs/__Z12FUN_00003438Pyyyy.cpp, Ghidra 3438, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00003438Pyyyy.cpp:4:5: error: no matching function for call to 'FUN_00004b88'
-    4 |     FUN_00004b88(data, filterParams, input, output);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1689:8: note: candidate function not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'float *' for 1st argument
- 1689 | float *FUN_00004b88(float *, float, float, float);
-      |        ^            ~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00003438(undefined8 *data, undefined8 filterParams, undefined8 input, undefined8 output) {
-    FUN_00004b88(data, filterParams, input, output);
-}
-```
-Notes:
-- 10-20 15:02 [compile] no matching function for call to 'applyLowpassFilter30' — plan: To fix the compiler error and ensure that the function `applyLowpassFilter30` is called correctly, you need to change the return type from `undefined8 *` to `fl — still fails: no matching function for call to 'applyLowpassFilter30'
-- 10-20 15:02 [compile] that edit didn't help — undone.
-- 10-20 15:02 [compile] no matching function for call to 'applyLowpassFilter30' — plan: To fix the compiler error and ensure that the function `applyLowpassFilter30` is called correctly, you need to change the return type from `undefined8 *` to `fl — compiles now.
-- 10-20 18:44 [compile] no matching function for call to 'FUN_00004b88' — plan: Change line 4 to: `float *result = FUN_00004b88(data, filterParams, input, output);` — still fails: no matching function for call to 'FUN_00004b88'
-- 10-20 18:44 [compile] that edit didn't help — undone.
-
 #### processInput2 — funcs/__Z13processInput2Pyyyy.cpp, Ghidra 349c, 0 model attempt(s)
 
 Compiler output:
@@ -5473,27 +6154,6 @@ Notes:
 - 10-20 16:22 [compile] no matching function for call to 'applyLowpassFilter31' — plan: Change line 4 from `applyLowpassFilter31(inputArray, param2, param3, param4);` to `applyLowpassFilter31((struct FilterParams*)param2, (float)param3, (float)para — still fails: no matching function for call to 'applyLowpassFilter31'
 - 10-20 16:22 [compile] that edit didn't help — undone.
 
-#### FUN_000034cc — funcs/__Z12FUN_000034ccPvS_S_S_.cpp, Ghidra 34cc, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000034ccPvS_S_S_.cpp:4:5: error: no matching function for call to 'FUN_00004ce8'
-    4 |     FUN_00004ce8(input, filterCoefficients, output, state);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1701:6: note: candidate function not viable: cannot convert argument of incomplete type 'void *' to 'float *' for 1st argument
- 1701 | void FUN_00004ce8(float *, float, float *, float *);
-      |      ^            ~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000034cc(void* input, void* filterCoefficients, void* output, void* state) {
-    FUN_00004ce8(input, filterCoefficients, output, state);
-}
-```
-
 #### FUN_00003750 — funcs/__Z12FUN_00003750Pyyyy.cpp, Ghidra 3750, 0 model attempt(s)
 
 Compiler output:
@@ -5515,48 +6175,111 @@ void FUN_00003750(undefined8 *data, undefined8 filterCoefficients, undefined8 in
 }
 ```
 
-### Not compiling yet — 2971 × use of undeclared identifier 'X'
-
-All: FUN_00003340 (3340), processAndPrintData (3468), FUN_0000351c (351c), initializeAndFilter (4724), main5 (4e9c), processInput8 (5170), processInput11 (5a9c), handleSwitch (5acc), processInput12 (6078), FUN_000060a8 (60a8), processInput13 (6170), processAndExecuteData (62e0), FUN_00006464 (6464), FUN_0000671c (671c), FUN_000067a8 (67a8), processInput18 (6ca8), FUN_00006f6c (6f6c), FUN_0000717c (717c), FUN_0000727c (727c), FUN_0000745c (745c), processAndWriteData4 (74d4), processAndWriteData3 (7534), initializeAPI (7d70), FUN_00007e68 (7e68), processAndResetData (7f08), processAudio (8014), processAndWriteData6 (859c), setAndCalculateDotProduct (86e0), FUN_0000973c (973c), updateVector (989c), FUN_00009be0 (9be0), FUN_00009c58 (9c58), processAndWriteData7 (a0c8), FUN_0000bc6c (bc6c), getFirstElementOrSecondIfEven (be8c), FUN_0000bfc8 (bfc8), FUN_0000bfd0 (bfd0), FUN_0000c088 (c088), FUN_0000c170 (c170), FUN_0000c178 (c178), FUN_0000c288 (c288), setAndCalculateDotProduct2 (c530), setAndCalculateDotProduct3 (c7c8), FUN_0000ce38 (ce38), FUN_0000dba8 (dba8), FUN_0000dc20 (dc20), FUN_0000dd2c (dd2c), FUN_0000def4 (def4), FUN_0000e944 (e944), FUN_0000ec4c (ec4c), FUN_0000f388 (f388), FUN_0000f854 (f854), FUN_0000fae8 (fae8), FUN_0000fb90 (fb90), FUN_0000fb98 (fb98), processInput29 (115fc), processAndRotateVectors (11760), processValues6 (118c8), processInput30 (12018), processInput31 (12048), FUN_000120a4 (120a4), processInput32 (12194), FUN_00012220 (12220), processInput33 (122c4), FUN_00012350 (12350), setAndCalculateDotProduct4 (12450), FUN_00012848 (12848), FUN_00013248 (13248), FUN_000132b0 (132b0), FUN_00013300 (13300), processAndValidateData (13454), FUN_00013550 (13550), FUN_00013558 (13558), FUN_00013564 (13564), FUN_0001356c (1356c), FUN_00013d38 (13d38), FUN_00013fa8 (13fa8), FUN_00014e50 (14e50), FUN_000168a4 (168a4), processAndExecute4 (16c44), FUN_00016ea8 (16ea8), FUN_00016eb0 (16eb0), FUN_00016ebc (16ebc), FUN_00016ec4 (16ec4), setAndNotify2 (179dc), processInput38 (17a54), FUN_00017c64 (17c64), FUN_00017cb0 (17cb0), FUN_00017f70 (17f70), FUN_000182d0 (182d0), FUN_000188b0 (188b0), setAndProcessData (18bac), FUN_00018c74 (18c74), FUN_00018cac (18cac), FUN_00018f94 (18f94), setAndCalculateDotProduct5 (190fc), FUN_00019130 (19130), FUN_0001967c (1967c), FUN_00019684 (19684), FUN_00019690 (19690), FUN_00019698 (19698), FUN_00019b10 (19b10), processBlocks (1a300), FUN_0001a34c (1a34c), FUN_0001a464 (1a464), FUN_0001ae70 (1ae70), processAndDisplayData2 (1b104), processValues8 (1b190), FUN_0001b2dc (1b2dc), FUN_0001bd88 (1bd88), FUN_0001bfcc (1bfcc), FUN_0001c388 (1c388), processObject (1c478), FUN_0001d988 (1d988), FUN_0001da00 (1da00), processVectors2 (1dbd4), FUN_0001e1d8 (1e1d8), processAudioData3 (1e91c), FUN_0001ec2c (1ec2c), FUN_0001f814 (1f814), setAndProcessVector (2036c), FUN_0002068c (2068c), FUN_00020ef8 (20ef8), setAndCalculateDotProduct6 (211f8), FUN_000212fc (212fc), FUN_00021548 (21548), FUN_00021688 (21688), FUN_00021eac (21eac), updateAndProcess (223e0), processAudioData4 (22978), processValues11 (22fe4), FUN_0002345c (2345c), FUN_00023b8c (23b8c), FUN_00023d48 (23d48), setAndCalculateDotProduct7 (23d58), processAndWriteData10 (27b1c), processAndWriteData11 (27cec), FUN_00028388 (28388), processArray7 (28ac8), FUN_00029d58 (29d58), FUN_0002a384 (2a384), processFile (2aea0), FUN_0002b57c (2b57c), FUN_0002b894 (2b894), processAndClearData5 (2ba0c), FUN_0002bae0 (2bae0), processAndWriteData12 (2d134), FUN_0002d950 (2d950), FUN_0002dbc4 (2dbc4), FUN_0002dcc8 (2dcc8), FUN_0002dce8 (2dce8), FUN_0002dd5c (2dd5c), processInput45 (2e14c), processInput46 (2e194), FUN_0002ea5c (2ea5c), FUN_0002ec44 (2ec44), FUN_0002ed3c (2ed3c), FUN_00031460 (31460), FUN_00031f0c (31f0c), FUN_0003227c (3227c), FUN_000326a4 (326a4), FUN_000335c4 (335c4), FUN_00035158 (35158), FUN_00035bf0 (35bf0), FUN_00035cbc (35cbc), FUN_00035ce8 (35ce8), FUN_00035e94 (35e94), FUN_000382a4 (382a4), FUN_0003c09c (3c09c), FUN_0003c354 (3c354), processAudioData6 (3cea8), processFilters (3cefc), FUN_0003d5c0 (3d5c0), FUN_0003fa68 (3fa68), FUN_000411b4 (411b4), FUN_00041510 (41510), FUN_000427b0 (427b0), FUN_00042bc8 (42bc8), FUN_00044784 (44784), FUN_000450c4 (450c4), FUN_00047674 (47674), FUN_00048b1c (48b1c), applyFilter4 (493c4), FUN_0004acf4 (4acf4), FUN_0004af8c (4af8c), FUN_0004b344 (4b344), FUN_0004b6a8 (4b6a8), FUN_0004e44c (4e44c), FUN_0004f0e8 (4f0e8), FUN_000500b8 (500b8), FUN_00051714 (51714), FUN_00051cfc (51cfc), FUN_00051e9c (51e9c), FUN_00052074 (52074), FUN_000521a8 (521a8), FUN_00052cdc (52cdc), FUN_000532f4 (532f4), FUN_00053364 (53364), FUN_00053568 (53568), FUN_00053890 (53890), FUN_000541f8 (541f8), FUN_00054330 (54330), FUN_00054d80 (54d80), FUN_00054e3c (54e3c), FUN_00057078 (57078), FUN_00057158 (57158), FUN_000a0de4 (a0de4), FUN_000a2150 (a2150), FUN_000a2bd8 (a2bd8), FUN_000a2c80 (a2c80), FUN_000a4078 (a4078), FUN_000a6178 (a6178), FUN_000a7e00 (a7e00), FUN_000a864c (a864c), FUN_000a96a8 (a96a8), FUN_000a96d8 (a96d8), FUN_000aa22c (aa22c), FUN_000aa41c (aa41c), FUN_000aa424 (aa424), FUN_000aa430 (aa430), FUN_000aa438 (aa438), FUN_000aaf74 (aaf74), FUN_000ab484 (ab484), FUN_000aba20 (aba20), FUN_000abbb8 (abbb8), FUN_000afcf4 (afcf4), FUN_000afcfc (afcfc), FUN_000afd08 (afd08), FUN_000afd10 (afd10), FUN_000afd64 (afd64), FUN_000b09ac (b09ac), FUN_000b0db8 (b0db8), FUN_000b1034 (b1034), FUN_000b11f8 (b11f8), FUN_000b19f8 (b19f8), FUN_000b1de0 (b1de0), FUN_000b2168 (b2168), FUN_000b3b5c (b3b5c), FUN_000b3d04 (b3d04), FUN_000b3f1c (b3f1c), FUN_000b5c5c (b5c5c), FUN_000b60a4 (b60a4), FUN_000b6238 (b6238), FUN_000b9330 (b9330), FUN_000b964c (b964c), FUN_000b9fb4 (b9fb4), FUN_000ba3ec (ba3ec), FUN_000ba59c (ba59c), FUN_000bb048 (bb048), FUN_000bb3bc (bb3bc), FUN_000bbf14 (bbf14), FUN_000bbfac (bbfac), FUN_000bc094 (bc094), FUN_000bc4ac (bc4ac), FUN_000bcf50 (bcf50), FUN_000bd180 (bd180), FUN_000bd9ac (bd9ac), FUN_000bdfe0 (bdfe0), FUN_000be348 (be348), FUN_000beb14 (beb14), FUN_000bf520 (bf520), FUN_000c043c (c043c), FUN_000c0ad4 (c0ad4), FUN_000c1424 (c1424), FUN_000c1bd4 (c1bd4), FUN_000c23c4 (c23c4), FUN_000c26a0 (c26a0), FUN_000c36a4 (c36a4), FUN_000c36fc (c36fc), FUN_000c3e5c (c3e5c), FUN_000c4500 (c4500), FUN_000c46c0 (c46c0), FUN_0027e190 (27e190), FUN_0027e2a8 (27e2a8), FUN_0027e7dc (27e7dc), FUN_0027e800 (27e800), FUN_0027e824 (27e824), FUN_0027e848 (27e848), FUN_0027ead4 (27ead4), FUN_0027eb88 (27eb88), FUN_0027ebe8 (27ebe8), FUN_0027ec80 (27ec80), FUN_0027ee38 (27ee38), FUN_0027ef44 (27ef44), FUN_00280ad8 (280ad8), FUN_00280d9c (280d9c), FUN_00281dd8 (281dd8), FUN_00282c5c (282c5c), FUN_002833d0 (2833d0), FUN_00283954 (283954), FUN_00284010 (284010), FUN_00284a78 (284a78), FUN_00284a84 (284a84), FUN_002856bc (2856bc), FUN_00285818 (285818), FUN_00286424 (286424), FUN_00286ce4 (286ce4), FUN_00286f0c (286f0c), FUN_00286fb8 (286fb8), FUN_00287544 (287544), FUN_00287f18 (287f18), FUN_00289a88 (289a88), FUN_0028a1f0 (28a1f0), FUN_0028a2fc (28a2fc), FUN_0028a3b8 (28a3b8), FUN_0028a4e4 (28a4e4), FUN_0028ada0 (28ada0), FUN_0028d3ac (28d3ac), FUN_0028d4c0 (28d4c0), FUN_0028dcb4 (28dcb4), FUN_0028e0fc (28e0fc), FUN_0028e3f0 (28e3f0), FUN_0028e864 (28e864), FUN_0028eac0 (28eac0), FUN_0028f27c (28f27c), FUN_0028f408 (28f408), FUN_0028fb48 (28fb48), FUN_0028fb5c (28fb5c), FUN_0028fcd4 (28fcd4), FUN_00291050 (291050), FUN_00291af0 (291af0), FUN_00291cac (291cac), FUN_00291d6c (291d6c), FUN_00291f04 (291f04), FUN_00291f40 (291f40), FUN_00291fac (291fac), FUN_0029202c (29202c), FUN_002920d4 (2920d4), FUN_00292cd8 (292cd8), FUN_00292d3c (292d3c), FUN_00293004 (293004), FUN_00293328 (293328), FUN_00293900 (293900), FUN_00293d1c (293d1c), FUN_00293db8 (293db8), FUN_00293eec (293eec), FUN_00293f94 (293f94), FUN_00294084 (294084), FUN_002945bc (2945bc), FUN_00294628 (294628), FUN_00296488 (296488), FUN_00296530 (296530), FUN_00297010 (297010), FUN_002978c4 (2978c4), FUN_00297afc (297afc), FUN_00297b3c (297b3c), FUN_00297c9c (297c9c), FUN_00297d08 (297d08), FUN_002984f8 (2984f8), FUN_0029855c (29855c), FUN_00299d00 (299d00), FUN_0029a11c (29a11c), FUN_0029a15c (29a15c), FUN_0029a21c (29a21c), FUN_0029a234 (29a234), FUN_0029a24c (29a24c), FUN_0029c71c (29c71c), FUN_0029cc40 (29cc40), FUN_0029d710 (29d710), FUN_0029dfcc (29dfcc), FUN_0029f50c (29f50c), FUN_002a0ef4 (2a0ef4), FUN_002a1ffc (2a1ffc), FUN_002a2f98 (2a2f98), FUN_002a4a88 (2a4a88), FUN_002a4e00 (2a4e00), FUN_002a4e8c (2a4e8c), FUN_002a4f34 (2a4f34), FUN_002a503c (2a503c), FUN_002a5250 (2a5250), FUN_002a588c (?), FUN_002b9be8 (2b9be8), FUN_002ba7e0 (2ba7e0), FUN_002bb3c0 (2bb3c0), FUN_002bb778 (2bb778), FUN_002bbbc4 (2bbbc4), FUN_002bbf10 (2bbf10), FUN_002bc158 (2bc158), FUN_002bc36c (2bc36c), FUN_002bc728 (2bc728), FUN_002bd7d4 (2bd7d4), FUN_002bdd38 (2bdd38), FUN_002be238 (2be238), FUN_002bedb0 (2bedb0), FUN_002bf2fc (2bf2fc), FUN_002c0000 (2c0000), FUN_002c01c0 (2c01c0), FUN_002c0804 (2c0804), FUN_002c0c20 (2c0c20), FUN_002c15c0 (2c15c0), FUN_002c179c (2c179c), FUN_002c1aac (2c1aac), FUN_002c1c18 (2c1c18), FUN_002c1de8 (2c1de8), FUN_002c1ee4 (2c1ee4), FUN_002c1f84 (2c1f84), FUN_002c23f4 (2c23f4), FUN_002c3064 (2c3064), FUN_002c31ac (2c31ac), FUN_002c32a0 (2c32a0), FUN_002c35c8 (2c35c8), FUN_002c381c (2c381c), FUN_002c39a8 (2c39a8), FUN_002c3cdc (2c3cdc), FUN_002c3d8c (2c3d8c), FUN_002c4148 (2c4148), FUN_002c4230 (2c4230), FUN_002c4a78 (?), FUN_002c4bc4 (2c4bc4), FUN_002c4db4 (2c4db4), FUN_002c4fcc (2c4fcc), FUN_002c51b8 (2c51b8), FUN_002c5478 (2c5478), FUN_002c5f0c (2c5f0c), FUN_002c6160 (2c6160), FUN_002c6324 (2c6324), FUN_002c6618 (2c6618), FUN_002c7020 (2c7020), FUN_002c714c (2c714c), FUN_002c7764 (2c7764), FUN_002c78f8 (2c78f8), FUN_002c7c58 (2c7c58), FUN_002c7fdc (2c7fdc), FUN_002c856c (2c856c), FUN_002c91a4 (2c91a4), FUN_002c9370 (2c9370), FUN_002c93e4 (2c93e4), FUN_002c9430 (2c9430), FUN_002c94cc (2c94cc), FUN_002c9534 (2c9534), FUN_002c95d0 (2c95d0), FUN_002c961c (2c961c), FUN_002c9668 (2c9668), FUN_002c96fc (2c96fc), FUN_002c9744 (2c9744), FUN_002c9824 (2c9824), FUN_002c9b1c (2c9b1c), FUN_002c9b94 (2c9b94), FUN_002ca1dc (2ca1dc), FUN_002cb67c (2cb67c), FUN_002cba6c (2cba6c), FUN_0035a698 (35a698), FUN_0035a91c (35a91c), FUN_0035a97c (35a97c), FUN_0035aa60 (35aa60), FUN_0035ab44 (35ab44), FUN_0035af74 (35af74), FUN_0035b090 (35b090), FUN_0035b878 (35b878), FUN_0035bff4 (35bff4), FUN_0035cc2c (35cc2c), FUN_0035ce80 (35ce80), FUN_0035cf44 (35cf44), FUN_0035d540 (35d540), FUN_0035deec (35deec), FUN_0035dfe8 (35dfe8), FUN_0035e0a0 (35e0a0), FUN_0035e830 (35e830), FUN_0035f010 (35f010), FUN_0035f640 (35f640), FUN_0035faec (35faec), FUN_0035fd1c (35fd1c), FUN_00360358 (360358), FUN_00360f2c (360f2c), FUN_00361d94 (361d94), FUN_00361ecc (361ecc), FUN_003624c4 (3624c4), FUN_003624dc (3624dc), FUN_003626cc (3626cc), FUN_00363618 (363618), FUN_00363844 (363844), FUN_00363af0 (363af0), FUN_00363b38 (363b38), FUN_00363f8c (363f8c), FUN_003644b4 (3644b4), FUN_00364548 (364548), FUN_00364560 (364560), FUN_0036475c (36475c), FUN_00364a5c (364a5c), FUN_00364cbc (364cbc), FUN_00364f84 (364f84), FUN_00364fec (364fec), FUN_00365954 (365954), FUN_00365bec (365bec), FUN_0005ac9c (5ac9c), FUN_0005cdf4 (5cdf4), FUN_0005d0d8 (5d0d8), FUN_0005d164 (5d164), FUN_0005d568 (5d568), FUN_0005d6ac (5d6ac), FUN_0005d75c (5d75c), FUN_0005ea08 (5ea08), FUN_0005f280 (5f280), FUN_0005fa08 (5fa08), alloc (5fd8c), FUN_00060bbc (60bbc), FUN_0006197c (6197c), FUN_00061b7c (61b7c), FUN_0006218c (6218c), FUN_0006222c (6222c), FUN_00062a1c (62a1c), processInput48 (62b28), FUN_0006315c (6315c), FUN_000647c4 (647c4), FUN_0006498c (6498c), FUN_000649ac (649ac), FUN_00064fb4 (64fb4), FUN_0006514c (6514c), FUN_00065ac8 (65ac8), FUN_00065c70 (65c70), FUN_00066104 (66104), FUN_00066900 (66900), FUN_00067c90 (67c90), FUN_00068aec (68aec), FUN_000696d0 (696d0), FUN_0006a784 (6a784), FUN_0006b758 (6b758), FUN_0006b7b4 (6b7b4), FUN_0006bef8 (6bef8), FUN_0006c94c (6c94c), FUN_0006ca80 (6ca80), FUN_0006cb48 (6cb48), FUN_0006d7c4 (6d7c4), FUN_0006dbb8 (6dbb8), applyFiltersAndCopy (6dcb4), FUN_0006e2d8 (6e2d8), FUN_0006e540 (6e540), FUN_0006e590 (6e590), FUN_0006f784 (6f784), FUN_000701d4 (701d4), FUN_000702cc (702cc), FUN_000721c0 (721c0), FUN_00072dc8 (72dc8), FUN_00073858 (73858), FUN_00073b4c (73b4c), FUN_00073c9c (73c9c), FUN_00074134 (74134), FUN_0007468c (7468c), FUN_00075904 (75904), FUN_00075c4c (75c4c), closePluginEditor (75c7c), FUN_00076080 (76080), FUN_00076344 (76344), FUN_00076370 (76370), FUN_00076460 (76460), FUN_000767ec (767ec), FUN_00076ae0 (76ae0), FUN_00077144 (77144), FUN_00077208 (77208), FUN_00077354 (77354), FUN_0007738c (7738c), FUN_000773c4 (773c4), FUN_000776dc (776dc), FUN_0007771c (7771c), FUN_00077764 (77764), FUN_000778c4 (778c4), FUN_00077bcc (77bcc), FUN_00077f14 (77f14), FUN_00078038 (78038), FUN_00079290 (79290), FUN_000793d4 (793d4), FUN_0007997c (7997c), FUN_00079a58 (79a58), FUN_00079ae8 (79ae8), FUN_0007a084 (7a084), FUN_0007ab58 (7ab58), FUN_0007cdc4 (7cdc4), applyFilter9 (7da9c), FUN_0007e560 (7e560), FUN_0007eb08 (7eb08), processArray8 (81aa8), FUN_000821a8 (821a8), FUN_000821b0 (821b0), FUN_000821e4 (821e4), FUN_000825c8 (825c8), FUN_000828e0 (828e0), processValue3 (828f0), FUN_000833dc (833dc), FUN_00083558 (83558), FUN_0008365c (8365c), FUN_000836b8 (836b8), FUN_00083714 (83714), FUN_000837e4 (837e4), FUN_000838f4 (838f4), FUN_0008396c (8396c), FUN_00083b4c (83b4c), FUN_00083bb0 (83bb0), FUN_00083c10 (83c10), FUN_00083c70 (83c70), FUN_00083ccc (83ccc), FUN_00083d28 (83d28), FUN_00083d70 (83d70), FUN_00083e30 (83e30), FUN_00083e8c (83e8c), FUN_00083f98 (83f98), FUN_00084114 (84114), FUN_000841d0 (841d0), FUN_0008422c (8422c), FUN_000842ec (842ec), isFunctionEnabled (84350), FUN_00084418 (84418), FUN_00084588 (84588), FUN_000850c0 (850c0), FUN_000859f4 (859f4), FUN_000860e4 (860e4), FUN_0008796c (8796c), FUN_00088540 (88540), FUN_000889fc (889fc), processInput51 (88a18), FUN_00088ad0 (88ad0), FUN_000899c4 (899c4), FUN_000899cc (899cc), FUN_0008a154 (8a154), setAndCalculateDotProduct8 (8a260), FUN_0008a294 (8a294), FUN_0008a2f4 (8a2f4), FUN_0008b300 (8b300), FUN_0008bdb4 (8bdb4), FUN_0008c394 (8c394), FUN_0008c4f4 (8c4f4), FUN_0008c5ac (8c5ac), processInput56 (8de48), FUN_0008f5cc (8f5cc), FUN_0008f5f4 (8f5f4), FUN_0008f70c (8f70c), FUN_00091870 (91870), FUN_00091e34 (91e34), FUN_00091e74 (91e74), FUN_00093734 (93734), FUN_00093790 (93790), FUN_00093920 (93920), FUN_0009404c (9404c), FUN_00094bac (94bac), FUN_00094e90 (94e90), FUN_00094f18 (94f18), processAndReturn2 (94f98), FUN_0009512c (9512c), FUN_00095260 (95260), FUN_00095390 (95390), FUN_00095438 (95438), FUN_00095450 (95450), FUN_00095af8 (95af8), FUN_00095c64 (95c64), processInput59 (95d10), FUN_00095f78 (95f78), FUN_00095fdc (95fdc), FUN_0009602c (9602c), FUN_0009627c (9627c), FUN_00096364 (96364), FUN_00097090 (97090), FUN_0009714c (9714c), FUN_000971cc (971cc), FUN_00097438 (97438), FUN_000976e0 (976e0), FUN_0009a688 (9a688), FUN_0009afe8 (9afe8), FUN_0009b290 (9b290), FUN_0009b2f0 (9b2f0), FUN_0009c1cc (9c1cc), FUN_0009c91c (9c91c), FUN_0009c944 (9c944), FUN_0009d0f8 (9d0f8), FUN_000c4f24 (c4f24), FUN_000c528c (c528c), FUN_000c58d4 (c58d4), FUN_000c5960 (c5960), FUN_000c5998 (c5998), FUN_000c59b4 (c59b4), FUN_000c6544 (c6544), FUN_000c65ec (c65ec), FUN_000c6c68 (c6c68), FUN_000c6ca8 (c6ca8), FUN_000c6d00 (c6d00), FUN_000c6f24 (c6f24), FUN_000c7158 (c7158), FUN_000c73c0 (c73c0), FUN_000c7a5c (c7a5c), FUN_000c7eb0 (c7eb0), FUN_000c7ef0 (c7ef0), FUN_000c8030 (c8030), FUN_000c808c (c808c), FUN_000c8094 (c8094), FUN_000c80a0 (c80a0), FUN_000c8b40 (c8b40), FUN_000c8fe8 (c8fe8), FUN_000c900c (c900c), FUN_000c957c (c957c), FUN_000c95ec (c95ec), FUN_000c96a0 (c96a0), FUN_000c99f8 (c99f8), FUN_000c9b88 (c9b88), FUN_000c9d34 (c9d34), FUN_000ca098 (ca098), FUN_000ca1d8 (ca1d8), FUN_000ca214 (ca214), FUN_000cc224 (cc224), FUN_000cc5d4 (cc5d4), FUN_000ccb00 (ccb00), FUN_000cdb1c (cdb1c), FUN_000cddec (cddec), FUN_000cef1c (cef1c), FUN_000cf088 (cf088), FUN_000cfdd8 (cfdd8), FUN_000d01b0 (d01b0), FUN_000d0f70 (d0f70), FUN_000d1ad0 (d1ad0), FUN_000d4774 (d4774), FUN_000d8904 (d8904), FUN_000dacdc (dacdc), FUN_000dbeb0 (dbeb0), FUN_000dd254 (dd254), FUN_000dfb84 (dfb84), FUN_000e0040 (e0040), FUN_000e1b78 (e1b78), FUN_000e2f88 (e2f88), FUN_000e30a0 (e30a0), FUN_000e33d0 (e33d0), FUN_000e5a4c (e5a4c), FUN_000e5f40 (e5f40), FUN_000e641c (e641c), FUN_000e7118 (e7118), FUN_000e77ac (e77ac), FUN_000e792c (e792c), FUN_000e8c6c (e8c6c), FUN_000e9188 (e9188), FUN_000e93ac (e93ac), FUN_000ec0f8 (ec0f8), FUN_000ecb64 (ecb64), FUN_000ef3f0 (ef3f0), FUN_000f0f8c (f0f8c), FUN_000f1388 (f1388), FUN_000f1c30 (f1c30), FUN_000f1f28 (f1f28), FUN_000f2274 (f2274), FUN_000f2ccc (f2ccc), FUN_000f2cd4 (f2cd4), FUN_000f2f7c (f2f7c), FUN_000f3078 (f3078), FUN_000f313c (f313c), FUN_000f3c78 (f3c78), FUN_000f5f24 (f5f24), FUN_000f70c0 (f70c0), FUN_000f7eb8 (f7eb8), FUN_000f82fc (f82fc), FUN_000f8388 (f8388), FUN_000f8400 (f8400), FUN_000f84ec (f84ec), FUN_000f89c4 (f89c4), FUN_000f8a6c (f8a6c), FUN_000f8bc4 (f8bc4), FUN_000f8d04 (f8d04), FUN_000fe7a0 (fe7a0), FUN_000ff0bc (ff0bc), FUN_000ffeb4 (ffeb4), FUN_00101468 (101468), FUN_00101778 (101778), FUN_00101b18 (101b18), FUN_00101b84 (101b84), FUN_00101c5c (101c5c), FUN_00101ccc (101ccc), FUN_00101d90 (101d90), FUN_00101df8 (101df8), FUN_00101e60 (101e60), FUN_00101f38 (101f38), FUN_00101f9c (101f9c), FUN_00102034 (102034), FUN_00102120 (102120), FUN_00102234 (102234), FUN_001022c0 (1022c0), FUN_00102b50 (102b50), FUN_00102ebc (102ebc), FUN_001030b0 (1030b0), FUN_0010338c (10338c), FUN_0010351c (10351c), FUN_001039b8 (1039b8), FUN_0010568c (10568c), FUN_00105c60 (105c60), FUN_00106144 (106144), FUN_0010631c (10631c), FUN_00106410 (106410), FUN_00109db4 (109db4), FUN_0010a408 (10a408), FUN_0010a484 (10a484), FUN_0010a65c (10a65c), FUN_0010a6e0 (10a6e0), FUN_0010eb80 (10eb80), FUN_0010eb98 (10eb98), FUN_0010f4ac (10f4ac), FUN_0011202c (11202c), FUN_00112528 (112528), FUN_00112680 (112680), FUN_00112a08 (112a08), FUN_00112b4c (112b4c), FUN_00112c78 (112c78), FUN_001131ec (1131ec), FUN_00114d38 (114d38), FUN_00114dac (114dac), FUN_00118574 (118574), FUN_00118658 (118658), FUN_0011872c (11872c), FUN_001188c4 (1188c4), FUN_00118cb8 (118cb8), FUN_00118ea0 (118ea0), FUN_0011a068 (11a068), FUN_0011b358 (11b358), FUN_0011b3b0 (11b3b0), FUN_0011ba8c (11ba8c), FUN_0011bb14 (11bb14), FUN_0011bc34 (11bc34), FUN_0011c19c (11c19c), FUN_0011c454 (11c454), FUN_0011cb9c (11cb9c), FUN_0011da40 (11da40), FUN_0011e0ac (11e0ac), FUN_0011e170 (11e170), FUN_0011e1f8 (11e1f8), FUN_0011f7ac (11f7ac), FUN_00120648 (120648), FUN_001217a4 (1217a4), FUN_00121b7c (121b7c), FUN_00124424 (124424), FUN_0012495c (12495c), FUN_00124ab8 (124ab8), FUN_00124c90 (124c90), FUN_00125774 (125774), FUN_00125794 (125794), FUN_00125e68 (125e68), FUN_00125e88 (125e88), FUN_00127818 (127818), FUN_00127830 (127830), FUN_00127eec (127eec), FUN_001280e4 (1280e4), FUN_0012817c (12817c), FUN_00128184 (128184), FUN_00128244 (128244), FUN_001289c4 (1289c4), FUN_0012a740 (12a740), FUN_0012b598 (12b598), FUN_0012b640 (12b640), FUN_0012cb94 (12cb94), FUN_0012d150 (12d150), FUN_0012e094 (12e094), FUN_0012e9a4 (12e9a4), FUN_0012ea00 (12ea00), FUN_0012ee0c (12ee0c), FUN_0012f018 (12f018), FUN_0012f194 (12f194), FUN_0012f19c (12f19c), FUN_0013063c (13063c), FUN_00130efc (130efc), FUN_00131ae0 (131ae0), FUN_00131afc (131afc), FUN_00131d24 (131d24), FUN_00132280 (132280), FUN_0013248c (13248c), FUN_00132798 (132798), FUN_00132d04 (132d04), FUN_00133b74 (133b74), FUN_00133c80 (133c80), FUN_001363c0 (1363c0), FUN_00136708 (136708), FUN_001367b4 (1367b4), FUN_00137d48 (137d48), FUN_00137e48 (137e48), FUN_00137e50 (137e50), FUN_001381e0 (1381e0), FUN_00138bf0 (138bf0), FUN_00139f50 (139f50), FUN_0013a1ac (13a1ac), FUN_0013ab38 (13ab38), FUN_0013b5f0 (13b5f0), FUN_0013b7bc (13b7bc), FUN_0013b984 (13b984), FUN_0013b9a8 (13b9a8), FUN_0013bef8 (13bef8), FUN_0013bf00 (13bf00), FUN_0013cf08 (13cf08), FUN_0013cf44 (13cf44), FUN_0013d008 (13d008), FUN_0013e86c (13e86c), FUN_0013faa4 (13faa4), FUN_00141bc0 (141bc0), FUN_00141f64 (141f64), FUN_00142280 (142280), FUN_00142500 (142500), FUN_00142510 (142510), FUN_00142524 (142524), FUN_00142540 (142540), FUN_0014255c (14255c), FUN_00142574 (142574), FUN_00142590 (142590), FUN_00142598 (142598), FUN_0014266c (14266c), FUN_0014267c (14267c), FUN_001429cc (1429cc), FUN_00142bb0 (142bb0), FUN_00143238 (143238), FUN_00143248 (143248), FUN_0014325c (14325c), FUN_00143274 (143274), FUN_00143a28 (143a28), FUN_0014424c (14424c), FUN_001442c0 (1442c0), FUN_0014466c (14466c), FUN_00144e90 (144e90), FUN_00144e9c (144e9c), FUN_00145c6c (145c6c), FUN_00146654 (146654), FUN_001469e4 (1469e4), FUN_00147008 (147008), FUN_0014b17c (14b17c), FUN_0014c0c4 (14c0c4), FUN_0014c64c (14c64c), FUN_0014c690 (14c690), FUN_0014d87c (14d87c), FUN_0014e3c8 (14e3c8), FUN_0014ec44 (14ec44), FUN_0014f80c (14f80c), FUN_0014fd00 (14fd00), FUN_0015040c (15040c), FUN_00151774 (151774), FUN_001518d8 (1518d8), FUN_00152240 (152240), FUN_001526b8 (1526b8), FUN_001526c8 (1526c8), FUN_001526dc (1526dc), FUN_001526f8 (1526f8), FUN_00152714 (152714), FUN_0015272c (15272c), FUN_0015280c (15280c), FUN_0015281c (15281c), FUN_00152874 (152874), FUN_00152e30 (152e30), FUN_00153020 (153020), FUN_00153114 (153114), FUN_0015311c (15311c), FUN_001537ac (1537ac), FUN_00153e48 (153e48), FUN_00153e58 (153e58), FUN_00153e6c (153e6c), FUN_00153e88 (153e88), FUN_00153ea4 (153ea4), FUN_00153ebc (153ebc), FUN_00153f9c (153f9c), FUN_00153fac (153fac), FUN_00154668 (154668), FUN_001548e8 (1548e8), FUN_00154984 (154984), FUN_00155b0c (155b0c), FUN_001561f4 (1561f4), FUN_00156670 (156670), FUN_0015684c (15684c), FUN_00156898 (156898), FUN_001569b0 (1569b0), FUN_0015745c (15745c), FUN_00157c7c (157c7c), FUN_00157f04 (157f04), FUN_0015828c (15828c), FUN_00158594 (158594), FUN_0015a0b0 (15a0b0), FUN_0016546c (16546c), FUN_00165730 (165730), FUN_0016593c (16593c), FUN_00166c44 (166c44), FUN_001675cc (1675cc), FUN_001675fc (1675fc), FUN_0016763c (16763c), FUN_00168068 (168068), FUN_0016832c (16832c), waitUntilPendingCommandsCompleted (1689cc), commandQueue (168c6c), setCommandQueue_ (168c84), texture (168cb0), setTexture_ (168cc8), alloc__168cf4 (168cf4), dealloc__169244 (169244), cancelCurrentMouseDownEvent (169b70), canBecomeMainWindow (169c7c), canBecomeKeyWindow (169d4c), becomeKeyWindow (169ddc), alloc__16c4f4 (16c4f4), dealloc__16c680 (16c680), resignFirstResponder (16c7e8), FUN_0016c82c (16c82c), makeBackingLayer (16c910), FUN_0016dc6c (16dc6c), FUN_0016dcfc (16dcfc), FUN_0016dd08 (16dd08), FUN_0016e0d8 (16e0d8), hasMarkedText (16e120), FUN_0016e460 (16e460), FUN_0016e930 (16e930), FUN_0016e990 (16e990), FUN_0016ec60 (16ec60), FUN_0016ec68 (16ec68), FUN_0016f2a8 (16f2a8), FUN_001707cc (1707cc), FUN_001708dc (1708dc), FUN_00170a78 (170a78), validModesForFontPanel_ (171894), fontManager_willIncludeFont_ (1718ac), FUN_00171dd0 (171dd0), FUN_00171f14 (171f14), FUN_00171fa4 (171fa4), FUN_00171fd8 (171fd8), FUN_001723a0 (1723a0), FUN_00172a58 (172a58), FUN_001736b4 (1736b4), FUN_00173d2c (173d2c), FUN_00173e3c (173e3c), FUN_00173f90 (173f90), FUN_00174008 (174008), FUN_00175104 (175104), FUN_001751cc (1751cc), FUN_00175504 (175504), FUN_00175554 (175554), FUN_001756dc (1756dc), FUN_00175864 (175864), FUN_00175fd0 (175fd0), FUN_00176190 (176190), FUN_00176210 (176210), FUN_00176298 (176298), FUN_001763ac (1763ac), FUN_00176728 (176728), FUN_00176980 (176980), FUN_00176f44 (176f44), FUN_0017711c (17711c), FUN_00177124 (177124), FUN_00177364 (177364), FUN_00177824 (177824), FUN_00177b6c (177b6c), FUN_00179118 (179118), FUN_00179890 (179890), FUN_00179898 (179898), FUN_00179e84 (179e84), FUN_0017a848 (17a848), FUN_0017a9b8 (17a9b8), FUN_0017aee0 (17aee0), FUN_0017af08 (17af08), FUN_0017cde0 (17cde0), FUN_0017ce08 (17ce08), FUN_0017d968 (17d968), FUN_0017da88 (17da88), FUN_0017dab0 (17dab0), FUN_0017dcf8 (17dcf8), FUN_0017e618 (17e618), FUN_0017e940 (17e940), FUN_0017ec70 (17ec70), FUN_0017f088 (17f088), FUN_0017f2a0 (17f2a0), FUN_0017f5d8 (17f5d8), FUN_0017f870 (17f870), FUN_0017f9f8 (17f9f8), FUN_0017fe74 (17fe74), FUN_0018056c (18056c), FUN_00180648 (180648), FUN_001814a0 (1814a0), FUN_00181910 (181910), FUN_0018198c (18198c), FUN_00181d14 (181d14), FUN_001821a0 (1821a0), FUN_0018302c (18302c), FUN_00184200 (184200), FUN_00184dd0 (184dd0), FUN_00185ec0 (185ec0), FUN_0018607c (18607c), FUN_001882dc (1882dc), FUN_001888b4 (1888b4), FUN_001895d8 (1895d8), FUN_001896e4 (1896e4), FUN_0018a1e8 (18a1e8), FUN_0018b054 (18b054), FUN_0018bc5c (18bc5c), FUN_0018bc84 (18bc84), FUN_0018edc4 (18edc4), FUN_00190480 (190480), FUN_00191250 (191250), FUN_001919ac (1919ac), FUN_00191d54 (191d54), FUN_00191e64 (191e64), FUN_00193494 (193494), FUN_00194b20 (194b20), FUN_00198600 (198600), FUN_00198dbc (198dbc), FUN_00199240 (199240), FUN_001994a4 (1994a4), FUN_0019a688 (19a688), FUN_0019b0b0 (19b0b0), FUN_0019b934 (19b934), FUN_0019be00 (19be00), FUN_0019c3cc (19c3cc), FUN_0019e460 (19e460), FUN_0019fc50 (19fc50), FUN_001a1b50 (1a1b50), FUN_001a2838 (1a2838), FUN_001a3c74 (1a3c74), FUN_001a4198 (1a4198), FUN_001a5308 (1a5308), FUN_001a629c (1a629c), FUN_001a648c (1a648c), FUN_001a696c (1a696c), FUN_001a6bc0 (1a6bc0), FUN_001a7e8c (1a7e8c), FUN_001a8664 (1a8664), layout (1a88bc), invalidate (1a8a74), viewDidHide (1a8e8c), viewDidUnhide (1a90dc), viewFrameChanged_ (1a929c), FUN_001a9d04 (1a9d04), FUN_001aa2ac (1aa2ac), FUN_001aa410 (1aa410), FUN_001aaa24 (1aaa24), FUN_001ac018 (1ac018), FUN_001ac090 (1ac090), FUN_001ad0a4 (1ad0a4), FUN_001ae3c8 (1ae3c8), FUN_001ae3d0 (1ae3d0), FUN_001ae48c (1ae48c), FUN_001afde0 (1afde0), FUN_001aff18 (1aff18), FUN_001b003c (1b003c), FUN_001b0174 (1b0174), FUN_001b04dc (1b04dc), FUN_001b0ad0 (1b0ad0), FUN_001b17fc (1b17fc), FUN_001b249c (1b249c), FUN_001b2724 (1b2724), FUN_001b37ec (1b37ec), FUN_001b474c (1b474c), FUN_001b4754 (1b4754), FUN_001b47ac (1b47ac), FUN_001b47b4 (1b47b4), FUN_001b47c0 (1b47c0), FUN_001b47c8 (1b47c8), FUN_001b47f8 (1b47f8), FUN_001b51d4 (1b51d4), FUN_001b78bc (1b78bc), FUN_001b8320 (1b8320), FUN_001b9134 (1b9134), FUN_001b925c (1b925c), FUN_001b9cac (1b9cac), FUN_001ba3d4 (1ba3d4), FUN_001ba8c8 (1ba8c8), FUN_001baefc (1baefc), FUN_001bafa8 (1bafa8), FUN_001bb54c (1bb54c), FUN_001bb8b0 (1bb8b0), FUN_001bbc6c (1bbc6c), FUN_001bbe6c (1bbe6c), FUN_001bbf28 (1bbf28), FUN_001bc4fc (1bc4fc), FUN_001bc914 (1bc914), FUN_001bd834 (1bd834), FUN_001bde04 (1bde04), FUN_001bf1dc (1bf1dc), FUN_001bfa80 (1bfa80), FUN_001c01a0 (1c01a0), FUN_001c0a28 (1c0a28), FUN_001c0a84 (1c0a84), FUN_001c2094 (1c2094), FUN_001c26cc (1c26cc), FUN_001c2a70 (1c2a70), FUN_001c3260 (1c3260), FUN_001c3358 (1c3358), FUN_001c3e18 (1c3e18), FUN_001c3e30 (1c3e30), FUN_001c3e50 (1c3e50), FUN_001c3ee8 (1c3ee8), FUN_001c4dd8 (1c4dd8), FUN_001c5380 (1c5380), FUN_001c551c (1c551c), FUN_001c5574 (1c5574), FUN_001c56bc (1c56bc), FUN_001c589c (1c589c), FUN_001c5af8 (1c5af8), FUN_001c5e90 (1c5e90), FUN_001c6f04 (1c6f04), FUN_001c6fb4 (1c6fb4), FUN_001c6fbc (1c6fbc), FUN_001c7058 (1c7058), FUN_001c71bc (1c71bc), FUN_001c7448 (1c7448), FUN_001c78d0 (1c78d0), FUN_001c79b0 (1c79b0), FUN_001c8d28 (1c8d28), FUN_001c8e3c (1c8e3c), FUN_001c8f78 (1c8f78), FUN_001c8fe4 (1c8fe4), FUN_001c9098 (1c9098), FUN_001cab68 (1cab68), FUN_001caf70 (1caf70), FUN_001cb11c (1cb11c), FUN_001cb304 (1cb304), FUN_001cb3c4 (1cb3c4), FUN_001cb5cc (1cb5cc), FUN_001ccbe0 (1ccbe0), FUN_001cd094 (1cd094), FUN_001cd0c8 (1cd0c8), FUN_001ce774 (1ce774), FUN_001ce8cc (1ce8cc), FUN_001cf3f8 (1cf3f8), FUN_001cf8e8 (1cf8e8), FUN_001cfe7c (1cfe7c), FUN_001d1970 (1d1970), FUN_001d40e4 (1d40e4), FUN_001d4490 (1d4490), FUN_001d4660 (1d4660), FUN_001d4b10 (1d4b10), FUN_001d4f78 (1d4f78), FUN_001d51d0 (1d51d0), FUN_001d52f8 (1d52f8), FUN_001d60c0 (1d60c0), FUN_001d62b8 (1d62b8), FUN_001d6620 (1d6620), FUN_001d698c (1d698c), FUN_001d6a14 (1d6a14), FUN_001d6a8c (1d6a8c), FUN_001d6aac (1d6aac), FUN_001d6b7c (1d6b7c), FUN_001d71d8 (1d71d8), FUN_001d7210 (1d7210), FUN_001d7790 (1d7790), FUN_001d7e04 (1d7e04), FUN_001d8bd8 (1d8bd8), FUN_001d914c (1d914c), FUN_001d9570 (1d9570), FUN_001d9a30 (1d9a30), FUN_001d9e8c (1d9e8c), FUN_001da458 (1da458), FUN_001da63c (1da63c), FUN_001daa18 (1daa18), FUN_001dab18 (1dab18), FUN_001daf0c (1daf0c), FUN_001db540 (1db540), FUN_001db9e0 (1db9e0), FUN_001dc790 (1dc790), FUN_001dc918 (1dc918), FUN_001dc920 (1dc920), FUN_001dd148 (1dd148), FUN_001dd204 (1dd204), FUN_001dd20c (1dd20c), FUN_001dd218 (1dd218), FUN_001de6f0 (1de6f0), FUN_001de8d4 (1de8d4), FUN_001dea88 (1dea88), FUN_001deba8 (1deba8), FUN_001deca0 (1deca0), FUN_001dece8 (1dece8), FUN_001ded3c (1ded3c), FUN_001dede0 (1dede0), FUN_001dee28 (1dee28), FUN_001deeac (1deeac), FUN_001df1dc (1df1dc), FUN_001df210 (1df210), FUN_001df244 (1df244), FUN_001df308 (1df308), FUN_001dfb04 (1dfb04), FUN_001e05ac (1e05ac), FUN_001e05f4 (1e05f4), FUN_001e05fc (1e05fc), FUN_001e0798 (1e0798), FUN_001e0bc4 (1e0bc4), FUN_001e0ed8 (1e0ed8), FUN_001e1004 (1e1004), FUN_001e1534 (1e1534), FUN_001e3120 (1e3120), FUN_001e3538 (1e3538), FUN_001e3540 (1e3540), FUN_001e38d0 (1e38d0), FUN_001e3a30 (1e3a30), FUN_001e3d94 (1e3d94), FUN_001e43d4 (1e43d4), FUN_001e4d30 (1e4d30), FUN_001e4e58 (1e4e58), FUN_001e4fdc (1e4fdc), FUN_001e503c (1e503c), FUN_001e5148 (1e5148), FUN_001e53f0 (1e53f0), FUN_001e5958 (1e5958), FUN_001e5c1c (1e5c1c), FUN_001e5d68 (1e5d68), FUN_001e629c (1e629c), FUN_001e63a4 (1e63a4), FUN_001e680c (1e680c), FUN_001e6d24 (1e6d24), FUN_001e6e58 (1e6e58), FUN_001e71ec (1e71ec), FUN_001e7474 (1e7474), FUN_001e747c (1e747c), FUN_001e7568 (1e7568), FUN_001e7a1c (1e7a1c), FUN_001e8340 (1e8340), FUN_001e8b2c (1e8b2c), FUN_001e9454 (1e9454), FUN_001e94d0 (1e94d0), FUN_001e9b90 (1e9b90), FUN_001eb96c (1eb96c), FUN_001ec298 (1ec298), FUN_001ec6c0 (1ec6c0), FUN_001ec6dc (1ec6dc), FUN_001ecaec (1ecaec), FUN_001ecdb4 (1ecdb4), FUN_001ed6bc (1ed6bc), FUN_001edaec (1edaec), FUN_001ee518 (1ee518), FUN_001ef604 (1ef604), FUN_001f01a0 (1f01a0), FUN_001f10a8 (1f10a8), FUN_001f14ec (1f14ec), FUN_001f1554 (1f1554), FUN_001f155c (1f155c), FUN_001f15b8 (1f15b8), FUN_001f1600 (1f1600), FUN_001f1640 (1f1640), FUN_001f1c10 (1f1c10), FUN_001f1c2c (1f1c2c), FUN_001f1c44 (1f1c44), FUN_001f1c80 (1f1c80), FUN_001f1cf8 (1f1cf8), FUN_001f1d5c (1f1d5c), FUN_001f1dc8 (1f1dc8), FUN_001f1de8 (1f1de8), FUN_001f1e08 (1f1e08), FUN_001f1e58 (1f1e58), FUN_001f2970 (1f2970), thunk_FUN_001f3e74 (1f4024), FUN_001f40b0 (1f40b0), FUN_001f4794 (1f4794), FUN_001f4870 (1f4870), FUN_001f4cd4 (1f4cd4), FUN_001f5464 (1f5464), FUN_001f54e4 (1f54e4), FUN_001f5d04 (1f5d04), FUN_001f6164 (1f6164), FUN_001f6d7c (1f6d7c), FUN_001f752c (1f752c), FUN_001f8068 (1f8068), FUN_001f8e10 (1f8e10), FUN_001f8e6c (1f8e6c), FUN_001f8eb0 (1f8eb0), FUN_001f8fe0 (1f8fe0), FUN_001f9140 (1f9140), FUN_001f9868 (1f9868), FUN_001f9ff4 (1f9ff4), FUN_001fdde4 (1fdde4), FUN_001ff11c (1ff11c), FUN_001ff2bc (1ff2bc), FUN_00201c5c (201c5c), FUN_00201d68 (201d68), FUN_00203c40 (203c40), FUN_00204a64 (204a64), FUN_00204bc8 (204bc8), FUN_00204bec (204bec), FUN_00204fe4 (204fe4), FUN_00205dbc (205dbc), FUN_00206378 (206378), FUN_00206414 (206414), FUN_00206458 (206458), FUN_00206888 (206888), FUN_00206afc (206afc), FUN_00208984 (208984), FUN_00208af0 (208af0), FUN_002092ec (2092ec), FUN_00209ee4 (209ee4), FUN_0020c004 (20c004), FUN_0020c984 (20c984), FUN_0020ca38 (20ca38), FUN_0020e048 (20e048), FUN_0020eeb8 (20eeb8), FUN_0020f664 (20f664), FUN_0020f85c (20f85c), FUN_0020f9d0 (20f9d0), FUN_0020fd94 (20fd94), FUN_0021195c (21195c), FUN_0021279c (21279c), FUN_00212950 (212950), FUN_00213ec8 (213ec8), FUN_00214408 (214408), FUN_00214424 (214424), FUN_002151a8 (2151a8), FUN_00215280 (215280), FUN_00215504 (215504), FUN_00215e28 (215e28), FUN_00215e50 (215e50), getpagesize (216044), FUN_0021640c (21640c), FUN_00216890 (216890), FUN_00216db8 (216db8), FUN_00216ecc (216ecc), FUN_00216fc4 (216fc4), FUN_00217374 (217374), FUN_002173c0 (2173c0), FUN_002176bc (2176bc), FUN_00219d88 (219d88), FUN_00219de8 (219de8), FUN_0021c16c (21c16c), FUN_0021c1d8 (21c1d8), FUN_0021cf04 (21cf04), FUN_0021d50c (21d50c), FUN_0021d53c (21d53c), FUN_0021eb34 (21eb34), FUN_0021eb70 (21eb70), FUN_0021ebf0 (21ebf0), FUN_0021fcd8 (21fcd8), FUN_00220ccc (220ccc), FUN_00220ed0 (220ed0), FUN_0022371c (22371c), FUN_00223970 (223970), FUN_00223a38 (223a38), FUN_002244f8 (2244f8), FUN_0022494c (22494c), FUN_00224b4c (224b4c), FUN_00224bcc (224bcc), FUN_00224ecc (224ecc), FUN_00226b84 (226b84), FUN_00227d2c (227d2c), FUN_00228910 (228910), FUN_002289c8 (2289c8), FUN_00228ac8 (228ac8), FUN_00228c08 (228c08), FUN_00228d04 (228d04), FUN_00228f34 (228f34), FUN_00229864 (229864), FUN_00229b60 (229b60), FUN_0022b530 (22b530), FUN_0022b7d0 (22b7d0), FUN_0022ba38 (22ba38), FUN_0022bb40 (22bb40), FUN_0022c2f4 (22c2f4), FUN_0022c48c (22c48c), FUN_0022cdc0 (22cdc0), FUN_0022d2bc (22d2bc), FUN_0022d370 (22d370), FUN_0022e798 (22e798), FUN_0022e850 (22e850), FUN_0022e930 (22e930), FUN_0022ee48 (22ee48), FUN_0022f0b8 (22f0b8), FUN_0022f1f0 (22f1f0), FUN_0022f914 (22f914), FUN_0022fb10 (22fb10), FUN_002300c4 (2300c4), FUN_00230f94 (230f94), FUN_00231164 (231164), FUN_00231288 (231288), FUN_002314d0 (2314d0), FUN_00231534 (231534), FUN_00231560 (231560), FUN_0023170c (23170c), FUN_00231cb0 (231cb0), FUN_00231e4c (231e4c), FUN_00231fc4 (231fc4), FUN_00232a24 (232a24), FUN_00232e80 (232e80), FUN_0023315c (23315c), FUN_0023317c (23317c), FUN_0023328c (23328c), FUN_002332a4 (2332a4), FUN_00233438 (233438), FUN_00233728 (233728), FUN_00233754 (233754), FUN_00233820 (233820), FUN_00233908 (233908), FUN_00233acc (233acc), FUN_00233c7c (233c7c), FUN_00233d70 (233d70), FUN_00233f28 (233f28), FUN_00234004 (234004), FUN_002341a4 (2341a4), FUN_00234404 (234404), FUN_002344bc (2344bc), FUN_00234824 (234824), FUN_00235040 (235040), FUN_002350e4 (2350e4), FUN_00235f70 (235f70), FUN_00236180 (236180), FUN_00236900 (236900), FUN_00236e44 (236e44), FUN_0023773c (23773c), FUN_002385ec (2385ec), FUN_00238704 (238704), parseEntityDeclaration (23a028), FUN_0023d094 (23d094), FUN_0023de1c (23de1c), FUN_0023e598 (23e598), FUN_0023f074 (23f074), FUN_0023f208 (23f208), FUN_00240430 (240430), FUN_002404b8 (2404b8), FUN_0024113c (24113c), FUN_002414e8 (2414e8), FUN_0024161c (24161c), FUN_00242010 (242010), FUN_00242f04 (242f04), FUN_00243c58 (243c58), FUN_00245018 (245018), FUN_00245904 (245904), FUN_00245998 (245998), FUN_00245a18 (245a18), FUN_00245b54 (245b54), FUN_00246294 (246294), FUN_00246db4 (246db4), FUN_00246f64 (246f64), FUN_00247174 (247174), FUN_002473a4 (2473a4), FUN_00247564 (247564), FUN_002477c4 (2477c4), FUN_002487bc (2487bc), FUN_002488ec (2488ec), FUN_0024891c (24891c), FUN_00248b4c (248b4c), FUN_00248c78 (248c78), FUN_00248d5c (248d5c), FUN_00248e4c (248e4c), FUN_00248fc8 (248fc8), FUN_002490ec (2490ec), FUN_00249350 (249350), FUN_0024a0c0 (24a0c0), FUN_0024a2bc (24a2bc), FUN_0024a598 (24a598), FUN_0024ae50 (24ae50), FUN_0024b46c (24b46c), FUN_0024b6a0 (24b6a0), FUN_0024b8cc (24b8cc), FUN_0024be14 (24be14), FUN_0024d210 (24d210), FUN_0024db74 (24db74), FUN_0024e514 (24e514), FUN_0024ebb8 (24ebb8), FUN_0024f080 (24f080), FUN_0024f26c (24f26c), FUN_0024f708 (24f708), FUN_0024f7b0 (24f7b0), FUN_00250230 (250230), FUN_00250540 (250540), FUN_00250668 (250668), FUN_0025118c (25118c), FUN_002511bc (2511bc), FUN_00251ac0 (251ac0), FUN_00251b64 (251b64), FUN_00251ed0 (251ed0), FUN_00252088 (252088), FUN_002522b4 (2522b4), FUN_00253104 (253104), FUN_0025320c (25320c), FUN_002532bc (2532bc), FUN_00253430 (253430), FUN_002534c4 (2534c4), FUN_00253668 (253668), FUN_00254050 (254050), FUN_002540c4 (2540c4), FUN_002541b8 (2541b8), FUN_00254384 (254384), FUN_002544d0 (2544d0), FUN_002545ec (2545ec), FUN_00254950 (254950), FUN_002549c4 (2549c4), FUN_00254b30 (254b30), FUN_00254bc8 (254bc8), FUN_00254c70 (254c70), FUN_00254e7c (254e7c), FUN_00254eb4 (254eb4), FUN_00254f84 (254f84), FUN_00255004 (255004), FUN_00255068 (255068), FUN_0025519c (25519c), FUN_00255278 (255278), FUN_00255514 (255514), FUN_00255658 (255658), FUN_0025566c (25566c), FUN_00255aac (255aac), FUN_00255e18 (255e18), FUN_00255e68 (255e68), FUN_00255f28 (255f28), FUN_00255fd8 (255fd8), FUN_002566a4 (2566a4), FUN_00256f6c (256f6c), FUN_00259674 (259674), FUN_00259e88 (259e88), FUN_0025a0e8 (25a0e8), FUN_0025a24c (25a24c), FUN_0025a8f8 (25a8f8), FUN_0025af78 (25af78), FUN_0025b138 (25b138), FUN_0025b290 (25b290), FUN_0025b7b4 (25b7b4), FUN_0025c45c (25c45c), FUN_0025cc8c (25cc8c), FUN_0025d6ec (25d6ec), FUN_002604ac (2604ac), FUN_00260770 (260770), FUN_00260834 (260834), FUN_00260a98 (260a98), FUN_00260c38 (260c38), FUN_00260d70 (260d70), FUN_00260ddc (260ddc), FUN_00260f24 (260f24), FUN_00261240 (261240), FUN_0026156c (26156c), FUN_002616e4 (2616e4), FUN_00261d40 (261d40), FUN_00262164 (262164), FUN_002627f8 (2627f8), FUN_00263380 (263380), FUN_0026345c (26345c), FUN_00264098 (264098), FUN_002645a0 (2645a0), FUN_00264f48 (264f48), FUN_002655a0 (2655a0), FUN_002655e8 (2655e8), FUN_00265d2c (265d2c), FUN_00265ecc (265ecc), FUN_00265f54 (265f54), FUN_00266080 (266080), FUN_002666a4 (2666a4), FUN_00266a74 (266a74), FUN_00266bd4 (266bd4), FUN_00266ccc (266ccc), FUN_00266d94 (266d94), FUN_00266e60 (266e60), FUN_00266ffc (266ffc), FUN_0026710c (26710c), FUN_00267434 (267434), FUN_002675c4 (2675c4), FUN_00267684 (267684), FUN_0026772c (26772c), FUN_00267764 (267764), FUN_002678ac (2678ac), FUN_002678e4 (2678e4), FUN_00268154 (268154), FUN_002681a4 (2681a4), FUN_00268224 (268224), FUN_002685cc (2685cc), FUN_00268730 (268730), FUN_00268ad4 (268ad4), FUN_00268bec (268bec), FUN_00268ca4 (268ca4), FUN_00268dcc (268dcc), FUN_00268e9c (268e9c), FUN_00268fac (268fac), FUN_00268fc0 (268fc0), FUN_00268fec (268fec), FUN_0026909c (26909c), FUN_002691e8 (2691e8), FUN_002691fc (2691fc), FUN_002692d8 (2692d8), FUN_00269300 (269300), FUN_00269470 (269470), FUN_002695d0 (2695d0), FUN_00269690 (269690), FUN_002696c8 (2696c8), FUN_00269784 (269784), FUN_0026979c (26979c), FUN_002697b4 (2697b4), FUN_002697e4 (2697e4), FUN_002697f8 (2697f8), FUN_00269a18 (269a18), FUN_00269aac (269aac), FUN_00269ddc (269ddc), FUN_00269e50 (269e50), FUN_00269edc (269edc), FUN_00269efc (269efc), FUN_00269f10 (269f10), FUN_00269f2c (269f2c), FUN_00269f50 (269f50), FUN_00269f74 (269f74), FUN_00269f8c (269f8c), FUN_00269fb8 (269fb8), FUN_00269fd4 (269fd4), FUN_00269ff0 (269ff0), FUN_0026a018 (26a018), FUN_0026a034 (26a034), FUN_0026a064 (26a064), FUN_0026a078 (26a078), FUN_0026a0b4 (26a0b4), FUN_0026a0cc (26a0cc), FUN_0026a0e4 (26a0e4), FUN_0026a0f8 (26a0f8), FUN_0026a118 (26a118), FUN_0026a138 (26a138), FUN_0026a150 (26a150), FUN_0026a168 (26a168), FUN_0026a194 (26a194), FUN_0026a1e0 (26a1e0), FUN_0026a1f8 (26a1f8), FUN_0026a228 (26a228), FUN_0026a240 (26a240), FUN_0026a258 (26a258), FUN_0026a270 (26a270), FUN_0026a284 (26a284), FUN_0026a2a4 (26a2a4), FUN_0026a2c0 (26a2c0), FUN_0026a2d8 (26a2d8), FUN_0026a3bc (26a3bc), FUN_0026a3d0 (26a3d0), FUN_0026a4d0 (26a4d0), FUN_0026a4e4 (26a4e4), FUN_0026a55c (26a55c), FUN_0026a5f0 (26a5f0), FUN_0026a608 (26a608), FUN_0026a630 (26a630), FUN_0026a664 (26a664), FUN_0026a6d8 (26a6d8), FUN_0026a6ec (26a6ec), FUN_0026a748 (26a748), FUN_0026a7fc (26a7fc), FUN_0026a810 (26a810), FUN_0026a824 (26a824), FUN_0026a8b8 (26a8b8), FUN_0026a98c (26a98c), FUN_0026a9a0 (26a9a0), FUN_0026a9f4 (26a9f4), FUN_0026aac4 (26aac4), FUN_0026aadc (26aadc), FUN_0026ab18 (26ab18), FUN_0026ab60 (26ab60), FUN_0026ab78 (26ab78), FUN_0026ab8c (26ab8c), FUN_0026ac3c (26ac3c), FUN_0026ace0 (26ace0), FUN_0026ad24 (26ad24), FUN_0026adb0 (26adb0), FUN_0026adf8 (26adf8), FUN_0026ae20 (26ae20), FUN_0026ae3c (26ae3c), FUN_0026b020 (26b020), FUN_0026b0b4 (26b0b4), FUN_0026b0cc (26b0cc), FUN_0026b0ec (26b0ec), FUN_0026b100 (26b100), FUN_0026b11c (26b11c), FUN_0026b130 (26b130), FUN_0026b144 (26b144), FUN_0026b158 (26b158), FUN_0026b170 (26b170), FUN_0026b188 (26b188), FUN_0026b1b8 (26b1b8), FUN_0026b1cc (26b1cc), FUN_0026b23c (26b23c), FUN_0026b328 (26b328), FUN_0026b340 (26b340), FUN_0026b35c (26b35c), FUN_0026b3b0 (26b3b0), FUN_0026b3c4 (26b3c4), FUN_0026b458 (26b458), FUN_0026b4a4 (26b4a4), FUN_0026b4bc (26b4bc), FUN_0026b564 (26b564), FUN_0026b620 (26b620), FUN_0026b648 (26b648), FUN_0026b6b4 (26b6b4), FUN_0026b734 (26b734), FUN_0026b7cc (26b7cc), FUN_0026b7e0 (26b7e0), FUN_0026b7f4 (26b7f4), FUN_0026b80c (26b80c), FUN_0026b8b4 (26b8b4), FUN_0026b8cc (26b8cc), FUN_0026b958 (26b958), FUN_0026b974 (26b974), FUN_0026b9c8 (26b9c8), FUN_0026b9e0 (26b9e0), FUN_0026ba10 (26ba10), FUN_0026ba48 (26ba48), FUN_0026ba60 (26ba60), FUN_0026badc (26badc), FUN_0026bbb8 (26bbb8), FUN_0026bbd0 (26bbd0), FUN_0026bc00 (26bc00), FUN_0026bc2c (26bc2c), FUN_0026bcd8 (26bcd8), FUN_0026bd10 (26bd10), FUN_0026bd24 (26bd24), FUN_0026bdf0 (26bdf0), FUN_0026be2c (26be2c), FUN_0026bfd8 (26bfd8), FUN_0026c060 (26c060), FUN_0026c074 (26c074), FUN_0026c088 (26c088), FUN_0026c168 (26c168), FUN_0026c17c (26c17c), FUN_0026c190 (26c190), FUN_0026c1f8 (26c1f8), FUN_0026c234 (26c234), FUN_0026c24c (26c24c), FUN_0026c288 (26c288), FUN_0026c2a0 (26c2a0), FUN_0026c2b4 (26c2b4), FUN_0026c2f8 (26c2f8), FUN_0026c334 (26c334), FUN_0026c3c0 (26c3c0), FUN_0026c3ec (26c3ec), FUN_0026c424 (26c424), FUN_0026c438 (26c438), FUN_0026c454 (26c454), FUN_0026c46c (26c46c), FUN_0026c484 (26c484), FUN_0026c6f0 (26c6f0), FUN_0026c704 (26c704), FUN_0026c744 (26c744), FUN_0026c7a0 (26c7a0), FUN_0026c828 (26c828), FUN_0026c840 (26c840), FUN_0026c90c (26c90c), FUN_0026cadc (26cadc), FUN_0026cb3c (26cb3c), FUN_0026cb84 (26cb84), FUN_0026cbdc (26cbdc), FUN_0026cd68 (26cd68), FUN_0026d094 (26d094), FUN_0026d0a8 (26d0a8), FUN_0026d0d0 (26d0d0), FUN_0026d100 (26d100), FUN_0026d154 (26d154), FUN_0026d168 (26d168), FUN_0026d17c (26d17c), FUN_0026d2bc (26d2bc), FUN_0026d2c0 (26d2c0), FUN_0026d34c (26d34c), FUN_0026d3c0 (26d3c0), FUN_0026d618 (26d618), FUN_0026d634 (26d634), FUN_0026d6a4 (26d6a4), FUN_0026d6f4 (26d6f4), FUN_0026d70c (26d70c), FUN_0026dbcc (26dbcc), FUN_0026dc1c (26dc1c), FUN_0026e104 (26e104), FUN_0026e758 (26e758), FUN_0026e76c (26e76c), FUN_0026e944 (26e944), FUN_0026eb74 (26eb74), FUN_0026ebdc (26ebdc), FUN_0026ecb0 (26ecb0), FUN_0026ed7c (26ed7c), FUN_0026ed90 (26ed90), FUN_0026ee70 (26ee70), FUN_0026efac (26efac), FUN_0026f21c (26f21c), FUN_0026f234 (26f234), FUN_0026f260 (26f260), FUN_0026f280 (26f280), FUN_0026f294 (26f294), FUN_0026f600 (26f600), FUN_0026f624 (26f624), FUN_0026f7d4 (26f7d4), FUN_0026f838 (26f838), FUN_0026f928 (26f928), FUN_0026f980 (26f980), FUN_0026fa04 (26fa04), FUN_0026fae0 (26fae0), FUN_0026faf8 (26faf8), FUN_0026fd70 (26fd70), FUN_0026fda0 (26fda0), FUN_0026fdd8 (26fdd8), FUN_0026ff84 (26ff84), FUN_00270228 (270228), FUN_00270808 (270808), FUN_002708f8 (2708f8), FUN_0027094c (27094c), FUN_00270970 (270970), FUN_00270984 (270984), FUN_002709a0 (2709a0), FUN_002709bc (2709bc), FUN_002709ec (2709ec), FUN_00270a5c (270a5c), FUN_00270a9c (270a9c), FUN_00270ab4 (270ab4), FUN_00270ae4 (270ae4), FUN_00270b38 (270b38), FUN_00270c0c (270c0c), FUN_00270c50 (270c50), FUN_00270d18 (270d18), FUN_00270d2c (270d2c), FUN_00270d74 (270d74), FUN_00270d90 (270d90), FUN_00270e00 (270e00), FUN_00270e14 (270e14), FUN_00270e30 (270e30), FUN_00270e84 (270e84), FUN_00270e98 (270e98), FUN_00270f10 (270f10), FUN_00270f24 (270f24), FUN_00270f40 (270f40), FUN_00270f94 (270f94), FUN_00270fc4 (270fc4), FUN_00271048 (271048), FUN_0027107c (27107c), FUN_00271100 (271100), FUN_002711bc (2711bc), FUN_002711d4 (2711d4), FUN_002711ec (2711ec), FUN_00271200 (271200), FUN_00271220 (271220), FUN_00271268 (271268), FUN_002712cc (2712cc), FUN_00271308 (271308), FUN_00271338 (271338), FUN_00271350 (271350), FUN_00271384 (271384), FUN_002713a4 (2713a4), FUN_002713bc (2713bc), FUN_002713d0 (2713d0), FUN_002714e8 (2714e8), FUN_00271510 (271510), FUN_002715a4 (2715a4), FUN_00271668 (271668), FUN_00271680 (271680), FUN_0027170c (27170c), FUN_00271728 (271728), FUN_0027177c (27177c), FUN_00271794 (271794), FUN_002717c4 (2717c4), FUN_002717fc (2717fc), FUN_00271814 (271814), FUN_00271870 (271870), FUN_00271884 (271884), FUN_00271904 (271904), FUN_00271918 (271918), FUN_002719b4 (2719b4), FUN_002719c8 (2719c8), FUN_002719e0 (2719e0), FUN_00271a2c (271a2c), FUN_00271a90 (271a90), FUN_00271b34 (271b34), FUN_00271b50 (271b50), FUN_00271ba4 (271ba4), FUN_00271bbc (271bbc), FUN_00271bf8 (271bf8), FUN_00271c40 (271c40), FUN_00271db0 (271db0), FUN_00271dfc (271dfc), FUN_00271ee0 (271ee0), FUN_00271ef4 (271ef4), FUN_00271f7c (271f7c), FUN_00271fa4 (271fa4), FUN_00272028 (272028), FUN_0027203c (27203c), FUN_00272094 (272094), FUN_002720d4 (2720d4), FUN_002720f0 (2720f0), FUN_002721a8 (2721a8), FUN_00272220 (272220), FUN_00272304 (272304), FUN_00272318 (272318), FUN_00272380 (272380), FUN_002725a4 (2725a4), FUN_002725c0 (2725c0), FUN_00272b38 (272b38), FUN_00272bf8 (272bf8), FUN_00272cec (272cec), FUN_00272dcc (272dcc), FUN_00272fa8 (272fa8), FUN_0027305c (27305c), FUN_0027307c (27307c), FUN_00273438 (273438), FUN_002734f0 (2734f0), FUN_00273504 (273504), FUN_0027353c (27353c), FUN_002737d4 (2737d4), FUN_00273808 (273808), FUN_002738f8 (2738f8), FUN_00273940 (273940), FUN_002739bc (2739bc), FUN_002739cc (2739cc), FUN_00273a00 (273a00), FUN_00274120 (274120), FUN_00274408 (274408), FUN_00274468 (274468), FUN_002747e0 (2747e0), FUN_00274b1c (274b1c), FUN_002752dc (2752dc), FUN_002752e0 (2752e0), FUN_002753a4 (2753a4), FUN_002754b0 (2754b0), FUN_0027556c (27556c), FUN_0027564c (27564c), FUN_00275778 (275778), FUN_00275b58 (275b58), FUN_002764d8 (2764d8), FUN_002774b8 (2774b8), FUN_002776dc (2776dc), FUN_002783b4 (2783b4), FUN_00278acc (278acc), FUN_002790e0 (2790e0), FUN_0027970c (27970c), FUN_0027995c (27995c), FUN_00279a00 (279a00), FUN_00279b38 (279b38), FUN_00279cb8 (279cb8), FUN_00279d44 (279d44), FUN_0027a2b8 (27a2b8), FUN_0027aa70 (27aa70), FUN_0027acd0 (27acd0), FUN_0027adac (27adac), FUN_0027b064 (27b064), FUN_0027b0e0 (27b0e0), FUN_0027b3cc (27b3cc), FUN_0027b418 (27b418), FUN_0027b8e8 (27b8e8), FUN_0027bc98 (27bc98), FUN_0027c518 (27c518), FUN_0027c638 (27c638), FUN_0027c6c8 (27c6c8), FUN_0027c758 (27c758), FUN_0027c788 (27c788), FUN_0027c8e4 (27c8e4), FUN_0027cbc4 (27cbc4), FUN_0027ce48 (27ce48), FUN_0027cfb0 (27cfb0), FUN_0027d308 (27d308), FUN_0027d42c (27d42c), FUN_0027d4d0 (27d4d0), FUN_0027d570 (27d570), FUN_0027d8b8 (27d8b8), FUN_0027d984 (27d984), FUN_002a5ec4 (2a5ec4), FUN_002a6180 (2a6180), FUN_002a61d4 (2a61d4), FUN_002a6a6c (2a6a6c), FUN_002a6b78 (2a6b78), FUN_002a71b8 (2a71b8), FUN_002a7330 (2a7330), FUN_002a7524 (2a7524), FUN_002a7614 (2a7614), FUN_002a7de0 (2a7de0), FUN_002a7e80 (2a7e80), FUN_002a8374 (2a8374), FUN_002a83cc (2a83cc), FUN_002a858c (2a858c), FUN_002a87c8 (2a87c8), FUN_002a8a24 (2a8a24), FUN_002a8bbc (2a8bbc), FUN_002a8c18 (2a8c18), FUN_002a8d20 (2a8d20), FUN_002a8da0 (2a8da0), FUN_002a8f28 (2a8f28), FUN_002a8ffc (2a8ffc), FUN_002a9014 (2a9014), FUN_002a92f0 (2a92f0), FUN_002a9488 (2a9488), FUN_002a96d8 (2a96d8), FUN_002a97e0 (2a97e0), FUN_002a9c60 (2a9c60), FUN_002a9f90 (2a9f90), FUN_002aa84c (2aa84c), FUN_002aa95c (2aa95c), FUN_002aab2c (2aab2c), FUN_002aab7c (2aab7c), FUN_002aabb4 (2aabb4), FUN_002aac04 (2aac04), FUN_002aad18 (2aad18), FUN_002aade4 (2aade4), FUN_002aafe4 (2aafe4), FUN_002ab4b0 (2ab4b0), FUN_002ab624 (2ab624), FUN_002ab778 (2ab778), FUN_002ab9b8 (2ab9b8), FUN_002abb1c (2abb1c), FUN_002abf90 (2abf90), FUN_002ac1a8 (2ac1a8), FUN_002ac20c (2ac20c), FUN_002ac6b0 (2ac6b0), FUN_002ac824 (2ac824), FUN_002ac98c (2ac98c), FUN_002acb28 (2acb28), FUN_002acca8 (2acca8), FUN_002acde8 (2acde8), FUN_002acef0 (2acef0), FUN_002acfcc (2acfcc), FUN_002ad0c4 (2ad0c4), FUN_002ae498 (2ae498), FUN_002ae610 (2ae610), FUN_002af4c4 (2af4c4), FUN_002af760 (2af760), FUN_002b0058 (2b0058), FUN_002b0554 (2b0554), FUN_002b05e8 (2b05e8), FUN_002b09d0 (2b09d0), FUN_002b0a80 (2b0a80), FUN_002b0a94 (2b0a94), FUN_002b0e8c (2b0e8c), FUN_002b0f7c (2b0f7c), FUN_002b1098 (2b1098), FUN_002b1124 (2b1124), FUN_002b1204 (2b1204), FUN_002b139c (2b139c), FUN_002b14a8 (2b14a8), FUN_002b1644 (2b1644), FUN_002b194c (2b194c), FUN_002b1c10 (2b1c10), FUN_002b1d9c (2b1d9c), FUN_002b2298 (2b2298), FUN_002b2350 (2b2350), FUN_002b3378 (2b3378), FUN_002b35cc (2b35cc), FUN_002b3d4c (2b3d4c), FUN_002b3fa0 (2b3fa0), FUN_002b4204 (2b4204), FUN_002b4404 (2b4404), FUN_002b4524 (2b4524), FUN_002b4740 (2b4740), FUN_002b4ba8 (2b4ba8), FUN_002b4f80 (2b4f80), FUN_002b51e4 (2b51e4), FUN_002b53e0 (2b53e0), FUN_002b5558 (2b5558), FUN_002b57ac (2b57ac), FUN_002b59b0 (2b59b0), FUN_002b63f8 (2b63f8), FUN_002b65b8 (2b65b8), FUN_002b75a0 (2b75a0), FUN_002b7fbc (2b7fbc), FUN_002b84cc (2b84cc), FUN_002cc6e0 (2cc6e0), FUN_002cca14 (2cca14), FUN_002ce4d4 (2ce4d4), FUN_002ce550 (2ce550), FUN_002cef68 (2cef68), FUN_002cf3b8 (2cf3b8), FUN_002cfd30 (2cfd30), FUN_002cfdd8 (2cfdd8), FUN_002cff44 (2cff44), FUN_002d06dc (2d06dc), FUN_002d0c24 (2d0c24), FUN_002d0c48 (2d0c48), FUN_002d0f38 (2d0f38), FUN_002d15a4 (2d15a4), FUN_002d1b0c (2d1b0c), FUN_002d1e4c (2d1e4c), FUN_002d21fc (2d21fc), FUN_002d24c4 (2d24c4), FUN_002d2e60 (2d2e60), FUN_002d3950 (2d3950), FUN_002d3c64 (2d3c64), FUN_002d3fec (2d3fec), FUN_002d4018 (2d4018), FUN_002d47a8 (2d47a8), FUN_002d4c04 (2d4c04), FUN_002d4d70 (2d4d70), FUN_002d53f4 (2d53f4), FUN_002d5b94 (2d5b94), FUN_002d5be4 (2d5be4), FUN_002d79f8 (2d79f8), FUN_002da4fc (2da4fc), FUN_002dac1c (2dac1c), FUN_002dadd4 (2dadd4), FUN_002daf18 (2daf18), FUN_002dafa8 (2dafa8), FUN_002db0d0 (2db0d0), FUN_002db17c (2db17c), FUN_002db224 (2db224), FUN_002db534 (2db534), FUN_002db6c4 (2db6c4), FUN_002db950 (2db950), FUN_002dc1ac (2dc1ac), FUN_002dc2b4 (2dc2b4), FUN_002dd738 (2dd738), FUN_002ddd40 (2ddd40), FUN_002dde90 (2dde90), FUN_002ddf38 (2ddf38), FUN_002ddfdc (2ddfdc), FUN_002de348 (2de348), FUN_002de49c (2de49c), FUN_002de7b4 (2de7b4), FUN_002de9f8 (2de9f8), FUN_002df784 (2df784), FUN_002df88c (2df88c), FUN_002df930 (2df930), FUN_002dfac0 (2dfac0), FUN_002dfd60 (2dfd60), FUN_002dfe58 (2dfe58), FUN_002dffa0 (2dffa0), FUN_002e0138 (2e0138), FUN_002e032c (2e032c), FUN_002e0464 (2e0464), FUN_002e09ac (2e09ac), FUN_002e15ac (2e15ac), FUN_002e16d8 (2e16d8), FUN_002e1c70 (2e1c70), FUN_002e2fb4 (2e2fb4), FUN_002e3154 (2e3154), FUN_002e4360 (2e4360), FUN_002e4580 (2e4580), FUN_002e47c0 (2e47c0), FUN_002e4890 (2e4890), FUN_002e48dc (2e48dc), FUN_002e66d8 (2e66d8), FUN_002e6acc (2e6acc), FUN_002e6c88 (2e6c88), FUN_002e81d4 (2e81d4), FUN_002e8238 (2e8238), FUN_002e82c4 (2e82c4), FUN_002e8350 (2e8350), FUN_002e853c (2e853c), FUN_002e92b8 (2e92b8), FUN_002e9800 (2e9800), FUN_002ea4c8 (2ea4c8), FUN_002ea54c (2ea54c), FUN_002ea60c (2ea60c), FUN_002eaaec (2eaaec), FUN_002eac08 (2eac08), FUN_002eac38 (2eac38), processPNG (2eafc0), FUN_002eb9f8 (2eb9f8), FUN_002ebf70 (2ebf70), FUN_002ec254 (2ec254), FUN_002ec348 (2ec348), FUN_002eccdc (2eccdc), FUN_002ed29c (2ed29c), FUN_002ed4c8 (2ed4c8), FUN_002edb84 (2edb84), FUN_002ef974 (2ef974), FUN_002f02e8 (2f02e8), FUN_002f0488 (2f0488), FUN_002f0ed4 (2f0ed4), FUN_002f1024 (2f1024), decompressZTXtChunk2 (2f1570), FUN_002f1d78 (2f1d78), FUN_002f1eb8 (2f1eb8), FUN_002f1fd0 (2f1fd0), FUN_002f2628 (2f2628), FUN_002f2fd4 (2f2fd4), FUN_002f3540 (2f3540), FUN_002f3814 (2f3814), FUN_002f3d54 (2f3d54), FUN_002f425c (2f425c), FUN_002f4364 (2f4364), FUN_002f4548 (2f4548), FUN_002f52a0 (2f52a0), FUN_002f5ab4 (2f5ab4), FUN_002f6770 (2f6770), FUN_002f6a74 (2f6a74), FUN_002f7800 (2f7800), FUN_002f783c (2f783c), FUN_002f7f84 (2f7f84), FUN_002f8704 (2f8704), FUN_002f8e90 (2f8e90), FUN_002fa778 (2fa778), FUN_002fa910 (2fa910), FUN_002faecc (2faecc), FUN_002fb2a4 (2fb2a4), FUN_002fb554 (2fb554), FUN_002fb684 (2fb684), FUN_002fd468 (2fd468), FUN_002fd48c (2fd48c), FUN_002fe3e4 (2fe3e4), FUN_002fe4a0 (2fe4a0), FUN_002febb4 (2febb4), FUN_002fedb0 (2fedb0), FUN_002ff270 (2ff270), FUN_00301254 (301254), FUN_00301b9c (301b9c), FUN_00301c14 (301c14), FUN_00302264 (302264), FUN_00302544 (302544), FUN_00302750 (302750), FUN_003027fc (3027fc), FUN_00303f78 (303f78), FUN_0030413c (30413c), Fax3Cleanup2 (304acc), FUN_00304b58 (304b58), FUN_00306470 (306470), FUN_00308310 (308310), FUN_00308434 (308434), FUN_00308c2c (308c2c), FUN_0030aae0 (30aae0), FUN_0030aed8 (30aed8), FUN_0030bcbc (30bcbc), FUN_0030c3fc (30c3fc), FUN_0030cad0 (30cad0), FUN_0030dc8c (30dc8c), FUN_0030dcf4 (30dcf4), FUN_0030dd5c (30dd5c), FUN_0030ddb8 (30ddb8), FUN_0030dee4 (30dee4), FUN_0030dfa0 (30dfa0), FUN_0030e030 (30e030), FUN_0030e25c (30e25c), FUN_0030e330 (30e330), FUN_0030e380 (30e380), FUN_0030e3b8 (30e3b8), FUN_0030e458 (30e458), FUN_0030e54c (30e54c), FUN_0030e5c4 (30e5c4), FUN_0030e6dc (30e6dc), FUN_0030eb48 (30eb48), FUN_0030eb84 (30eb84), FUN_0030ee64 (30ee64), FUN_0030f82c (30f82c), FUN_0030fafc (30fafc), FUN_0030fbc0 (30fbc0), FUN_0030fec4 (30fec4), FUN_0031052c (31052c), FUN_003105bc (3105bc), FUN_00310878 (310878), FUN_00310f98 (310f98), FUN_00312228 (312228), FUN_003126b4 (3126b4), FUN_00312c84 (312c84), FUN_00312f18 (312f18), FUN_00313260 (313260), FUN_003135dc (3135dc), FUN_0031471c (31471c), FUN_00314bb4 (314bb4), FUN_0031534c (31534c), FUN_0031571c (31571c), FUN_003157bc (3157bc), FUN_00315848 (315848), FUN_00315898 (315898), FUN_003158e0 (3158e0), FUN_00315a00 (315a00), FUN_00315a3c (315a3c), FUN_00315d38 (315d38), FUN_00315e9c (315e9c), FUN_00315fa0 (315fa0), FUN_00315ff4 (315ff4), FUN_00316278 (316278), FUN_00317870 (317870), FUN_00317a28 (317a28), FUN_0031980c (31980c), FUN_00319e7c (319e7c), FUN_0031a0b0 (31a0b0), FUN_0031a150 (31a150), FUN_0031a25c (31a25c), FUN_0031a884 (31a884), FUN_0031af2c (31af2c), FUN_0031b148 (31b148), FUN_0031b1e0 (31b1e0), FUN_0031b358 (31b358), FUN_0031bf50 (31bf50), FUN_0031c07c (31c07c), FUN_0031c530 (31c530), FUN_0031c670 (31c670), FUN_0031d248 (31d248), FUN_0031d394 (31d394), FUN_0031d794 (31d794), FUN_0031d8b0 (31d8b0), FUN_0031d97c (31d97c), FUN_0031dab8 (31dab8), FUN_0031e084 (31e084), FUN_0031e1fc (31e1fc), FUN_0031f60c (31f60c), FUN_0031fb00 (31fb00), FUN_0031fdb4 (31fdb4), FUN_00320558 (320558), FUN_00320928 (320928), FUN_00320d00 (320d00), FUN_00321240 (321240), FUN_003212ec (3212ec), FUN_00321428 (321428), FUN_003216f4 (3216f4), FUN_00321824 (321824), FUN_00321e78 (321e78), FUN_003225a0 (3225a0), FUN_00322c7c (322c7c), FUN_00323380 (323380), FUN_00323550 (323550), FUN_003238c0 (3238c0), FUN_0032396c (32396c), FUN_00323aa8 (323aa8), FUN_00323fbc (323fbc), FUN_00324344 (324344), FUN_003247ac (3247ac), FUN_00324940 (324940), FUN_00324a78 (324a78), FUN_00324b70 (324b70), FUN_00324bc0 (324bc0), FUN_00325854 (325854), FUN_00325dc0 (325dc0), FUN_00325f18 (325f18), FUN_00326014 (326014), FUN_003262ac (3262ac), FUN_0032749c (32749c), FUN_00327da8 (327da8), FUN_00328034 (328034), FUN_00328c14 (328c14), FUN_00328c34 (328c34), FUN_00328ec8 (328ec8), FUN_0032a734 (32a734), FUN_0032aa20 (32aa20), FUN_0032ac08 (32ac08), FUN_0032af7c (32af7c), FUN_0032b9b8 (32b9b8), FUN_0032ba98 (32ba98), FUN_0032bbf0 (32bbf0), FUN_0032bc34 (32bc34), FUN_0032bdbc (32bdbc), FUN_0032bf84 (32bf84), FUN_0032c068 (32c068), FUN_0032c1ac (32c1ac), FUN_0032c6a4 (32c6a4), FUN_0032c7d8 (32c7d8), FUN_0032dc78 (32dc78), FUN_0032dfa0 (32dfa0), FUN_0032e93c (32e93c), FUN_0032ec5c (32ec5c), FUN_0032ed50 (32ed50), FUN_0032ee44 (32ee44), FUN_0032eee4 (32eee4), FUN_00330104 (330104), FUN_003305e8 (3305e8), FUN_003308d8 (3308d8), FUN_00330b74 (330b74), FUN_00330b88 (330b88), FUN_00330cec (330cec), FUN_00330f58 (330f58), FUN_00330fd4 (330fd4), FUN_003313ec (3313ec), FUN_00331a68 (331a68), FUN_00331dd0 (331dd0), FUN_00332660 (332660), FUN_0033298c (33298c), FUN_00332b44 (332b44), FUN_00333410 (333410), FUN_00333c38 (333c38), FUN_003344d4 (3344d4), FUN_003347b4 (3347b4), FUN_003349d0 (3349d0), FUN_00334be4 (334be4), FUN_00334d44 (334d44), FUN_00334dd8 (334dd8), FUN_00334e78 (334e78), FUN_00334fc4 (334fc4), FUN_003352dc (3352dc), FUN_0033541c (33541c), FUN_003355c0 (3355c0), FUN_00335604 (335604), FUN_00335828 (335828), FUN_0033596c (33596c), FUN_003359f4 (3359f4), FUN_00335ea4 (335ea4), FUN_00336120 (336120), FUN_00336768 (336768), FUN_00336f14 (336f14), FUN_00336fd8 (336fd8), FUN_003372d8 (3372d8), FUN_00338a74 (338a74), FUN_00339608 (339608), FUN_003396e4 (3396e4), FUN_0033a848 (33a848), FUN_0033abf8 (33abf8), FUN_0033b9a8 (33b9a8), FUN_0033c9b4 (33c9b4), FUN_0033cf50 (33cf50), FUN_0033cfc0 (33cfc0), FUN_0033e290 (33e290), FUN_0033e4b8 (33e4b8), FUN_0033e548 (33e548), FUN_0033e6ac (33e6ac), FUN_0033e70c (33e70c), FUN_0033e7e0 (33e7e0), FUN_0033f0e8 (33f0e8), FUN_0033f234 (33f234), FUN_0033fb6c (33fb6c), FUN_0033fbf4 (33fbf4), FUN_00342bb8 (342bb8), FUN_003436ac (3436ac), FUN_00344060 (344060), FUN_0034441c (34441c), FUN_00344f90 (344f90), FUN_003476a0 (3476a0), FUN_00347e40 (347e40), FUN_00348208 (348208), FUN_00348300 (348300), FUN_00348d18 (348d18), FUN_00349910 (349910), FUN_00349a38 (349a38), FUN_0034af28 (34af28), FUN_0034b9e8 (34b9e8), FUN_0034bb10 (34bb10), FUN_0034bcfc (34bcfc), FUN_0034bf34 (34bf34), FUN_0034bf4c (34bf4c), FUN_0034c544 (34c544), FUN_0034ca1c (34ca1c), FUN_0034e82c (34e82c), FUN_0034ea08 (34ea08), FUN_0034ee54 (34ee54), FUN_0034f694 (34f694), FUN_0034f8f0 (34f8f0), FUN_0034f964 (34f964), FUN_0034fcc0 (34fcc0), FUN_003503dc (3503dc), FUN_00350c24 (350c24), FUN_003511cc (3511cc), FUN_00352ec8 (352ec8), FUN_003531a0 (3531a0), FUN_00353644 (353644), FUN_00353a7c (353a7c), FUN_00353f88 (353f88), FUN_003544a0 (3544a0), FUN_00354628 (354628), FUN_003546b4 (3546b4), FUN_00354724 (354724), FUN_0035477c (35477c), FUN_00354bb0 (354bb0), FUN_00354cd4 (354cd4), FUN_00354d58 (354d58), FUN_0035719c (35719c), FUN_00357658 (357658), FUN_003576c4 (3576c4), FUN_00357824 (357824), FUN_00357848 (357848), FUN_00358274 (358274), FUN_00358aec (358aec), FUN_00358dac (358dac), FUN_0035954c (35954c), FUN_0036613c (36613c), FUN_00366394 (366394), FUN_00366af4 (366af4), FUN_00366bc4 (366bc4), FUN_003678b0 (3678b0), FUN_00367af8 (367af8), FUN_00368e04 (368e04), FUN_00369414 (369414), FUN_00369d6c (369d6c), FUN_0036a088 (36a088), FUN_0036a0f0 (36a0f0), FUN_0036a27c (36a27c), FUN_0036a314 (36a314), FUN_0036af0c (36af0c), FUN_0036b15c (36b15c), FUN_0036b218 (36b218), FUN_0036b3a4 (36b3a4), FUN_0036b4ac (36b4ac), FUN_0036b730 (36b730), FUN_0036ba84 (36ba84), FUN_0036bfcc (36bfcc), FUN_0036c01c (36c01c), FUN_0036c0b8 (36c0b8), FUN_0036c6e0 (36c6e0), FUN_0036d378 (36d378), FUN_0036d650 (36d650), FUN_0036dc4c (36dc4c), FUN_0036dd84 (36dd84), FUN_0036e364 (36e364), FUN_0036eb64 (36eb64), FUN_0036ed94 (36ed94), FUN_0036fd78 (36fd78), FUN_0036ff78 (36ff78), FUN_0037019c (37019c), FUN_00370308 (370308), FUN_003706d4 (3706d4), FUN_00371268 (371268), FUN_003714e0 (3714e0), FUN_0037189c (37189c), FUN_00371e3c (371e3c), FUN_0037285c (37285c), FUN_00372ce8 (372ce8), FUN_00374618 (374618), FUN_0037472c (37472c), FUN_00374840 (374840), FUN_00374bf4 (374bf4), FUN_00374c38 (374c38), FUN_00375cb0 (375cb0), FUN_00375dfc (375dfc), FUN_003760d8 (3760d8), FUN_0037686c (37686c), FUN_00376cc8 (376cc8), FUN_003774fc (3774fc), FUN_00377b20 (377b20), FUN_00377d24 (377d24), FUN_00377e34 (377e34), FUN_00377ea0 (377ea0), FUN_003781d0 (3781d0), FUN_0037827c (37827c), FUN_00378460 (378460), FUN_003784a8 (3784a8), FUN_003784fc (3784fc), FUN_0037868c (37868c), FUN_003787c4 (3787c4), FUN_00378ebc (378ebc), FUN_00379ad0 (379ad0), FUN_00379c28 (379c28), FUN_0037a0c8 (37a0c8), FUN_0037a450 (37a450), FUN_0037a654 (37a654), FUN_0037b04c (37b04c), FUN_0037cefc (37cefc), FUN_0037d028 (37d028), FUN_0037d808 (37d808), FUN_0037d93c (37d93c), FUN_0037d9e4 (37d9e4), FUN_0037e0a4 (37e0a4), FUN_0037e0e0 (37e0e0), FUN_0037e498 (37e498), FUN_0037e5b8 (37e5b8), FUN_0037e728 (37e728), FUN_0037ed64 (37ed64), FUN_0037f118 (37f118), FUN_0037f564 (37f564), FUN_0037f6f8 (37f6f8), FUN_0037ffcc (37ffcc), FUN_00380338 (380338), FUN_003809c8 (3809c8), FUN_00380ba8 (380ba8), FUN_00381abc (381abc), FUN_00381d64 (381d64), FUN_00381eb0 (381eb0), FUN_00381fc0 (381fc0), FUN_003836d4 (3836d4), FUN_00383b10 (383b10), FUN_00383c64 (383c64), FUN_00383f9c (383f9c), FUN_00383fa0 (383fa0), FUN_00383fa4 (383fa4), FUN_00383fa8 (383fa8), Fax3Cleanup (384188), FUN_003843b8 (3843b8), LogLuvInitState (384520), LogLuvInitState2 (384548), FUN_00384660 (384660), FUN_00384728 (384728), FUN_00384750 (384750), FUN_003847c8 (3847c8), FUN_003848b8 (3848b8), FUN_00384ac0 (384ac0), FUN_00384ca0 (384ca0), FUN_00384d90 (384d90), FUN_00384e08 (384e08), FUN_00384e30 (384e30), FUN_00384f48 (384f48), FUN_00385128 (385128), FUN_003851c8 (3851c8), FUN_00385290 (385290), FUN_00385380 (385380), FUN_00385420 (385420), FUN_00385470 (385470), FUN_003854e8 (3854e8), FUN_00385650 (385650), FUN_00385678 (385678), readLayerAndMaskInfoSection (3856c8), FUN_00385808 (385808), _ATSFontFindFromName (385858), _ATSFontFindFromPostScriptName (385864), _ATSFontGetFileReference (385870), _AUEventListenerNotify (38587c), _AudioUnitGetProperty (385888), _AudioUnitRender (385894), _CFArrayAppendValue (3858a0), _CFArrayCreateMutable (3858ac), _CFArrayGetCount (3858b8), _CFArrayGetValueAtIndex (3858c4), _CFDataAppendBytes (3858d0), _CFDataCreate (3858dc), _CFDataCreateMutable (3858e8), _CFDataGetBytePtr (3858f4), _CFDataGetLength (385900), _CFDateCreate (38590c), _CFDateFormatterCreate (385918), _CFDateFormatterCreateStringWithDate (385924), _CFDictionaryContainsKey (385930), _CFDictionaryCreateMutable (38593c), _CFDictionaryGetCount (385948), _CFDictionaryGetKeysAndValues (385954), _CFDictionaryGetTypeID (385960), _CFDictionaryGetValue (38596c), _CFDictionaryGetValueIfPresent (385978), _CFDictionarySetValue (385984), _CFGetTypeID (385990), _CFGregorianDateGetAbsoluteTime (38599c), _CFLocaleCopyCurrent (3859a8), _CFNumberCreate (3859b4), _CFNumberGetValue (3859c0), _CFRetain (3859d8), _CFStringAppendCString (3859e4), _CFStringAppendCharacters (3859f0), _CFStringCreateMutable (3859fc), _CFStringCreateWithCString (385a14), _CFStringCreateWithCharacters (385a20), _CFStringCreateWithFormat (385a44), _CFStringGetCString (385a5c), _CFStringGetDoubleValue (385a74), _CFStringGetIntValue (385a8c), _CFStringGetMaximumSizeForEncoding (385aa4), _CFURLCreateFromFSRef (385ac8), _CFUUIDCreate (385ad4), _CFUUIDGetUUIDBytes (385ae0), _CGBitmapContextCreate (385aec), _CGBitmapContextGetBitmapInfo (385af8), _CGBitmapContextGetBitsPerComponent (385b04), _CGBitmapContextGetBitsPerPixel (385b10), _CGBitmapContextGetBytesPerRow (385b1c), _CGBitmapContextGetColorSpace (385b28), _CGBitmapContextGetData (385b34), _CGBitmapContextGetHeight (385b40), _CGBitmapContextGetWidth (385b4c), _CGColorSpaceCreateDeviceRGB (385b58), _CGColorSpaceRelease (385b64), _CGContextClipToRect (385b70), _CGContextDrawImage (385b7c), _CGContextFlush (385b88), _CGContextRelease (385b94), _CGContextRestoreGState (385ba0), _CGContextSaveGState (385bac), _CGContextScaleCTM (385bb8), _CGContextSetBlendMode (385bc4), _CGContextSetInterpolationQuality (385bd0), _CGDataProviderCreateWithData (385bdc), _CGDataProviderRelease (385be8), _CGEventSourceFlagsState (385bf4), _CGEventSourceKeyState (385c00), _CGImageCreate (385c0c), _CGImageRelease (385c18), _CGSetLocalEventsSuppressionInterval (385c24), _CGWarpMouseCursorPosition (385c30), _GetCurrentEventButtonState (385c3c), _GetCurrentEventKeyModifiers (385c48), _GetMainEventLoop (385c54), _InstallEventLoopTimer (385c60), _LMGetKbdType (385c6c), _MTLCreateSystemDefaultDevice (385c78), _NSApplicationLoad (385c90), _NSCountWindowsForContext (385c9c), _NSMouseInRect (385cb4), _NSPointInRect (385cc0), _NSRunCriticalAlertPanel (385ccc), _NSRunInformationalAlertPanel (385cd8), _NSStringFromClass (385ce4), _NSTemporaryDirectory (385cf0), _NSWindowListForContext (385cfc), _OSAtomicAdd32Barrier (385d08), _OSAtomicCompareAndSwap64Barrier (385d14), _OSMemoryBarrier (385d20), _RemoveEventLoopTimer (385d2c), _TISCopyCurrentKeyboardInputSource (385d38), _TISCopyCurrentKeyboardLayoutInputSource (385d44), _TISGetInputSourceProperty (385d50), _TSMGetActiveDocument (385d5c), _UCKeyTranslate (385d68), ___assert_rtn (385f9c), ___cxa_bad_typeid (385fc0), ___cxa_begin_catch (385fcc), ___cxa_call_unexpected__385fd8 (385fd8), ___cxa_demangle (385fe4), ___cxa_end_catch (385ff0), ___cxa_free_exception (385ffc), ___cxa_guard_abort (386008), ___cxa_guard_acquire (386014), ___cxa_guard_release (386020), ___cxa_rethrow (38602c), ___dynamic_cast (386044), ___error (386050), ___exp10 (38605c), ___fpclassifyd (386068), ___maskrune (386074), ___memcpy_chk (386080), ___sincos_stret (38608c), ___sincosf_stret (386098), ___sprintf_chk (3860a4), ___tolower (3860bc), ___toupper (3860c8), _abort (3860d4), _acos (3860ec), _atan2 (3860f8), _atol (386104), _bsearch (386110), _calloc (386128), _cblas_scopy (386134), _closedir (386140), _cos (38614c), _deflate (386164), _deflateEnd (386170), _deflateInit_ (386188), _deflateParams (386194), _deflateReset (3861a0), _div (3861b8), _dladdr (3861c4), _dlopen (3861d0), _dlsym (3861dc), _dup (3861e8), _exit (3861f4), _exp (386200), _expf (38620c), _ferror (386224), _fmod (38623c), _fmodf (386248), _fprintf (386260), _fputc (38626c), _freopen (386290), _frexpf (38629c), _fseek (3862a8), _ftell (3862c0), _getcwd (3862e4), _getpagesize (386308), _getpid (386314), _inflate (386374), _inflateEnd (386380), _inflateInit2_ (38638c), _inflateInit_ (386398), _inflateReset (3863a4), _inflateSync (3863b0), _ldexp (3863c8), _localeconv (3863d4), _log (3863ec), _log10 (3863f8), _log10f (386404), _logf (386410), _longjmp (38641c), _mach_host_self (386434), _memchr (386458), _memcmp (386464), _memset (386488), _memset_pattern16 (386494), _mktemp (3864ac), _nan (3864b8), _objc_alloc (3864c4), _objc_autorelease (3864d0), _objc_autoreleasePoolPop (3864dc), _objc_autoreleasePoolPush (3864e8), _objc_begin_catch (3864f4), _objc_end_catch (386500), _objc_release (386518), _objc_retain (386524), _objc_setProperty_nonatomic (386530), _opendir (38653c), _pow (386554), _powf (386560), _pthread_cond_destroy (38656c), _pthread_cond_init (386578), _pthread_cond_signal (386584), _pthread_cond_timedwait_relative_np (386590), _pthread_cond_wait (38659c), _pthread_equal (3865a8), _pthread_key_create (3865c0), _pthread_key_delete (3865cc), _pthread_mutex_destroy (3865d8), _pthread_mutex_init (3865e4), _pthread_mutex_trylock (3865fc), _pthread_mutexattr_destroy (386614), _pthread_mutexattr_init (386620), _pthread_mutexattr_settype (38662c), _pthread_self (386638), _qsort (38665c), _raise (386668), _rand (386674), _readdir (386680), _realloc (386698), _reallocf (3866a4), _rewind (3866b0), _rmdir (3866bc), _sched_yield (3866c8), _setjmp (3866d4), _setlocale (3866e0), _setrlimit (3866ec), _sigaction (3866f8), _sigsetjmp (386704), _sin (386710), _sprintf (386728), _srand (386734), _sscanf (386740), _strcat (386758), _strchr (386764), _strcmp (386770), _strncat (386794), _strncmp (3867a0), _strncpy (3867ac), _strrchr (3867b8), _strstr (3867c4), _strtod (3867d0), _strtol (3867dc), _sysctl (3867e8), _syslog (3867f4), _system (386800), _tan (38680c), _tanf (386818), _toupper (386830), _unlink (38683c), _usleep (386848), _vDSP_vadd (386854), _vDSP_vclr (386860), _vDSP_vclrD (38686c), _vDSP_vsmul (386878), _vImageBufferFill_ARGB8888 (386884), _vImageCopyBuffer (386890), _vfprintf (38689c), dealloc__8a5201 (8a5201), init__8a5401 (8a5401), addButtonWithTitle___8a5402 (8a5402), finishLaunching__8a5501 (8a5501), sendEvent___8a5502 (8a5502), arrayWithObjects_count___8a5601 (8a5601), arrayWithObject___8a5602 (8a5602), arrayWithObjects___8a5603 (8a5603), array__8a5604 (8a5604), initWithString___8a5701 (8a5701), class__8a5702 (8a5702), string__8a5703 (8a5703), length__8a5704 (8a5704), characterAtIndex___8a5705 (8a5705), init__8a5801 (8a5801), bundleWithPath___8a5901 (8a5901), mainBundle__8a5902 (8a5902), executablePath__8a5903 (8a5903), date__8a5d01 (8a5d01), timeIntervalSinceReferenceDate__8a5d02 (8a5d02), dictionaryWithContentsOfFile___8a5e01 (8a5e01), objectForKey___8a5e02 (8a5e02), defaultCenter__8a5f01 (8a5f01), removeObserver___8a5f02 (8a5f02), addObserver_selector_name_object___8a5f03 (8a5f03), sharedDocumentController__8a6001 (8a6001), respondsToSelector___8a6002 (8a6002), otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_ (8a6101), mouseLocation__8a6102 (8a6102), defaultManager__8a6201 (8a6201), graphicsContextWithWindow___8a6501 (8a6501), currentContext__8a6502 (8a6502), graphicsPort__8a6503 (8a6503), currentInputManager__8a6701 (8a6701), markedTextAbandoned___8a6702 (8a6702), invocationWithMethodSignature___8a6801 (8a6801), setSelector___8a6802 (8a6802), invokeWithTarget___8a6803 (8a6803), getReturnValue___8a6804 (8a6804), constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant___8a6901 (8a6901), menuBarVisible__8a6a01 (8a6a01), setMenuBarVisible___8a6a02 (8a6a02), init__8a6a03 (8a6a03), initWithTitle___8a6a04 (8a6a04), setTitle___8a6a05 (8a6a05), separatorItem__8a6b01 (8a6b01), initWithTitle_action_keyEquivalent___8a6b02 (8a6b02), setSubmenu___8a6b03 (8a6b03), arrayWithCapacity___8a6c01 (8a6c01), defaultCenter__8a6d01 (8a6d01), removeObserver___8a6d02 (8a6d02), addObserver_selector_name_object___8a6d03 (8a6d03), openPanel__8a6f01 (8a6f01), setCanChooseFiles___8a6f02 (8a6f02), defaultWritingDirectionForLanguage___8a7001 (8a7001), savePanel__8a7601 (8a7601), setCanCreateDirectories___8a7602 (8a7602), dealloc__8a7801 (8a7801), alloc__8a7802 (8a7802), initWithFrame___8a7803 (8a7803), viewDidMoveToWindow__8a7804 (8a7804), class__8a7805 (8a7805), scheduledTimerWithTimeInterval_target_selector_userInfo_repeats___8a7b01 (8a7b01), fileURLWithPath___8a7c01 (8a7c01), alloc__8a7d01 (8a7d01), dealloc__8a7d02 (8a7d02), becomeFirstResponder__8a7d03 (8a7d03), resignFirstResponder__8a7d04 (8a7d04), acceptsFirstResponder__8a7d05 (8a7d05), initWithFrame___8a7d06 (8a7d06), makeBackingLayer__8a7d07 (8a7d07), drawRect___8a7d08 (8a7d08), layout__8a7d09 (8a7d09), viewDidHide__8a7d0a (8a7d0a), viewDidUnhide__8a7d0b (8a7d0b), viewDidMoveToWindow__8a7d0c (8a7d0c), viewWillMoveToSuperview___8a7d0d (8a7d0d), alloc__8a7e01 (8a7e01), setStyleMask___8a7e02 (8a7e02), dealloc__8a7e03 (8a7e03), setFrame_display___8a7e04 (8a7e04), becomeKeyWindow__8a7e05 (8a7e05), resignKeyWindow__8a7e06 (8a7e06), miniaturize___8a7e07 (8a7e07), deminiaturize___8a7e08 (8a7e08), zoom___8a7e09 (8a7e09), performClose___8a7e0a (8a7e0a), sendEvent___8a7e0b (8a7e0b), close__8a7e0c (8a7e0c), validateMenuItem___8a7e0d (8a7e0d), initWithContentRect_styleMask_backing_defer___8a7e0e (8a7e0e), sharedWorkspace__8a7f01 (8a7f01), performFileOperation_source_destination_files_tag___8a7f02 (8a7f02)
-
-#### FUN_00003340 — funcs/__Z12FUN_00003340Pl.cpp, Ghidra 3340, 4 model attempt(s)
+#### FUN_000038a0 — funcs/__Z12FUN_000038a0lli.cpp, Ghidra 38a0, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00003340Pl.cpp:9:5: error: use of undeclared identifier 'printInt'
-    9 |     printInt(data);
-      |     ^~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00003340Pl.cpp:11:5: error: no matching function for call to 'applyFilter'
-   11 |     applyFilter(data, &filterSettings);
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000038a0lli.cpp:8:32: error: no matching function for call to 'FUN_00018830'
+    8 |         float filteredSample = FUN_00018830(currentSample, i);
+      |                                ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:3617:7: note: candidate function not viable: requires 3 arguments, but 2 were provided
+ 3617 | float FUN_00018830(float, float, float *);
+      |       ^            ~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000038a0(long inputBuffer, long outputBuffer, int bufferSize)
+{
+    for (int i = 0; i < bufferSize; ++i)
+    {
+        float currentSample = *(float *)(inputBuffer + 4 * i);
+        float filteredSample = FUN_00018830(currentSample, i);
+        *(float *)(outputBuffer + 4 * i) = filteredSample;
+    }
+}
+```
+
+#### processInputData — funcs/__Z16processInputDataPcdydPl.cpp, Ghidra 38c0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z16processInputDataPcdydPl.cpp:4:5: error: no matching function for call to 'FUN_00001a3c'
+    4 |     FUN_00001a3c(inputBuffer, value1, value2, value3, outputPointer);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1427:6: note: candidate function not viable: requires 3 arguments, but 5 were provided
+ 1427 | void FUN_00001a3c(float *, float *, int);
+      |      ^            ~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void processInputData(char inputBuffer[16], double value1, uint64_t value2, double value3, long* outputPointer) {
+    FUN_00001a3c(inputBuffer, value1, value2, value3, outputPointer);
+}
+```
+
+#### processValue — funcs/__Z12processValuel.cpp, Ghidra 38e0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12processValuel.cpp:4:30: error: no matching function for call to 'getValueFromPointer'
+    4 |     long *valuePtr = (long *)getValueFromPointer((undefined8 *)(valuePointer + 0x150));
+      |                              ^~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1433:7: note: candidate function not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'float *' for 1st argument
+ 1433 | float getValueFromPointer(float *);
+      |       ^                   ~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12processValuel.cpp:5:20: error: use of undeclared identifier 'calculateFunction'
+    5 |     float result = calculateFunction();
+      |                    ^~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12processValuel.cpp:6:5: error: use of undeclared identifier 'applyResult'
+    6 |     applyResult(valuePtr, &result);
       |     ^~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:3419:6: note: candidate function not viable: no known conversion from 'long *' to 'Data *' for 1st argument
- 3419 | void applyFilter(Data *, int);
-      |      ^           ~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void processValue(long valuePointer) {
+    long *valuePtr = (long *)getValueFromPointer((undefined8 *)(valuePointer + 0x150));
+    float result = calculateFunction();
+    applyResult(valuePtr, &result);
+}
+```
+
+#### isConditionMet — funcs/__Z14isConditionMetv.cpp, Ghidra 39d4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z14isConditionMetv.cpp:4:27: error: no matching function for call to 'FUN_00007090'
+    4 |     long conditionValue = FUN_00007090();
+      |                           ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1967:6: note: candidate function not viable: requires 2 arguments, but 0 were provided
+ 1967 | void FUN_00007090(float *, float *);
+      |      ^            ~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z14isConditionMetv.cpp:4:10: error: cannot initialize a variable of type 'long' with an rvalue of type 'void'
+    4 |     long conditionValue = FUN_00007090();
+      |          ^                ~~~~~~~~~~~~~~
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_00003340(long *data) {
-    uint64_t filterSettings = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t filterEnabled = 0; // auto-declared (undeclared in the rewrite)
-
-  if ((filterEnabled & 1) == 0) {
-    printInt(data);
-  } else {
-    applyFilter(data, &filterSettings);
-  }
+bool isConditionMet() {
+    long conditionValue = FUN_00007090();
+    return conditionValue != 0;
 }
 ```
-Notes:
-- 10-20 18:42 [compile] use of undeclared identifier 'printInt' — plan: Change line 9 to: `printInt(data);` — still fails: use of undeclared identifier 'printInt'
-- 10-20 18:42 [compile] that edit didn't help — undone.
-- 10-20 18:43 [compile] use of undeclared identifier 'printInt' — plan: Change line 9 to: `printInt(data);` — still fails: use of undeclared identifier 'printInt'
-- 10-20 18:43 [compile] that edit didn't help — undone.
-- 10-20 18:43 [compile] the model suggested an edit that already failed — skipped.
-- 10-20 18:44 [compile] the model suggested an edit that already failed — skipped.
+
+### Not compiling yet — 2963 × use of undeclared identifier 'X'
+
+All: processAndPrintData (3468), FUN_0000351c (351c), initializeAndFilter (4724), main5 (4e9c), processInput8 (5170), processInput11 (5a9c), handleSwitch (5acc), processInput12 (6078), FUN_000060a8 (60a8), processInput13 (6170), processAndExecuteData (62e0), FUN_00006464 (6464), FUN_0000671c (671c), FUN_000067a8 (67a8), processInput18 (6ca8), FUN_00006f6c (6f6c), FUN_0000717c (717c), FUN_0000727c (727c), FUN_0000745c (745c), processAndWriteData4 (74d4), processAndWriteData3 (7534), initializeAPI (7d70), FUN_00007e68 (7e68), processAndResetData (7f08), processAudio (8014), processAndWriteData6 (859c), setAndCalculateDotProduct (86e0), FUN_0000973c (973c), updateVector (989c), FUN_00009be0 (9be0), FUN_00009c58 (9c58), processAndWriteData7 (a0c8), FUN_0000bc6c (bc6c), getFirstElementOrSecondIfEven (be8c), FUN_0000bfc8 (bfc8), FUN_0000bfd0 (bfd0), FUN_0000c088 (c088), FUN_0000c170 (c170), FUN_0000c178 (c178), FUN_0000c288 (c288), setAndCalculateDotProduct2 (c530), setAndCalculateDotProduct3 (c7c8), FUN_0000ce38 (ce38), FUN_0000dba8 (dba8), FUN_0000dc20 (dc20), FUN_0000dd2c (dd2c), FUN_0000def4 (def4), FUN_0000e944 (e944), FUN_0000ec4c (ec4c), FUN_0000f388 (f388), FUN_0000f854 (f854), FUN_0000fae8 (fae8), FUN_0000fb90 (fb90), FUN_0000fb98 (fb98), processInput29 (115fc), processAndRotateVectors (11760), processValues6 (118c8), processInput30 (12018), processInput31 (12048), FUN_000120a4 (120a4), processInput32 (12194), FUN_00012220 (12220), processInput33 (122c4), FUN_00012350 (12350), setAndCalculateDotProduct4 (12450), FUN_00012848 (12848), FUN_00013248 (13248), FUN_000132b0 (132b0), FUN_00013300 (13300), processAndValidateData (13454), FUN_00013550 (13550), FUN_00013558 (13558), FUN_00013564 (13564), FUN_0001356c (1356c), FUN_00013d38 (13d38), FUN_00013fa8 (13fa8), FUN_00014e50 (14e50), FUN_000168a4 (168a4), processAndExecute4 (16c44), FUN_00016ea8 (16ea8), FUN_00016eb0 (16eb0), FUN_00016ebc (16ebc), FUN_00016ec4 (16ec4), setAndNotify2 (179dc), processInput38 (17a54), FUN_00017c64 (17c64), FUN_00017cb0 (17cb0), FUN_00017f70 (17f70), FUN_000182d0 (182d0), FUN_000188b0 (188b0), setAndProcessData (18bac), FUN_00018c74 (18c74), FUN_00018cac (18cac), FUN_00018f94 (18f94), setAndCalculateDotProduct5 (190fc), FUN_00019130 (19130), FUN_0001967c (1967c), FUN_00019684 (19684), FUN_00019690 (19690), FUN_00019698 (19698), FUN_00019b10 (19b10), processBlocks (1a300), FUN_0001a34c (1a34c), FUN_0001a464 (1a464), FUN_0001ae70 (1ae70), processAndDisplayData2 (1b104), processValues8 (1b190), FUN_0001b2dc (1b2dc), FUN_0001bd88 (1bd88), FUN_0001bfcc (1bfcc), FUN_0001c388 (1c388), processObject (1c478), FUN_0001d988 (1d988), FUN_0001da00 (1da00), processVectors2 (1dbd4), FUN_0001e1d8 (1e1d8), processAudioData3 (1e91c), FUN_0001ec2c (1ec2c), FUN_0001f814 (1f814), setAndProcessVector (2036c), FUN_0002068c (2068c), FUN_00020ef8 (20ef8), setAndCalculateDotProduct6 (211f8), FUN_000212fc (212fc), FUN_00021548 (21548), FUN_00021688 (21688), FUN_00021eac (21eac), updateAndProcess (223e0), processAudioData4 (22978), processValues11 (22fe4), FUN_0002345c (2345c), FUN_00023b8c (23b8c), FUN_00023d48 (23d48), setAndCalculateDotProduct7 (23d58), processAndWriteData10 (27b1c), processAndWriteData11 (27cec), FUN_00028388 (28388), processArray7 (28ac8), FUN_00029d58 (29d58), FUN_0002a384 (2a384), processFile (2aea0), FUN_0002b57c (2b57c), FUN_0002b894 (2b894), processAndClearData5 (2ba0c), FUN_0002bae0 (2bae0), processAndWriteData12 (2d134), FUN_0002d950 (2d950), FUN_0002dbc4 (2dbc4), FUN_0002dcc8 (2dcc8), FUN_0002dce8 (2dce8), FUN_0002dd5c (2dd5c), processInput45 (2e14c), processInput46 (2e194), FUN_0002ea5c (2ea5c), FUN_0002ec44 (2ec44), FUN_0002ed3c (2ed3c), FUN_00031460 (31460), FUN_00031f0c (31f0c), FUN_0003227c (3227c), FUN_000326a4 (326a4), FUN_000335c4 (335c4), FUN_00035158 (35158), FUN_00035bf0 (35bf0), FUN_00035cbc (35cbc), FUN_00035ce8 (35ce8), FUN_00035e94 (35e94), FUN_000382a4 (382a4), FUN_0003c09c (3c09c), FUN_0003c354 (3c354), processAudioData6 (3cea8), processFilters (3cefc), FUN_0003d5c0 (3d5c0), FUN_0003fa68 (3fa68), FUN_000411b4 (411b4), FUN_00041510 (41510), FUN_000427b0 (427b0), FUN_00042bc8 (42bc8), FUN_00044784 (44784), FUN_000450c4 (450c4), FUN_00047674 (47674), FUN_00048b1c (48b1c), applyFilter4 (493c4), FUN_0004acf4 (4acf4), FUN_0004af8c (4af8c), FUN_0004b344 (4b344), FUN_0004b6a8 (4b6a8), FUN_0004e44c (4e44c), FUN_0004f0e8 (4f0e8), FUN_000500b8 (500b8), FUN_00051714 (51714), FUN_00051cfc (51cfc), FUN_00051e9c (51e9c), FUN_00052074 (52074), FUN_000521a8 (521a8), FUN_00052cdc (52cdc), FUN_000532f4 (532f4), FUN_00053364 (53364), FUN_00053568 (53568), FUN_00053890 (53890), FUN_000541f8 (541f8), FUN_00054330 (54330), FUN_00054d80 (54d80), FUN_00054e3c (54e3c), FUN_00057078 (57078), FUN_00057158 (57158), FUN_000a0de4 (a0de4), FUN_000a2150 (a2150), FUN_000a2bd8 (a2bd8), FUN_000a2c80 (a2c80), FUN_000a4078 (a4078), FUN_000a6178 (a6178), FUN_000a7e00 (a7e00), FUN_000a864c (a864c), FUN_000a96a8 (a96a8), FUN_000a96d8 (a96d8), FUN_000aa22c (aa22c), FUN_000aa41c (aa41c), FUN_000aa424 (aa424), FUN_000aa430 (aa430), FUN_000aa438 (aa438), FUN_000aaf74 (aaf74), FUN_000ab484 (ab484), FUN_000aba20 (aba20), FUN_000abbb8 (abbb8), FUN_000afcf4 (afcf4), FUN_000afcfc (afcfc), FUN_000afd08 (afd08), FUN_000afd10 (afd10), FUN_000afd64 (afd64), FUN_000b09ac (b09ac), FUN_000b0db8 (b0db8), FUN_000b1034 (b1034), FUN_000b11f8 (b11f8), FUN_000b19f8 (b19f8), FUN_000b1de0 (b1de0), FUN_000b2168 (b2168), FUN_000b3b5c (b3b5c), FUN_000b3d04 (b3d04), FUN_000b3f1c (b3f1c), FUN_000b60a4 (b60a4), FUN_000b6238 (b6238), FUN_000b9330 (b9330), FUN_000b964c (b964c), FUN_000b9fb4 (b9fb4), FUN_000ba3ec (ba3ec), FUN_000ba59c (ba59c), FUN_000bb048 (bb048), FUN_000bb3bc (bb3bc), FUN_000bbf14 (bbf14), FUN_000bbfac (bbfac), FUN_000bc094 (bc094), FUN_000bc4ac (bc4ac), FUN_000bcf50 (bcf50), FUN_000bd180 (bd180), FUN_000bd9ac (bd9ac), FUN_000bdfe0 (bdfe0), FUN_000be348 (be348), FUN_000beb14 (beb14), FUN_000bf520 (bf520), FUN_000c043c (c043c), FUN_000c0ad4 (c0ad4), FUN_000c1424 (c1424), FUN_000c1bd4 (c1bd4), FUN_000c23c4 (c23c4), FUN_000c26a0 (c26a0), FUN_000c36a4 (c36a4), FUN_000c36fc (c36fc), FUN_000c3e5c (c3e5c), FUN_000c4500 (c4500), FUN_000c46c0 (c46c0), FUN_0027e190 (27e190), FUN_0027e2a8 (27e2a8), FUN_0027e7dc (27e7dc), FUN_0027e800 (27e800), FUN_0027e824 (27e824), FUN_0027e848 (27e848), FUN_0027ead4 (27ead4), FUN_0027eb88 (27eb88), FUN_0027ebe8 (27ebe8), FUN_0027ec80 (27ec80), FUN_0027ee38 (27ee38), FUN_0027ef44 (27ef44), FUN_00280ad8 (280ad8), FUN_00280d9c (280d9c), FUN_00281dd8 (281dd8), FUN_00282c5c (282c5c), FUN_002833d0 (2833d0), FUN_00283954 (283954), FUN_00284010 (284010), FUN_00284a78 (284a78), FUN_00284a84 (284a84), FUN_002856bc (2856bc), FUN_00285818 (285818), FUN_00286424 (286424), FUN_00286ce4 (286ce4), FUN_00286f0c (286f0c), FUN_00286fb8 (286fb8), FUN_00287544 (287544), FUN_00287f18 (287f18), FUN_00289a88 (289a88), FUN_0028a1f0 (28a1f0), FUN_0028a2fc (28a2fc), FUN_0028a3b8 (28a3b8), FUN_0028a4e4 (28a4e4), FUN_0028ada0 (28ada0), FUN_0028d3ac (28d3ac), FUN_0028d4c0 (28d4c0), FUN_0028dcb4 (28dcb4), FUN_0028e0fc (28e0fc), FUN_0028e3f0 (28e3f0), FUN_0028e864 (28e864), FUN_0028eac0 (28eac0), FUN_0028f27c (28f27c), FUN_0028f408 (28f408), FUN_0028fb48 (28fb48), FUN_0028fb5c (28fb5c), FUN_0028fcd4 (28fcd4), FUN_00291050 (291050), FUN_00291af0 (291af0), FUN_00291cac (291cac), FUN_00291d6c (291d6c), FUN_00291f04 (291f04), FUN_00291f40 (291f40), FUN_00291fac (291fac), FUN_0029202c (29202c), FUN_002920d4 (2920d4), FUN_00292cd8 (292cd8), FUN_00292d3c (292d3c), FUN_00293004 (293004), FUN_00293328 (293328), FUN_00293900 (293900), FUN_00293d1c (293d1c), FUN_00293db8 (293db8), FUN_00293eec (293eec), FUN_00293f94 (293f94), FUN_00294084 (294084), FUN_002945bc (2945bc), FUN_00294628 (294628), FUN_00296488 (296488), FUN_00296530 (296530), FUN_00297010 (297010), FUN_002978c4 (2978c4), FUN_00297afc (297afc), FUN_00297b3c (297b3c), FUN_00297c9c (297c9c), FUN_00297d08 (297d08), FUN_002984f8 (2984f8), FUN_0029855c (29855c), FUN_00299d00 (299d00), FUN_0029a11c (29a11c), FUN_0029a15c (29a15c), FUN_0029a21c (29a21c), FUN_0029a234 (29a234), FUN_0029a24c (29a24c), FUN_0029c71c (29c71c), FUN_0029cc40 (29cc40), FUN_0029d710 (29d710), FUN_0029dfcc (29dfcc), FUN_0029f50c (29f50c), FUN_002a0ef4 (2a0ef4), FUN_002a1ffc (2a1ffc), FUN_002a2f98 (2a2f98), FUN_002a4a88 (2a4a88), FUN_002a4e00 (2a4e00), FUN_002a4e8c (2a4e8c), FUN_002a4f34 (2a4f34), FUN_002a503c (2a503c), FUN_002a5250 (2a5250), FUN_002a588c (?), FUN_002b9be8 (2b9be8), FUN_002ba7e0 (2ba7e0), FUN_002bb3c0 (2bb3c0), FUN_002bb778 (2bb778), FUN_002bbbc4 (2bbbc4), FUN_002bbf10 (2bbf10), FUN_002bc158 (2bc158), FUN_002bc36c (2bc36c), FUN_002bc728 (2bc728), FUN_002bd7d4 (2bd7d4), FUN_002bdd38 (2bdd38), FUN_002be238 (2be238), FUN_002bedb0 (2bedb0), FUN_002bf2fc (2bf2fc), FUN_002c0000 (2c0000), FUN_002c01c0 (2c01c0), FUN_002c0804 (2c0804), FUN_002c0c20 (2c0c20), FUN_002c15c0 (2c15c0), FUN_002c179c (2c179c), FUN_002c1aac (2c1aac), FUN_002c1c18 (2c1c18), FUN_002c1de8 (2c1de8), FUN_002c1ee4 (2c1ee4), FUN_002c1f84 (2c1f84), FUN_002c23f4 (2c23f4), FUN_002c3064 (2c3064), FUN_002c31ac (2c31ac), FUN_002c32a0 (2c32a0), FUN_002c35c8 (2c35c8), FUN_002c381c (2c381c), FUN_002c39a8 (2c39a8), FUN_002c3cdc (2c3cdc), FUN_002c3d8c (2c3d8c), FUN_002c4148 (2c4148), FUN_002c4230 (2c4230), FUN_002c4a78 (?), FUN_002c4bc4 (2c4bc4), FUN_002c4db4 (2c4db4), FUN_002c4fcc (2c4fcc), FUN_002c51b8 (2c51b8), FUN_002c5478 (2c5478), FUN_002c5f0c (2c5f0c), FUN_002c6160 (2c6160), FUN_002c6324 (2c6324), FUN_002c6618 (2c6618), FUN_002c7020 (2c7020), FUN_002c714c (2c714c), FUN_002c7764 (2c7764), FUN_002c78f8 (2c78f8), FUN_002c7c58 (2c7c58), FUN_002c7fdc (2c7fdc), FUN_002c856c (2c856c), FUN_002c91a4 (2c91a4), FUN_002c9370 (2c9370), FUN_002c93e4 (2c93e4), FUN_002c9430 (2c9430), FUN_002c94cc (2c94cc), FUN_002c9534 (2c9534), FUN_002c95d0 (2c95d0), FUN_002c961c (2c961c), FUN_002c9668 (2c9668), FUN_002c96fc (2c96fc), FUN_002c9744 (2c9744), FUN_002c9824 (2c9824), FUN_002c9b1c (2c9b1c), FUN_002c9b94 (2c9b94), FUN_002ca1dc (2ca1dc), FUN_002cb67c (2cb67c), FUN_002cba6c (2cba6c), FUN_0035a698 (35a698), FUN_0035a91c (35a91c), FUN_0035a97c (35a97c), FUN_0035aa60 (35aa60), FUN_0035ab44 (35ab44), FUN_0035af74 (35af74), FUN_0035b090 (35b090), FUN_0035b878 (35b878), FUN_0035bff4 (35bff4), FUN_0035cc2c (35cc2c), FUN_0035ce80 (35ce80), FUN_0035cf44 (35cf44), FUN_0035d540 (35d540), FUN_0035deec (35deec), FUN_0035dfe8 (35dfe8), FUN_0035e0a0 (35e0a0), FUN_0035e830 (35e830), FUN_0035f010 (35f010), FUN_0035f640 (35f640), FUN_0035faec (35faec), FUN_0035fd1c (35fd1c), FUN_00360358 (360358), FUN_00360f2c (360f2c), FUN_00361d94 (361d94), FUN_00361ecc (361ecc), FUN_003624c4 (3624c4), FUN_003624dc (3624dc), FUN_003626cc (3626cc), FUN_00363618 (363618), FUN_00363844 (363844), FUN_00363af0 (363af0), FUN_00363b38 (363b38), FUN_00363f8c (363f8c), FUN_003644b4 (3644b4), FUN_00364548 (364548), FUN_00364560 (364560), FUN_0036475c (36475c), FUN_00364a5c (364a5c), FUN_00364cbc (364cbc), FUN_00364f84 (364f84), FUN_00364fec (364fec), FUN_00365954 (365954), FUN_00365bec (365bec), FUN_0005ac9c (5ac9c), FUN_0005cdf4 (5cdf4), FUN_0005d0d8 (5d0d8), FUN_0005d164 (5d164), FUN_0005d568 (5d568), FUN_0005d6ac (5d6ac), FUN_0005d75c (5d75c), FUN_0005ea08 (5ea08), FUN_0005f280 (5f280), FUN_0005fa08 (5fa08), alloc (5fd8c), FUN_00060bbc (60bbc), FUN_0006197c (6197c), FUN_00061b7c (61b7c), FUN_0006218c (6218c), FUN_0006222c (6222c), FUN_00062a1c (62a1c), processInput48 (62b28), FUN_0006315c (6315c), FUN_000647c4 (647c4), FUN_0006498c (6498c), FUN_000649ac (649ac), FUN_00064fb4 (64fb4), FUN_0006514c (6514c), FUN_00065ac8 (65ac8), FUN_00065c70 (65c70), FUN_00066104 (66104), FUN_00066900 (66900), FUN_00067c90 (67c90), FUN_00068aec (68aec), FUN_000696d0 (696d0), FUN_0006a784 (6a784), FUN_0006b758 (6b758), FUN_0006b7b4 (6b7b4), FUN_0006bef8 (6bef8), FUN_0006c94c (6c94c), FUN_0006ca80 (6ca80), FUN_0006cb48 (6cb48), FUN_0006d7c4 (6d7c4), FUN_0006dbb8 (6dbb8), applyFiltersAndCopy (6dcb4), FUN_0006e2d8 (6e2d8), FUN_0006e540 (6e540), FUN_0006e590 (6e590), FUN_0006f784 (6f784), FUN_000701d4 (701d4), FUN_000702cc (702cc), FUN_000721c0 (721c0), FUN_00072dc8 (72dc8), FUN_00073858 (73858), FUN_00073b4c (73b4c), FUN_00073c9c (73c9c), FUN_00074134 (74134), FUN_0007468c (7468c), FUN_00075904 (75904), FUN_00075c4c (75c4c), closePluginEditor (75c7c), FUN_00076080 (76080), FUN_00076344 (76344), FUN_00076370 (76370), FUN_00076460 (76460), FUN_000767ec (767ec), FUN_00076ae0 (76ae0), FUN_00077144 (77144), FUN_00077208 (77208), FUN_00077354 (77354), FUN_0007738c (7738c), FUN_000773c4 (773c4), FUN_000776dc (776dc), FUN_0007771c (7771c), FUN_00077764 (77764), FUN_000778c4 (778c4), FUN_00077bcc (77bcc), FUN_00077f14 (77f14), FUN_00078038 (78038), FUN_00079290 (79290), FUN_000793d4 (793d4), FUN_0007997c (7997c), FUN_00079a58 (79a58), FUN_00079ae8 (79ae8), FUN_0007a084 (7a084), FUN_0007ab58 (7ab58), FUN_0007cdc4 (7cdc4), applyFilter9 (7da9c), FUN_0007e560 (7e560), FUN_0007eb08 (7eb08), processArray8 (81aa8), FUN_000821a8 (821a8), FUN_000821b0 (821b0), FUN_000821e4 (821e4), FUN_000825c8 (825c8), FUN_000828e0 (828e0), processValue3 (828f0), FUN_000833dc (833dc), FUN_00083558 (83558), FUN_0008365c (8365c), FUN_000836b8 (836b8), FUN_00083714 (83714), FUN_000837e4 (837e4), FUN_000838f4 (838f4), FUN_0008396c (8396c), FUN_00083b4c (83b4c), FUN_00083bb0 (83bb0), FUN_00083c10 (83c10), FUN_00083c70 (83c70), FUN_00083ccc (83ccc), FUN_00083d28 (83d28), FUN_00083d70 (83d70), FUN_00083e30 (83e30), FUN_00083e8c (83e8c), FUN_00083f98 (83f98), FUN_00084114 (84114), FUN_000841d0 (841d0), FUN_0008422c (8422c), FUN_000842ec (842ec), isFunctionEnabled (84350), FUN_00084418 (84418), FUN_00084588 (84588), FUN_000850c0 (850c0), FUN_000859f4 (859f4), FUN_000860e4 (860e4), FUN_0008796c (8796c), FUN_00088540 (88540), FUN_000889fc (889fc), processInput51 (88a18), FUN_00088ad0 (88ad0), FUN_000899c4 (899c4), FUN_000899cc (899cc), FUN_0008a154 (8a154), setAndCalculateDotProduct8 (8a260), FUN_0008a294 (8a294), FUN_0008a2f4 (8a2f4), FUN_0008b300 (8b300), FUN_0008bdb4 (8bdb4), FUN_0008c394 (8c394), FUN_0008c4f4 (8c4f4), FUN_0008c5ac (8c5ac), processInput56 (8de48), FUN_0008f5cc (8f5cc), FUN_0008f5f4 (8f5f4), FUN_0008f70c (8f70c), FUN_00091870 (91870), FUN_00091e34 (91e34), FUN_00091e74 (91e74), FUN_00093734 (93734), FUN_00093790 (93790), FUN_00093920 (93920), FUN_0009404c (9404c), FUN_00094bac (94bac), FUN_00094e90 (94e90), FUN_00094f18 (94f18), processAndReturn2 (94f98), FUN_0009512c (9512c), FUN_00095260 (95260), FUN_00095390 (95390), FUN_00095438 (95438), FUN_00095450 (95450), FUN_00095af8 (95af8), FUN_00095c64 (95c64), processInput59 (95d10), FUN_00095f78 (95f78), FUN_00095fdc (95fdc), FUN_0009602c (9602c), FUN_0009627c (9627c), FUN_00096364 (96364), FUN_00097090 (97090), FUN_0009714c (9714c), FUN_000971cc (971cc), FUN_00097438 (97438), FUN_000976e0 (976e0), FUN_0009a688 (9a688), FUN_0009afe8 (9afe8), FUN_0009b290 (9b290), FUN_0009b2f0 (9b2f0), FUN_0009c1cc (9c1cc), FUN_0009c91c (9c91c), FUN_0009c944 (9c944), FUN_0009d0f8 (9d0f8), FUN_000c4f24 (c4f24), FUN_000c528c (c528c), FUN_000c58d4 (c58d4), FUN_000c5960 (c5960), FUN_000c5998 (c5998), FUN_000c59b4 (c59b4), FUN_000c6544 (c6544), FUN_000c65ec (c65ec), FUN_000c6c68 (c6c68), FUN_000c6ca8 (c6ca8), FUN_000c6d00 (c6d00), FUN_000c6f24 (c6f24), FUN_000c7158 (c7158), FUN_000c73c0 (c73c0), FUN_000c7a5c (c7a5c), FUN_000c7eb0 (c7eb0), FUN_000c7ef0 (c7ef0), FUN_000c8030 (c8030), FUN_000c808c (c808c), FUN_000c8094 (c8094), FUN_000c8b40 (c8b40), FUN_000c8fe8 (c8fe8), FUN_000c900c (c900c), FUN_000c957c (c957c), FUN_000c95ec (c95ec), FUN_000c96a0 (c96a0), FUN_000c99f8 (c99f8), FUN_000c9b88 (c9b88), FUN_000c9d34 (c9d34), FUN_000ca098 (ca098), FUN_000ca1d8 (ca1d8), FUN_000ca214 (ca214), FUN_000cc224 (cc224), FUN_000cc5d4 (cc5d4), FUN_000ccb00 (ccb00), FUN_000cdb1c (cdb1c), FUN_000cddec (cddec), FUN_000cef1c (cef1c), FUN_000cf088 (cf088), FUN_000cfdd8 (cfdd8), FUN_000d01b0 (d01b0), FUN_000d0f70 (d0f70), FUN_000d1ad0 (d1ad0), FUN_000d4774 (d4774), FUN_000d8904 (d8904), FUN_000dacdc (dacdc), FUN_000dbeb0 (dbeb0), FUN_000dd254 (dd254), FUN_000dfb84 (dfb84), FUN_000e0040 (e0040), FUN_000e1b78 (e1b78), FUN_000e2f88 (e2f88), FUN_000e30a0 (e30a0), FUN_000e33d0 (e33d0), FUN_000e5a4c (e5a4c), FUN_000e5f40 (e5f40), FUN_000e641c (e641c), FUN_000e7118 (e7118), FUN_000e77ac (e77ac), FUN_000e792c (e792c), FUN_000e8c6c (e8c6c), FUN_000e9188 (e9188), FUN_000e93ac (e93ac), FUN_000ec0f8 (ec0f8), FUN_000ecb64 (ecb64), FUN_000ef3f0 (ef3f0), FUN_000f0f8c (f0f8c), FUN_000f1388 (f1388), FUN_000f1c30 (f1c30), FUN_000f1f28 (f1f28), FUN_000f2274 (f2274), FUN_000f2ccc (f2ccc), FUN_000f2cd4 (f2cd4), FUN_000f2f7c (f2f7c), FUN_000f3078 (f3078), FUN_000f313c (f313c), FUN_000f3c78 (f3c78), FUN_000f5f24 (f5f24), FUN_000f70c0 (f70c0), FUN_000f7eb8 (f7eb8), FUN_000f82fc (f82fc), FUN_000f8388 (f8388), FUN_000f8400 (f8400), FUN_000f84ec (f84ec), FUN_000f89c4 (f89c4), FUN_000f8a6c (f8a6c), FUN_000f8bc4 (f8bc4), FUN_000f8d04 (f8d04), FUN_000fe7a0 (fe7a0), FUN_000ff0bc (ff0bc), FUN_000ffeb4 (ffeb4), FUN_00101468 (101468), FUN_00101778 (101778), FUN_00101b18 (101b18), FUN_00101b84 (101b84), FUN_00101c5c (101c5c), FUN_00101ccc (101ccc), FUN_00101d90 (101d90), FUN_00101df8 (101df8), FUN_00101e60 (101e60), FUN_00101f38 (101f38), FUN_00101f9c (101f9c), FUN_00102034 (102034), FUN_00102120 (102120), FUN_00102234 (102234), FUN_001022c0 (1022c0), FUN_00102b50 (102b50), FUN_00102ebc (102ebc), FUN_001030b0 (1030b0), FUN_0010338c (10338c), FUN_0010351c (10351c), FUN_001039b8 (1039b8), FUN_0010568c (10568c), FUN_00105c60 (105c60), FUN_00106144 (106144), FUN_0010631c (10631c), FUN_00106410 (106410), FUN_00109db4 (109db4), FUN_0010a408 (10a408), FUN_0010a484 (10a484), FUN_0010a65c (10a65c), FUN_0010a6e0 (10a6e0), FUN_0010eb80 (10eb80), FUN_0010eb98 (10eb98), FUN_0010f4ac (10f4ac), FUN_0011202c (11202c), FUN_00112528 (112528), FUN_00112680 (112680), FUN_00112a08 (112a08), FUN_00112b4c (112b4c), FUN_00112c78 (112c78), FUN_001131ec (1131ec), FUN_00114d38 (114d38), FUN_00114dac (114dac), FUN_00118574 (118574), FUN_00118658 (118658), FUN_0011872c (11872c), FUN_001188c4 (1188c4), FUN_00118cb8 (118cb8), FUN_00118ea0 (118ea0), FUN_0011a068 (11a068), FUN_0011b358 (11b358), FUN_0011b3b0 (11b3b0), FUN_0011ba8c (11ba8c), FUN_0011bb14 (11bb14), FUN_0011bc34 (11bc34), FUN_0011c19c (11c19c), FUN_0011c454 (11c454), FUN_0011cb9c (11cb9c), FUN_0011da40 (11da40), FUN_0011e0ac (11e0ac), FUN_0011e170 (11e170), FUN_0011e1f8 (11e1f8), FUN_0011f7ac (11f7ac), FUN_00120648 (120648), FUN_001217a4 (1217a4), FUN_00121b7c (121b7c), FUN_00124424 (124424), FUN_0012495c (12495c), FUN_00124ab8 (124ab8), FUN_00124c90 (124c90), FUN_00125774 (125774), FUN_00125794 (125794), FUN_00125e68 (125e68), FUN_00125e88 (125e88), FUN_00127818 (127818), FUN_00127830 (127830), FUN_00127eec (127eec), FUN_001280e4 (1280e4), FUN_0012817c (12817c), FUN_00128184 (128184), FUN_00128244 (128244), FUN_001289c4 (1289c4), FUN_0012a740 (12a740), FUN_0012b598 (12b598), FUN_0012b640 (12b640), FUN_0012cb94 (12cb94), FUN_0012d150 (12d150), FUN_0012e094 (12e094), FUN_0012e9a4 (12e9a4), FUN_0012ea00 (12ea00), FUN_0012ee0c (12ee0c), FUN_0012f018 (12f018), FUN_0012f194 (12f194), FUN_0012f19c (12f19c), FUN_0013063c (13063c), FUN_00130efc (130efc), FUN_00131ae0 (131ae0), FUN_00131afc (131afc), FUN_00131d24 (131d24), FUN_00132280 (132280), FUN_0013248c (13248c), FUN_00132798 (132798), FUN_00132d04 (132d04), FUN_00133b74 (133b74), FUN_00133c80 (133c80), FUN_001363c0 (1363c0), FUN_00136708 (136708), FUN_001367b4 (1367b4), FUN_00137d48 (137d48), FUN_00137e48 (137e48), FUN_00137e50 (137e50), FUN_001381e0 (1381e0), FUN_00138bf0 (138bf0), FUN_00139f50 (139f50), FUN_0013a1ac (13a1ac), FUN_0013ab38 (13ab38), FUN_0013b5f0 (13b5f0), FUN_0013b7bc (13b7bc), FUN_0013b984 (13b984), FUN_0013b9a8 (13b9a8), FUN_0013bef8 (13bef8), FUN_0013bf00 (13bf00), FUN_0013cf08 (13cf08), FUN_0013cf44 (13cf44), FUN_0013d008 (13d008), FUN_0013e86c (13e86c), FUN_0013faa4 (13faa4), FUN_00141bc0 (141bc0), FUN_00141f64 (141f64), FUN_00142280 (142280), FUN_00142500 (142500), FUN_00142510 (142510), FUN_00142524 (142524), FUN_00142540 (142540), FUN_0014255c (14255c), FUN_00142574 (142574), FUN_00142590 (142590), FUN_00142598 (142598), FUN_0014266c (14266c), FUN_0014267c (14267c), FUN_001429cc (1429cc), FUN_00142bb0 (142bb0), FUN_00143238 (143238), FUN_00143248 (143248), FUN_0014325c (14325c), FUN_00143274 (143274), FUN_00143a28 (143a28), FUN_0014424c (14424c), FUN_001442c0 (1442c0), FUN_0014466c (14466c), FUN_00144e90 (144e90), FUN_00144e9c (144e9c), FUN_00145c6c (145c6c), FUN_00146654 (146654), FUN_001469e4 (1469e4), FUN_00147008 (147008), FUN_0014b17c (14b17c), FUN_0014c0c4 (14c0c4), FUN_0014c64c (14c64c), FUN_0014c690 (14c690), FUN_0014d87c (14d87c), FUN_0014e3c8 (14e3c8), FUN_0014ec44 (14ec44), FUN_0014f80c (14f80c), FUN_0014fd00 (14fd00), FUN_0015040c (15040c), FUN_00151774 (151774), FUN_001518d8 (1518d8), FUN_00152240 (152240), FUN_001526b8 (1526b8), FUN_001526c8 (1526c8), FUN_001526dc (1526dc), FUN_001526f8 (1526f8), FUN_00152714 (152714), FUN_0015272c (15272c), FUN_0015280c (15280c), FUN_0015281c (15281c), FUN_00152874 (152874), FUN_00152e30 (152e30), FUN_00153020 (153020), FUN_00153114 (153114), FUN_0015311c (15311c), FUN_001537ac (1537ac), FUN_00153e48 (153e48), FUN_00153e58 (153e58), FUN_00153e6c (153e6c), FUN_00153e88 (153e88), FUN_00153ea4 (153ea4), FUN_00153ebc (153ebc), FUN_00153f9c (153f9c), FUN_00153fac (153fac), FUN_00154668 (154668), FUN_001548e8 (1548e8), FUN_00154984 (154984), FUN_00155b0c (155b0c), FUN_001561f4 (1561f4), FUN_00156670 (156670), FUN_0015684c (15684c), FUN_00156898 (156898), FUN_001569b0 (1569b0), FUN_0015745c (15745c), FUN_00157c7c (157c7c), FUN_00157f04 (157f04), FUN_0015828c (15828c), FUN_00158594 (158594), FUN_0015a0b0 (15a0b0), FUN_0016546c (16546c), FUN_00165730 (165730), FUN_0016593c (16593c), FUN_00166c44 (166c44), FUN_001675cc (1675cc), FUN_001675fc (1675fc), FUN_0016763c (16763c), FUN_00168068 (168068), FUN_0016832c (16832c), waitUntilPendingCommandsCompleted (1689cc), commandQueue (168c6c), setCommandQueue_ (168c84), texture (168cb0), setTexture_ (168cc8), alloc__168cf4 (168cf4), dealloc__169244 (169244), cancelCurrentMouseDownEvent (169b70), canBecomeMainWindow (169c7c), canBecomeKeyWindow (169d4c), becomeKeyWindow (169ddc), alloc__16c4f4 (16c4f4), dealloc__16c680 (16c680), resignFirstResponder (16c7e8), FUN_0016c82c (16c82c), makeBackingLayer (16c910), FUN_0016dc6c (16dc6c), FUN_0016dcfc (16dcfc), FUN_0016dd08 (16dd08), FUN_0016e0d8 (16e0d8), hasMarkedText (16e120), FUN_0016e460 (16e460), FUN_0016e930 (16e930), FUN_0016e990 (16e990), FUN_0016ec60 (16ec60), FUN_0016ec68 (16ec68), FUN_0016f2a8 (16f2a8), FUN_001707cc (1707cc), FUN_001708dc (1708dc), FUN_00170a78 (170a78), validModesForFontPanel_ (171894), fontManager_willIncludeFont_ (1718ac), FUN_00171dd0 (171dd0), FUN_00171f14 (171f14), FUN_00171fa4 (171fa4), FUN_00171fd8 (171fd8), FUN_001723a0 (1723a0), FUN_00172a58 (172a58), FUN_001736b4 (1736b4), FUN_00173d2c (173d2c), FUN_00173e3c (173e3c), FUN_00173f90 (173f90), FUN_00174008 (174008), FUN_00175104 (175104), FUN_001751cc (1751cc), FUN_00175504 (175504), FUN_00175554 (175554), FUN_001756dc (1756dc), FUN_00175864 (175864), FUN_00175fd0 (175fd0), FUN_00176190 (176190), FUN_00176210 (176210), FUN_00176298 (176298), FUN_001763ac (1763ac), FUN_00176728 (176728), FUN_00176980 (176980), FUN_00176f44 (176f44), FUN_0017711c (17711c), FUN_00177124 (177124), FUN_00177364 (177364), FUN_00177824 (177824), FUN_00177b6c (177b6c), FUN_00179118 (179118), FUN_00179890 (179890), FUN_00179898 (179898), FUN_00179e84 (179e84), FUN_0017a848 (17a848), FUN_0017a9b8 (17a9b8), FUN_0017aee0 (17aee0), FUN_0017af08 (17af08), FUN_0017cde0 (17cde0), FUN_0017ce08 (17ce08), FUN_0017d968 (17d968), FUN_0017da88 (17da88), FUN_0017dab0 (17dab0), FUN_0017dcf8 (17dcf8), FUN_0017e618 (17e618), FUN_0017e940 (17e940), FUN_0017ec70 (17ec70), FUN_0017f088 (17f088), FUN_0017f2a0 (17f2a0), FUN_0017f5d8 (17f5d8), FUN_0017f870 (17f870), FUN_0017f9f8 (17f9f8), FUN_0017fe74 (17fe74), FUN_0018056c (18056c), FUN_00180648 (180648), FUN_001814a0 (1814a0), FUN_00181910 (181910), FUN_0018198c (18198c), FUN_00181d14 (181d14), FUN_001821a0 (1821a0), FUN_0018302c (18302c), FUN_00184200 (184200), FUN_00184dd0 (184dd0), FUN_00185ec0 (185ec0), FUN_0018607c (18607c), FUN_001882dc (1882dc), FUN_001888b4 (1888b4), FUN_001895d8 (1895d8), FUN_001896e4 (1896e4), FUN_0018a1e8 (18a1e8), FUN_0018b054 (18b054), FUN_0018bc5c (18bc5c), FUN_0018bc84 (18bc84), FUN_0018edc4 (18edc4), FUN_00190480 (190480), FUN_00191250 (191250), FUN_001919ac (1919ac), FUN_00191d54 (191d54), FUN_00191e64 (191e64), FUN_00193494 (193494), FUN_00194b20 (194b20), FUN_00198600 (198600), FUN_00198dbc (198dbc), FUN_00199240 (199240), FUN_001994a4 (1994a4), FUN_0019a688 (19a688), FUN_0019b0b0 (19b0b0), FUN_0019b934 (19b934), FUN_0019be00 (19be00), FUN_0019c3cc (19c3cc), FUN_0019e460 (19e460), FUN_0019fc50 (19fc50), FUN_001a1b50 (1a1b50), FUN_001a2838 (1a2838), FUN_001a3c74 (1a3c74), FUN_001a4198 (1a4198), FUN_001a5308 (1a5308), FUN_001a629c (1a629c), FUN_001a648c (1a648c), FUN_001a696c (1a696c), FUN_001a6bc0 (1a6bc0), FUN_001a7e8c (1a7e8c), FUN_001a8664 (1a8664), layout (1a88bc), invalidate (1a8a74), viewDidHide (1a8e8c), viewDidUnhide (1a90dc), viewFrameChanged_ (1a929c), FUN_001a9d04 (1a9d04), FUN_001aa2ac (1aa2ac), FUN_001aa410 (1aa410), FUN_001aaa24 (1aaa24), FUN_001ac018 (1ac018), FUN_001ac090 (1ac090), FUN_001ad0a4 (1ad0a4), FUN_001ae3c8 (1ae3c8), FUN_001ae3d0 (1ae3d0), FUN_001ae48c (1ae48c), FUN_001afde0 (1afde0), FUN_001aff18 (1aff18), FUN_001b003c (1b003c), FUN_001b0174 (1b0174), FUN_001b04dc (1b04dc), FUN_001b0ad0 (1b0ad0), FUN_001b17fc (1b17fc), FUN_001b249c (1b249c), FUN_001b2724 (1b2724), FUN_001b37ec (1b37ec), FUN_001b474c (1b474c), FUN_001b4754 (1b4754), FUN_001b47ac (1b47ac), FUN_001b47b4 (1b47b4), FUN_001b47c0 (1b47c0), FUN_001b47c8 (1b47c8), FUN_001b47f8 (1b47f8), FUN_001b51d4 (1b51d4), FUN_001b78bc (1b78bc), FUN_001b8320 (1b8320), FUN_001b9134 (1b9134), FUN_001b925c (1b925c), FUN_001b9cac (1b9cac), FUN_001ba3d4 (1ba3d4), FUN_001ba8c8 (1ba8c8), FUN_001baefc (1baefc), FUN_001bafa8 (1bafa8), FUN_001bb54c (1bb54c), FUN_001bb8b0 (1bb8b0), FUN_001bbc6c (1bbc6c), FUN_001bbe6c (1bbe6c), FUN_001bbf28 (1bbf28), FUN_001bc4fc (1bc4fc), FUN_001bc914 (1bc914), FUN_001bd834 (1bd834), FUN_001bde04 (1bde04), FUN_001bf1dc (1bf1dc), FUN_001bfa80 (1bfa80), FUN_001c01a0 (1c01a0), FUN_001c0a28 (1c0a28), FUN_001c0a84 (1c0a84), FUN_001c2094 (1c2094), FUN_001c26cc (1c26cc), FUN_001c2a70 (1c2a70), FUN_001c3260 (1c3260), FUN_001c3358 (1c3358), FUN_001c3e18 (1c3e18), FUN_001c3e30 (1c3e30), FUN_001c3e50 (1c3e50), FUN_001c3ee8 (1c3ee8), FUN_001c4dd8 (1c4dd8), FUN_001c5380 (1c5380), FUN_001c551c (1c551c), FUN_001c5574 (1c5574), FUN_001c56bc (1c56bc), FUN_001c589c (1c589c), FUN_001c5af8 (1c5af8), FUN_001c5e90 (1c5e90), FUN_001c6f04 (1c6f04), FUN_001c6fb4 (1c6fb4), FUN_001c6fbc (1c6fbc), FUN_001c7058 (1c7058), FUN_001c71bc (1c71bc), FUN_001c7448 (1c7448), FUN_001c78d0 (1c78d0), FUN_001c79b0 (1c79b0), FUN_001c8d28 (1c8d28), FUN_001c8e3c (1c8e3c), FUN_001c8f78 (1c8f78), FUN_001c8fe4 (1c8fe4), FUN_001c9098 (1c9098), FUN_001cab68 (1cab68), FUN_001caf70 (1caf70), FUN_001cb11c (1cb11c), FUN_001cb304 (1cb304), FUN_001cb3c4 (1cb3c4), FUN_001cb5cc (1cb5cc), FUN_001ccbe0 (1ccbe0), FUN_001cd094 (1cd094), FUN_001cd0c8 (1cd0c8), FUN_001ce774 (1ce774), FUN_001ce8cc (1ce8cc), FUN_001cf3f8 (1cf3f8), FUN_001cf8e8 (1cf8e8), FUN_001cfe7c (1cfe7c), FUN_001d1970 (1d1970), FUN_001d40e4 (1d40e4), FUN_001d4490 (1d4490), FUN_001d4660 (1d4660), FUN_001d4b10 (1d4b10), FUN_001d4f78 (1d4f78), FUN_001d51d0 (1d51d0), FUN_001d52f8 (1d52f8), FUN_001d60c0 (1d60c0), FUN_001d62b8 (1d62b8), FUN_001d6620 (1d6620), FUN_001d698c (1d698c), FUN_001d6a14 (1d6a14), FUN_001d6a8c (1d6a8c), FUN_001d6aac (1d6aac), FUN_001d6b7c (1d6b7c), FUN_001d71d8 (1d71d8), FUN_001d7210 (1d7210), FUN_001d7790 (1d7790), FUN_001d7e04 (1d7e04), FUN_001d8bd8 (1d8bd8), FUN_001d914c (1d914c), FUN_001d9570 (1d9570), FUN_001d9a30 (1d9a30), FUN_001d9e8c (1d9e8c), FUN_001da458 (1da458), FUN_001da63c (1da63c), FUN_001daa18 (1daa18), FUN_001daf0c (1daf0c), FUN_001db540 (1db540), FUN_001db9e0 (1db9e0), FUN_001dc790 (1dc790), FUN_001dc918 (1dc918), FUN_001dc920 (1dc920), FUN_001dd148 (1dd148), FUN_001dd204 (1dd204), FUN_001dd20c (1dd20c), FUN_001dd218 (1dd218), FUN_001de6f0 (1de6f0), FUN_001de8d4 (1de8d4), FUN_001dea88 (1dea88), FUN_001deba8 (1deba8), FUN_001deca0 (1deca0), FUN_001dece8 (1dece8), FUN_001ded3c (1ded3c), FUN_001dede0 (1dede0), FUN_001dee28 (1dee28), FUN_001deeac (1deeac), FUN_001df1dc (1df1dc), FUN_001df210 (1df210), FUN_001df244 (1df244), FUN_001df308 (1df308), FUN_001dfb04 (1dfb04), FUN_001e05ac (1e05ac), FUN_001e05f4 (1e05f4), FUN_001e05fc (1e05fc), FUN_001e0798 (1e0798), FUN_001e0bc4 (1e0bc4), FUN_001e0ed8 (1e0ed8), FUN_001e1004 (1e1004), FUN_001e1534 (1e1534), FUN_001e3120 (1e3120), FUN_001e3538 (1e3538), FUN_001e3540 (1e3540), FUN_001e38d0 (1e38d0), FUN_001e3a30 (1e3a30), FUN_001e3d94 (1e3d94), FUN_001e43d4 (1e43d4), FUN_001e4d30 (1e4d30), FUN_001e4e58 (1e4e58), FUN_001e4fdc (1e4fdc), FUN_001e503c (1e503c), FUN_001e5148 (1e5148), FUN_001e53f0 (1e53f0), FUN_001e5958 (1e5958), FUN_001e5c1c (1e5c1c), FUN_001e5d68 (1e5d68), FUN_001e629c (1e629c), FUN_001e63a4 (1e63a4), FUN_001e680c (1e680c), FUN_001e6d24 (1e6d24), FUN_001e6e58 (1e6e58), FUN_001e71ec (1e71ec), FUN_001e7474 (1e7474), FUN_001e747c (1e747c), FUN_001e7568 (1e7568), FUN_001e7a1c (1e7a1c), FUN_001e8340 (1e8340), FUN_001e8b2c (1e8b2c), FUN_001e9454 (1e9454), FUN_001e94d0 (1e94d0), FUN_001e9b90 (1e9b90), FUN_001eb96c (1eb96c), FUN_001ec298 (1ec298), FUN_001ec6c0 (1ec6c0), FUN_001ec6dc (1ec6dc), FUN_001ecaec (1ecaec), FUN_001ecdb4 (1ecdb4), FUN_001ed6bc (1ed6bc), FUN_001edaec (1edaec), FUN_001ee518 (1ee518), FUN_001ef604 (1ef604), FUN_001f01a0 (1f01a0), FUN_001f10a8 (1f10a8), FUN_001f14ec (1f14ec), FUN_001f1554 (1f1554), FUN_001f155c (1f155c), FUN_001f15b8 (1f15b8), FUN_001f1600 (1f1600), FUN_001f1640 (1f1640), FUN_001f1c10 (1f1c10), FUN_001f1c2c (1f1c2c), FUN_001f1c44 (1f1c44), FUN_001f1c80 (1f1c80), FUN_001f1cf8 (1f1cf8), FUN_001f1d5c (1f1d5c), FUN_001f1dc8 (1f1dc8), FUN_001f1de8 (1f1de8), FUN_001f1e08 (1f1e08), FUN_001f1e58 (1f1e58), FUN_001f2970 (1f2970), thunk_FUN_001f3e74 (1f4024), FUN_001f40b0 (1f40b0), FUN_001f4794 (1f4794), FUN_001f4870 (1f4870), FUN_001f4cd4 (1f4cd4), FUN_001f5464 (1f5464), FUN_001f54e4 (1f54e4), FUN_001f5d04 (1f5d04), FUN_001f6164 (1f6164), FUN_001f6d7c (1f6d7c), FUN_001f752c (1f752c), FUN_001f8068 (1f8068), FUN_001f8e10 (1f8e10), FUN_001f8e6c (1f8e6c), FUN_001f8eb0 (1f8eb0), FUN_001f8fe0 (1f8fe0), FUN_001f9140 (1f9140), FUN_001f9868 (1f9868), FUN_001f9ff4 (1f9ff4), FUN_001fdde4 (1fdde4), FUN_001ff11c (1ff11c), FUN_001ff2bc (1ff2bc), FUN_00201c5c (201c5c), FUN_00201d68 (201d68), FUN_00203c40 (203c40), FUN_00204a64 (204a64), FUN_00204bc8 (204bc8), FUN_00204bec (204bec), FUN_00204fe4 (204fe4), FUN_00205dbc (205dbc), FUN_00206378 (206378), FUN_00206414 (206414), FUN_00206458 (206458), FUN_00206888 (206888), FUN_00206afc (206afc), FUN_00208984 (208984), FUN_002092ec (2092ec), FUN_00209ee4 (209ee4), FUN_0020c004 (20c004), FUN_0020c984 (20c984), FUN_0020ca38 (20ca38), FUN_0020e048 (20e048), FUN_0020eeb8 (20eeb8), FUN_0020f664 (20f664), FUN_0020f85c (20f85c), FUN_0020f9d0 (20f9d0), FUN_0020fd94 (20fd94), FUN_0021195c (21195c), FUN_0021279c (21279c), FUN_00212950 (212950), FUN_00213ec8 (213ec8), FUN_00214408 (214408), FUN_00214424 (214424), FUN_002151a8 (2151a8), FUN_00215280 (215280), FUN_00215504 (215504), FUN_00215e28 (215e28), FUN_00215e50 (215e50), getpagesize (216044), FUN_0021640c (21640c), FUN_00216890 (216890), FUN_00216db8 (216db8), FUN_00216ecc (216ecc), FUN_00216fc4 (216fc4), FUN_00217374 (217374), FUN_002173c0 (2173c0), FUN_002176bc (2176bc), FUN_00219d88 (219d88), FUN_00219de8 (219de8), FUN_0021c16c (21c16c), FUN_0021c1d8 (21c1d8), FUN_0021cf04 (21cf04), FUN_0021d50c (21d50c), FUN_0021d53c (21d53c), FUN_0021eb34 (21eb34), FUN_0021eb70 (21eb70), FUN_0021ebf0 (21ebf0), FUN_0021fcd8 (21fcd8), FUN_00220ccc (220ccc), FUN_00220ed0 (220ed0), FUN_0022371c (22371c), FUN_00223970 (223970), FUN_00223a38 (223a38), FUN_002244f8 (2244f8), FUN_0022494c (22494c), FUN_00224b4c (224b4c), FUN_00224bcc (224bcc), FUN_00224ecc (224ecc), FUN_00226b84 (226b84), FUN_00227d2c (227d2c), FUN_00228910 (228910), FUN_002289c8 (2289c8), FUN_00228ac8 (228ac8), FUN_00228c08 (228c08), FUN_00228d04 (228d04), FUN_00228f34 (228f34), FUN_00229864 (229864), FUN_00229b60 (229b60), FUN_0022b530 (22b530), FUN_0022b7d0 (22b7d0), FUN_0022ba38 (22ba38), FUN_0022bb40 (22bb40), FUN_0022c2f4 (22c2f4), FUN_0022c48c (22c48c), FUN_0022cdc0 (22cdc0), FUN_0022d2bc (22d2bc), FUN_0022d370 (22d370), FUN_0022e798 (22e798), FUN_0022e850 (22e850), FUN_0022e930 (22e930), FUN_0022ee48 (22ee48), FUN_0022f0b8 (22f0b8), FUN_0022f1f0 (22f1f0), FUN_0022f914 (22f914), FUN_0022fb10 (22fb10), FUN_002300c4 (2300c4), FUN_00230f94 (230f94), FUN_00231164 (231164), FUN_00231288 (231288), FUN_002314d0 (2314d0), FUN_00231534 (231534), FUN_00231560 (231560), FUN_0023170c (23170c), FUN_00231cb0 (231cb0), FUN_00231e4c (231e4c), FUN_00231fc4 (231fc4), FUN_00232a24 (232a24), FUN_00232e80 (232e80), FUN_0023315c (23315c), FUN_0023317c (23317c), FUN_0023328c (23328c), FUN_002332a4 (2332a4), FUN_00233438 (233438), FUN_00233728 (233728), FUN_00233754 (233754), FUN_00233820 (233820), FUN_00233908 (233908), FUN_00233acc (233acc), FUN_00233c7c (233c7c), FUN_00233d70 (233d70), FUN_00233f28 (233f28), FUN_00234004 (234004), FUN_002341a4 (2341a4), FUN_00234404 (234404), FUN_002344bc (2344bc), FUN_00234824 (234824), FUN_00235040 (235040), FUN_002350e4 (2350e4), FUN_00235f70 (235f70), FUN_00236180 (236180), FUN_00236900 (236900), FUN_00236e44 (236e44), FUN_0023773c (23773c), FUN_002385ec (2385ec), FUN_00238704 (238704), parseEntityDeclaration (23a028), FUN_0023d094 (23d094), FUN_0023de1c (23de1c), FUN_0023e598 (23e598), FUN_0023f074 (23f074), FUN_0023f208 (23f208), FUN_00240430 (240430), FUN_002404b8 (2404b8), FUN_0024113c (24113c), FUN_002414e8 (2414e8), FUN_0024161c (24161c), FUN_00242010 (242010), FUN_00242f04 (242f04), FUN_00243c58 (243c58), FUN_00245018 (245018), FUN_00245904 (245904), FUN_00245998 (245998), FUN_00245a18 (245a18), FUN_00245b54 (245b54), FUN_00246294 (246294), FUN_00246db4 (246db4), FUN_00246f64 (246f64), FUN_00247174 (247174), FUN_002473a4 (2473a4), FUN_00247564 (247564), FUN_002477c4 (2477c4), FUN_002487bc (2487bc), FUN_002488ec (2488ec), FUN_0024891c (24891c), FUN_00248b4c (248b4c), FUN_00248c78 (248c78), FUN_00248d5c (248d5c), FUN_00248e4c (248e4c), FUN_00248fc8 (248fc8), FUN_002490ec (2490ec), FUN_00249350 (249350), FUN_0024a0c0 (24a0c0), FUN_0024a2bc (24a2bc), FUN_0024a598 (24a598), FUN_0024ae50 (24ae50), FUN_0024b46c (24b46c), FUN_0024b6a0 (24b6a0), FUN_0024b8cc (24b8cc), FUN_0024be14 (24be14), FUN_0024d210 (24d210), FUN_0024db74 (24db74), FUN_0024e514 (24e514), FUN_0024ebb8 (24ebb8), FUN_0024f080 (24f080), FUN_0024f26c (24f26c), FUN_0024f708 (24f708), FUN_0024f7b0 (24f7b0), FUN_00250230 (250230), FUN_00250540 (250540), FUN_00250668 (250668), FUN_0025118c (25118c), FUN_002511bc (2511bc), FUN_00251ac0 (251ac0), FUN_00251b64 (251b64), FUN_00251ed0 (251ed0), FUN_00252088 (252088), FUN_002522b4 (2522b4), FUN_00253104 (253104), FUN_0025320c (25320c), FUN_002532bc (2532bc), FUN_00253430 (253430), FUN_002534c4 (2534c4), FUN_00253668 (253668), FUN_00254050 (254050), FUN_002540c4 (2540c4), FUN_002541b8 (2541b8), FUN_00254384 (254384), FUN_002544d0 (2544d0), FUN_002545ec (2545ec), FUN_00254950 (254950), FUN_002549c4 (2549c4), FUN_00254b30 (254b30), FUN_00254bc8 (254bc8), FUN_00254c70 (254c70), FUN_00254e7c (254e7c), FUN_00254eb4 (254eb4), FUN_00254f84 (254f84), FUN_00255004 (255004), FUN_00255068 (255068), FUN_0025519c (25519c), FUN_00255278 (255278), FUN_00255514 (255514), FUN_00255658 (255658), FUN_0025566c (25566c), FUN_00255aac (255aac), FUN_00255e18 (255e18), FUN_00255e68 (255e68), FUN_00255f28 (255f28), FUN_00255fd8 (255fd8), FUN_002566a4 (2566a4), FUN_00256f6c (256f6c), FUN_00259674 (259674), FUN_00259e88 (259e88), FUN_0025a0e8 (25a0e8), FUN_0025a24c (25a24c), FUN_0025a8f8 (25a8f8), FUN_0025af78 (25af78), FUN_0025b138 (25b138), FUN_0025b290 (25b290), FUN_0025b7b4 (25b7b4), FUN_0025c45c (25c45c), FUN_0025cc8c (25cc8c), FUN_0025d6ec (25d6ec), FUN_002604ac (2604ac), FUN_00260770 (260770), FUN_00260834 (260834), FUN_00260a98 (260a98), FUN_00260c38 (260c38), FUN_00260d70 (260d70), FUN_00260ddc (260ddc), FUN_00260f24 (260f24), FUN_00261240 (261240), FUN_0026156c (26156c), FUN_002616e4 (2616e4), FUN_00261d40 (261d40), FUN_00262164 (262164), FUN_002627f8 (2627f8), FUN_00263380 (263380), FUN_0026345c (26345c), FUN_00264098 (264098), FUN_002645a0 (2645a0), FUN_00264f48 (264f48), FUN_002655a0 (2655a0), FUN_002655e8 (2655e8), FUN_00265d2c (265d2c), FUN_00265ecc (265ecc), FUN_00265f54 (265f54), FUN_00266080 (266080), FUN_002666a4 (2666a4), FUN_00266a74 (266a74), FUN_00266bd4 (266bd4), FUN_00266ccc (266ccc), FUN_00266d94 (266d94), FUN_00266e60 (266e60), FUN_00266ffc (266ffc), FUN_0026710c (26710c), FUN_00267434 (267434), FUN_002675c4 (2675c4), FUN_00267684 (267684), FUN_0026772c (26772c), FUN_00267764 (267764), FUN_002678ac (2678ac), FUN_002678e4 (2678e4), FUN_00268154 (268154), FUN_002681a4 (2681a4), FUN_00268224 (268224), FUN_002685cc (2685cc), FUN_00268730 (268730), FUN_00268ad4 (268ad4), FUN_00268bec (268bec), FUN_00268ca4 (268ca4), FUN_00268dcc (268dcc), FUN_00268e9c (268e9c), FUN_00268fac (268fac), FUN_00268fc0 (268fc0), FUN_00268fec (268fec), FUN_0026909c (26909c), FUN_002691e8 (2691e8), FUN_002691fc (2691fc), FUN_002692d8 (2692d8), FUN_00269300 (269300), FUN_00269470 (269470), FUN_002695d0 (2695d0), FUN_00269690 (269690), FUN_002696c8 (2696c8), FUN_00269784 (269784), FUN_0026979c (26979c), FUN_002697b4 (2697b4), FUN_002697e4 (2697e4), FUN_002697f8 (2697f8), FUN_00269a18 (269a18), FUN_00269aac (269aac), FUN_00269ddc (269ddc), FUN_00269e50 (269e50), FUN_00269edc (269edc), FUN_00269efc (269efc), FUN_00269f10 (269f10), FUN_00269f2c (269f2c), FUN_00269f50 (269f50), FUN_00269f74 (269f74), FUN_00269f8c (269f8c), FUN_00269fb8 (269fb8), FUN_00269fd4 (269fd4), FUN_00269ff0 (269ff0), FUN_0026a018 (26a018), FUN_0026a034 (26a034), FUN_0026a064 (26a064), FUN_0026a078 (26a078), FUN_0026a0b4 (26a0b4), FUN_0026a0cc (26a0cc), FUN_0026a0e4 (26a0e4), FUN_0026a0f8 (26a0f8), FUN_0026a118 (26a118), FUN_0026a138 (26a138), FUN_0026a150 (26a150), FUN_0026a168 (26a168), FUN_0026a194 (26a194), FUN_0026a1e0 (26a1e0), FUN_0026a1f8 (26a1f8), FUN_0026a228 (26a228), FUN_0026a240 (26a240), FUN_0026a258 (26a258), FUN_0026a270 (26a270), FUN_0026a284 (26a284), FUN_0026a2a4 (26a2a4), FUN_0026a2c0 (26a2c0), FUN_0026a2d8 (26a2d8), FUN_0026a3bc (26a3bc), FUN_0026a3d0 (26a3d0), FUN_0026a4d0 (26a4d0), FUN_0026a4e4 (26a4e4), FUN_0026a55c (26a55c), FUN_0026a5f0 (26a5f0), FUN_0026a608 (26a608), FUN_0026a630 (26a630), FUN_0026a664 (26a664), FUN_0026a6d8 (26a6d8), FUN_0026a6ec (26a6ec), FUN_0026a748 (26a748), FUN_0026a7fc (26a7fc), FUN_0026a810 (26a810), FUN_0026a824 (26a824), FUN_0026a8b8 (26a8b8), FUN_0026a98c (26a98c), FUN_0026a9a0 (26a9a0), FUN_0026a9f4 (26a9f4), FUN_0026aac4 (26aac4), FUN_0026aadc (26aadc), FUN_0026ab18 (26ab18), FUN_0026ab60 (26ab60), FUN_0026ab78 (26ab78), FUN_0026ab8c (26ab8c), FUN_0026ac3c (26ac3c), FUN_0026ace0 (26ace0), FUN_0026ad24 (26ad24), FUN_0026adb0 (26adb0), FUN_0026adf8 (26adf8), FUN_0026ae20 (26ae20), FUN_0026ae3c (26ae3c), FUN_0026b020 (26b020), FUN_0026b0b4 (26b0b4), FUN_0026b0cc (26b0cc), FUN_0026b0ec (26b0ec), FUN_0026b100 (26b100), FUN_0026b11c (26b11c), FUN_0026b130 (26b130), FUN_0026b144 (26b144), FUN_0026b158 (26b158), FUN_0026b170 (26b170), FUN_0026b188 (26b188), FUN_0026b1b8 (26b1b8), FUN_0026b1cc (26b1cc), FUN_0026b23c (26b23c), FUN_0026b328 (26b328), FUN_0026b340 (26b340), FUN_0026b35c (26b35c), FUN_0026b3b0 (26b3b0), FUN_0026b3c4 (26b3c4), FUN_0026b458 (26b458), FUN_0026b4a4 (26b4a4), FUN_0026b4bc (26b4bc), FUN_0026b564 (26b564), FUN_0026b620 (26b620), FUN_0026b648 (26b648), FUN_0026b6b4 (26b6b4), FUN_0026b734 (26b734), FUN_0026b7cc (26b7cc), FUN_0026b7e0 (26b7e0), FUN_0026b7f4 (26b7f4), FUN_0026b80c (26b80c), FUN_0026b8b4 (26b8b4), FUN_0026b8cc (26b8cc), FUN_0026b958 (26b958), FUN_0026b974 (26b974), FUN_0026b9c8 (26b9c8), FUN_0026b9e0 (26b9e0), FUN_0026ba10 (26ba10), FUN_0026ba48 (26ba48), FUN_0026ba60 (26ba60), FUN_0026badc (26badc), FUN_0026bbb8 (26bbb8), FUN_0026bbd0 (26bbd0), FUN_0026bc00 (26bc00), FUN_0026bc2c (26bc2c), FUN_0026bcd8 (26bcd8), FUN_0026bd10 (26bd10), FUN_0026bd24 (26bd24), FUN_0026bdf0 (26bdf0), FUN_0026be2c (26be2c), FUN_0026bfd8 (26bfd8), FUN_0026c060 (26c060), FUN_0026c074 (26c074), FUN_0026c088 (26c088), FUN_0026c168 (26c168), FUN_0026c17c (26c17c), FUN_0026c190 (26c190), FUN_0026c1f8 (26c1f8), FUN_0026c234 (26c234), FUN_0026c24c (26c24c), FUN_0026c288 (26c288), FUN_0026c2a0 (26c2a0), FUN_0026c2b4 (26c2b4), FUN_0026c2f8 (26c2f8), FUN_0026c334 (26c334), FUN_0026c3c0 (26c3c0), FUN_0026c3ec (26c3ec), FUN_0026c424 (26c424), FUN_0026c438 (26c438), FUN_0026c454 (26c454), FUN_0026c46c (26c46c), FUN_0026c484 (26c484), FUN_0026c6f0 (26c6f0), FUN_0026c704 (26c704), FUN_0026c744 (26c744), FUN_0026c7a0 (26c7a0), FUN_0026c828 (26c828), FUN_0026c840 (26c840), FUN_0026c90c (26c90c), FUN_0026cadc (26cadc), FUN_0026cb3c (26cb3c), FUN_0026cb84 (26cb84), FUN_0026cbdc (26cbdc), FUN_0026cd68 (26cd68), FUN_0026d094 (26d094), FUN_0026d0a8 (26d0a8), FUN_0026d0d0 (26d0d0), FUN_0026d100 (26d100), FUN_0026d154 (26d154), FUN_0026d168 (26d168), FUN_0026d17c (26d17c), FUN_0026d2bc (26d2bc), FUN_0026d2c0 (26d2c0), FUN_0026d34c (26d34c), FUN_0026d3c0 (26d3c0), FUN_0026d618 (26d618), FUN_0026d634 (26d634), FUN_0026d6a4 (26d6a4), FUN_0026d6f4 (26d6f4), FUN_0026d70c (26d70c), FUN_0026dbcc (26dbcc), FUN_0026dc1c (26dc1c), FUN_0026e104 (26e104), FUN_0026e758 (26e758), FUN_0026e76c (26e76c), FUN_0026e944 (26e944), FUN_0026eb74 (26eb74), FUN_0026ebdc (26ebdc), FUN_0026ecb0 (26ecb0), FUN_0026ed7c (26ed7c), FUN_0026ed90 (26ed90), FUN_0026ee70 (26ee70), FUN_0026efac (26efac), FUN_0026f21c (26f21c), FUN_0026f234 (26f234), FUN_0026f260 (26f260), FUN_0026f280 (26f280), FUN_0026f294 (26f294), FUN_0026f600 (26f600), FUN_0026f624 (26f624), FUN_0026f7d4 (26f7d4), FUN_0026f838 (26f838), FUN_0026f928 (26f928), FUN_0026f980 (26f980), FUN_0026fa04 (26fa04), FUN_0026fae0 (26fae0), FUN_0026faf8 (26faf8), FUN_0026fd70 (26fd70), FUN_0026fda0 (26fda0), FUN_0026fdd8 (26fdd8), FUN_0026ff84 (26ff84), FUN_00270228 (270228), FUN_00270808 (270808), FUN_002708f8 (2708f8), FUN_0027094c (27094c), FUN_00270970 (270970), FUN_00270984 (270984), FUN_002709a0 (2709a0), FUN_002709bc (2709bc), FUN_002709ec (2709ec), FUN_00270a5c (270a5c), FUN_00270a9c (270a9c), FUN_00270ab4 (270ab4), FUN_00270ae4 (270ae4), FUN_00270b38 (270b38), FUN_00270c0c (270c0c), FUN_00270c50 (270c50), FUN_00270d18 (270d18), FUN_00270d2c (270d2c), FUN_00270d74 (270d74), FUN_00270d90 (270d90), FUN_00270e00 (270e00), FUN_00270e14 (270e14), FUN_00270e30 (270e30), FUN_00270e84 (270e84), FUN_00270e98 (270e98), FUN_00270f10 (270f10), FUN_00270f24 (270f24), FUN_00270f40 (270f40), FUN_00270f94 (270f94), FUN_00270fc4 (270fc4), FUN_00271048 (271048), FUN_0027107c (27107c), FUN_00271100 (271100), FUN_002711bc (2711bc), FUN_002711d4 (2711d4), FUN_002711ec (2711ec), FUN_00271200 (271200), FUN_00271220 (271220), FUN_00271268 (271268), FUN_002712cc (2712cc), FUN_00271308 (271308), FUN_00271338 (271338), FUN_00271350 (271350), FUN_00271384 (271384), FUN_002713a4 (2713a4), FUN_002713bc (2713bc), FUN_002713d0 (2713d0), FUN_002714e8 (2714e8), FUN_00271510 (271510), FUN_002715a4 (2715a4), FUN_00271668 (271668), FUN_00271680 (271680), FUN_0027170c (27170c), FUN_00271728 (271728), FUN_0027177c (27177c), FUN_00271794 (271794), FUN_002717c4 (2717c4), FUN_002717fc (2717fc), FUN_00271814 (271814), FUN_00271870 (271870), FUN_00271884 (271884), FUN_00271904 (271904), FUN_00271918 (271918), FUN_002719b4 (2719b4), FUN_002719c8 (2719c8), FUN_002719e0 (2719e0), FUN_00271a2c (271a2c), FUN_00271a90 (271a90), FUN_00271b34 (271b34), FUN_00271b50 (271b50), FUN_00271ba4 (271ba4), FUN_00271bbc (271bbc), FUN_00271bf8 (271bf8), FUN_00271c40 (271c40), FUN_00271db0 (271db0), FUN_00271dfc (271dfc), FUN_00271ee0 (271ee0), FUN_00271ef4 (271ef4), FUN_00271f7c (271f7c), FUN_00271fa4 (271fa4), FUN_00272028 (272028), FUN_0027203c (27203c), FUN_00272094 (272094), FUN_002720d4 (2720d4), FUN_002720f0 (2720f0), FUN_002721a8 (2721a8), FUN_00272220 (272220), FUN_00272304 (272304), FUN_00272318 (272318), FUN_00272380 (272380), FUN_002725a4 (2725a4), FUN_002725c0 (2725c0), FUN_00272b38 (272b38), FUN_00272bf8 (272bf8), FUN_00272cec (272cec), FUN_00272dcc (272dcc), FUN_00272fa8 (272fa8), FUN_0027305c (27305c), FUN_0027307c (27307c), FUN_00273438 (273438), FUN_002734f0 (2734f0), FUN_00273504 (273504), FUN_0027353c (27353c), FUN_002737d4 (2737d4), FUN_00273808 (273808), FUN_002738f8 (2738f8), FUN_00273940 (273940), FUN_002739bc (2739bc), FUN_002739cc (2739cc), FUN_00273a00 (273a00), FUN_00274120 (274120), FUN_00274408 (274408), FUN_00274468 (274468), FUN_002747e0 (2747e0), FUN_00274b1c (274b1c), FUN_002752dc (2752dc), FUN_002752e0 (2752e0), FUN_002753a4 (2753a4), FUN_002754b0 (2754b0), FUN_0027556c (27556c), FUN_0027564c (27564c), FUN_00275778 (275778), FUN_00275b58 (275b58), FUN_002764d8 (2764d8), FUN_002774b8 (2774b8), FUN_002776dc (2776dc), FUN_002783b4 (2783b4), FUN_00278acc (278acc), FUN_002790e0 (2790e0), FUN_0027970c (27970c), FUN_0027995c (27995c), FUN_00279a00 (279a00), FUN_00279b38 (279b38), FUN_00279cb8 (279cb8), FUN_00279d44 (279d44), FUN_0027a2b8 (27a2b8), FUN_0027aa70 (27aa70), FUN_0027acd0 (27acd0), FUN_0027adac (27adac), FUN_0027b064 (27b064), FUN_0027b0e0 (27b0e0), FUN_0027b3cc (27b3cc), FUN_0027b418 (27b418), FUN_0027b8e8 (27b8e8), FUN_0027bc98 (27bc98), FUN_0027c518 (27c518), FUN_0027c638 (27c638), FUN_0027c6c8 (27c6c8), FUN_0027c758 (27c758), FUN_0027c788 (27c788), FUN_0027c8e4 (27c8e4), FUN_0027cbc4 (27cbc4), FUN_0027ce48 (27ce48), FUN_0027cfb0 (27cfb0), FUN_0027d308 (27d308), FUN_0027d42c (27d42c), FUN_0027d4d0 (27d4d0), FUN_0027d570 (27d570), FUN_0027d8b8 (27d8b8), FUN_0027d984 (27d984), FUN_002a5ec4 (2a5ec4), FUN_002a6180 (2a6180), FUN_002a61d4 (2a61d4), FUN_002a6a6c (2a6a6c), FUN_002a6b78 (2a6b78), FUN_002a71b8 (2a71b8), FUN_002a7330 (2a7330), FUN_002a7524 (2a7524), FUN_002a7614 (2a7614), FUN_002a7de0 (2a7de0), FUN_002a7e80 (2a7e80), FUN_002a8374 (2a8374), FUN_002a83cc (2a83cc), FUN_002a858c (2a858c), FUN_002a87c8 (2a87c8), FUN_002a8a24 (2a8a24), FUN_002a8bbc (2a8bbc), FUN_002a8c18 (2a8c18), FUN_002a8d20 (2a8d20), FUN_002a8da0 (2a8da0), FUN_002a8f28 (2a8f28), FUN_002a8ffc (2a8ffc), FUN_002a9014 (2a9014), FUN_002a92f0 (2a92f0), FUN_002a9488 (2a9488), FUN_002a96d8 (2a96d8), FUN_002a97e0 (2a97e0), FUN_002a9c60 (2a9c60), FUN_002a9f90 (2a9f90), FUN_002aa84c (2aa84c), FUN_002aa95c (2aa95c), FUN_002aab2c (2aab2c), FUN_002aab7c (2aab7c), FUN_002aabb4 (2aabb4), FUN_002aac04 (2aac04), FUN_002aad18 (2aad18), FUN_002aade4 (2aade4), FUN_002aafe4 (2aafe4), FUN_002ab4b0 (2ab4b0), FUN_002ab624 (2ab624), FUN_002ab778 (2ab778), FUN_002ab9b8 (2ab9b8), FUN_002abb1c (2abb1c), FUN_002abf90 (2abf90), FUN_002ac1a8 (2ac1a8), FUN_002ac20c (2ac20c), FUN_002ac6b0 (2ac6b0), FUN_002ac824 (2ac824), FUN_002ac98c (2ac98c), FUN_002acb28 (2acb28), FUN_002acca8 (2acca8), FUN_002acde8 (2acde8), FUN_002acef0 (2acef0), FUN_002acfcc (2acfcc), FUN_002ad0c4 (2ad0c4), FUN_002ae498 (2ae498), FUN_002ae610 (2ae610), FUN_002af4c4 (2af4c4), FUN_002af760 (2af760), FUN_002b0058 (2b0058), FUN_002b0554 (2b0554), FUN_002b05e8 (2b05e8), FUN_002b09d0 (2b09d0), FUN_002b0a80 (2b0a80), FUN_002b0a94 (2b0a94), FUN_002b0e8c (2b0e8c), FUN_002b0f7c (2b0f7c), FUN_002b1098 (2b1098), FUN_002b1124 (2b1124), FUN_002b1204 (2b1204), FUN_002b139c (2b139c), FUN_002b14a8 (2b14a8), FUN_002b1644 (2b1644), FUN_002b194c (2b194c), FUN_002b1c10 (2b1c10), FUN_002b1d9c (2b1d9c), FUN_002b2298 (2b2298), FUN_002b2350 (2b2350), FUN_002b3378 (2b3378), FUN_002b35cc (2b35cc), FUN_002b3d4c (2b3d4c), FUN_002b3fa0 (2b3fa0), FUN_002b4204 (2b4204), FUN_002b4404 (2b4404), FUN_002b4524 (2b4524), FUN_002b4740 (2b4740), FUN_002b4ba8 (2b4ba8), FUN_002b4f80 (2b4f80), FUN_002b51e4 (2b51e4), FUN_002b53e0 (2b53e0), FUN_002b5558 (2b5558), FUN_002b57ac (2b57ac), FUN_002b59b0 (2b59b0), FUN_002b63f8 (2b63f8), FUN_002b65b8 (2b65b8), FUN_002b75a0 (2b75a0), FUN_002b7fbc (2b7fbc), FUN_002b84cc (2b84cc), FUN_002cc6e0 (2cc6e0), FUN_002cca14 (2cca14), FUN_002ce4d4 (2ce4d4), FUN_002ce550 (2ce550), FUN_002cef68 (2cef68), FUN_002cf3b8 (2cf3b8), FUN_002cfd30 (2cfd30), FUN_002cfdd8 (2cfdd8), FUN_002cff44 (2cff44), FUN_002d06dc (2d06dc), FUN_002d0c24 (2d0c24), FUN_002d0c48 (2d0c48), FUN_002d0f38 (2d0f38), FUN_002d15a4 (2d15a4), FUN_002d1b0c (2d1b0c), FUN_002d1e4c (2d1e4c), FUN_002d21fc (2d21fc), FUN_002d24c4 (2d24c4), FUN_002d2e60 (2d2e60), FUN_002d3950 (2d3950), FUN_002d3c64 (2d3c64), FUN_002d3fec (2d3fec), FUN_002d4018 (2d4018), FUN_002d47a8 (2d47a8), FUN_002d4c04 (2d4c04), FUN_002d4d70 (2d4d70), FUN_002d53f4 (2d53f4), FUN_002d5b94 (2d5b94), FUN_002d5be4 (2d5be4), FUN_002d79f8 (2d79f8), FUN_002da4fc (2da4fc), FUN_002dac1c (2dac1c), FUN_002dadd4 (2dadd4), FUN_002daf18 (2daf18), FUN_002dafa8 (2dafa8), FUN_002db0d0 (2db0d0), FUN_002db17c (2db17c), FUN_002db224 (2db224), FUN_002db534 (2db534), FUN_002db6c4 (2db6c4), FUN_002db950 (2db950), FUN_002dc1ac (2dc1ac), FUN_002dc2b4 (2dc2b4), FUN_002dd738 (2dd738), FUN_002ddd40 (2ddd40), FUN_002dde90 (2dde90), FUN_002ddf38 (2ddf38), FUN_002ddfdc (2ddfdc), FUN_002de348 (2de348), FUN_002de49c (2de49c), FUN_002de7b4 (2de7b4), FUN_002de9f8 (2de9f8), FUN_002df784 (2df784), FUN_002df88c (2df88c), FUN_002df930 (2df930), FUN_002dfac0 (2dfac0), FUN_002dfd60 (2dfd60), FUN_002dfe58 (2dfe58), FUN_002dffa0 (2dffa0), FUN_002e0138 (2e0138), FUN_002e032c (2e032c), FUN_002e0464 (2e0464), FUN_002e09ac (2e09ac), FUN_002e15ac (2e15ac), FUN_002e16d8 (2e16d8), FUN_002e1c70 (2e1c70), FUN_002e2fb4 (2e2fb4), FUN_002e3154 (2e3154), FUN_002e4360 (2e4360), FUN_002e4580 (2e4580), FUN_002e47c0 (2e47c0), FUN_002e4890 (2e4890), FUN_002e48dc (2e48dc), FUN_002e66d8 (2e66d8), FUN_002e6acc (2e6acc), FUN_002e6c88 (2e6c88), FUN_002e81d4 (2e81d4), FUN_002e8238 (2e8238), FUN_002e82c4 (2e82c4), FUN_002e8350 (2e8350), FUN_002e853c (2e853c), FUN_002e92b8 (2e92b8), FUN_002e9800 (2e9800), FUN_002ea4c8 (2ea4c8), FUN_002ea54c (2ea54c), FUN_002ea60c (2ea60c), FUN_002eaaec (2eaaec), FUN_002eac08 (2eac08), FUN_002eac38 (2eac38), processPNG (2eafc0), FUN_002eb9f8 (2eb9f8), FUN_002ebf70 (2ebf70), FUN_002ec254 (2ec254), FUN_002ec348 (2ec348), FUN_002eccdc (2eccdc), FUN_002ed29c (2ed29c), FUN_002ed4c8 (2ed4c8), FUN_002edb84 (2edb84), FUN_002ef974 (2ef974), FUN_002f02e8 (2f02e8), FUN_002f0488 (2f0488), FUN_002f0ed4 (2f0ed4), FUN_002f1024 (2f1024), decompressZTXtChunk2 (2f1570), FUN_002f1d78 (2f1d78), FUN_002f1eb8 (2f1eb8), FUN_002f1fd0 (2f1fd0), FUN_002f2628 (2f2628), FUN_002f2fd4 (2f2fd4), FUN_002f3540 (2f3540), FUN_002f3814 (2f3814), FUN_002f3d54 (2f3d54), FUN_002f425c (2f425c), FUN_002f4364 (2f4364), FUN_002f4548 (2f4548), FUN_002f52a0 (2f52a0), FUN_002f5ab4 (2f5ab4), FUN_002f6770 (2f6770), FUN_002f6a74 (2f6a74), FUN_002f7800 (2f7800), FUN_002f783c (2f783c), FUN_002f7f84 (2f7f84), FUN_002f8704 (2f8704), FUN_002f8e90 (2f8e90), FUN_002fa778 (2fa778), FUN_002fa910 (2fa910), FUN_002faecc (2faecc), FUN_002fb2a4 (2fb2a4), FUN_002fb554 (2fb554), FUN_002fb684 (2fb684), FUN_002fd468 (2fd468), FUN_002fd48c (2fd48c), FUN_002fe3e4 (2fe3e4), FUN_002fe4a0 (2fe4a0), FUN_002febb4 (2febb4), FUN_002fedb0 (2fedb0), FUN_002ff270 (2ff270), FUN_00301254 (301254), FUN_00301b9c (301b9c), FUN_00301c14 (301c14), FUN_00302264 (302264), FUN_00302544 (302544), FUN_00302750 (302750), FUN_003027fc (3027fc), FUN_00303f78 (303f78), FUN_0030413c (30413c), Fax3Cleanup2 (304acc), FUN_00304b58 (304b58), FUN_00306470 (306470), FUN_00308310 (308310), FUN_00308434 (308434), FUN_00308c2c (308c2c), FUN_0030aae0 (30aae0), FUN_0030aed8 (30aed8), FUN_0030bcbc (30bcbc), FUN_0030c3fc (30c3fc), FUN_0030cad0 (30cad0), FUN_0030dc8c (30dc8c), FUN_0030dcf4 (30dcf4), FUN_0030dd5c (30dd5c), FUN_0030ddb8 (30ddb8), FUN_0030dee4 (30dee4), FUN_0030dfa0 (30dfa0), FUN_0030e030 (30e030), FUN_0030e25c (30e25c), FUN_0030e330 (30e330), FUN_0030e380 (30e380), FUN_0030e3b8 (30e3b8), FUN_0030e458 (30e458), FUN_0030e54c (30e54c), FUN_0030e5c4 (30e5c4), FUN_0030e6dc (30e6dc), FUN_0030eb48 (30eb48), FUN_0030eb84 (30eb84), FUN_0030ee64 (30ee64), FUN_0030f82c (30f82c), FUN_0030fafc (30fafc), FUN_0030fbc0 (30fbc0), FUN_0030fec4 (30fec4), FUN_0031052c (31052c), FUN_003105bc (3105bc), FUN_00310878 (310878), FUN_00310f98 (310f98), FUN_00312228 (312228), FUN_003126b4 (3126b4), FUN_00312c84 (312c84), FUN_00312f18 (312f18), FUN_00313260 (313260), FUN_003135dc (3135dc), FUN_0031471c (31471c), FUN_00314bb4 (314bb4), FUN_0031534c (31534c), FUN_0031571c (31571c), FUN_003157bc (3157bc), FUN_00315848 (315848), FUN_00315898 (315898), FUN_003158e0 (3158e0), FUN_00315a00 (315a00), FUN_00315a3c (315a3c), FUN_00315d38 (315d38), FUN_00315e9c (315e9c), FUN_00315fa0 (315fa0), FUN_00315ff4 (315ff4), FUN_00316278 (316278), FUN_00317870 (317870), FUN_00317a28 (317a28), FUN_0031980c (31980c), FUN_00319e7c (319e7c), FUN_0031a0b0 (31a0b0), FUN_0031a150 (31a150), FUN_0031a25c (31a25c), FUN_0031a884 (31a884), FUN_0031af2c (31af2c), FUN_0031b148 (31b148), FUN_0031b1e0 (31b1e0), FUN_0031b358 (31b358), FUN_0031bf50 (31bf50), FUN_0031c07c (31c07c), FUN_0031c530 (31c530), FUN_0031c670 (31c670), FUN_0031d248 (31d248), FUN_0031d394 (31d394), FUN_0031d794 (31d794), FUN_0031d8b0 (31d8b0), FUN_0031d97c (31d97c), FUN_0031dab8 (31dab8), FUN_0031e084 (31e084), FUN_0031e1fc (31e1fc), FUN_0031f60c (31f60c), FUN_0031fb00 (31fb00), FUN_0031fdb4 (31fdb4), FUN_00320558 (320558), FUN_00320928 (320928), FUN_00320d00 (320d00), FUN_00321240 (321240), FUN_003212ec (3212ec), FUN_00321428 (321428), FUN_003216f4 (3216f4), FUN_00321824 (321824), FUN_00321e78 (321e78), FUN_003225a0 (3225a0), FUN_00322c7c (322c7c), FUN_00323380 (323380), FUN_00323550 (323550), FUN_003238c0 (3238c0), FUN_0032396c (32396c), FUN_00323aa8 (323aa8), FUN_00323fbc (323fbc), FUN_00324344 (324344), FUN_003247ac (3247ac), FUN_00324940 (324940), FUN_00324a78 (324a78), FUN_00324b70 (324b70), FUN_00324bc0 (324bc0), FUN_00325854 (325854), FUN_00325dc0 (325dc0), FUN_00325f18 (325f18), FUN_00326014 (326014), FUN_003262ac (3262ac), FUN_0032749c (32749c), FUN_00327da8 (327da8), FUN_00328034 (328034), FUN_00328c14 (328c14), FUN_00328c34 (328c34), FUN_00328ec8 (328ec8), FUN_0032a734 (32a734), FUN_0032aa20 (32aa20), FUN_0032ac08 (32ac08), FUN_0032af7c (32af7c), FUN_0032b9b8 (32b9b8), FUN_0032ba98 (32ba98), FUN_0032bbf0 (32bbf0), FUN_0032bc34 (32bc34), FUN_0032bdbc (32bdbc), FUN_0032bf84 (32bf84), FUN_0032c068 (32c068), FUN_0032c1ac (32c1ac), FUN_0032c6a4 (32c6a4), FUN_0032c7d8 (32c7d8), FUN_0032dc78 (32dc78), FUN_0032dfa0 (32dfa0), FUN_0032e93c (32e93c), FUN_0032ec5c (32ec5c), FUN_0032ed50 (32ed50), FUN_0032ee44 (32ee44), FUN_0032eee4 (32eee4), FUN_00330104 (330104), FUN_003305e8 (3305e8), FUN_003308d8 (3308d8), FUN_00330b74 (330b74), FUN_00330b88 (330b88), FUN_00330cec (330cec), FUN_00330f58 (330f58), FUN_00330fd4 (330fd4), FUN_003313ec (3313ec), FUN_00331a68 (331a68), FUN_00331dd0 (331dd0), FUN_00332660 (332660), FUN_0033298c (33298c), FUN_00332b44 (332b44), FUN_00333410 (333410), FUN_00333c38 (333c38), FUN_003344d4 (3344d4), FUN_003347b4 (3347b4), FUN_003349d0 (3349d0), FUN_00334be4 (334be4), FUN_00334d44 (334d44), FUN_00334dd8 (334dd8), FUN_00334e78 (334e78), FUN_00334fc4 (334fc4), FUN_003352dc (3352dc), FUN_0033541c (33541c), FUN_003355c0 (3355c0), FUN_00335604 (335604), FUN_00335828 (335828), FUN_0033596c (33596c), FUN_003359f4 (3359f4), FUN_00335ea4 (335ea4), FUN_00336120 (336120), FUN_00336768 (336768), FUN_00336f14 (336f14), FUN_00336fd8 (336fd8), FUN_003372d8 (3372d8), FUN_00338a74 (338a74), FUN_00339608 (339608), FUN_003396e4 (3396e4), FUN_0033a848 (33a848), FUN_0033abf8 (33abf8), FUN_0033b9a8 (33b9a8), FUN_0033c9b4 (33c9b4), FUN_0033cf50 (33cf50), FUN_0033cfc0 (33cfc0), FUN_0033e290 (33e290), FUN_0033e4b8 (33e4b8), FUN_0033e548 (33e548), FUN_0033e6ac (33e6ac), FUN_0033e70c (33e70c), FUN_0033e7e0 (33e7e0), FUN_0033f0e8 (33f0e8), FUN_0033f234 (33f234), FUN_0033fb6c (33fb6c), FUN_0033fbf4 (33fbf4), FUN_00342bb8 (342bb8), FUN_003436ac (3436ac), FUN_00344060 (344060), FUN_0034441c (34441c), FUN_00344f90 (344f90), FUN_003476a0 (3476a0), FUN_00347e40 (347e40), FUN_00348208 (348208), FUN_00348300 (348300), FUN_00348d18 (348d18), FUN_00349910 (349910), FUN_00349a38 (349a38), FUN_0034af28 (34af28), FUN_0034b9e8 (34b9e8), FUN_0034bb10 (34bb10), FUN_0034bcfc (34bcfc), FUN_0034bf34 (34bf34), FUN_0034bf4c (34bf4c), FUN_0034c544 (34c544), FUN_0034ca1c (34ca1c), FUN_0034e82c (34e82c), FUN_0034ea08 (34ea08), FUN_0034ee54 (34ee54), FUN_0034f694 (34f694), FUN_0034f8f0 (34f8f0), FUN_0034f964 (34f964), FUN_0034fcc0 (34fcc0), FUN_003503dc (3503dc), FUN_00350c24 (350c24), FUN_003511cc (3511cc), FUN_00352ec8 (352ec8), FUN_003531a0 (3531a0), FUN_00353644 (353644), FUN_00353a7c (353a7c), FUN_00353f88 (353f88), FUN_003544a0 (3544a0), FUN_00354628 (354628), FUN_003546b4 (3546b4), FUN_00354724 (354724), FUN_0035477c (35477c), FUN_00354bb0 (354bb0), FUN_00354cd4 (354cd4), FUN_00354d58 (354d58), FUN_0035719c (35719c), FUN_00357658 (357658), FUN_003576c4 (3576c4), FUN_00357824 (357824), FUN_00357848 (357848), FUN_00358274 (358274), FUN_00358aec (358aec), FUN_00358dac (358dac), FUN_0035954c (35954c), FUN_0036613c (36613c), FUN_00366394 (366394), FUN_00366af4 (366af4), FUN_00366bc4 (366bc4), FUN_003678b0 (3678b0), FUN_00367af8 (367af8), FUN_00368e04 (368e04), FUN_00369414 (369414), FUN_00369d6c (369d6c), FUN_0036a088 (36a088), FUN_0036a0f0 (36a0f0), FUN_0036a27c (36a27c), FUN_0036a314 (36a314), FUN_0036af0c (36af0c), FUN_0036b15c (36b15c), FUN_0036b218 (36b218), FUN_0036b3a4 (36b3a4), FUN_0036b4ac (36b4ac), FUN_0036b730 (36b730), FUN_0036ba84 (36ba84), FUN_0036bfcc (36bfcc), FUN_0036c01c (36c01c), FUN_0036c0b8 (36c0b8), FUN_0036c6e0 (36c6e0), FUN_0036d378 (36d378), FUN_0036d650 (36d650), FUN_0036dc4c (36dc4c), FUN_0036dd84 (36dd84), FUN_0036e364 (36e364), FUN_0036eb64 (36eb64), FUN_0036ed94 (36ed94), FUN_0036fd78 (36fd78), FUN_0036ff78 (36ff78), FUN_0037019c (37019c), FUN_00370308 (370308), FUN_003706d4 (3706d4), FUN_00371268 (371268), FUN_003714e0 (3714e0), FUN_0037189c (37189c), FUN_00371e3c (371e3c), FUN_0037285c (37285c), FUN_00372ce8 (372ce8), FUN_00374618 (374618), FUN_0037472c (37472c), FUN_00374840 (374840), FUN_00374bf4 (374bf4), FUN_00374c38 (374c38), FUN_00375cb0 (375cb0), FUN_00375dfc (375dfc), FUN_003760d8 (3760d8), FUN_0037686c (37686c), FUN_00376cc8 (376cc8), FUN_003774fc (3774fc), FUN_00377b20 (377b20), FUN_00377d24 (377d24), FUN_00377e34 (377e34), FUN_00377ea0 (377ea0), FUN_003781d0 (3781d0), FUN_0037827c (37827c), FUN_00378460 (378460), FUN_003784a8 (3784a8), FUN_003784fc (3784fc), FUN_0037868c (37868c), FUN_003787c4 (3787c4), FUN_00378ebc (378ebc), FUN_00379ad0 (379ad0), FUN_00379c28 (379c28), FUN_0037a0c8 (37a0c8), FUN_0037a450 (37a450), FUN_0037a654 (37a654), FUN_0037b04c (37b04c), FUN_0037cefc (37cefc), FUN_0037d028 (37d028), FUN_0037d808 (37d808), FUN_0037d93c (37d93c), FUN_0037d9e4 (37d9e4), FUN_0037e0a4 (37e0a4), FUN_0037e0e0 (37e0e0), FUN_0037e498 (37e498), FUN_0037e5b8 (37e5b8), FUN_0037e728 (37e728), FUN_0037ed64 (37ed64), FUN_0037f118 (37f118), FUN_0037f564 (37f564), FUN_0037f6f8 (37f6f8), FUN_0037ffcc (37ffcc), FUN_00380338 (380338), FUN_003809c8 (3809c8), FUN_00380ba8 (380ba8), FUN_00381abc (381abc), FUN_00381d64 (381d64), FUN_00381eb0 (381eb0), FUN_00381fc0 (381fc0), FUN_003836d4 (3836d4), FUN_00383b10 (383b10), FUN_00383c64 (383c64), FUN_00383f9c (383f9c), FUN_00383fa0 (383fa0), FUN_00383fa4 (383fa4), FUN_00383fa8 (383fa8), Fax3Cleanup (384188), FUN_003843b8 (3843b8), LogLuvInitState (384520), LogLuvInitState2 (384548), FUN_00384660 (384660), FUN_00384728 (384728), FUN_00384750 (384750), FUN_003847c8 (3847c8), FUN_003848b8 (3848b8), FUN_00384ac0 (384ac0), FUN_00384ca0 (384ca0), FUN_00384d90 (384d90), FUN_00384e08 (384e08), FUN_00384e30 (384e30), FUN_00384f48 (384f48), FUN_00385128 (385128), FUN_003851c8 (3851c8), FUN_00385290 (385290), FUN_00385380 (385380), FUN_00385420 (385420), FUN_00385470 (385470), FUN_003854e8 (3854e8), FUN_00385650 (385650), FUN_00385678 (385678), readLayerAndMaskInfoSection (3856c8), FUN_00385808 (385808), _ATSFontFindFromName (385858), _ATSFontFindFromPostScriptName (385864), _ATSFontGetFileReference (385870), _AUEventListenerNotify (38587c), _AudioUnitGetProperty (385888), _AudioUnitRender (385894), _CFArrayAppendValue (3858a0), _CFArrayCreateMutable (3858ac), _CFArrayGetCount (3858b8), _CFArrayGetValueAtIndex (3858c4), _CFDataAppendBytes (3858d0), _CFDataCreate (3858dc), _CFDataCreateMutable (3858e8), _CFDataGetBytePtr (3858f4), _CFDataGetLength (385900), _CFDateCreate (38590c), _CFDateFormatterCreate (385918), _CFDateFormatterCreateStringWithDate (385924), _CFDictionaryContainsKey (385930), _CFDictionaryCreateMutable (38593c), _CFDictionaryGetCount (385948), _CFDictionaryGetKeysAndValues (385954), _CFDictionaryGetTypeID (385960), _CFDictionaryGetValue (38596c), _CFDictionaryGetValueIfPresent (385978), _CFDictionarySetValue (385984), _CFGetTypeID (385990), _CFGregorianDateGetAbsoluteTime (38599c), _CFLocaleCopyCurrent (3859a8), _CFNumberCreate (3859b4), _CFNumberGetValue (3859c0), _CFRetain (3859d8), _CFStringAppendCString (3859e4), _CFStringAppendCharacters (3859f0), _CFStringCreateMutable (3859fc), _CFStringCreateWithCString (385a14), _CFStringCreateWithCharacters (385a20), _CFStringCreateWithFormat (385a44), _CFStringGetCString (385a5c), _CFStringGetDoubleValue (385a74), _CFStringGetIntValue (385a8c), _CFStringGetMaximumSizeForEncoding (385aa4), _CFURLCreateFromFSRef (385ac8), _CFUUIDCreate (385ad4), _CFUUIDGetUUIDBytes (385ae0), _CGBitmapContextCreate (385aec), _CGBitmapContextGetBitmapInfo (385af8), _CGBitmapContextGetBitsPerComponent (385b04), _CGBitmapContextGetBitsPerPixel (385b10), _CGBitmapContextGetBytesPerRow (385b1c), _CGBitmapContextGetColorSpace (385b28), _CGBitmapContextGetData (385b34), _CGBitmapContextGetHeight (385b40), _CGBitmapContextGetWidth (385b4c), _CGColorSpaceCreateDeviceRGB (385b58), _CGColorSpaceRelease (385b64), _CGContextClipToRect (385b70), _CGContextDrawImage (385b7c), _CGContextFlush (385b88), _CGContextRelease (385b94), _CGContextRestoreGState (385ba0), _CGContextSaveGState (385bac), _CGContextScaleCTM (385bb8), _CGContextSetBlendMode (385bc4), _CGContextSetInterpolationQuality (385bd0), _CGDataProviderCreateWithData (385bdc), _CGDataProviderRelease (385be8), _CGEventSourceFlagsState (385bf4), _CGEventSourceKeyState (385c00), _CGImageCreate (385c0c), _CGImageRelease (385c18), _CGSetLocalEventsSuppressionInterval (385c24), _CGWarpMouseCursorPosition (385c30), _GetCurrentEventButtonState (385c3c), _GetCurrentEventKeyModifiers (385c48), _GetMainEventLoop (385c54), _InstallEventLoopTimer (385c60), _LMGetKbdType (385c6c), _MTLCreateSystemDefaultDevice (385c78), _NSApplicationLoad (385c90), _NSCountWindowsForContext (385c9c), _NSMouseInRect (385cb4), _NSPointInRect (385cc0), _NSRunCriticalAlertPanel (385ccc), _NSRunInformationalAlertPanel (385cd8), _NSStringFromClass (385ce4), _NSTemporaryDirectory (385cf0), _NSWindowListForContext (385cfc), _OSAtomicAdd32Barrier (385d08), _OSAtomicCompareAndSwap64Barrier (385d14), _OSMemoryBarrier (385d20), _RemoveEventLoopTimer (385d2c), _TISCopyCurrentKeyboardInputSource (385d38), _TISCopyCurrentKeyboardLayoutInputSource (385d44), _TISGetInputSourceProperty (385d50), _TSMGetActiveDocument (385d5c), _UCKeyTranslate (385d68), ___assert_rtn (385f9c), ___cxa_bad_typeid (385fc0), ___cxa_begin_catch (385fcc), ___cxa_call_unexpected__385fd8 (385fd8), ___cxa_demangle (385fe4), ___cxa_end_catch (385ff0), ___cxa_free_exception (385ffc), ___cxa_guard_abort (386008), ___cxa_guard_acquire (386014), ___cxa_guard_release (386020), ___cxa_rethrow (38602c), ___dynamic_cast (386044), ___error (386050), ___exp10 (38605c), ___fpclassifyd (386068), ___maskrune (386074), ___memcpy_chk (386080), ___sincos_stret (38608c), ___sincosf_stret (386098), ___sprintf_chk (3860a4), ___tolower (3860bc), ___toupper (3860c8), _abort (3860d4), _acos (3860ec), _atan2 (3860f8), _atol (386104), _bsearch (386110), _calloc (386128), _cblas_scopy (386134), _closedir (386140), _cos (38614c), _deflate (386164), _deflateEnd (386170), _deflateInit_ (386188), _deflateParams (386194), _deflateReset (3861a0), _div (3861b8), _dladdr (3861c4), _dlopen (3861d0), _dlsym (3861dc), _dup (3861e8), _exit (3861f4), _exp (386200), _expf (38620c), _ferror (386224), _fmod (38623c), _fmodf (386248), _fprintf (386260), _fputc (38626c), _freopen (386290), _frexpf (38629c), _fseek (3862a8), _ftell (3862c0), _getcwd (3862e4), _getpagesize (386308), _getpid (386314), _inflate (386374), _inflateEnd (386380), _inflateInit2_ (38638c), _inflateInit_ (386398), _inflateReset (3863a4), _inflateSync (3863b0), _ldexp (3863c8), _localeconv (3863d4), _log (3863ec), _log10 (3863f8), _log10f (386404), _logf (386410), _longjmp (38641c), _mach_host_self (386434), _memchr (386458), _memcmp (386464), _memset (386488), _memset_pattern16 (386494), _mktemp (3864ac), _nan (3864b8), _objc_alloc (3864c4), _objc_autorelease (3864d0), _objc_autoreleasePoolPop (3864dc), _objc_autoreleasePoolPush (3864e8), _objc_begin_catch (3864f4), _objc_end_catch (386500), _objc_release (386518), _objc_retain (386524), _objc_setProperty_nonatomic (386530), _opendir (38653c), _pow (386554), _powf (386560), _pthread_cond_destroy (38656c), _pthread_cond_init (386578), _pthread_cond_signal (386584), _pthread_cond_timedwait_relative_np (386590), _pthread_cond_wait (38659c), _pthread_equal (3865a8), _pthread_key_create (3865c0), _pthread_key_delete (3865cc), _pthread_mutex_destroy (3865d8), _pthread_mutex_trylock (3865fc), _pthread_mutexattr_destroy (386614), _pthread_self (386638), _qsort (38665c), _raise (386668), _rand (386674), _readdir (386680), _realloc (386698), _reallocf (3866a4), _rewind (3866b0), _rmdir (3866bc), _sched_yield (3866c8), _setjmp (3866d4), _setlocale (3866e0), _setrlimit (3866ec), _sigaction (3866f8), _sigsetjmp (386704), _sin (386710), _sprintf (386728), _srand (386734), _sscanf (386740), _strcat (386758), _strchr (386764), _strcmp (386770), _strncat (386794), _strncmp (3867a0), _strncpy (3867ac), _strrchr (3867b8), _strstr (3867c4), _strtod (3867d0), _strtol (3867dc), _sysctl (3867e8), _syslog (3867f4), _system (386800), _tan (38680c), _tanf (386818), _toupper (386830), _unlink (38683c), _usleep (386848), _vDSP_vadd (386854), _vDSP_vclr (386860), _vDSP_vclrD (38686c), _vDSP_vsmul (386878), _vImageBufferFill_ARGB8888 (386884), _vImageCopyBuffer (386890), _vfprintf (38689c), dealloc__8a5201 (8a5201), init__8a5401 (8a5401), addButtonWithTitle___8a5402 (8a5402), finishLaunching__8a5501 (8a5501), sendEvent___8a5502 (8a5502), arrayWithObjects_count___8a5601 (8a5601), arrayWithObject___8a5602 (8a5602), arrayWithObjects___8a5603 (8a5603), array__8a5604 (8a5604), initWithString___8a5701 (8a5701), class__8a5702 (8a5702), string__8a5703 (8a5703), length__8a5704 (8a5704), characterAtIndex___8a5705 (8a5705), init__8a5801 (8a5801), bundleWithPath___8a5901 (8a5901), mainBundle__8a5902 (8a5902), executablePath__8a5903 (8a5903), date__8a5d01 (8a5d01), timeIntervalSinceReferenceDate__8a5d02 (8a5d02), dictionaryWithContentsOfFile___8a5e01 (8a5e01), objectForKey___8a5e02 (8a5e02), defaultCenter__8a5f01 (8a5f01), removeObserver___8a5f02 (8a5f02), addObserver_selector_name_object___8a5f03 (8a5f03), sharedDocumentController__8a6001 (8a6001), respondsToSelector___8a6002 (8a6002), otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_ (8a6101), mouseLocation__8a6102 (8a6102), defaultManager__8a6201 (8a6201), graphicsContextWithWindow___8a6501 (8a6501), currentContext__8a6502 (8a6502), graphicsPort__8a6503 (8a6503), currentInputManager__8a6701 (8a6701), markedTextAbandoned___8a6702 (8a6702), invocationWithMethodSignature___8a6801 (8a6801), setSelector___8a6802 (8a6802), invokeWithTarget___8a6803 (8a6803), getReturnValue___8a6804 (8a6804), constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant___8a6901 (8a6901), menuBarVisible__8a6a01 (8a6a01), setMenuBarVisible___8a6a02 (8a6a02), init__8a6a03 (8a6a03), initWithTitle___8a6a04 (8a6a04), setTitle___8a6a05 (8a6a05), separatorItem__8a6b01 (8a6b01), initWithTitle_action_keyEquivalent___8a6b02 (8a6b02), setSubmenu___8a6b03 (8a6b03), arrayWithCapacity___8a6c01 (8a6c01), defaultCenter__8a6d01 (8a6d01), removeObserver___8a6d02 (8a6d02), addObserver_selector_name_object___8a6d03 (8a6d03), openPanel__8a6f01 (8a6f01), setCanChooseFiles___8a6f02 (8a6f02), defaultWritingDirectionForLanguage___8a7001 (8a7001), savePanel__8a7601 (8a7601), setCanCreateDirectories___8a7602 (8a7602), dealloc__8a7801 (8a7801), alloc__8a7802 (8a7802), initWithFrame___8a7803 (8a7803), viewDidMoveToWindow__8a7804 (8a7804), class__8a7805 (8a7805), scheduledTimerWithTimeInterval_target_selector_userInfo_repeats___8a7b01 (8a7b01), fileURLWithPath___8a7c01 (8a7c01), alloc__8a7d01 (8a7d01), dealloc__8a7d02 (8a7d02), becomeFirstResponder__8a7d03 (8a7d03), resignFirstResponder__8a7d04 (8a7d04), acceptsFirstResponder__8a7d05 (8a7d05), initWithFrame___8a7d06 (8a7d06), makeBackingLayer__8a7d07 (8a7d07), drawRect___8a7d08 (8a7d08), layout__8a7d09 (8a7d09), viewDidHide__8a7d0a (8a7d0a), viewDidUnhide__8a7d0b (8a7d0b), viewDidMoveToWindow__8a7d0c (8a7d0c), viewWillMoveToSuperview___8a7d0d (8a7d0d), alloc__8a7e01 (8a7e01), setStyleMask___8a7e02 (8a7e02), dealloc__8a7e03 (8a7e03), setFrame_display___8a7e04 (8a7e04), becomeKeyWindow__8a7e05 (8a7e05), resignKeyWindow__8a7e06 (8a7e06), miniaturize___8a7e07 (8a7e07), deminiaturize___8a7e08 (8a7e08), zoom___8a7e09 (8a7e09), performClose___8a7e0a (8a7e0a), sendEvent___8a7e0b (8a7e0b), close__8a7e0c (8a7e0c), validateMenuItem___8a7e0d (8a7e0d), initWithContentRect_styleMask_backing_defer___8a7e0e (8a7e0e), sharedWorkspace__8a7f01 (8a7f01), performFileOperation_source_destination_files_tag___8a7f02 (8a7f02)
 
 #### processAndPrintData — funcs/__Z19processAndPrintDatav.cpp, Ghidra 3468, 3 model attempt(s)
 
@@ -5773,9 +6496,27 @@ void handleSwitch(long *switchState, double angle, uint64_t color, double bright
 }
 ```
 
-### Not compiling yet — 907 × use of undeclared identifier 'X'; did you mean 'X'?
+#### processInput12 — funcs/__Z14processInput12Pyyyy.cpp, Ghidra 6078, 0 model attempt(s)
 
-All: processInput4 (3d10), processInput5 (4540), updateValue (4594), FUN_000045fc (45fc), FUN_00007144 (7144), FUN_000073b4 (73b4), FUN_000084e0 (84e0), FUN_00009cb0 (9cb0), processAndInvertByte (a1f8), processListAndProcessNodes (c660), FUN_0000cdac (cdac), FUN_0000cdcc (cdcc), processAudioSettings (e4e8), FUN_0000ebb0 (ebb0), FUN_0000f1d8 (f1d8), FUN_0000f804 (f804), processAndWriteData8 (f8d8), processList3 (fa88), FUN_0000fb1c (fb1c), FUN_00011a98 (11a98), FUN_00011f1c (11f1c), FUN_000135f8 (135f8), FUN_00013c80 (13c80), processInput34 (13ec0), FUN_00016478 (16478), FUN_00017d24 (17d24), processList4 (19830), FUN_0001bca4 (1bca4), processAndWriteData9 (1f94c), FUN_0001ff14 (1ff14), FUN_00020a30 (20a30), FUN_00020a48 (20a48), FUN_00020b14 (20b14), processList5 (21c70), FUN_00021ef0 (21ef0), FUN_000237d0 (237d0), processVectorsAndAngles (2779c), FUN_00028590 (28590), FUN_00028a0c (28a0c), FUN_00028ba4 (28ba4), FUN_0002ab4c (2ab4c), FUN_0002af58 (2af58), FUN_0002bfc0 (2bfc0), FUN_0002e9b0 (2e9b0), FUN_0002ebe0 (2ebe0), FUN_0002ece0 (2ece0), FUN_0003525c (3525c), FUN_00035a20 (35a20), FUN_00036c08 (36c08), FUN_0003b740 (3b740), FUN_0003c128 (3c128), FUN_0003f908 (3f908), FUN_0003f9cc (3f9cc), FUN_000419ac (419ac), FUN_00042dc0 (42dc0), FUN_00043890 (43890), FUN_000441b8 (441b8), FUN_00045028 (45028), FUN_000481f4 (481f4), FUN_00052110 (52110), FUN_00055298 (55298), FUN_00057740 (57740), FUN_000a2440 (a2440), FUN_000a54b8 (a54b8), FUN_000a6034 (a6034), FUN_000a609c (a609c), FUN_000a61b4 (a61b4), FUN_000a61c0 (a61c0), FUN_000a9a94 (a9a94), FUN_000b0350 (b0350), FUN_000b046c (b046c), FUN_000b04dc (b04dc), FUN_000b07b4 (b07b4), FUN_000b0bfc (b0bfc), FUN_000b198c (b198c), FUN_000b41cc (b41cc), FUN_000b4a90 (b4a90), FUN_000b5834 (b5834), FUN_000b5f50 (b5f50), FUN_000b9dac (b9dac), FUN_000ba200 (ba200), FUN_000ba618 (ba618), FUN_000ba754 (ba754), FUN_000bc5d8 (bc5d8), FUN_000bc918 (bc918), FUN_000c041c (c041c), FUN_000c0c80 (c0c80), FUN_000c1fa4 (c1fa4), FUN_000c334c (c334c), FUN_000c388c (c388c), FUN_000c3a58 (c3a58), FUN_0027dd40 (27dd40), FUN_0027de20 (27de20), FUN_0027de44 (27de44), FUN_0027de74 (27de74), FUN_0027df40 (27df40), FUN_0027df70 (27df70), FUN_0027e098 (27e098), FUN_0027e798 (27e798), FUN_0027e918 (27e918), FUN_0027e9d8 (27e9d8), FUN_0027ea10 (27ea10), FUN_0027ea28 (27ea28), FUN_0027ea40 (27ea40), FUN_0027ea60 (27ea60), FUN_0027ea7c (27ea7c), FUN_0027ec8c (27ec8c), FUN_0027ecf0 (27ecf0), FUN_0027ef08 (27ef08), FUN_0027efa0 (27efa0), FUN_0027f4a0 (27f4a0), FUN_002802b0 (2802b0), FUN_00281a34 (281a34), FUN_00284a28 (284a28), FUN_00284d70 (284d70), FUN_00284d8c (284d8c), FUN_00284da8 (284da8), FUN_00284dbc (284dbc), FUN_0028508c (28508c), FUN_00285d04 (285d04), FUN_00285ea8 (285ea8), FUN_00285ec8 (285ec8), FUN_00286894 (286894), FUN_00287b88 (287b88), FUN_00288518 (288518), FUN_0028a074 (28a074), FUN_0028dae4 (28dae4), FUN_0028ec7c (28ec7c), FUN_0028f378 (28f378), FUN_0028f630 (28f630), FUN_0028f894 (28f894), FUN_0028fca8 (28fca8), FUN_00290d50 (290d50), FUN_00290fe8 (290fe8), FUN_002920e0 (2920e0), FUN_00292634 (292634), FUN_0029313c (29313c), FUN_00293d78 (293d78), FUN_00293d94 (293d94), FUN_0029403c (29403c), FUN_0029406c (29406c), FUN_00297b88 (297b88), FUN_00299edc (299edc), FUN_00299f84 (299f84), FUN_0029a1d8 (29a1d8), FUN_0029a1f0 (29a1f0), FUN_0029a204 (29a204), FUN_0029a338 (29a338), FUN_0029bf40 (29bf40), FUN_0029c9f0 (29c9f0), FUN_0029db84 (29db84), FUN_0029e5b4 (29e5b4), FUN_0029e690 (29e690), FUN_0029fc18 (29fc18), FUN_0029fc2c (29fc2c), FUN_0029fc40 (29fc40), FUN_002a0798 (2a0798), FUN_002a22a4 (2a22a4), FUN_002a43e0 (2a43e0), FUN_002a4b88 (2a4b88), FUN_002c12a0 (2c12a0), FUN_002c2950 (2c2950), FUN_002c2968 (2c2968), FUN_002c2980 (2c2980), FUN_002c2998 (2c2998), FUN_002c29c0 (2c29c0), FUN_002c2a88 (2c2a88), FUN_002c2adc (2c2adc), FUN_002c2b6c (2c2b6c), FUN_002c2bfc (2c2bfc), FUN_002c2c60 (2c2c60), FUN_002c3e48 (?), FUN_002c4ff4 (2c4ff4), FUN_002c66c8 (2c66c8), FUN_002c8494 (2c8494), FUN_002c986c (2c986c), FUN_00360bf0 (360bf0), FUN_0036421c (36421c), FUN_0005b134 (5b134), FUN_0005da8c (5da8c), FUN_0005f4a8 (5f4a8), FUN_0005f730 (5f730), shellWindowGlue (6013c), FUN_000605a8 (605a8), updateShellWindowWantKeys (60808), FUN_000637ec (637ec), FUN_00063be8 (63be8), FUN_00065e6c (65e6c), FUN_00066498 (66498), FUN_000676ec (676ec), FUN_00068974 (68974), FUN_00068d2c (68d2c), FUN_000690b4 (690b4), FUN_00069494 (69494), FUN_0006a0b4 (6a0b4), FUN_0006a4c0 (6a4c0), FUN_0006baf4 (6baf4), FUN_0006cac4 (6cac4), FUN_0006ce64 (6ce64), FUN_00071ef0 (71ef0), FUN_000726fc (726fc), FUN_00073a78 (73a78), FUN_00073cb8 (73cb8), FUN_00074120 (74120), FUN_00074784 (74784), FUN_00074f68 (74f68), FUN_0007588c (7588c), FUN_00075e7c (75e7c), FUN_00076c60 (76c60), FUN_00077d94 (77d94), FUN_00078744 (78744), FUN_00078f34 (78f34), FUN_0007aef8 (7aef8), FUN_0007bb44 (7bb44), FUN_0007f1e0 (7f1e0), FUN_0007fa74 (7fa74), FUN_00080cf4 (80cf4), FUN_00082068 (82068), FUN_000828b0 (828b0), FUN_000829fc (829fc), FUN_00082ccc (82ccc), FUN_00082cfc (82cfc), FUN_00086ef8 (86ef8), FUN_00087c2c (87c2c), FUN_00088458 (88458), FUN_0008a6ac (8a6ac), FUN_0008b728 (8b728), FUN_0008f904 (8f904), FUN_00096de4 (96de4), FUN_00096e00 (96e00), FUN_00096e2c (96e2c), FUN_00096e58 (96e58), FUN_0009718c (9718c), FUN_0009a9b8 (9a9b8), FUN_0009b124 (9b124), FUN_0009d03c (9d03c), FUN_0009e1f0 (9e1f0), FUN_0009f688 (9f688), FUN_0009f780 (9f780), FUN_000a0ca8 (a0ca8), FUN_000c5030 (c5030), FUN_000c537c (c537c), FUN_000c53ac (c53ac), FUN_000c5468 (c5468), FUN_000c8bcc (c8bcc), FUN_000c9108 (c9108), FUN_000cb488 (cb488), FUN_000cd140 (cd140), FUN_000cf034 (cf034), FUN_000cfcc8 (cfcc8), FUN_000d16bc (d16bc), FUN_000d1884 (d1884), FUN_000d38f8 (d38f8), FUN_000d5e0c (d5e0c), FUN_000d7e58 (d7e58), FUN_000d87f0 (d87f0), FUN_000d9cec (d9cec), FUN_000dabe4 (dabe4), FUN_000dca40 (dca40), FUN_000e2efc (e2efc), FUN_000e3660 (e3660), FUN_000e388c (e388c), FUN_000e3948 (e3948), FUN_000e5b80 (e5b80), FUN_000e609c (e609c), FUN_000e613c (e613c), FUN_000e6248 (e6248), FUN_000e683c (e683c), FUN_000e6eb8 (e6eb8), FUN_000e88b0 (e88b0), FUN_000ec514 (ec514), FUN_000f0e08 (f0e08), FUN_000f0e80 (f0e80), FUN_000f31dc (f31dc), FUN_000f3620 (f3620), FUN_000f55c0 (f55c0), FUN_000f6044 (f6044), FUN_000f79c4 (f79c4), FUN_000f7a18 (f7a18), FUN_000f8298 (f8298), FUN_000fdb24 (fdb24), FUN_001025a8 (1025a8), FUN_00102e94 (102e94), FUN_0010eb68 (10eb68), FUN_00111e74 (111e74), FUN_0011206c (11206c), FUN_001120b8 (1120b8), FUN_0011269c (11269c), FUN_00113ea4 (113ea4), FUN_0011485c (11485c), FUN_00114c10 (114c10), FUN_00116030 (116030), FUN_00118000 (118000), FUN_001188f4 (1188f4), FUN_00119d9c (119d9c), FUN_0011a098 (11a098), FUN_0011a100 (11a100), FUN_0011b33c (11b33c), FUN_0011b384 (11b384), FUN_0011f0c0 (11f0c0), FUN_00120960 (120960), FUN_00121454 (121454), FUN_00121900 (121900), FUN_00121f88 (121f88), FUN_00123640 (123640), FUN_001246a8 (1246a8), FUN_00124884 (124884), FUN_001248d0 (1248d0), FUN_00124b2c (124b2c), FUN_00126d68 (126d68), FUN_00126e70 (126e70), FUN_00126ecc (126ecc), FUN_00127cd8 (127cd8), FUN_00128280 (128280), FUN_001282f0 (1282f0), FUN_00128358 (128358), FUN_001286fc (1286fc), FUN_00128928 (128928), FUN_00128be8 (128be8), FUN_00129080 (129080), FUN_00129794 (129794), FUN_0012a23c (12a23c), FUN_0012a888 (12a888), FUN_0012b8e8 (12b8e8), FUN_0012c1e0 (12c1e0), FUN_0012c7a0 (12c7a0), FUN_0012ccac (12ccac), FUN_0012cd24 (12cd24), FUN_0012d230 (12d230), FUN_0012d518 (12d518), FUN_0012d874 (12d874), FUN_0012e01c (12e01c), FUN_0012e1a8 (12e1a8), FUN_0012e4fc (12e4fc), FUN_0012f088 (12f088), FUN_0012f4c4 (12f4c4), FUN_00131c1c (131c1c), FUN_001321e4 (1321e4), FUN_001322ec (1322ec), FUN_00139c98 (139c98), FUN_0013af14 (13af14), FUN_0013b894 (13b894), FUN_0013be14 (13be14), FUN_0013e388 (13e388), FUN_0013e5c0 (13e5c0), FUN_0013e888 (13e888), FUN_0013eb24 (13eb24), FUN_0013ebe8 (13ebe8), FUN_00142d70 (142d70), FUN_0014472c (14472c), FUN_001450b8 (1450b8), FUN_00145194 (145194), FUN_00145cc0 (145cc0), FUN_00145cec (145cec), FUN_00146698 (146698), FUN_00146858 (146858), FUN_001468c8 (1468c8), FUN_001468f4 (1468f4), FUN_00146e1c (146e1c), FUN_00146fdc (146fdc), FUN_00147134 (147134), FUN_00147630 (147630), FUN_00147e04 (147e04), FUN_00148770 (148770), FUN_00148dec (148dec), FUN_00149d94 (149d94), FUN_0014a538 (14a538), FUN_0014b334 (14b334), FUN_0014b410 (14b410), FUN_0014b738 (14b738), FUN_0014d1c0 (14d1c0), FUN_0014ff58 (14ff58), FUN_0015203c (15203c), FUN_00153128 (153128), FUN_0015319c (15319c), FUN_001542cc (1542cc), FUN_00154450 (154450), FUN_00156640 (156640), FUN_0015681c (15681c), FUN_00156c2c (156c2c), FUN_00156e38 (156e38), FUN_001575d0 (1575d0), FUN_00157624 (157624), FUN_00158ca4 (158ca4), FUN_00159050 (159050), FUN_00159f54 (159f54), FUN_00163044 (163044), FUN_00164994 (164994), FUN_00164d7c (164d7c), FUN_00164d98 (164d98), FUN_001676bc (1676bc), finishLaunching (1676f4), autoForwardKeyEvents (169ac4), windowWillMiniaturize_ (16a3f4), sendEvent___16adcc (16adcc), FUN_0016ec48 (16ec48), FUN_0016f1e0 (16f1e0), FUN_0017099c (17099c), FUN_001715bc (1715bc), FUN_00173900 (173900), FUN_001751c0 (1751c0), FUN_00177eb0 (177eb0), FUN_00178f80 (178f80), FUN_0017d54c (17d54c), FUN_0017e5e0 (17e5e0), FUN_0017e848 (17e848), FUN_00180b90 (180b90), FUN_00183594 (183594), FUN_001894c8 (1894c8), FUN_0018b1e8 (18b1e8), FUN_0018b474 (18b474), FUN_0018e7e4 (18e7e4), FUN_0018e994 (18e994), FUN_0019372c (19372c), FUN_00195654 (195654), FUN_0019a2e0 (19a2e0), FUN_0019a9f4 (19a9f4), FUN_0019ae10 (19ae10), FUN_0019bea4 (19bea4), FUN_0019c140 (19c140), FUN_001a29c0 (1a29c0), FUN_001a2a20 (1a2a20), FUN_001a5104 (1a5104), FUN_001a628c (1a628c), FUN_001a6640 (1a6640), FUN_001a6eb0 (1a6eb0), FUN_001a9594 (1a9594), FUN_001a9b10 (1a9b10), FUN_001a9f18 (1a9f18), FUN_001aa130 (1aa130), FUN_001aaab0 (1aaab0), FUN_001ab2c4 (1ab2c4), FUN_001ae4a4 (1ae4a4), FUN_001ae568 (1ae568), FUN_001af180 (1af180), FUN_001af5dc (1af5dc), FUN_001b387c (1b387c), FUN_001b4d9c (1b4d9c), FUN_001b4e48 (1b4e48), FUN_001b54a0 (1b54a0), FUN_001b5908 (1b5908), FUN_001b5bf8 (1b5bf8), FUN_001b656c (1b656c), FUN_001b97e0 (1b97e0), FUN_001bb770 (1bb770), FUN_001bba3c (1bba3c), FUN_001bbdc4 (1bbdc4), FUN_001bbdd0 (1bbdd0), FUN_001bc614 (1bc614), FUN_001bd254 (1bd254), FUN_001bdb68 (1bdb68), FUN_001bdc4c (1bdc4c), FUN_001be424 (1be424), FUN_001c1a6c (1c1a6c), FUN_001c22d4 (1c22d4), FUN_001c25c4 (1c25c4), FUN_001c261c (1c261c), FUN_001c2c28 (1c2c28), FUN_001c36ac (1c36ac), FUN_001c3870 (1c3870), FUN_001c3984 (1c3984), FUN_001c5710 (1c5710), FUN_001c5d88 (1c5d88), FUN_001c6fec (1c6fec), FUN_001c7bf8 (1c7bf8), FUN_001cb1b8 (1cb1b8), FUN_001cb244 (1cb244), FUN_001cb52c (1cb52c), FUN_001cbb58 (1cbb58), FUN_001ce0f0 (1ce0f0), FUN_001cead4 (1cead4), FUN_001cf218 (1cf218), FUN_001cf5b8 (1cf5b8), FUN_001d1d64 (1d1d64), FUN_001d46ac (1d46ac), FUN_001d4a78 (1d4a78), FUN_001d59cc (1d59cc), FUN_001d5e10 (1d5e10), FUN_001d6684 (1d6684), FUN_001d7c10 (1d7c10), FUN_001d7ca4 (1d7ca4), FUN_001d860c (1d860c), FUN_001d8b5c (1d8b5c), FUN_001d8ce0 (1d8ce0), FUN_001da3a0 (1da3a0), FUN_001dc038 (1dc038), FUN_001dc350 (1dc350), FUN_001de9e4 (1de9e4), FUN_001e122c (1e122c), FUN_001e16d0 (1e16d0), FUN_001e1a0c (1e1a0c), FUN_001e2cac (1e2cac), FUN_001e3160 (1e3160), FUN_001e32e4 (1e32e4), FUN_001e34ec (1e34ec), FUN_001e48e8 (1e48e8), FUN_001e4f18 (1e4f18), FUN_001e5424 (1e5424), FUN_001e5f04 (1e5f04), FUN_001e7d3c (1e7d3c), FUN_001e8ba8 (1e8ba8), FUN_001e8cb0 (1e8cb0), FUN_001e9034 (1e9034), FUN_001ebaf8 (1ebaf8), FUN_001ebe10 (1ebe10), rotateVectorAndRotateFunction4 (1ebe64), FUN_001ec68c (1ec68c), FUN_001ec698 (1ec698), FUN_001eedf0 (1eedf0), FUN_001ef0d8 (1ef0d8), FUN_001efe34 (1efe34), FUN_001f00a4 (1f00a4), FUN_001f07b4 (1f07b4), FUN_001f184c (1f184c), FUN_001f19e4 (1f19e4), thunk_FUN_001f48d8 (1f1eb4), FUN_001f2780 (1f2780), FUN_001f2904 (1f2904), FUN_001f2d38 (1f2d38), FUN_001f2ec8 (1f2ec8), FUN_001f3950 (1f3950), FUN_001f3970 (1f3970), FUN_001f3cd0 (1f3cd0), FUN_001f48d8 (1f48d8), FUN_001f4968 (1f4968), FUN_001f4b34 (1f4b34), FUN_001f4b98 (1f4b98), FUN_001f4cb4 (1f4cb4), FUN_001f4e28 (1f4e28), FUN_001f52cc (1f52cc), FUN_001f5de8 (1f5de8), FUN_001f7ee0 (1f7ee0), FUN_001f81fc (1f81fc), FUN_001f8278 (1f8278), FUN_001f8334 (1f8334), FUN_001f880c (1f880c), FUN_001f9af8 (1f9af8), FUN_001fa8a8 (1fa8a8), FUN_001fb814 (1fb814), FUN_001fba30 (1fba30), FUN_001fdbc8 (1fdbc8), FUN_001fe284 (1fe284), FUN_001fe850 (1fe850), FUN_001fea4c (1fea4c), FUN_001ff16c (1ff16c), FUN_001ff264 (1ff264), FUN_001ff2d4 (1ff2d4), FUN_001ff428 (1ff428), FUN_002000b0 (2000b0), FUN_00200b6c (200b6c), FUN_00200e4c (200e4c), FUN_00200f58 (200f58), FUN_00201764 (201764), FUN_00201f14 (201f14), FUN_00202220 (202220), FUN_00208b68 (208b68), FUN_0020da98 (20da98), FUN_0020e9d0 (20e9d0), FUN_0020eafc (20eafc), FUN_0020fbe8 (20fbe8), FUN_0020fd18 (20fd18), FUN_00211b84 (211b84), FUN_00212ad8 (212ad8), FUN_00214204 (214204), FUN_00214278 (214278), FUN_00214328 (214328), FUN_0021516c (21516c), pthread_cond_init (2157ec), FUN_002159f4 (2159f4), FUN_00215afc (215afc), FUN_002164e8 (2164e8), FUN_00216610 (216610), FUN_00216730 (216730), FUN_00216788 (216788), FUN_00216b58 (216b58), FUN_00217738 (217738), FUN_00217f74 (217f74), FUN_00217fa4 (217fa4), FUN_00218228 (218228), FUN_0021a1f4 (21a1f4), FUN_0021a274 (21a274), FUN_0021c8c8 (21c8c8), FUN_0021d4dc (21d4dc), FUN_0021ed74 (21ed74), FUN_0021ee0c (21ee0c), FUN_0021eec8 (21eec8), FUN_00224d8c (224d8c), FUN_00226e70 (226e70), FUN_00227dac (227dac), FUN_00227f0c (227f0c), FUN_0022a86c (22a86c), FUN_0022abf4 (22abf4), FUN_0022b180 (22b180), FUN_0022b430 (22b430), FUN_0022b468 (22b468), FUN_0022b6ec (22b6ec), FUN_0022d080 (22d080), FUN_0022dbf4 (22dbf4), FUN_0022efec (22efec), FUN_0022fbb4 (22fbb4), FUN_00230860 (230860), FUN_00232910 (232910), FUN_0023292c (23292c), FUN_00233928 (233928), FUN_00234d38 (234d38), FUN_00234de8 (234de8), FUN_00239258 (239258), FUN_0024242c (24242c), FUN_002430f4 (2430f4), FUN_00244830 (244830), FUN_00246228 (246228), FUN_002464c0 (2464c0), FUN_00246524 (246524), FUN_0024656c (24656c), FUN_00246688 (246688), FUN_0024679c (24679c), FUN_00246c9c (246c9c), FUN_00247fec (247fec), FUN_00249748 (249748), FUN_0024aa8c (24aa8c), FUN_0024aea8 (24aea8), FUN_0024b80c (24b80c), FUN_0024ba18 (24ba18), FUN_0024c204 (24c204), FUN_0025102c (25102c), FUN_0025181c (25181c), FUN_00251880 (251880), FUN_00251994 (251994), readFile (251a4c), openFile3 (251da8), FUN_00251e54 (251e54), FUN_002530a0 (2530a0), FUN_00254db8 (254db8), FUN_002579f8 (2579f8), FUN_00257ad0 (257ad0), FUN_00257d7c (257d7c), FUN_00259730 (259730), FUN_00259838 (259838), FUN_0025b3e0 (25b3e0), FUN_0025d07c (25d07c), FUN_00263080 (263080), FUN_00265ad4 (265ad4), FUN_00266fe0 (266fe0), FUN_0026782c (26782c), FUN_0026793c (26793c), FUN_00268400 (268400), FUN_002684e8 (2684e8), FUN_00268680 (268680), FUN_002690b4 (2690b4), FUN_002692ec (2692ec), FUN_002694f8 (2694f8), FUN_00269534 (269534), FUN_00269e3c (269e3c), FUN_00269eb0 (269eb0), FUN_00269fa4 (269fa4), FUN_0026a180 (26a180), FUN_0026a5dc (26a5dc), FUN_0026a61c (26a61c), FUN_0026a69c (26a69c), FUN_0026a938 (26a938), FUN_0026a9b4 (26a9b4), FUN_0026aa84 (26aa84), FUN_0026ad3c (26ad3c), FUN_0026ad6c (26ad6c), FUN_0026b19c (26b19c), FUN_0026b48c (26b48c), FUN_0026b6a0 (26b6a0), FUN_0026b988 (26b988), FUN_0026bba4 (26bba4), FUN_0026bcec (26bcec), FUN_0026bf28 (26bf28), FUN_0026c0dc (26c0dc), FUN_0026c154 (26c154), FUN_0026c264 (26c264), FUN_0026c2d8 (26c2d8), FUN_0026c320 (26c320), FUN_0026c3d8 (26c3d8), FUN_0026c408 (26c408), FUN_0026c7b4 (26c7b4), FUN_0026d0bc (26d0bc), FUN_0026d11c (26d11c), FUN_0026d190 (26d190), FUN_0026d690 (26d690), FUN_0026dbf4 (26dbf4), FUN_0026eb28 (26eb28), FUN_0026ecc8 (26ecc8), FUN_0026ed40 (26ed40), FUN_0026edcc (26edcc), FUN_0026ee48 (26ee48), FUN_002708e4 (2708e4), FUN_00270acc (270acc), FUN_00270c64 (270c64), FUN_00270c78 (270c78), FUN_00270c98 (270c98), FUN_00270d04 (270d04), FUN_00270d4c (270d4c), FUN_00270d60 (270d60), FUN_00270eb4 (270eb4), FUN_00270fa8 (270fa8), FUN_00271018 (271018), FUN_0027102c (27102c), FUN_002710ec (2710ec), FUN_0027114c (27114c), FUN_00271174 (271174), FUN_002711a4 (2711a4), FUN_0027123c (27123c), FUN_00271254 (271254), FUN_002712b4 (2712b4), FUN_00271320 (271320), FUN_00271364 (271364), FUN_00271450 (271450), FUN_002714fc (2714fc), FUN_00271614 (271614), FUN_0027173c (27173c), FUN_00271828 (271828), FUN_002719a0 (2719a0), FUN_00271c58 (271c58), FUN_00271cd4 (271cd4), FUN_00271d9c (271d9c), FUN_00271dc8 (271dc8), FUN_00271ea4 (271ea4), FUN_00272014 (272014), FUN_002720ac (2720ac), FUN_002721d4 (2721d4), FUN_002722a0 (2722a0), FUN_00272448 (272448), FUN_0027245c (27245c), FUN_00272474 (272474), FUN_002724a4 (2724a4), FUN_0027257c (27257c), FUN_00272ff0 (272ff0), FUN_002730c8 (2730c8), FUN_00273110 (273110), FUN_00273124 (273124), FUN_002732a0 (2732a0), FUN_00273390 (273390), FUN_002734b0 (2734b0), FUN_00273594 (273594), FUN_00273a50 (273a50), FUN_00273b58 (273b58), FUN_00273cd8 (273cd8), FUN_002740cc (2740cc), FUN_002747d0 (2747d0), FUN_0027493c (27493c), FUN_00274a24 (274a24), FUN_00274c10 (274c10), FUN_00274e44 (274e44), FUN_00274ea0 (274ea0), FUN_00274ebc (274ebc), FUN_00274f0c (274f0c), FUN_002773cc (2773cc), FUN_00277524 (277524), FUN_00277600 (277600), FUN_00278708 (278708), FUN_002792e4 (2792e4), FUN_0027930c (27930c), FUN_00279f08 (279f08), FUN_00279ff4 (279ff4), FUN_0027a0e0 (27a0e0), FUN_0027a1cc (27a1cc), FUN_0027a880 (27a880), FUN_0027b15c (27b15c), FUN_0027bfbc (27bfbc), FUN_0027c0f4 (27c0f4), FUN_0027c22c (27c22c), FUN_0027ca0c (27ca0c), FUN_0027d0e8 (27d0e8), FUN_0027da90 (27da90), FUN_002a6f0c (2a6f0c), FUN_002a9138 (2a9138), FUN_002a914c (2a914c), FUN_002a9240 (2a9240), FUN_002a9578 (2a9578), FUN_002a981c (2a981c), FUN_002aa01c (2aa01c), FUN_002aaee4 (2aaee4), FUN_002ab564 (2ab564), FUN_002abd60 (2abd60), FUN_002ac4c0 (2ac4c0), FUN_002ac810 (2ac810), FUN_002ad358 (2ad358), FUN_002b52fc (2b52fc), FUN_002b7b04 (2b7b04), FUN_002d3bc0 (2d3bc0), FUN_002d4e08 (2d4e08), FUN_002dc558 (2dc558), FUN_002e2e60 (2e2e60), FUN_002e4480 (2e4480), FUN_002e8ee8 (2e8ee8), FUN_002eab5c (2eab5c), FUN_002eabb4 (2eabb4), FUN_002eb968 (2eb968), FUN_002ec284 (2ec284), FUN_002ec3ec (2ec3ec), FUN_002f4088 (2f4088), FUN_002f4440 (2f4440), FUN_002f49e4 (2f49e4), FUN_002f533c (2f533c), FUN_002f9180 (2f9180), FUN_002f934c (2f934c), FUN_002fa2b4 (2fa2b4), FUN_002fb3cc (2fb3cc), FUN_002fd118 (2fd118), FUN_002fd12c (2fd12c), FUN_002fd140 (2fd140), FUN_002fd37c (2fd37c), FUN_002ff3f0 (2ff3f0), FUN_00300fd8 (300fd8), FUN_003025c4 (3025c4), FUN_00303cc8 (303cc8), FUN_003040e4 (3040e4), FUN_0030ab8c (30ab8c), FUN_0030dc5c (30dc5c), FUN_0030ec28 (30ec28), FUN_0030f060 (30f060), FUN_00310c30 (310c30), FUN_00311418 (311418), FUN_00313874 (313874), FUN_00313ff4 (313ff4), FUN_00314148 (314148), FUN_00314f78 (314f78), FUN_003162f0 (3162f0), FUN_00316750 (316750), FUN_00318934 (318934), FUN_0031b080 (31b080), FUN_0031b4dc (31b4dc), FUN_0031d6f8 (31d6f8), FUN_003201a0 (3201a0), FUN_00321194 (321194), FUN_0032195c (32195c), FUN_00324c28 (324c28), FUN_00324f84 (324f84), FUN_0032591c (32591c), FUN_003271a4 (3271a4), FUN_003272b8 (3272b8), FUN_00327f3c (327f3c), FUN_0032a520 (32a520), FUN_0032b240 (32b240), FUN_00330530 (330530), FUN_00330b0c (330b0c), FUN_00330c94 (330c94), FUN_00333510 (333510), FUN_00334870 (334870), FUN_0033697c (33697c), FUN_00336a34 (336a34), FUN_00336db4 (336db4), FUN_00336fbc (336fbc), FUN_00337494 (337494), FUN_003377c0 (3377c0), FUN_00337a28 (337a28), FUN_00339ff8 (339ff8), FUN_0033a0b0 (33a0b0), FUN_0033a11c (33a11c), FUN_0033a148 (33a148), FUN_0033a184 (33a184), FUN_0033a19c (33a19c), FUN_0033a1b8 (33a1b8), FUN_0033a1d0 (33a1d0), FUN_0033ad90 (33ad90), processPostScriptFont (33f9e4), FUN_0033fe44 (33fe44), FUN_0033ff0c (33ff0c), FUN_00343338 (343338), FUN_0034381c (34381c), FUN_00345078 (345078), FUN_00345eb0 (345eb0), FUN_00345f48 (345f48), FUN_0034600c (34600c), FUN_00347304 (347304), FUN_003475f0 (3475f0), FUN_00347b34 (347b34), FUN_003496b4 (3496b4), FUN_00349de4 (349de4), FUN_0034c0d4 (34c0d4), FUN_0034fc4c (34fc4c), FUN_0034fd6c (34fd6c), FUN_003516b8 (3516b8), FUN_00351858 (351858), FUN_003544c4 (3544c4), FUN_003544f0 (3544f0), FUN_003667e0 (3667e0), FUN_0036683c (36683c), FUN_00368694 (368694), FUN_00368728 (368728), FUN_0036a2bc (36a2bc), FUN_0036a6e0 (36a6e0), FUN_0036c888 (36c888), FUN_0036dd6c (36dd6c), FUN_0036df48 (36df48), FUN_0036e870 (36e870), FUN_0036eeec (36eeec), FUN_00370d10 (370d10), FUN_003712d8 (3712d8), FUN_00372d84 (372d84), FUN_00374c5c (374c5c), FUN_00374c74 (374c74), FUN_00377bbc (377bbc), FUN_003781b4 (3781b4), FUN_00378474 (378474), FUN_00378490 (378490), FUN_003787a8 (3787a8), FUN_003791d0 (3791d0), FUN_0037c430 (37c430), FUN_003817a0 (3817a0), FUN_00381cfc (381cfc), FUN_00384430 (384430), FUN_003853f8 (3853f8)
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z14processInput12Pyyyy.cpp:4:5: error: use of undeclared identifier 'FUN_1DB8F0'
+    4 |     FUN_1DB8F0(inputArray, input1, input2, input3);
+      |     ^~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void processInput12(uint64_t* inputArray, uint64_t input1, uint64_t input2, uint64_t input3) {
+    FUN_1DB8F0(inputArray, input1, input2, input3);
+}
+```
+
+### Not compiling yet — 900 × use of undeclared identifier 'X'; did you mean 'X'?
+
+All: processInput4 (3d10), processInput5 (4540), updateValue (4594), FUN_000045fc (45fc), FUN_00007144 (7144), FUN_000073b4 (73b4), FUN_000084e0 (84e0), FUN_00009cb0 (9cb0), processAndInvertByte (a1f8), processListAndProcessNodes (c660), FUN_0000cdac (cdac), FUN_0000cdcc (cdcc), processAudioSettings (e4e8), FUN_0000ebb0 (ebb0), FUN_0000f1d8 (f1d8), FUN_0000f804 (f804), processAndWriteData8 (f8d8), processList3 (fa88), FUN_0000fb1c (fb1c), FUN_00011a98 (11a98), FUN_00011f1c (11f1c), FUN_000135f8 (135f8), FUN_00013c80 (13c80), processInput34 (13ec0), FUN_00016478 (16478), FUN_00017d24 (17d24), processList4 (19830), FUN_0001bca4 (1bca4), processAndWriteData9 (1f94c), FUN_0001ff14 (1ff14), FUN_00020a30 (20a30), FUN_00020a48 (20a48), FUN_00020b14 (20b14), processList5 (21c70), FUN_00021ef0 (21ef0), FUN_000237d0 (237d0), processVectorsAndAngles (2779c), FUN_00028590 (28590), FUN_00028a0c (28a0c), FUN_00028ba4 (28ba4), FUN_0002ab4c (2ab4c), FUN_0002af58 (2af58), FUN_0002bfc0 (2bfc0), FUN_0002e9b0 (2e9b0), FUN_0002ebe0 (2ebe0), FUN_0002ece0 (2ece0), FUN_0003525c (3525c), FUN_00035a20 (35a20), FUN_00036c08 (36c08), FUN_0003b740 (3b740), FUN_0003c128 (3c128), FUN_0003f908 (3f908), FUN_0003f9cc (3f9cc), FUN_000419ac (419ac), FUN_00042dc0 (42dc0), FUN_00043890 (43890), FUN_000441b8 (441b8), FUN_00045028 (45028), FUN_000481f4 (481f4), FUN_00052110 (52110), FUN_00055298 (55298), FUN_00057740 (57740), FUN_000a2440 (a2440), FUN_000a54b8 (a54b8), FUN_000a6034 (a6034), FUN_000a609c (a609c), FUN_000a61b4 (a61b4), FUN_000a61c0 (a61c0), FUN_000a9a94 (a9a94), FUN_000b0350 (b0350), FUN_000b046c (b046c), FUN_000b04dc (b04dc), FUN_000b07b4 (b07b4), FUN_000b0bfc (b0bfc), FUN_000b198c (b198c), FUN_000b41cc (b41cc), FUN_000b4a90 (b4a90), FUN_000b5834 (b5834), FUN_000b5f50 (b5f50), FUN_000b9dac (b9dac), FUN_000ba200 (ba200), FUN_000ba618 (ba618), FUN_000ba754 (ba754), FUN_000bc5d8 (bc5d8), FUN_000bc918 (bc918), FUN_000c041c (c041c), FUN_000c0c80 (c0c80), FUN_000c1fa4 (c1fa4), FUN_000c334c (c334c), FUN_000c388c (c388c), FUN_000c3a58 (c3a58), FUN_0027dd40 (27dd40), FUN_0027de20 (27de20), FUN_0027de44 (27de44), FUN_0027de74 (27de74), FUN_0027df40 (27df40), FUN_0027df70 (27df70), FUN_0027e098 (27e098), FUN_0027e798 (27e798), FUN_0027e918 (27e918), FUN_0027e9d8 (27e9d8), FUN_0027ea10 (27ea10), FUN_0027ea28 (27ea28), FUN_0027ea40 (27ea40), FUN_0027ea60 (27ea60), FUN_0027ea7c (27ea7c), FUN_0027ec8c (27ec8c), FUN_0027ecf0 (27ecf0), FUN_0027ef08 (27ef08), FUN_0027efa0 (27efa0), FUN_0027f4a0 (27f4a0), FUN_002802b0 (2802b0), FUN_00281a34 (281a34), FUN_00284a28 (284a28), FUN_00284d70 (284d70), FUN_00284d8c (284d8c), FUN_00284da8 (284da8), FUN_00284dbc (284dbc), FUN_0028508c (28508c), FUN_00285d04 (285d04), FUN_00285ea8 (285ea8), FUN_00285ec8 (285ec8), FUN_00286894 (286894), FUN_00287b88 (287b88), FUN_00288518 (288518), FUN_0028a074 (28a074), FUN_0028dae4 (28dae4), FUN_0028ec7c (28ec7c), FUN_0028f378 (28f378), FUN_0028f630 (28f630), FUN_0028f894 (28f894), FUN_0028fca8 (28fca8), FUN_00290d50 (290d50), FUN_00290fe8 (290fe8), FUN_002920e0 (2920e0), FUN_00292634 (292634), FUN_0029313c (29313c), FUN_00293d78 (293d78), FUN_00293d94 (293d94), FUN_0029403c (29403c), FUN_0029406c (29406c), FUN_00297b88 (297b88), FUN_00299edc (299edc), FUN_00299f84 (299f84), FUN_0029a1d8 (29a1d8), FUN_0029a1f0 (29a1f0), FUN_0029a204 (29a204), FUN_0029a338 (29a338), FUN_0029bf40 (29bf40), FUN_0029c9f0 (29c9f0), FUN_0029db84 (29db84), FUN_0029e5b4 (29e5b4), FUN_0029e690 (29e690), FUN_0029fc18 (29fc18), FUN_0029fc2c (29fc2c), FUN_0029fc40 (29fc40), FUN_002a0798 (2a0798), FUN_002a22a4 (2a22a4), FUN_002a43e0 (2a43e0), FUN_002a4b88 (2a4b88), FUN_002c12a0 (2c12a0), FUN_002c2950 (2c2950), FUN_002c2968 (2c2968), FUN_002c2980 (2c2980), FUN_002c2998 (2c2998), FUN_002c29c0 (2c29c0), FUN_002c2a88 (2c2a88), FUN_002c2adc (2c2adc), FUN_002c2b6c (2c2b6c), FUN_002c2bfc (2c2bfc), FUN_002c2c60 (2c2c60), FUN_002c3e48 (?), FUN_002c4ff4 (2c4ff4), FUN_002c66c8 (2c66c8), FUN_002c8494 (2c8494), FUN_002c986c (2c986c), FUN_00360bf0 (360bf0), FUN_0036421c (36421c), FUN_0005b134 (5b134), FUN_0005da8c (5da8c), FUN_0005f4a8 (5f4a8), FUN_0005f730 (5f730), shellWindowGlue (6013c), FUN_000605a8 (605a8), updateShellWindowWantKeys (60808), FUN_000637ec (637ec), FUN_00063be8 (63be8), FUN_00065e6c (65e6c), FUN_00066498 (66498), FUN_000676ec (676ec), FUN_00068974 (68974), FUN_00068d2c (68d2c), FUN_000690b4 (690b4), FUN_00069494 (69494), FUN_0006a0b4 (6a0b4), FUN_0006a4c0 (6a4c0), FUN_0006baf4 (6baf4), FUN_0006cac4 (6cac4), FUN_0006ce64 (6ce64), FUN_00071ef0 (71ef0), FUN_000726fc (726fc), FUN_00073a78 (73a78), FUN_00073cb8 (73cb8), FUN_00074120 (74120), FUN_00074784 (74784), FUN_00074f68 (74f68), FUN_0007588c (7588c), FUN_00075e7c (75e7c), FUN_00076c60 (76c60), FUN_00077d94 (77d94), FUN_00078744 (78744), FUN_00078f34 (78f34), FUN_0007aef8 (7aef8), FUN_0007bb44 (7bb44), FUN_0007f1e0 (7f1e0), FUN_0007fa74 (7fa74), FUN_00080cf4 (80cf4), FUN_00082068 (82068), FUN_000828b0 (828b0), FUN_000829fc (829fc), FUN_00082ccc (82ccc), FUN_00082cfc (82cfc), FUN_00086ef8 (86ef8), FUN_00087c2c (87c2c), FUN_00088458 (88458), FUN_0008a6ac (8a6ac), FUN_0008b728 (8b728), FUN_0008f904 (8f904), FUN_00096de4 (96de4), FUN_00096e00 (96e00), FUN_00096e2c (96e2c), FUN_00096e58 (96e58), FUN_0009718c (9718c), FUN_0009a9b8 (9a9b8), FUN_0009b124 (9b124), FUN_0009d03c (9d03c), FUN_0009e1f0 (9e1f0), FUN_0009f688 (9f688), FUN_0009f780 (9f780), FUN_000a0ca8 (a0ca8), FUN_000c5030 (c5030), FUN_000c537c (c537c), FUN_000c53ac (c53ac), FUN_000c5468 (c5468), FUN_000c8bcc (c8bcc), FUN_000c9108 (c9108), FUN_000cb488 (cb488), FUN_000cd140 (cd140), FUN_000cf034 (cf034), FUN_000cfcc8 (cfcc8), FUN_000d16bc (d16bc), FUN_000d1884 (d1884), FUN_000d38f8 (d38f8), FUN_000d5e0c (d5e0c), FUN_000d7e58 (d7e58), FUN_000d87f0 (d87f0), FUN_000d9cec (d9cec), FUN_000dabe4 (dabe4), FUN_000dca40 (dca40), FUN_000e2efc (e2efc), FUN_000e3660 (e3660), FUN_000e388c (e388c), FUN_000e3948 (e3948), FUN_000e5b80 (e5b80), FUN_000e609c (e609c), FUN_000e613c (e613c), FUN_000e6248 (e6248), FUN_000e683c (e683c), FUN_000e6eb8 (e6eb8), FUN_000e88b0 (e88b0), FUN_000ec514 (ec514), FUN_000f0e08 (f0e08), FUN_000f0e80 (f0e80), FUN_000f31dc (f31dc), FUN_000f3620 (f3620), FUN_000f55c0 (f55c0), FUN_000f6044 (f6044), FUN_000f79c4 (f79c4), FUN_000f7a18 (f7a18), FUN_000f8298 (f8298), FUN_000fdb24 (fdb24), FUN_001025a8 (1025a8), FUN_00102e94 (102e94), FUN_0010eb68 (10eb68), FUN_00111e74 (111e74), FUN_0011206c (11206c), FUN_001120b8 (1120b8), FUN_0011269c (11269c), FUN_00113ea4 (113ea4), FUN_0011485c (11485c), FUN_00114c10 (114c10), FUN_00116030 (116030), FUN_00118000 (118000), FUN_001188f4 (1188f4), FUN_00119d9c (119d9c), FUN_0011a098 (11a098), FUN_0011a100 (11a100), FUN_0011b33c (11b33c), FUN_0011b384 (11b384), FUN_00120960 (120960), FUN_00121454 (121454), FUN_00121900 (121900), FUN_00121f88 (121f88), FUN_00123640 (123640), FUN_001246a8 (1246a8), FUN_00124884 (124884), FUN_001248d0 (1248d0), FUN_00124b2c (124b2c), FUN_00126d68 (126d68), FUN_00126e70 (126e70), FUN_00126ecc (126ecc), FUN_00127cd8 (127cd8), FUN_00128280 (128280), FUN_001282f0 (1282f0), FUN_00128358 (128358), FUN_001286fc (1286fc), FUN_00128928 (128928), FUN_00128be8 (128be8), FUN_00129080 (129080), FUN_00129794 (129794), FUN_0012a23c (12a23c), FUN_0012a888 (12a888), FUN_0012b8e8 (12b8e8), FUN_0012c1e0 (12c1e0), FUN_0012c7a0 (12c7a0), FUN_0012ccac (12ccac), FUN_0012cd24 (12cd24), FUN_0012d230 (12d230), FUN_0012d518 (12d518), FUN_0012d874 (12d874), FUN_0012e01c (12e01c), FUN_0012e1a8 (12e1a8), FUN_0012e4fc (12e4fc), FUN_0012f088 (12f088), FUN_0012f4c4 (12f4c4), FUN_00131c1c (131c1c), FUN_001321e4 (1321e4), FUN_001322ec (1322ec), FUN_00139c98 (139c98), FUN_0013af14 (13af14), FUN_0013b894 (13b894), FUN_0013be14 (13be14), FUN_0013e388 (13e388), FUN_0013e5c0 (13e5c0), FUN_0013e888 (13e888), FUN_0013eb24 (13eb24), FUN_0013ebe8 (13ebe8), FUN_00142d70 (142d70), FUN_0014472c (14472c), FUN_001450b8 (1450b8), FUN_00145194 (145194), FUN_00145cc0 (145cc0), FUN_00145cec (145cec), FUN_00146698 (146698), FUN_00146858 (146858), FUN_001468c8 (1468c8), FUN_001468f4 (1468f4), FUN_00146e1c (146e1c), FUN_00146fdc (146fdc), FUN_00147134 (147134), FUN_00147630 (147630), FUN_00147e04 (147e04), FUN_00148770 (148770), FUN_00148dec (148dec), FUN_00149d94 (149d94), FUN_0014a538 (14a538), FUN_0014b334 (14b334), FUN_0014b410 (14b410), FUN_0014b738 (14b738), FUN_0014d1c0 (14d1c0), FUN_0014ff58 (14ff58), FUN_0015203c (15203c), FUN_00153128 (153128), FUN_0015319c (15319c), FUN_001542cc (1542cc), FUN_00154450 (154450), FUN_00156640 (156640), FUN_0015681c (15681c), FUN_00156c2c (156c2c), FUN_00156e38 (156e38), FUN_001575d0 (1575d0), FUN_00157624 (157624), FUN_00158ca4 (158ca4), FUN_00159050 (159050), FUN_00159f54 (159f54), FUN_00163044 (163044), FUN_00164994 (164994), FUN_00164d7c (164d7c), FUN_00164d98 (164d98), FUN_001676bc (1676bc), finishLaunching (1676f4), autoForwardKeyEvents (169ac4), windowWillMiniaturize_ (16a3f4), sendEvent___16adcc (16adcc), FUN_0016ec48 (16ec48), FUN_0016f1e0 (16f1e0), FUN_0017099c (17099c), FUN_001715bc (1715bc), FUN_00173900 (173900), FUN_001751c0 (1751c0), FUN_00177eb0 (177eb0), FUN_00178f80 (178f80), FUN_0017d54c (17d54c), FUN_0017e5e0 (17e5e0), FUN_0017e848 (17e848), FUN_00180b90 (180b90), FUN_00183594 (183594), FUN_001894c8 (1894c8), FUN_0018b1e8 (18b1e8), FUN_0018b474 (18b474), FUN_0018e7e4 (18e7e4), FUN_0018e994 (18e994), FUN_0019372c (19372c), FUN_00195654 (195654), FUN_0019a2e0 (19a2e0), FUN_0019a9f4 (19a9f4), FUN_0019ae10 (19ae10), FUN_0019bea4 (19bea4), FUN_0019c140 (19c140), FUN_001a29c0 (1a29c0), FUN_001a2a20 (1a2a20), FUN_001a5104 (1a5104), FUN_001a628c (1a628c), FUN_001a6640 (1a6640), FUN_001a6eb0 (1a6eb0), FUN_001a9594 (1a9594), FUN_001a9b10 (1a9b10), FUN_001a9f18 (1a9f18), FUN_001aa130 (1aa130), FUN_001aaab0 (1aaab0), FUN_001ab2c4 (1ab2c4), FUN_001ae4a4 (1ae4a4), FUN_001ae568 (1ae568), FUN_001af180 (1af180), FUN_001af5dc (1af5dc), FUN_001b387c (1b387c), FUN_001b4d9c (1b4d9c), FUN_001b4e48 (1b4e48), FUN_001b54a0 (1b54a0), FUN_001b5908 (1b5908), FUN_001b5bf8 (1b5bf8), FUN_001b656c (1b656c), FUN_001b97e0 (1b97e0), FUN_001bb770 (1bb770), FUN_001bba3c (1bba3c), FUN_001bbdc4 (1bbdc4), FUN_001bbdd0 (1bbdd0), FUN_001bc614 (1bc614), FUN_001bd254 (1bd254), FUN_001bdb68 (1bdb68), FUN_001bdc4c (1bdc4c), FUN_001be424 (1be424), FUN_001c1a6c (1c1a6c), FUN_001c22d4 (1c22d4), FUN_001c25c4 (1c25c4), FUN_001c261c (1c261c), FUN_001c2c28 (1c2c28), FUN_001c36ac (1c36ac), FUN_001c3870 (1c3870), FUN_001c3984 (1c3984), FUN_001c5710 (1c5710), FUN_001c5d88 (1c5d88), FUN_001c6fec (1c6fec), FUN_001c7bf8 (1c7bf8), FUN_001cb1b8 (1cb1b8), FUN_001cb244 (1cb244), FUN_001cb52c (1cb52c), FUN_001cbb58 (1cbb58), FUN_001ce0f0 (1ce0f0), FUN_001cead4 (1cead4), FUN_001cf218 (1cf218), FUN_001cf5b8 (1cf5b8), FUN_001d1d64 (1d1d64), FUN_001d46ac (1d46ac), FUN_001d4a78 (1d4a78), FUN_001d59cc (1d59cc), FUN_001d5e10 (1d5e10), FUN_001d6684 (1d6684), FUN_001d7c10 (1d7c10), FUN_001d7ca4 (1d7ca4), FUN_001d860c (1d860c), FUN_001d8b5c (1d8b5c), FUN_001d8ce0 (1d8ce0), FUN_001da3a0 (1da3a0), FUN_001dc038 (1dc038), FUN_001de9e4 (1de9e4), FUN_001e122c (1e122c), FUN_001e1a0c (1e1a0c), FUN_001e3160 (1e3160), FUN_001e32e4 (1e32e4), FUN_001e34ec (1e34ec), FUN_001e48e8 (1e48e8), FUN_001e4f18 (1e4f18), FUN_001e5424 (1e5424), FUN_001e5f04 (1e5f04), FUN_001e7d3c (1e7d3c), FUN_001e8ba8 (1e8ba8), FUN_001e8cb0 (1e8cb0), FUN_001e9034 (1e9034), FUN_001ebaf8 (1ebaf8), FUN_001ebe10 (1ebe10), rotateVectorAndRotateFunction4 (1ebe64), FUN_001ec68c (1ec68c), FUN_001ec698 (1ec698), FUN_001eedf0 (1eedf0), FUN_001ef0d8 (1ef0d8), FUN_001efe34 (1efe34), FUN_001f00a4 (1f00a4), FUN_001f07b4 (1f07b4), FUN_001f184c (1f184c), FUN_001f19e4 (1f19e4), thunk_FUN_001f48d8 (1f1eb4), FUN_001f2780 (1f2780), FUN_001f2904 (1f2904), FUN_001f2d38 (1f2d38), FUN_001f2ec8 (1f2ec8), FUN_001f3950 (1f3950), FUN_001f3970 (1f3970), FUN_001f3cd0 (1f3cd0), FUN_001f48d8 (1f48d8), FUN_001f4968 (1f4968), FUN_001f4b34 (1f4b34), FUN_001f4b98 (1f4b98), FUN_001f4cb4 (1f4cb4), FUN_001f4e28 (1f4e28), FUN_001f52cc (1f52cc), FUN_001f5de8 (1f5de8), FUN_001f7ee0 (1f7ee0), FUN_001f81fc (1f81fc), FUN_001f8278 (1f8278), FUN_001f8334 (1f8334), FUN_001f880c (1f880c), FUN_001f9af8 (1f9af8), FUN_001fa8a8 (1fa8a8), FUN_001fb814 (1fb814), FUN_001fba30 (1fba30), FUN_001fdbc8 (1fdbc8), FUN_001fe284 (1fe284), FUN_001fe850 (1fe850), FUN_001ff16c (1ff16c), FUN_001ff264 (1ff264), FUN_001ff2d4 (1ff2d4), FUN_001ff428 (1ff428), FUN_002000b0 (2000b0), FUN_00200b6c (200b6c), FUN_00200e4c (200e4c), FUN_00200f58 (200f58), FUN_00201764 (201764), FUN_00201f14 (201f14), FUN_00202220 (202220), FUN_00208b68 (208b68), FUN_0020da98 (20da98), FUN_0020e9d0 (20e9d0), FUN_0020eafc (20eafc), FUN_0020fbe8 (20fbe8), FUN_0020fd18 (20fd18), FUN_00211b84 (211b84), FUN_00212ad8 (212ad8), FUN_00214204 (214204), FUN_00214278 (214278), FUN_00214328 (214328), FUN_0021516c (21516c), pthread_cond_init (2157ec), FUN_002159f4 (2159f4), FUN_00215afc (215afc), FUN_002164e8 (2164e8), FUN_00216610 (216610), FUN_00216788 (216788), FUN_00216b58 (216b58), FUN_00217738 (217738), FUN_00217f74 (217f74), FUN_00217fa4 (217fa4), FUN_00218228 (218228), FUN_0021a274 (21a274), FUN_0021c8c8 (21c8c8), FUN_0021d4dc (21d4dc), FUN_0021ed74 (21ed74), FUN_0021ee0c (21ee0c), FUN_0021eec8 (21eec8), FUN_00224d8c (224d8c), FUN_00226e70 (226e70), FUN_00227dac (227dac), FUN_00227f0c (227f0c), FUN_0022a86c (22a86c), FUN_0022abf4 (22abf4), FUN_0022b180 (22b180), FUN_0022b430 (22b430), FUN_0022b468 (22b468), FUN_0022b6ec (22b6ec), FUN_0022d080 (22d080), FUN_0022dbf4 (22dbf4), FUN_0022efec (22efec), FUN_0022fbb4 (22fbb4), FUN_00230860 (230860), FUN_00232910 (232910), FUN_0023292c (23292c), FUN_00233928 (233928), FUN_00234d38 (234d38), FUN_00234de8 (234de8), FUN_00239258 (239258), FUN_0024242c (24242c), FUN_002430f4 (2430f4), FUN_00244830 (244830), FUN_00246228 (246228), FUN_002464c0 (2464c0), FUN_00246524 (246524), FUN_0024656c (24656c), FUN_00246688 (246688), FUN_0024679c (24679c), FUN_00246c9c (246c9c), FUN_00247fec (247fec), FUN_00249748 (249748), FUN_0024aa8c (24aa8c), FUN_0024aea8 (24aea8), FUN_0024b80c (24b80c), FUN_0024ba18 (24ba18), FUN_0024c204 (24c204), FUN_0025102c (25102c), FUN_0025181c (25181c), FUN_00251880 (251880), FUN_00251994 (251994), readFile (251a4c), openFile3 (251da8), FUN_00251e54 (251e54), FUN_002530a0 (2530a0), FUN_00254db8 (254db8), FUN_002579f8 (2579f8), FUN_00257ad0 (257ad0), FUN_00257d7c (257d7c), FUN_00259730 (259730), FUN_00259838 (259838), FUN_0025b3e0 (25b3e0), FUN_0025d07c (25d07c), FUN_00263080 (263080), FUN_00265ad4 (265ad4), FUN_00266fe0 (266fe0), FUN_0026782c (26782c), FUN_0026793c (26793c), FUN_00268400 (268400), FUN_002684e8 (2684e8), FUN_00268680 (268680), FUN_002690b4 (2690b4), FUN_002692ec (2692ec), FUN_002694f8 (2694f8), FUN_00269534 (269534), FUN_00269e3c (269e3c), FUN_00269eb0 (269eb0), FUN_00269fa4 (269fa4), FUN_0026a180 (26a180), FUN_0026a5dc (26a5dc), FUN_0026a61c (26a61c), FUN_0026a69c (26a69c), FUN_0026a938 (26a938), FUN_0026a9b4 (26a9b4), FUN_0026aa84 (26aa84), FUN_0026ad3c (26ad3c), FUN_0026ad6c (26ad6c), FUN_0026b19c (26b19c), FUN_0026b48c (26b48c), FUN_0026b6a0 (26b6a0), FUN_0026b988 (26b988), FUN_0026bba4 (26bba4), FUN_0026bcec (26bcec), FUN_0026bf28 (26bf28), FUN_0026c0dc (26c0dc), FUN_0026c154 (26c154), FUN_0026c264 (26c264), FUN_0026c2d8 (26c2d8), FUN_0026c320 (26c320), FUN_0026c3d8 (26c3d8), FUN_0026c408 (26c408), FUN_0026c7b4 (26c7b4), FUN_0026d0bc (26d0bc), FUN_0026d11c (26d11c), FUN_0026d190 (26d190), FUN_0026d690 (26d690), FUN_0026dbf4 (26dbf4), FUN_0026eb28 (26eb28), FUN_0026ecc8 (26ecc8), FUN_0026ed40 (26ed40), FUN_0026edcc (26edcc), FUN_0026ee48 (26ee48), FUN_002708e4 (2708e4), FUN_00270acc (270acc), FUN_00270c64 (270c64), FUN_00270c78 (270c78), FUN_00270c98 (270c98), FUN_00270d04 (270d04), FUN_00270d4c (270d4c), FUN_00270d60 (270d60), FUN_00270eb4 (270eb4), FUN_00270fa8 (270fa8), FUN_00271018 (271018), FUN_0027102c (27102c), FUN_002710ec (2710ec), FUN_0027114c (27114c), FUN_00271174 (271174), FUN_002711a4 (2711a4), FUN_0027123c (27123c), FUN_00271254 (271254), FUN_002712b4 (2712b4), FUN_00271320 (271320), FUN_00271364 (271364), FUN_00271450 (271450), FUN_002714fc (2714fc), FUN_00271614 (271614), FUN_0027173c (27173c), FUN_00271828 (271828), FUN_002719a0 (2719a0), FUN_00271c58 (271c58), FUN_00271cd4 (271cd4), FUN_00271d9c (271d9c), FUN_00271dc8 (271dc8), FUN_00271ea4 (271ea4), FUN_00272014 (272014), FUN_002720ac (2720ac), FUN_002721d4 (2721d4), FUN_002722a0 (2722a0), FUN_00272448 (272448), FUN_0027245c (27245c), FUN_00272474 (272474), FUN_002724a4 (2724a4), FUN_0027257c (27257c), FUN_00272ff0 (272ff0), FUN_002730c8 (2730c8), FUN_00273110 (273110), FUN_00273124 (273124), FUN_002732a0 (2732a0), FUN_00273390 (273390), FUN_002734b0 (2734b0), FUN_00273594 (273594), FUN_00273a50 (273a50), FUN_00273b58 (273b58), FUN_00273cd8 (273cd8), FUN_002740cc (2740cc), FUN_002747d0 (2747d0), FUN_0027493c (27493c), FUN_00274a24 (274a24), FUN_00274c10 (274c10), FUN_00274e44 (274e44), FUN_00274ea0 (274ea0), FUN_00274ebc (274ebc), FUN_00274f0c (274f0c), FUN_002773cc (2773cc), FUN_00277524 (277524), FUN_00277600 (277600), FUN_00278708 (278708), FUN_002792e4 (2792e4), FUN_0027930c (27930c), FUN_00279f08 (279f08), FUN_00279ff4 (279ff4), FUN_0027a0e0 (27a0e0), FUN_0027a1cc (27a1cc), FUN_0027a880 (27a880), FUN_0027b15c (27b15c), FUN_0027bfbc (27bfbc), FUN_0027c0f4 (27c0f4), FUN_0027c22c (27c22c), FUN_0027ca0c (27ca0c), FUN_0027d0e8 (27d0e8), FUN_0027da90 (27da90), FUN_002a6f0c (2a6f0c), FUN_002a9138 (2a9138), FUN_002a914c (2a914c), FUN_002a9240 (2a9240), FUN_002a9578 (2a9578), FUN_002a981c (2a981c), FUN_002aa01c (2aa01c), FUN_002aaee4 (2aaee4), FUN_002ab564 (2ab564), FUN_002abd60 (2abd60), FUN_002ac4c0 (2ac4c0), FUN_002ac810 (2ac810), FUN_002ad358 (2ad358), FUN_002b52fc (2b52fc), FUN_002b7b04 (2b7b04), FUN_002d3bc0 (2d3bc0), FUN_002d4e08 (2d4e08), FUN_002dc558 (2dc558), FUN_002e2e60 (2e2e60), FUN_002e4480 (2e4480), FUN_002e8ee8 (2e8ee8), FUN_002eab5c (2eab5c), FUN_002eabb4 (2eabb4), FUN_002eb968 (2eb968), FUN_002ec284 (2ec284), FUN_002ec3ec (2ec3ec), FUN_002f4088 (2f4088), FUN_002f4440 (2f4440), FUN_002f49e4 (2f49e4), FUN_002f533c (2f533c), FUN_002f9180 (2f9180), FUN_002f934c (2f934c), FUN_002fa2b4 (2fa2b4), FUN_002fb3cc (2fb3cc), FUN_002fd118 (2fd118), FUN_002fd12c (2fd12c), FUN_002fd140 (2fd140), FUN_002fd37c (2fd37c), FUN_002ff3f0 (2ff3f0), FUN_00300fd8 (300fd8), FUN_003025c4 (3025c4), FUN_00303cc8 (303cc8), FUN_003040e4 (3040e4), FUN_0030ab8c (30ab8c), FUN_0030dc5c (30dc5c), FUN_0030ec28 (30ec28), FUN_0030f060 (30f060), FUN_00310c30 (310c30), FUN_00311418 (311418), FUN_00313874 (313874), FUN_00313ff4 (313ff4), FUN_00314148 (314148), FUN_00314f78 (314f78), FUN_003162f0 (3162f0), FUN_00316750 (316750), FUN_00318934 (318934), FUN_0031b080 (31b080), FUN_0031b4dc (31b4dc), FUN_0031d6f8 (31d6f8), FUN_003201a0 (3201a0), FUN_00321194 (321194), FUN_0032195c (32195c), FUN_00324c28 (324c28), FUN_00324f84 (324f84), FUN_0032591c (32591c), FUN_003271a4 (3271a4), FUN_003272b8 (3272b8), FUN_00327f3c (327f3c), FUN_0032a520 (32a520), FUN_0032b240 (32b240), FUN_00330530 (330530), FUN_00330b0c (330b0c), FUN_00330c94 (330c94), FUN_00333510 (333510), FUN_00334870 (334870), FUN_0033697c (33697c), FUN_00336a34 (336a34), FUN_00336db4 (336db4), FUN_00336fbc (336fbc), FUN_00337494 (337494), FUN_003377c0 (3377c0), FUN_00337a28 (337a28), FUN_00339ff8 (339ff8), FUN_0033a0b0 (33a0b0), FUN_0033a11c (33a11c), FUN_0033a148 (33a148), FUN_0033a184 (33a184), FUN_0033a19c (33a19c), FUN_0033a1b8 (33a1b8), FUN_0033a1d0 (33a1d0), FUN_0033ad90 (33ad90), processPostScriptFont (33f9e4), FUN_0033fe44 (33fe44), FUN_0033ff0c (33ff0c), FUN_00343338 (343338), FUN_0034381c (34381c), FUN_00345078 (345078), FUN_00345eb0 (345eb0), FUN_00345f48 (345f48), FUN_0034600c (34600c), FUN_00347304 (347304), FUN_003475f0 (3475f0), FUN_00347b34 (347b34), FUN_003496b4 (3496b4), FUN_00349de4 (349de4), FUN_0034c0d4 (34c0d4), FUN_0034fc4c (34fc4c), FUN_0034fd6c (34fd6c), FUN_003516b8 (3516b8), FUN_00351858 (351858), FUN_003544c4 (3544c4), FUN_003544f0 (3544f0), FUN_003667e0 (3667e0), FUN_0036683c (36683c), FUN_00368694 (368694), FUN_00368728 (368728), FUN_0036a2bc (36a2bc), FUN_0036a6e0 (36a6e0), FUN_0036c888 (36c888), FUN_0036dd6c (36dd6c), FUN_0036df48 (36df48), FUN_0036e870 (36e870), FUN_0036eeec (36eeec), FUN_00370d10 (370d10), FUN_003712d8 (3712d8), FUN_00372d84 (372d84), FUN_00374c5c (374c5c), FUN_00374c74 (374c74), FUN_00377bbc (377bbc), FUN_003781b4 (3781b4), FUN_00378474 (378474), FUN_00378490 (378490), FUN_003787a8 (3787a8), FUN_003791d0 (3791d0), FUN_0037c430 (37c430), FUN_003817a0 (3817a0), FUN_00381cfc (381cfc), FUN_00384430 (384430), FUN_003853f8 (3853f8)
 
 #### processInput4 — funcs/__Z13processInput4Py.cpp, Ghidra 3d10, 0 model attempt(s)
 
@@ -6029,9 +6770,9 @@ void FUN_00009cb0(long inputBuffer)
 }
 ```
 
-### Not compiling yet — 743 × no member named 'X' in 'X'
+### Not compiling yet — 739 × no member named 'X' in 'X'
 
-All: FUN_000035c8 (35c8), checkStatus (3d90), FUN_00004458 (4458), FUN_0000449c (449c), FUN_0000461c (461c), FUN_000048f8 (48f8), FUN_0000492c (492c), FUN_00004960 (4960), FUN_00004c48 (4c48), FUN_00004ce8 (4ce8), FUN_000050e8 (50e8), callFunction2 (6014), FUN_00006038 (6038), FUN_0000640c (640c), FUN_000064d4 (64d4), FUN_000069dc (69dc), calculateSineCosine (6aac), FUN_00006ac8 (6ac8), FUN_00006f14 (6f14), FUN_00007e54 (7e54), FUN_00008040 (8040), FUN_00008170 (8170), FUN_00008440 (8440), FUN_00008e30 (8e30), processFilterData2 (99b4), FUN_0000a038 (a038), FUN_0000a244 (a244), FUN_0000a410 (a410), FUN_0000a810 (a810), FUN_0000b9d0 (b9d0), FUN_0000cae4 (cae4), FUN_0000ccf8 (ccf8), FUN_0000fa54 (fa54), FUN_00011e94 (11e94), FUN_00012cc0 (12cc0), applyFilter (16810), FUN_00016990 (16990), FUN_00016f94 (16f94), FUN_00017294 (17294), FUN_00017328 (17328), FUN_00018d88 (18d88), FUN_00018efc (18efc), FUN_00019034 (19034), FUN_0001a12c (1a12c), FUN_00020cd8 (20cd8), FUN_00020d1c (20d1c), FUN_00021b00 (21b00), FUN_00021d74 (21d74), FUN_00021da8 (21da8), processAndReturn (21ddc), FUN_00023d8c (23d8c), FUN_0002b04c (2b04c), FUN_0002e8e0 (2e8e0), FUN_00030554 (30554), FUN_00031904 (31904), FUN_00031fc8 (31fc8), FUN_00032208 (32208), FUN_00032230 (32230), FUN_000334c4 (334c4), FUN_00035ba4 (35ba4), FUN_0003803c (3803c), FUN_0003c7d8 (3c7d8), FUN_0003ce54 (3ce54), FUN_0003d02c (3d02c), FUN_0003d0c4 (3d0c4), FUN_0003d194 (3d194), FUN_0003d2cc (3d2cc), FUN_0003e984 (3e984), FUN_0003eea4 (3eea4), FUN_000416c8 (416c8), FUN_00042b00 (42b00), FUN_00042ed8 (42ed8), FUN_00042f78 (42f78), FUN_000437bc (437bc), FUN_00044b78 (44b78), FUN_00044e04 (44e04), FUN_00047394 (47394), FUN_00047898 (47898), FUN_00047c7c (47c7c), FUN_00048118 (48118), FUN_00048c10 (48c10), FUN_00049720 (49720), FUN_00049e2c (49e2c), FUN_0004e474 (4e474), FUN_0004ef7c (4ef7c), FUN_0004f07c (4f07c), FUN_0004fb14 (4fb14), FUN_0004fc4c (4fc4c), FUN_0004fce4 (4fce4), FUN_0005503c (5503c), FUN_00056ff0 (56ff0), FUN_00057300 (57300), FUN_0005769c (5769c), FUN_00059f68 (59f68), FUN_000a5800 (a5800), FUN_000a6008 (a6008), FUN_000af934 (af934), FUN_000afa98 (afa98), FUN_000b8648 (b8648), FUN_000b9d78 (b9d78), FUN_000bb204 (bb204), FUN_000bbafc (bbafc), FUN_000bc84c (bc84c), FUN_000beba8 (beba8), FUN_000c1d3c (c1d3c), FUN_000c2060 (c2060), FUN_000c240c (c240c), FUN_000c35a0 (c35a0), FUN_0027efe8 (27efe8), FUN_0027f474 (27f474), FUN_0027f4f8 (27f4f8), FUN_0027fe00 (27fe00), FUN_0027fe88 (27fe88), FUN_00281228 (281228), FUN_002816c4 (2816c4), FUN_00282038 (282038), FUN_00285000 (285000), FUN_002854b0 (2854b0), FUN_00285720 (285720), FUN_002889d8 (2889d8), FUN_00288c54 (288c54), FUN_0028923c (28923c), FUN_00289884 (289884), FUN_0028a778 (28a778), FUN_0028b3fc (28b3fc), FUN_0028e004 (28e004), FUN_0028f1d4 (28f1d4), FUN_00290864 (290864), FUN_0029133c (29133c), FUN_00291e8c (291e8c), FUN_00293540 (293540), FUN_00293a40 (293a40), FUN_002946f4 (2946f4), FUN_00295028 (295028), FUN_0029cff8 (29cff8), FUN_002a1b94 (2a1b94), FUN_002a5388 (2a5388), FUN_002ba070 (2ba070), FUN_002ba490 (2ba490), FUN_002bafcc (2bafcc), FUN_002bc504 (2bc504), FUN_002bc6f8 (2bc6f8), FUN_002bcacc (2bcacc), FUN_002bf724 (2bf724), FUN_002bfa84 (2bfa84), FUN_002bfd7c (2bfd7c), FUN_002c034c (2c034c), FUN_002c0f90 (2c0f90), FUN_002c1cf0 (2c1cf0), FUN_002c4300 (2c4300), FUN_002c470c (2c470c), FUN_002c54f4 (2c54f4), FUN_002c5988 (2c5988), FUN_002c74b8 (2c74b8), FUN_002c86a4 (2c86a4), FUN_002c9130 (2c9130), FUN_002c9790 (2c9790), FUN_002c9a6c (2c9a6c), FUN_0035c2b4 (35c2b4), FUN_0035dbb4 (35dbb4), FUN_0035e508 (35e508), FUN_0035e954 (35e954), FUN_0035ed7c (35ed7c), FUN_0035ee10 (35ee10), FUN_003612f0 (3612f0), FUN_00362cc8 (362cc8), FUN_00363978 (363978), FUN_0005ae44 (5ae44), FUN_0005bf20 (5bf20), FUN_0005e7d0 (5e7d0), FUN_0005f71c (5f71c), FUN_0005fcc8 (5fcc8), isShellWindowOpen (60168), FUN_000631bc (631bc), FUN_000632ac (632ac), FUN_00063638 (63638), FUN_00064888 (64888), FUN_00064d44 (64d44), FUN_00064f54 (64f54), FUN_00064f70 (64f70), FUN_00064f90 (64f90), FUN_0006504c (6504c), FUN_00065064 (65064), FUN_000650bc (650bc), FUN_000650d8 (650d8), FUN_00065114 (65114), FUN_000651b4 (651b4), FUN_000651d4 (651d4), FUN_000651f4 (651f4), FUN_00065214 (65214), FUN_00065250 (65250), FUN_0006526c (6526c), FUN_0006528c (6528c), FUN_000652a4 (652a4), FUN_00065648 (65648), FUN_00065884 (65884), FUN_00066b80 (66b80), FUN_00066cb4 (66cb4), FUN_00066e14 (66e14), FUN_00066f60 (66f60), FUN_0006720c (6720c), FUN_00067340 (67340), FUN_00067718 (67718), FUN_00067b1c (67b1c), FUN_00067d50 (67d50), FUN_00067f68 (67f68), FUN_0006826c (6826c), FUN_00068328 (68328), FUN_000685d0 (685d0), FUN_00068a08 (68a08), FUN_00068ba4 (68ba4), FUN_00068d7c (68d7c), FUN_0006955c (6955c), FUN_0006a860 (6a860), FUN_0006b310 (6b310), FUN_0006b5d0 (6b5d0), FUN_0006b724 (6b724), FUN_0006ba30 (6ba30), FUN_0006bc8c (6bc8c), FUN_0006bfd4 (6bfd4), FUN_0006c360 (6c360), FUN_0006c39c (6c39c), FUN_0006c608 (6c608), FUN_0006c928 (6c928), FUN_0006d028 (6d028), FUN_0006d0f0 (6d0f0), FUN_0006d1d0 (6d1d0), FUN_0006e6bc (6e6bc), FUN_0006e6e4 (6e6e4), FUN_0006e734 (6e734), FUN_0006e748 (6e748), FUN_0006f3d8 (6f3d8), FUN_0006ffc4 (6ffc4), FUN_00070194 (70194), FUN_000701b4 (701b4), FUN_000703ac (703ac), FUN_00071750 (71750), FUN_00071d34 (71d34), FUN_00072010 (72010), FUN_00072790 (72790), FUN_00072fb0 (72fb0), FUN_000731d0 (731d0), FUN_00073378 (73378), FUN_0007349c (7349c), FUN_00073bfc (73bfc), FUN_00073d50 (73d50), applyFilter6 (73e7c), FUN_00074058 (74058), FUN_0007406c (7406c), FUN_0007434c (7434c), processInputData3 (74b78), FUN_00074cf0 (74cf0), FUN_00074fa8 (74fa8), FUN_00075150 (75150), FUN_00075284 (75284), FUN_000762c0 (762c0), FUN_00076308 (76308), FUN_00076680 (76680), FUN_00076844 (76844), FUN_00076c08 (76c08), FUN_00077b38 (77b38), FUN_00077c4c (77c4c), FUN_0007822c (7822c), FUN_00078440 (78440), FUN_00078584 (78584), FUN_00078768 (78768), FUN_000787f0 (787f0), FUN_00078b14 (78b14), FUN_0007a4cc (7a4cc), FUN_0007aa84 (7aa84), FUN_0007ab7c (7ab7c), FUN_0007ac4c (7ac4c), FUN_0007ae1c (7ae1c), FUN_0007ae48 (7ae48), FUN_0007b02c (7b02c), FUN_0007b3fc (7b3fc), FUN_0007b7f8 (7b7f8), FUN_0007b8d0 (7b8d0), FUN_0007c34c (7c34c), FUN_0007c488 (7c488), FUN_0007c808 (7c808), FUN_0007cb60 (7cb60), FUN_0007cbc8 (7cbc8), FUN_0007cc7c (7cc7c), FUN_0007d054 (7d054), FUN_0007d37c (7d37c), FUN_0007d734 (7d734), FUN_0007d7c4 (7d7c4), FUN_0007dd54 (7dd54), FUN_0007df40 (7df40), FUN_0007e0cc (7e0cc), FUN_0007e2b4 (7e2b4), FUN_0007e6b8 (7e6b8), FUN_0007e928 (7e928), FUN_0007eb48 (7eb48), FUN_0007ecf4 (7ecf4), FUN_0007f014 (7f014), FUN_0007fa1c (7fa1c), FUN_000838a0 (838a0), FUN_000839f8 (839f8), FUN_00083a4c (83a4c), FUN_0008404c (8404c), FUN_00084500 (84500), FUN_00085174 (85174), FUN_00085d24 (85d24), FUN_00086a44 (86a44), FUN_0008749c (8749c), FUN_0008c414 (8c414), FUN_00098634 (98634), FUN_000c6bc8 (c6bc8), FUN_000c6c30 (c6c30), FUN_000c9448 (c9448), FUN_000cd198 (cd198), FUN_000d27a8 (d27a8), FUN_000d2f78 (d2f78), FUN_000d3ac4 (d3ac4), FUN_000d3ba4 (d3ba4), FUN_000d7104 (d7104), FUN_000dd848 (dd848), FUN_000e18ec (e18ec), FUN_000e34dc (e34dc), FUN_000e36fc (e36fc), FUN_000f0ae0 (f0ae0), FUN_000f1224 (f1224), FUN_000f62a0 (f62a0), FUN_000f8808 (f8808), FUN_000fe358 (fe358), FUN_000ff12c (ff12c), FUN_00106b10 (106b10), FUN_0010a6a8 (10a6a8), FUN_0010dfb0 (10dfb0), FUN_00111e90 (111e90), FUN_001128c4 (1128c4), FUN_00113ebc (113ebc), FUN_00117a30 (117a30), FUN_0011ebbc (11ebbc), FUN_00125aa4 (125aa4), FUN_00128f08 (128f08), FUN_00129a0c (129a0c), FUN_0012bcdc (12bcdc), FUN_0012c014 (12c014), FUN_0012c87c (12c87c), FUN_0012f4e0 (12f4e0), FUN_0012f6d0 (12f6d0), FUN_0012f708 (12f708), FUN_00130564 (130564), FUN_00133f10 (133f10), FUN_00138484 (138484), FUN_0013a284 (13a284), FUN_0013ac14 (13ac14), FUN_0013d4b8 (13d4b8), FUN_0013d5dc (13d5dc), FUN_001465ec (1465ec), FUN_00148eb0 (148eb0), FUN_0014a6cc (14a6cc), FUN_0014e53c (14e53c), FUN_0014f67c (14f67c), FUN_00150f34 (150f34), FUN_0015184c (15184c), FUN_00151ab0 (151ab0), FUN_00152068 (152068), FUN_001525f0 (1525f0), FUN_00154398 (154398), FUN_00155cdc (155cdc), FUN_001562f0 (1562f0), FUN_001566fc (1566fc), FUN_0015a038 (15a038), FUN_0015a2d4 (15a2d4), FUN_0015b06c (15b06c), FUN_0015b3cc (15b3cc), FUN_00166090 (166090), setAllowGettingClosed_ (169aa4), FUN_00169e70 (169e70), windowScreenChanged_ (16a7ec), setCppWindow_ (16c6f4), setCurrentInterpretKeyEventsKey_ (16c72c), acceptsFirstResponder (16c74c), createLayerTextureWithSize_ (16cb94), attributedSubstringFromRange_ (16e170), characterIndexForPoint_ (16e34c), FUN_0016f0b0 (16f0b0), FUN_0016f32c (16f32c), FUN_00171c28 (171c28), FUN_00171cc8 (171cc8), FUN_00173004 (173004), FUN_001740a0 (1740a0), FUN_00176034 (176034), FUN_001767b0 (1767b0), FUN_0017a694 (17a694), FUN_00180040 (180040), FUN_001815b8 (1815b8), FUN_00181a94 (181a94), FUN_00181c64 (181c64), FUN_00183bb8 (183bb8), FUN_00183de0 (183de0), FUN_001878d8 (1878d8), FUN_0018c684 (18c684), FUN_0018f4f8 (18f4f8), FUN_001918c8 (1918c8), FUN_00192e08 (192e08), FUN_00193508 (193508), FUN_00193bac (193bac), FUN_00193dd0 (193dd0), FUN_00198aa4 (198aa4), FUN_0019bf1c (19bf1c), FUN_0019c5bc (19c5bc), FUN_0019de80 (19de80), FUN_001a2888 (1a2888), FUN_001a2ebc (1a2ebc), FUN_001a3e38 (1a3e38), FUN_001a3edc (1a3edc), FUN_001a47ec (1a47ec), FUN_001a4d30 (1a4d30), FUN_001a6e4c (1a6e4c), FUN_001a83e4 (1a83e4), FUN_001a8954 (1a8954), FUN_001a9718 (1a9718), FUN_001aaf14 (1aaf14), FUN_001abbcc (1abbcc), FUN_001ae13c (1ae13c), FUN_001af258 (1af258), FUN_001b0670 (1b0670), FUN_001b4b6c (1b4b6c), FUN_001b6ed8 (1b6ed8), FUN_001b73d4 (1b73d4), FUN_001b7b54 (1b7b54), FUN_001b93b0 (1b93b0), FUN_001bcaec (1bcaec), FUN_001be448 (1be448), FUN_001be664 (1be664), FUN_001bff40 (1bff40), FUN_001c085c (1c085c), FUN_001c1fa8 (1c1fa8), FUN_001c2724 (1c2724), FUN_001d0f34 (1d0f34), FUN_001d158c (1d158c), FUN_001d167c (1d167c), FUN_001d46f4 (1d46f4), FUN_001d483c (1d483c), FUN_001d4a1c (1d4a1c), FUN_001d5060 (1d5060), FUN_001d5164 (1d5164), FUN_001d5aa8 (1d5aa8), FUN_001d61d4 (1d61d4), FUN_001d6248 (1d6248), FUN_001d6d7c (1d6d7c), FUN_001d8340 (1d8340), FUN_001d83d4 (1d83d4), FUN_001d91c0 (1d91c0), FUN_001d95d4 (1d95d4), FUN_001d97f4 (1d97f4), FUN_001deef4 (1deef4), FUN_001df43c (1df43c), FUN_001e2d88 (1e2d88), FUN_001e4974 (1e4974), FUN_001e89e4 (1e89e4), FUN_001e8da8 (1e8da8), FUN_001e91f4 (1e91f4), FUN_001ed3d8 (1ed3d8), FUN_001f66cc (1f66cc), FUN_001f84ac (1f84ac), FUN_001ff564 (1ff564), FUN_002001ec (2001ec), FUN_002055dc (2055dc), FUN_00205b14 (205b14), FUN_00206338 (206338), FUN_00209ca4 (209ca4), FUN_0020dca8 (20dca8), FUN_0020e4a8 (20e4a8), FUN_0020f33c (20f33c), FUN_0020ffe0 (20ffe0), FUN_00210128 (210128), FUN_002116d4 (2116d4), FUN_002121e8 (2121e8), FUN_002123b8 (2123b8), FUN_002124a4 (2124a4), FUN_002129e8 (2129e8), FUN_00214374 (214374), FUN_0021a090 (21a090), FUN_0021abf4 (21abf4), FUN_0021e4ac (21e4ac), FUN_00220068 (220068), FUN_0022031c (22031c), FUN_00224c0c (224c0c), FUN_00225568 (225568), FUN_002286d4 (2286d4), FUN_00228a04 (228a04), FUN_0022ad74 (22ad74), FUN_0022b2f0 (22b2f0), FUN_0022bca4 (22bca4), FUN_0022c078 (22c078), FUN_0022cb6c (22cb6c), FUN_0022d41c (22d41c), FUN_0022e464 (22e464), FUN_0022f594 (22f594), FUN_0023077c (23077c), FUN_00232958 (232958), FUN_00232b8c (232b8c), FUN_00243ecc (243ecc), FUN_00245638 (245638), FUN_00246594 (246594), FUN_0024a418 (24a418), FUN_0024aa6c (24aa6c), FUN_0024bcd8 (24bcd8), FUN_0024c210 (24c210), FUN_0024c278 (24c278), FUN_0024df88 (24df88), FUN_00251014 (251014), FUN_002510d4 (2510d4), FUN_00251bfc (251bfc), FUN_002536dc (2536dc), FUN_00253c50 (253c50), FUN_00253d00 (253d00), FUN_00254c00 (254c00), FUN_00257868 (257868), FUN_002595d4 (2595d4), FUN_0025991c (25991c), FUN_002602c8 (2602c8), FUN_002611a8 (2611a8), FUN_00265d90 (265d90), FUN_00266abc (266abc), FUN_00268de4 (268de4), FUN_0026a774 (26a774), FUN_0026c378 (26c378), FUN_0026cd2c (26cd2c), FUN_0026d724 (26d724), FUN_0026ea28 (26ea28), FUN_002705b0 (2705b0), FUN_00270708 (270708), FUN_002708b0 (2708b0), FUN_00270edc (270edc), FUN_00271528 (271528), FUN_00271f50 (271f50), FUN_002725dc (2725dc), FUN_00272a5c (272a5c), FUN_002745c4 (2745c4), FUN_00274ab0 (274ab0), FUN_0027682c (27682c), FUN_00279c18 (279c18), FUN_00279c60 (279c60), FUN_0027a920 (27a920), FUN_0027af34 (27af34), FUN_0027b1d8 (27b1d8), FUN_0027b278 (27b278), FUN_0027b4a0 (27b4a0), FUN_0027b74c (27b74c), FUN_0027c424 (27c424), FUN_002a78e4 (2a78e4), FUN_002a7c94 (2a7c94), FUN_002aabdc (2aabdc), FUN_002acb78 (2acb78), FUN_002aee8c (2aee8c), FUN_002af268 (2af268), FUN_002b2028 (2b2028), FUN_002b2a6c (2b2a6c), FUN_002b5f54 (2b5f54), FUN_002b68f4 (2b68f4), FUN_002cc1d0 (2cc1d0), FUN_002cd094 (2cd094), FUN_002cdcb4 (2cdcb4), FUN_002cddac (2cddac), FUN_002cedc4 (2cedc4), FUN_002d0088 (2d0088), FUN_002d0244 (2d0244), FUN_002d0844 (2d0844), FUN_002d4120 (2d4120), FUN_002d5440 (2d5440), FUN_002db03c (2db03c), FUN_002ddde8 (2ddde8), FUN_002de0bc (2de0bc), FUN_002de168 (2de168), FUN_002dedd8 (2dedd8), FUN_002df7f4 (2df7f4), FUN_002e0870 (2e0870), FUN_002e15e8 (2e15e8), FUN_002e30f4 (2e30f4), FUN_002e33f8 (2e33f8), FUN_002e353c (2e353c), FUN_002e3be0 (2e3be0), FUN_002e3c78 (2e3c78), FUN_002e3dec (2e3dec), FUN_002e44f0 (2e44f0), FUN_002e45cc (2e45cc), FUN_002e514c (2e514c), FUN_002e5e00 (2e5e00), FUN_002e5f4c (2e5f4c), FUN_002e699c (2e699c), FUN_002e70b4 (2e70b4), FUN_002e7e18 (2e7e18), FUN_002e7e74 (2e7e74), FUN_002e7ee4 (2e7ee4), FUN_002ea690 (2ea690), FUN_002ea89c (2ea89c), FUN_002ed95c (2ed95c), FUN_002edfb8 (2edfb8), FUN_002efb74 (2efb74), FUN_002f2d14 (2f2d14), FUN_002f51d0 (2f51d0), FUN_002f5338 (2f5338), FUN_003047fc (3047fc), FUN_00304914 (304914), FUN_00305cc8 (305cc8), FUN_00307698 (307698), FUN_003091fc (3091fc), FUN_0030d080 (30d080), FUN_0030d84c (30d84c), FUN_0030d9d4 (30d9d4), FUN_0030e414 (30e414), FUN_0030e72c (30e72c), FUN_0030e7d0 (30e7d0), FUN_0031208c (31208c), FUN_003130d0 (3130d0), FUN_00313390 (313390), FUN_003173a0 (3173a0), FUN_003185b4 (3185b4), FUN_0031b84c (31b84c), FUN_0031bc74 (31bc74), FUN_0031d1c8 (31d1c8), FUN_0031e1dc (31e1dc), FUN_0031ea5c (31ea5c), FUN_0031f5c8 (31f5c8), FUN_0031fa58 (31fa58), FUN_00320014 (320014), FUN_003202f8 (3202f8), FUN_003203d4 (3203d4), FUN_00321314 (321314), FUN_00324d60 (324d60), FUN_003268e8 (3268e8), FUN_00326ac0 (326ac0), FUN_00327758 (327758), FUN_00327fa0 (327fa0), FUN_00328b44 (328b44), FUN_00328cb8 (328cb8), FUN_003298cc (3298cc), FUN_0032ccd4 (32ccd4), FUN_003303e8 (3303e8), FUN_00330788 (330788), FUN_003313a0 (3313a0), FUN_00332904 (332904), FUN_00332c90 (332c90), FUN_00332eac (332eac), FUN_003332dc (3332dc), FUN_00333cf0 (333cf0), FUN_00334124 (334124), FUN_003368b8 (3368b8), FUN_0033717c (33717c), FUN_00337434 (337434), FUN_00338da8 (338da8), FUN_00339008 (339008), FUN_00339104 (339104), FUN_0033acac (33acac), FUN_0033b650 (33b650), FUN_0033f2a4 (33f2a4), FUN_0033f970 (33f970), FUN_0033fd1c (33fd1c), FUN_00340800 (340800), FUN_00340ad8 (340ad8), FUN_00340bbc (340bbc), FUN_00343608 (343608), FUN_00344ccc (344ccc), FUN_0034542c (34542c), FUN_003463f8 (3463f8), FUN_00346aac (346aac), FUN_00347374 (347374), FUN_0034757c (34757c), FUN_00347ab4 (347ab4), FUN_0034a4b4 (34a4b4), FUN_0034b964 (34b964), FUN_0034c21c (34c21c), FUN_0034e81c (34e81c), FUN_00351488 (351488), FUN_00353244 (353244), FUN_00353d0c (353d0c), FUN_00354900 (354900), FUN_003553ac (3553ac), FUN_00355548 (355548), FUN_0035591c (35591c), FUN_0035602c (35602c), FUN_00356ce4 (356ce4), FUN_00357c04 (357c04), FUN_00358010 (358010), FUN_003581e0 (3581e0), FUN_0035850c (35850c), FUN_00358ad8 (358ad8), FUN_0035963c (35963c), FUN_00366884 (366884), FUN_00366e0c (366e0c), FUN_00367e1c (367e1c), FUN_00367f20 (367f20), FUN_00368338 (368338), FUN_003685c8 (3685c8), FUN_00368ff8 (368ff8), FUN_0036a4dc (36a4dc), FUN_0036af90 (36af90), FUN_0036c8fc (36c8fc), FUN_0036c9cc (36c9cc), FUN_00370454 (370454), FUN_003709f8 (3709f8), FUN_00371864 (371864), FUN_00371d94 (371d94), FUN_00373174 (373174), FUN_00373f18 (373f18), FUN_00374784 (374784), FUN_00375230 (375230), FUN_00375ccc (375ccc), FUN_00377f64 (377f64), FUN_0037aafc (37aafc), FUN_0037c038 (37c038), FUN_0037e2ac (37e2ac), FUN_0037f914 (37f914), FUN_00383fd4 (383fd4), FUN_00384c28 (384c28), FUN_00384d40 (384d40), FUN_00384db8 (384db8), FUN_00384e58 (384e58), FUN_00385088 (385088), FUN_003852e0 (3852e0), FUN_00385330 (385330), FUN_003855b0 (3855b0), addItemWithTitle_action_keyEquivalent_ (387a40), constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_ (387ea0), copyFromTexture_sourceSlice_sourceLevel_sourceOrigin_sourceSize_toTexture_destinationSlice_destinationLevel_destinationOrigin_ (388020), defaultWritingDirectionForLanguage_ (3881c0), replaceRegion_mipmapLevel_withBytes_bytesPerRow_ (388fe0), runModalForDirectory_file_types_ (3890a0), scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_ (389100), selectFile_inFileViewerRootedAtPath_ (389160), setCurrentInterpretKeyEventsKey___389540 (389540), setPostsBoundsChangedNotifications_ (389920), setPostsFrameChangedNotifications_ (389940), setTranslatesAutoresizingMaskIntoConstraints_ (389b20), texture2DDescriptorWithPixelFormat_width_height_mipmapped___8a5301 (8a5301), setAllowGPUOptimizedContents___8a5302 (8a5302), setUsage___8a5303 (8a5303), setCpuCacheMode___8a5304 (8a5304), initWithImage_hotSpot___8a5c02 (8a5c02), initWithContentsOfFile___8a6601 (8a6601), objectAtIndex___8a7703 (8a7703), convertRectToBacking___8a7707 (8a7707), convertRectFromBacking___8a7708 (8a7708), stringWithUTF8String___8a7901 (8a7901), stringWithFormat___8a7902 (8a7902), stringWithCharacters_length___8a7903 (8a7903)
+All: FUN_000035c8 (35c8), checkStatus (3d90), FUN_00004458 (4458), FUN_0000449c (449c), FUN_0000461c (461c), FUN_000048f8 (48f8), FUN_0000492c (492c), FUN_00004960 (4960), FUN_00004c48 (4c48), FUN_000050e8 (50e8), callFunction2 (6014), FUN_0000640c (640c), FUN_000064d4 (64d4), FUN_000069dc (69dc), calculateSineCosine (6aac), FUN_00006ac8 (6ac8), FUN_00006f14 (6f14), FUN_00007e54 (7e54), FUN_00008040 (8040), FUN_00008170 (8170), FUN_00008440 (8440), FUN_00008e30 (8e30), processFilterData2 (99b4), FUN_0000a038 (a038), FUN_0000a244 (a244), FUN_0000a410 (a410), FUN_0000a810 (a810), FUN_0000b9d0 (b9d0), FUN_0000cae4 (cae4), FUN_0000ccf8 (ccf8), FUN_0000fa54 (fa54), FUN_00011e94 (11e94), FUN_00012cc0 (12cc0), applyFilter (16810), FUN_00016990 (16990), FUN_00016f94 (16f94), FUN_00017294 (17294), FUN_00017328 (17328), FUN_00018d88 (18d88), FUN_00018efc (18efc), FUN_00019034 (19034), FUN_0001a12c (1a12c), FUN_00020cd8 (20cd8), FUN_00020d1c (20d1c), FUN_00021b00 (21b00), FUN_00021d74 (21d74), FUN_00021da8 (21da8), processAndReturn (21ddc), FUN_00023d8c (23d8c), FUN_0002b04c (2b04c), FUN_0002e8e0 (2e8e0), FUN_00030554 (30554), FUN_00031904 (31904), FUN_00031fc8 (31fc8), FUN_00032208 (32208), FUN_00032230 (32230), FUN_000334c4 (334c4), FUN_00035ba4 (35ba4), FUN_0003803c (3803c), FUN_0003c7d8 (3c7d8), FUN_0003ce54 (3ce54), FUN_0003d02c (3d02c), FUN_0003d0c4 (3d0c4), FUN_0003d194 (3d194), FUN_0003d2cc (3d2cc), FUN_0003e984 (3e984), FUN_0003eea4 (3eea4), FUN_000416c8 (416c8), FUN_00042b00 (42b00), FUN_00042ed8 (42ed8), FUN_00042f78 (42f78), FUN_000437bc (437bc), FUN_00044b78 (44b78), FUN_00044e04 (44e04), FUN_00047394 (47394), FUN_00047898 (47898), FUN_00047c7c (47c7c), FUN_00048118 (48118), FUN_00048c10 (48c10), FUN_00049720 (49720), FUN_00049e2c (49e2c), FUN_0004e474 (4e474), FUN_0004ef7c (4ef7c), FUN_0004f07c (4f07c), FUN_0004fb14 (4fb14), FUN_0004fc4c (4fc4c), FUN_0004fce4 (4fce4), FUN_0005503c (5503c), FUN_00056ff0 (56ff0), FUN_00057300 (57300), FUN_0005769c (5769c), FUN_00059f68 (59f68), FUN_000a5800 (a5800), FUN_000a6008 (a6008), FUN_000af934 (af934), FUN_000afa98 (afa98), FUN_000b8648 (b8648), FUN_000b9d78 (b9d78), FUN_000bb204 (bb204), FUN_000bbafc (bbafc), FUN_000bc84c (bc84c), FUN_000beba8 (beba8), FUN_000c1d3c (c1d3c), FUN_000c2060 (c2060), FUN_000c240c (c240c), FUN_000c35a0 (c35a0), FUN_0027efe8 (27efe8), FUN_0027f474 (27f474), FUN_0027f4f8 (27f4f8), FUN_0027fe00 (27fe00), FUN_0027fe88 (27fe88), FUN_00281228 (281228), FUN_002816c4 (2816c4), FUN_00282038 (282038), FUN_00285000 (285000), FUN_002854b0 (2854b0), FUN_00285720 (285720), FUN_002889d8 (2889d8), FUN_00288c54 (288c54), FUN_0028923c (28923c), FUN_00289884 (289884), FUN_0028a778 (28a778), FUN_0028b3fc (28b3fc), FUN_0028e004 (28e004), FUN_0028f1d4 (28f1d4), FUN_00290864 (290864), FUN_0029133c (29133c), FUN_00291e8c (291e8c), FUN_00293540 (293540), FUN_00293a40 (293a40), FUN_002946f4 (2946f4), FUN_00295028 (295028), FUN_0029cff8 (29cff8), FUN_002a1b94 (2a1b94), FUN_002a5388 (2a5388), FUN_002ba070 (2ba070), FUN_002ba490 (2ba490), FUN_002bafcc (2bafcc), FUN_002bc504 (2bc504), FUN_002bc6f8 (2bc6f8), FUN_002bcacc (2bcacc), FUN_002bf724 (2bf724), FUN_002bfa84 (2bfa84), FUN_002bfd7c (2bfd7c), FUN_002c034c (2c034c), FUN_002c0f90 (2c0f90), FUN_002c1cf0 (2c1cf0), FUN_002c4300 (2c4300), FUN_002c470c (2c470c), FUN_002c54f4 (2c54f4), FUN_002c5988 (2c5988), FUN_002c74b8 (2c74b8), FUN_002c86a4 (2c86a4), FUN_002c9130 (2c9130), FUN_002c9790 (2c9790), FUN_002c9a6c (2c9a6c), FUN_0035c2b4 (35c2b4), FUN_0035dbb4 (35dbb4), FUN_0035e508 (35e508), FUN_0035e954 (35e954), FUN_0035ed7c (35ed7c), FUN_0035ee10 (35ee10), FUN_003612f0 (3612f0), FUN_00362cc8 (362cc8), FUN_00363978 (363978), FUN_0005ae44 (5ae44), FUN_0005bf20 (5bf20), FUN_0005e7d0 (5e7d0), FUN_0005f71c (5f71c), FUN_0005fcc8 (5fcc8), isShellWindowOpen (60168), FUN_000631bc (631bc), FUN_000632ac (632ac), FUN_00063638 (63638), FUN_00064888 (64888), FUN_00064d44 (64d44), FUN_00064f54 (64f54), FUN_00064f70 (64f70), FUN_00064f90 (64f90), FUN_0006504c (6504c), FUN_00065064 (65064), FUN_000650bc (650bc), FUN_000650d8 (650d8), FUN_00065114 (65114), FUN_000651b4 (651b4), FUN_000651d4 (651d4), FUN_000651f4 (651f4), FUN_00065214 (65214), FUN_00065250 (65250), FUN_0006526c (6526c), FUN_0006528c (6528c), FUN_000652a4 (652a4), FUN_00065648 (65648), FUN_00065884 (65884), FUN_00066b80 (66b80), FUN_00066cb4 (66cb4), FUN_00066e14 (66e14), FUN_00066f60 (66f60), FUN_0006720c (6720c), FUN_00067340 (67340), FUN_00067718 (67718), FUN_00067b1c (67b1c), FUN_00067d50 (67d50), FUN_00067f68 (67f68), FUN_0006826c (6826c), FUN_00068328 (68328), FUN_000685d0 (685d0), FUN_00068a08 (68a08), FUN_00068ba4 (68ba4), FUN_00068d7c (68d7c), FUN_0006955c (6955c), FUN_0006a860 (6a860), FUN_0006b310 (6b310), FUN_0006b5d0 (6b5d0), FUN_0006b724 (6b724), FUN_0006ba30 (6ba30), FUN_0006bc8c (6bc8c), FUN_0006bfd4 (6bfd4), FUN_0006c360 (6c360), FUN_0006c39c (6c39c), FUN_0006c608 (6c608), FUN_0006c928 (6c928), FUN_0006d028 (6d028), FUN_0006d0f0 (6d0f0), FUN_0006d1d0 (6d1d0), FUN_0006e6bc (6e6bc), FUN_0006e6e4 (6e6e4), FUN_0006e734 (6e734), FUN_0006e748 (6e748), FUN_0006f3d8 (6f3d8), FUN_0006ffc4 (6ffc4), FUN_00070194 (70194), FUN_000701b4 (701b4), FUN_000703ac (703ac), FUN_00071750 (71750), FUN_00071d34 (71d34), FUN_00072010 (72010), FUN_00072790 (72790), FUN_00072fb0 (72fb0), FUN_000731d0 (731d0), FUN_00073378 (73378), FUN_0007349c (7349c), FUN_00073bfc (73bfc), FUN_00073d50 (73d50), applyFilter6 (73e7c), FUN_00074058 (74058), FUN_0007406c (7406c), FUN_0007434c (7434c), processInputData3 (74b78), FUN_00074cf0 (74cf0), FUN_00074fa8 (74fa8), FUN_00075150 (75150), FUN_00075284 (75284), FUN_000762c0 (762c0), FUN_00076308 (76308), FUN_00076680 (76680), FUN_00076844 (76844), FUN_00076c08 (76c08), FUN_00077b38 (77b38), FUN_00077c4c (77c4c), FUN_0007822c (7822c), FUN_00078440 (78440), FUN_00078584 (78584), FUN_00078768 (78768), FUN_000787f0 (787f0), FUN_00078b14 (78b14), FUN_0007a4cc (7a4cc), FUN_0007aa84 (7aa84), FUN_0007ab7c (7ab7c), FUN_0007ac4c (7ac4c), FUN_0007ae1c (7ae1c), FUN_0007ae48 (7ae48), FUN_0007b02c (7b02c), FUN_0007b3fc (7b3fc), FUN_0007b7f8 (7b7f8), FUN_0007b8d0 (7b8d0), FUN_0007c34c (7c34c), FUN_0007c488 (7c488), FUN_0007c808 (7c808), FUN_0007cb60 (7cb60), FUN_0007cbc8 (7cbc8), FUN_0007cc7c (7cc7c), FUN_0007d054 (7d054), FUN_0007d37c (7d37c), FUN_0007d734 (7d734), FUN_0007d7c4 (7d7c4), FUN_0007dd54 (7dd54), FUN_0007df40 (7df40), FUN_0007e0cc (7e0cc), FUN_0007e2b4 (7e2b4), FUN_0007e6b8 (7e6b8), FUN_0007e928 (7e928), FUN_0007eb48 (7eb48), FUN_0007ecf4 (7ecf4), FUN_0007f014 (7f014), FUN_0007fa1c (7fa1c), FUN_000838a0 (838a0), FUN_000839f8 (839f8), FUN_00083a4c (83a4c), FUN_0008404c (8404c), FUN_00084500 (84500), FUN_00085174 (85174), FUN_00085d24 (85d24), FUN_00086a44 (86a44), FUN_0008749c (8749c), FUN_0008c414 (8c414), FUN_00098634 (98634), FUN_000c6bc8 (c6bc8), FUN_000c6c30 (c6c30), FUN_000c9448 (c9448), FUN_000cd198 (cd198), FUN_000d27a8 (d27a8), FUN_000d2f78 (d2f78), FUN_000d3ac4 (d3ac4), FUN_000d3ba4 (d3ba4), FUN_000d7104 (d7104), FUN_000dd848 (dd848), FUN_000e18ec (e18ec), FUN_000e34dc (e34dc), FUN_000e36fc (e36fc), FUN_000f0ae0 (f0ae0), FUN_000f1224 (f1224), FUN_000f62a0 (f62a0), FUN_000f8808 (f8808), FUN_000fe358 (fe358), FUN_000ff12c (ff12c), FUN_00106b10 (106b10), FUN_0010a6a8 (10a6a8), FUN_0010dfb0 (10dfb0), FUN_00111e90 (111e90), FUN_001128c4 (1128c4), FUN_00113ebc (113ebc), FUN_00117a30 (117a30), FUN_0011ebbc (11ebbc), FUN_00125aa4 (125aa4), FUN_00128f08 (128f08), FUN_00129a0c (129a0c), FUN_0012bcdc (12bcdc), FUN_0012c014 (12c014), FUN_0012c87c (12c87c), FUN_0012f4e0 (12f4e0), FUN_0012f6d0 (12f6d0), FUN_0012f708 (12f708), FUN_00130564 (130564), FUN_00133f10 (133f10), FUN_00138484 (138484), FUN_0013a284 (13a284), FUN_0013ac14 (13ac14), FUN_0013d4b8 (13d4b8), FUN_0013d5dc (13d5dc), FUN_001465ec (1465ec), FUN_00148eb0 (148eb0), FUN_0014a6cc (14a6cc), FUN_0014e53c (14e53c), FUN_0014f67c (14f67c), FUN_00150f34 (150f34), FUN_0015184c (15184c), FUN_00151ab0 (151ab0), FUN_00152068 (152068), FUN_001525f0 (1525f0), FUN_00154398 (154398), FUN_00155cdc (155cdc), FUN_001562f0 (1562f0), FUN_001566fc (1566fc), FUN_0015a038 (15a038), FUN_0015a2d4 (15a2d4), FUN_0015b06c (15b06c), FUN_0015b3cc (15b3cc), FUN_00166090 (166090), setAllowGettingClosed_ (169aa4), FUN_00169e70 (169e70), windowScreenChanged_ (16a7ec), setCppWindow_ (16c6f4), setCurrentInterpretKeyEventsKey_ (16c72c), acceptsFirstResponder (16c74c), createLayerTextureWithSize_ (16cb94), attributedSubstringFromRange_ (16e170), characterIndexForPoint_ (16e34c), FUN_0016f0b0 (16f0b0), FUN_0016f32c (16f32c), FUN_00171c28 (171c28), FUN_00171cc8 (171cc8), FUN_00173004 (173004), FUN_001740a0 (1740a0), FUN_00176034 (176034), FUN_001767b0 (1767b0), FUN_0017a694 (17a694), FUN_00180040 (180040), FUN_001815b8 (1815b8), FUN_00181a94 (181a94), FUN_00181c64 (181c64), FUN_00183bb8 (183bb8), FUN_00183de0 (183de0), FUN_001878d8 (1878d8), FUN_0018c684 (18c684), FUN_0018f4f8 (18f4f8), FUN_001918c8 (1918c8), FUN_00192e08 (192e08), FUN_00193508 (193508), FUN_00193bac (193bac), FUN_00193dd0 (193dd0), FUN_00198aa4 (198aa4), FUN_0019bf1c (19bf1c), FUN_0019c5bc (19c5bc), FUN_0019de80 (19de80), FUN_001a2888 (1a2888), FUN_001a2ebc (1a2ebc), FUN_001a3e38 (1a3e38), FUN_001a3edc (1a3edc), FUN_001a47ec (1a47ec), FUN_001a4d30 (1a4d30), FUN_001a6e4c (1a6e4c), FUN_001a83e4 (1a83e4), FUN_001a8954 (1a8954), FUN_001a9718 (1a9718), FUN_001aaf14 (1aaf14), FUN_001abbcc (1abbcc), FUN_001ae13c (1ae13c), FUN_001af258 (1af258), FUN_001b0670 (1b0670), FUN_001b4b6c (1b4b6c), FUN_001b6ed8 (1b6ed8), FUN_001b73d4 (1b73d4), FUN_001b7b54 (1b7b54), FUN_001b93b0 (1b93b0), FUN_001bcaec (1bcaec), FUN_001be448 (1be448), FUN_001be664 (1be664), FUN_001bff40 (1bff40), FUN_001c085c (1c085c), FUN_001c1fa8 (1c1fa8), FUN_001c2724 (1c2724), FUN_001d0f34 (1d0f34), FUN_001d158c (1d158c), FUN_001d167c (1d167c), FUN_001d46f4 (1d46f4), FUN_001d483c (1d483c), FUN_001d4a1c (1d4a1c), FUN_001d5060 (1d5060), FUN_001d5164 (1d5164), FUN_001d5aa8 (1d5aa8), FUN_001d61d4 (1d61d4), FUN_001d6248 (1d6248), FUN_001d6d7c (1d6d7c), FUN_001d8340 (1d8340), FUN_001d83d4 (1d83d4), FUN_001d91c0 (1d91c0), FUN_001d95d4 (1d95d4), FUN_001d97f4 (1d97f4), FUN_001deef4 (1deef4), FUN_001df43c (1df43c), FUN_001e4974 (1e4974), FUN_001e89e4 (1e89e4), FUN_001e8da8 (1e8da8), FUN_001e91f4 (1e91f4), FUN_001ed3d8 (1ed3d8), FUN_001f66cc (1f66cc), FUN_001f84ac (1f84ac), FUN_001ff564 (1ff564), FUN_002001ec (2001ec), FUN_002055dc (2055dc), FUN_00205b14 (205b14), FUN_00206338 (206338), FUN_00209ca4 (209ca4), FUN_0020dca8 (20dca8), FUN_0020e4a8 (20e4a8), FUN_0020f33c (20f33c), FUN_0020ffe0 (20ffe0), FUN_00210128 (210128), FUN_002116d4 (2116d4), FUN_002121e8 (2121e8), FUN_002123b8 (2123b8), FUN_002124a4 (2124a4), FUN_002129e8 (2129e8), FUN_00214374 (214374), FUN_0021a090 (21a090), FUN_0021e4ac (21e4ac), FUN_00220068 (220068), FUN_0022031c (22031c), FUN_00224c0c (224c0c), FUN_00225568 (225568), FUN_002286d4 (2286d4), FUN_00228a04 (228a04), FUN_0022ad74 (22ad74), FUN_0022b2f0 (22b2f0), FUN_0022bca4 (22bca4), FUN_0022c078 (22c078), FUN_0022cb6c (22cb6c), FUN_0022d41c (22d41c), FUN_0022e464 (22e464), FUN_0022f594 (22f594), FUN_0023077c (23077c), FUN_00232958 (232958), FUN_00232b8c (232b8c), FUN_00243ecc (243ecc), FUN_00245638 (245638), FUN_00246594 (246594), FUN_0024a418 (24a418), FUN_0024aa6c (24aa6c), FUN_0024bcd8 (24bcd8), FUN_0024c210 (24c210), FUN_0024c278 (24c278), FUN_0024df88 (24df88), FUN_00251014 (251014), FUN_002510d4 (2510d4), FUN_00251bfc (251bfc), FUN_002536dc (2536dc), FUN_00253c50 (253c50), FUN_00253d00 (253d00), FUN_00254c00 (254c00), FUN_00257868 (257868), FUN_002595d4 (2595d4), FUN_0025991c (25991c), FUN_002602c8 (2602c8), FUN_002611a8 (2611a8), FUN_00265d90 (265d90), FUN_00266abc (266abc), FUN_00268de4 (268de4), FUN_0026a774 (26a774), FUN_0026c378 (26c378), FUN_0026cd2c (26cd2c), FUN_0026d724 (26d724), FUN_0026ea28 (26ea28), FUN_002705b0 (2705b0), FUN_00270708 (270708), FUN_002708b0 (2708b0), FUN_00270edc (270edc), FUN_00271528 (271528), FUN_00271f50 (271f50), FUN_002725dc (2725dc), FUN_00272a5c (272a5c), FUN_002745c4 (2745c4), FUN_00274ab0 (274ab0), FUN_0027682c (27682c), FUN_00279c18 (279c18), FUN_00279c60 (279c60), FUN_0027a920 (27a920), FUN_0027af34 (27af34), FUN_0027b1d8 (27b1d8), FUN_0027b278 (27b278), FUN_0027b4a0 (27b4a0), FUN_0027b74c (27b74c), FUN_0027c424 (27c424), FUN_002a78e4 (2a78e4), FUN_002a7c94 (2a7c94), FUN_002aabdc (2aabdc), FUN_002acb78 (2acb78), FUN_002aee8c (2aee8c), FUN_002af268 (2af268), FUN_002b2028 (2b2028), FUN_002b2a6c (2b2a6c), FUN_002b5f54 (2b5f54), FUN_002b68f4 (2b68f4), FUN_002cc1d0 (2cc1d0), FUN_002cd094 (2cd094), FUN_002cdcb4 (2cdcb4), FUN_002cddac (2cddac), FUN_002cedc4 (2cedc4), FUN_002d0088 (2d0088), FUN_002d0244 (2d0244), FUN_002d0844 (2d0844), FUN_002d4120 (2d4120), FUN_002d5440 (2d5440), FUN_002db03c (2db03c), FUN_002ddde8 (2ddde8), FUN_002de0bc (2de0bc), FUN_002de168 (2de168), FUN_002dedd8 (2dedd8), FUN_002df7f4 (2df7f4), FUN_002e0870 (2e0870), FUN_002e15e8 (2e15e8), FUN_002e30f4 (2e30f4), FUN_002e33f8 (2e33f8), FUN_002e353c (2e353c), FUN_002e3be0 (2e3be0), FUN_002e3c78 (2e3c78), FUN_002e3dec (2e3dec), FUN_002e44f0 (2e44f0), FUN_002e45cc (2e45cc), FUN_002e514c (2e514c), FUN_002e5e00 (2e5e00), FUN_002e5f4c (2e5f4c), FUN_002e699c (2e699c), FUN_002e70b4 (2e70b4), FUN_002e7e18 (2e7e18), FUN_002e7e74 (2e7e74), FUN_002e7ee4 (2e7ee4), FUN_002ea690 (2ea690), FUN_002ea89c (2ea89c), FUN_002ed95c (2ed95c), FUN_002edfb8 (2edfb8), FUN_002efb74 (2efb74), FUN_002f2d14 (2f2d14), FUN_002f51d0 (2f51d0), FUN_002f5338 (2f5338), FUN_003047fc (3047fc), FUN_00304914 (304914), FUN_00305cc8 (305cc8), FUN_00307698 (307698), FUN_003091fc (3091fc), FUN_0030d080 (30d080), FUN_0030d84c (30d84c), FUN_0030d9d4 (30d9d4), FUN_0030e414 (30e414), FUN_0030e72c (30e72c), FUN_0030e7d0 (30e7d0), FUN_0031208c (31208c), FUN_003130d0 (3130d0), FUN_00313390 (313390), FUN_003173a0 (3173a0), FUN_003185b4 (3185b4), FUN_0031b84c (31b84c), FUN_0031bc74 (31bc74), FUN_0031d1c8 (31d1c8), FUN_0031e1dc (31e1dc), FUN_0031ea5c (31ea5c), FUN_0031f5c8 (31f5c8), FUN_0031fa58 (31fa58), FUN_00320014 (320014), FUN_003202f8 (3202f8), FUN_003203d4 (3203d4), FUN_00321314 (321314), FUN_00324d60 (324d60), FUN_003268e8 (3268e8), FUN_00326ac0 (326ac0), FUN_00327758 (327758), FUN_00327fa0 (327fa0), FUN_00328b44 (328b44), FUN_00328cb8 (328cb8), FUN_003298cc (3298cc), FUN_0032ccd4 (32ccd4), FUN_003303e8 (3303e8), FUN_00330788 (330788), FUN_003313a0 (3313a0), FUN_00332904 (332904), FUN_00332c90 (332c90), FUN_00332eac (332eac), FUN_003332dc (3332dc), FUN_00333cf0 (333cf0), FUN_00334124 (334124), FUN_003368b8 (3368b8), FUN_0033717c (33717c), FUN_00337434 (337434), FUN_00338da8 (338da8), FUN_00339008 (339008), FUN_00339104 (339104), FUN_0033acac (33acac), FUN_0033b650 (33b650), FUN_0033f2a4 (33f2a4), FUN_0033f970 (33f970), FUN_0033fd1c (33fd1c), FUN_00340800 (340800), FUN_00340ad8 (340ad8), FUN_00340bbc (340bbc), FUN_00343608 (343608), FUN_00344ccc (344ccc), FUN_0034542c (34542c), FUN_003463f8 (3463f8), FUN_00346aac (346aac), FUN_00347374 (347374), FUN_0034757c (34757c), FUN_00347ab4 (347ab4), FUN_0034a4b4 (34a4b4), FUN_0034b964 (34b964), FUN_0034c21c (34c21c), FUN_0034e81c (34e81c), FUN_00351488 (351488), FUN_00353244 (353244), FUN_00353d0c (353d0c), FUN_00354900 (354900), FUN_003553ac (3553ac), FUN_00355548 (355548), FUN_0035591c (35591c), FUN_0035602c (35602c), FUN_00356ce4 (356ce4), FUN_00357c04 (357c04), FUN_00358010 (358010), FUN_003581e0 (3581e0), FUN_0035850c (35850c), FUN_00358ad8 (358ad8), FUN_0035963c (35963c), FUN_00366884 (366884), FUN_00366e0c (366e0c), FUN_00367e1c (367e1c), FUN_00367f20 (367f20), FUN_00368338 (368338), FUN_003685c8 (3685c8), FUN_00368ff8 (368ff8), FUN_0036a4dc (36a4dc), FUN_0036af90 (36af90), FUN_0036c8fc (36c8fc), FUN_0036c9cc (36c9cc), FUN_00370454 (370454), FUN_003709f8 (3709f8), FUN_00371864 (371864), FUN_00371d94 (371d94), FUN_00373174 (373174), FUN_00373f18 (373f18), FUN_00374784 (374784), FUN_00375230 (375230), FUN_00375ccc (375ccc), FUN_00377f64 (377f64), FUN_0037aafc (37aafc), FUN_0037c038 (37c038), FUN_0037e2ac (37e2ac), FUN_0037f914 (37f914), FUN_00383fd4 (383fd4), FUN_00384c28 (384c28), FUN_00384d40 (384d40), FUN_00384db8 (384db8), FUN_00384e58 (384e58), FUN_00385088 (385088), FUN_003852e0 (3852e0), FUN_00385330 (385330), FUN_003855b0 (3855b0), addItemWithTitle_action_keyEquivalent_ (387a40), constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_ (387ea0), copyFromTexture_sourceSlice_sourceLevel_sourceOrigin_sourceSize_toTexture_destinationSlice_destinationLevel_destinationOrigin_ (388020), defaultWritingDirectionForLanguage_ (3881c0), replaceRegion_mipmapLevel_withBytes_bytesPerRow_ (388fe0), runModalForDirectory_file_types_ (3890a0), scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_ (389100), selectFile_inFileViewerRootedAtPath_ (389160), setCurrentInterpretKeyEventsKey___389540 (389540), setPostsBoundsChangedNotifications_ (389920), setPostsFrameChangedNotifications_ (389940), setTranslatesAutoresizingMaskIntoConstraints_ (389b20), texture2DDescriptorWithPixelFormat_width_height_mipmapped___8a5301 (8a5301), setAllowGPUOptimizedContents___8a5302 (8a5302), setUsage___8a5303 (8a5303), setCpuCacheMode___8a5304 (8a5304), initWithImage_hotSpot___8a5c02 (8a5c02), initWithContentsOfFile___8a6601 (8a6601), objectAtIndex___8a7703 (8a7703), convertRectToBacking___8a7707 (8a7707), convertRectFromBacking___8a7708 (8a7708), stringWithUTF8String___8a7901 (8a7901), stringWithFormat___8a7902 (8a7902), stringWithCharacters_length___8a7903 (8a7903)
 
 #### FUN_000035c8 — funcs/__Z12FUN_000035c8R10FilterData.cpp, Ghidra 35c8, 0 model attempt(s)
 
@@ -6277,9 +7018,9 @@ void FUN_00004960(FilterData* filterData) {
 }
 ```
 
-### Not compiling yet — 478 × assigning to 'X' from incompatible type 'X'
+### Not compiling yet — 477 × assigning to 'X' from incompatible type 'X'
 
-All: FUN_00006a1c (6a1c), FUN_00007dc0 (7dc0), FUN_00007f78 (7f78), FUN_00007f98 (7f98), FUN_00009dfc (9dfc), FUN_0000b550 (b550), FUN_0000bf64 (bf64), FUN_0000c2dc (c2dc), FUN_0000c3f8 (c3f8), FUN_0000f154 (f154), FUN_00011f94 (11f94), FUN_00012110 (12110), FUN_00012240 (12240), FUN_000122f4 (122f4), FUN_00012528 (12528), processAudioData2 (12c80), processAndExecute2 (15ed4), processAndExecute3 (15f58), FUN_0001e730 (1e730), FUN_0001f218 (1f218), FUN_0001f3d0 (1f3d0), FUN_0001f908 (1f908), FUN_0001fa08 (1fa08), FUN_0001fa58 (1fa58), FUN_0001fa9c (1fa9c), FUN_00020ea8 (20ea8), setMaxValue (288ec), FUN_000294d4 (294d4), FUN_00029568 (29568), FUN_00029600 (29600), FUN_00029694 (29694), processAudioData5 (2d060), FUN_00032a3c (32a3c), FUN_00032b2c (32b2c), FUN_00035c30 (35c30), FUN_00036c40 (36c40), FUN_000418a8 (418a8), FUN_00044d18 (44d18), FUN_00044f88 (44f88), FUN_0004a648 (4a648), FUN_0004a91c (4a91c), FUN_0004aee0 (4aee0), FUN_000a14e8 (a14e8), FUN_000a1f84 (a1f84), FUN_000a3d58 (a3d58), FUN_000a3dfc (a3dfc), FUN_000a53d0 (a53d0), FUN_000b1cfc (b1cfc), FUN_000b2ee0 (b2ee0), FUN_000b3098 (b3098), FUN_000b3344 (b3344), FUN_000b510c (b510c), FUN_000b5bdc (b5bdc), FUN_000b9e8c (b9e8c), FUN_000bb55c (bb55c), FUN_000c02d4 (c02d4), FUN_000c0cdc (c0cdc), FUN_000c211c (c211c), FUN_000c3ee4 (c3ee4), FUN_000c4044 (c4044), FUN_000c42dc (c42dc), FUN_000c4a64 (c4a64), FUN_0027f58c (27f58c), FUN_0027f91c (27f91c), FUN_0027ff84 (27ff84), FUN_00280018 (280018), FUN_00280040 (280040), FUN_00280198 (280198), FUN_00280a64 (280a64), FUN_00280fd0 (280fd0), FUN_002818a8 (2818a8), FUN_002818c0 (2818c0), FUN_00282518 (282518), FUN_002826f0 (2826f0), FUN_00282848 (282848), FUN_00282b3c (282b3c), FUN_002835d8 (2835d8), FUN_00285224 (285224), FUN_00285318 (285318), FUN_00285dc8 (285dc8), FUN_00285f5c (285f5c), FUN_0028e32c (28e32c), FUN_0028e668 (28e668), FUN_0028e7b0 (28e7b0), FUN_0028e7c8 (28e7c8), FUN_0028e90c (28e90c), FUN_00290efc (290efc), FUN_00293e98 (293e98), FUN_0029d038 (29d038), FUN_0029f938 (29f938), FUN_0029f958 (29f958), FUN_0029f970 (29f970), FUN_002a1e84 (2a1e84), FUN_002a4744 (2a4744), FUN_0035a7ec (35a7ec), FUN_0035b0fc (35b0fc), FUN_0035c508 (35c508), FUN_0035e788 (35e788), FUN_0035f194 (35f194), FUN_0035f518 (35f518), FUN_00361010 (361010), FUN_0036134c (36134c), FUN_00361c6c (361c6c), FUN_00362e9c (362e9c), FUN_00362f84 (362f84), FUN_003630c4 (3630c4), closeShellWindow (606b4), FUN_000613c4 (613c4), FUN_00062e20 (62e20), FUN_000649d4 (649d4), FUN_00064ec4 (64ec4), FUN_00065504 (65504), FUN_0006574c (6574c), FUN_00069010 (69010), FUN_0006a374 (6a374), FUN_0006a448 (6a448), FUN_0006b57c (6b57c), FUN_0006d900 (6d900), FUN_0006e5cc (6e5cc), FUN_00073074 (73074), FUN_0007c770 (7c770), FUN_0007fff8 (7fff8), FUN_00081280 (81280), FUN_00081a70 (81a70), FUN_00082e14 (82e14), FUN_000862a0 (862a0), FUN_0008a1f0 (8a1f0), FUN_0008a3c0 (8a3c0), FUN_0008a494 (8a494), FUN_0008b06c (8b06c), FUN_0008b804 (8b804), FUN_0008ba84 (8ba84), FUN_0008bb04 (8bb04), FUN_0008bea4 (8bea4), FUN_0008cf64 (8cf64), FUN_0008d278 (8d278), FUN_0008d320 (8d320), FUN_0008dda4 (8dda4), processInput57 (8ee90), FUN_0008fe54 (8fe54), FUN_0009076c (9076c), FUN_0009383c (9383c), FUN_00093878 (93878), FUN_000938b8 (938b8), FUN_000939fc (939fc), FUN_00093a68 (93a68), FUN_00093aa0 (93aa0), FUN_00093ad8 (93ad8), FUN_00093b10 (93b10), FUN_00093bb8 (93bb8), FUN_0009642c (9642c), FUN_00097abc (97abc), FUN_000989a4 (989a4), FUN_0009a8f8 (9a8f8), FUN_0009aea8 (9aea8), FUN_0009af44 (9af44), FUN_0009cfbc (9cfbc), FUN_000c5484 (c5484), FUN_000c8978 (c8978), FUN_000ca578 (ca578), FUN_000cbe40 (cbe40), FUN_000cbf64 (cbf64), FUN_000cc488 (cc488), FUN_000cd0d8 (cd0d8), FUN_000cda4c (cda4c), FUN_000ced74 (ced74), FUN_000cf2dc (cf2dc), FUN_000cf640 (cf640), FUN_000d12b0 (d12b0), FUN_000d1a68 (d1a68), FUN_000d3614 (d3614), FUN_000d5d58 (d5d58), FUN_000d5fdc (d5fdc), FUN_000d7500 (d7500), FUN_000d753c (d753c), FUN_000d84c8 (d84c8), FUN_000d9520 (d9520), FUN_000d96dc (d96dc), FUN_000d9804 (d9804), FUN_000da090 (da090), FUN_000de1c4 (de1c4), FUN_000e08f0 (e08f0), FUN_000e122c (e122c), FUN_000e12d0 (e12d0), FUN_000e1520 (e1520), FUN_000e2dac (e2dac), FUN_000e5ae0 (e5ae0), FUN_000e62c0 (e62c0), FUN_000ea174 (ea174), FUN_000ea2c0 (ea2c0), FUN_000ea340 (ea340), FUN_000ea8dc (ea8dc), FUN_000ebe2c (ebe2c), FUN_000f0888 (f0888), FUN_000f1940 (f1940), FUN_000f4014 (f4014), FUN_000f59e8 (f59e8), FUN_001066f0 (1066f0), FUN_001124f8 (1124f8), FUN_001125e8 (1125e8), FUN_00112840 (112840), FUN_00114ce8 (114ce8), FUN_00117748 (117748), FUN_0011aad0 (11aad0), FUN_0011ab00 (11ab00), FUN_0011acf4 (11acf4), FUN_0011bba4 (11bba4), FUN_0011c850 (11c850), FUN_0011d6a8 (11d6a8), FUN_0011dd8c (11dd8c), FUN_0011e6d0 (11e6d0), FUN_0011ff30 (11ff30), FUN_00120890 (120890), FUN_00121048 (121048), FUN_00121510 (121510), FUN_00121644 (121644), FUN_00121888 (121888), FUN_00121fb4 (121fb4), FUN_00123258 (123258), FUN_00124b94 (124b94), FUN_00125878 (125878), FUN_001258fc (1258fc), FUN_00126948 (126948), FUN_00126c48 (126c48), FUN_00127444 (127444), FUN_00127ad8 (127ad8), FUN_00129240 (129240), FUN_0012cac0 (12cac0), FUN_0012d1b0 (12d1b0), FUN_0012d7d0 (12d7d0), FUN_0012db8c (12db8c), FUN_0012e030 (12e030), FUN_0012e3dc (12e3dc), FUN_0012efcc (12efcc), FUN_0012f684 (12f684), FUN_00131cd8 (131cd8), FUN_00138ad0 (138ad0), FUN_0013a4ac (13a4ac), FUN_0013aec8 (13aec8), FUN_0013d330 (13d330), FUN_0013ea2c (13ea2c), FUN_0013f580 (13f580), FUN_0013f62c (13f62c), FUN_00140b68 (140b68), FUN_00143f88 (143f88), FUN_00145c28 (145c28), FUN_0014cd20 (14cd20), FUN_0014d380 (14d380), FUN_0014f3c4 (14f3c4), FUN_0014f74c (14f74c), FUN_0014f7bc (14f7bc), FUN_00150ba4 (150ba4), FUN_00155f58 (155f58), FUN_00156dec (156dec), FUN_00156e54 (156e54), FUN_0015898c (15898c), FUN_00158fac (158fac), FUN_00163314 (163314), FUN_00163a84 (163a84), FUN_00163c80 (163c80), lowpassFilter2430 (166ba4), FUN_00166dfc (166dfc), FUN_00168268 (168268), FUN_0016828c (16828c), FUN_00175474 (175474), FUN_00176554 (176554), FUN_0017b200 (17b200), FUN_0017f018 (17f018), FUN_001818a0 (1818a0), FUN_0018ce2c (18ce2c), FUN_00191bc4 (191bc4), FUN_0019a4f8 (19a4f8), FUN_001a2d7c (1a2d7c), FUN_001a374c (1a374c), FUN_001a3d00 (1a3d00), FUN_001a8184 (1a8184), FUN_001acfb0 (1acfb0), FUN_001afa08 (1afa08), FUN_001b3180 (1b3180), FUN_001b4580 (1b4580), FUN_001b70ac (1b70ac), FUN_001bac14 (1bac14), FUN_001bb0bc (1bb0bc), FUN_001bb998 (1bb998), FUN_001bd150 (1bd150), FUN_001bd1fc (1bd1fc), FUN_001bd368 (1bd368), FUN_001bd418 (1bd418), FUN_001bd464 (1bd464), FUN_001bd48c (1bd48c), FUN_001bd650 (1bd650), FUN_001bd7e4 (1bd7e4), FUN_001bd8cc (1bd8cc), FUN_001bf064 (1bf064), FUN_001c0c20 (1c0c20), FUN_001c12d0 (1c12d0), FUN_001c19c8 (1c19c8), FUN_001c3084 (1c3084), FUN_001c6a08 (1c6a08), FUN_001c6d78 (1c6d78), FUN_001c9160 (1c9160), FUN_001c9210 (1c9210), LowpassFilter (1c959c), FUN_001c9978 (1c9978), FUN_001c9af0 (1c9af0), FUN_001c9c40 (1c9c40), FUN_001ca15c (1ca15c), FUN_001ca5b8 (1ca5b8), FUN_001cddd8 (1cddd8), FUN_001ce9ec (1ce9ec), FUN_001cfaac (1cfaac), FUN_001d072c (1d072c), FUN_001d0860 (1d0860), FUN_001d0914 (1d0914), FUN_001d09c8 (1d09c8), FUN_001d371c (1d371c), FUN_001d5cc4 (1d5cc4), FUN_001d6a5c (1d6a5c), FUN_001d8018 (1d8018), FUN_001d8520 (1d8520), FUN_001d8ab8 (1d8ab8), FUN_001d9540 (1d9540), FUN_001da698 (1da698), FUN_001db0a0 (1db0a0), FUN_001dbbbc (1dbbbc), FUN_001dbfb8 (1dbfb8), FUN_001dc5bc (1dc5bc), FUN_001e3f0c (1e3f0c), FUN_001e4ba8 (1e4ba8), FUN_001e6414 (1e6414), FUN_001e6c00 (1e6c00), FUN_001e8638 (1e8638), FUN_001e8f90 (1e8f90), FUN_001ecbc8 (1ecbc8), FUN_001efd50 (1efd50), FUN_001f0bf0 (1f0bf0), FUN_001f0e84 (1f0e84), FUN_001f172c (1f172c), FUN_001f73d0 (1f73d0), FUN_001f8650 (1f8650), FUN_001f8844 (1f8844), FUN_001f8b30 (1f8b30), FUN_001f921c (1f921c), FUN_001f955c (1f955c), FUN_001feeb0 (1feeb0), FUN_001ff678 (1ff678), FUN_002010b8 (2010b8), FUN_00201a68 (201a68), FUN_00203ebc (203ebc), FUN_00204ce0 (204ce0), FUN_00206064 (206064), FUN_0020b2fc (20b2fc), FUN_0020e1c0 (20e1c0), FUN_0020eb40 (20eb40), FUN_0020edbc (20edbc), FUN_0020f1f4 (20f1f4), FUN_0020f270 (20f270), FUN_0020f294 (20f294), FUN_0020f4b4 (20f4b4), FUN_0020fa9c (20fa9c), FUN_0020fad4 (20fad4), FUN_00211d20 (211d20), FUN_002150d4 (2150d4), FUN_002150ec (2150ec), FUN_00215554 (215554), FUN_00217130 (217130), FUN_00217618 (217618), FUN_00217b44 (217b44), FUN_002194e8 (2194e8), FUN_0021a01c (21a01c), FUN_0021bb34 (21bb34), FUN_0021e9e4 (21e9e4), FUN_0021f4e4 (21f4e4), FUN_00223c6c (223c6c), FUN_00223ca4 (223ca4), FUN_00225548 (225548), FUN_00225788 (225788), FUN_0022587c (22587c), FUN_00225a0c (225a0c), FUN_00226010 (226010), FUN_0022a7bc (22a7bc), FUN_0022d578 (22d578), FUN_0022ff84 (22ff84), FUN_0023acc4 (23acc4), FUN_0024ac24 (24ac24), FUN_00250f98 (250f98), FUN_00255568 (255568), FUN_002572cc (2572cc), FUN_00259258 (259258), FUN_0025b8f0 (25b8f0), FUN_0025edf8 (25edf8), FUN_0025f37c (25f37c), FUN_0026036c (26036c), FUN_00262894 (262894), FUN_00269a34 (269a34), FUN_0026b58c (26b58c), FUN_0026fb98 (26fb98), FUN_0026fc10 (26fc10), FUN_00274308 (274308), FUN_0027b228 (27b228), FUN_002cd704 (2cd704), FUN_002cdc0c (2cdc0c), FUN_002dc424 (2dc424), FUN_002e9950 (2e9950), FUN_002eaab4 (2eaab4), FUN_002f3e9c (2f3e9c), FUN_002f48bc (2f48bc), FUN_002fa204 (2fa204), FUN_002fb0f0 (2fb0f0), FUN_002fb1c0 (2fb1c0), FUN_002fb374 (2fb374), FUN_002fd224 (2fd224), FUN_0030798c (30798c), FUN_00309314 (309314), FUN_0030ad70 (30ad70), FUN_0030b1ac (30b1ac), FUN_0030d4b8 (30d4b8), FUN_0030e494 (30e494), FUN_0030e644 (30e644), FUN_00310908 (310908), FUN_00311980 (311980), FUN_0031202c (31202c), FUN_00317020 (317020), FUN_0031cda8 (31cda8), FUN_0031e640 (31e640), FUN_00321550 (321550), FUN_00322230 (322230), FUN_00323198 (323198), FUN_00323814 (323814), FUN_00323b90 (323b90), FUN_00324ec8 (324ec8), FUN_00324fa4 (324fa4), FUN_003259f4 (3259f4), FUN_00325ae4 (325ae4), FUN_00325afc (325afc), FUN_003266d0 (3266d0), FUN_0032ff58 (32ff58), FUN_00330314 (330314), FUN_003304bc (3304bc), FUN_00330e04 (330e04), FUN_0033349c (33349c), FUN_00333a68 (333a68), FUN_00334a4c (334a4c), FUN_00334a80 (334a80), FUN_003365dc (3365dc), FUN_0033731c (33731c), FUN_003378e8 (3378e8), FUN_00338124 (338124), FUN_00339d20 (339d20), FUN_0033aa18 (33aa18), FUN_0033aba8 (33aba8), FUN_0033c914 (33c914), FUN_0033d2a8 (33d2a8), FUN_00341384 (341384), FUN_00346e24 (346e24), FUN_0034747c (34747c), FUN_00348264 (348264), FUN_0034bc30 (34bc30), FUN_0034bd7c (34bd7c), FUN_0034e8e0 (34e8e0), FUN_0034ff54 (34ff54), FUN_0035081c (35081c), FUN_003519e4 (3519e4), FUN_003528d8 (3528d8), FUN_0035378c (35378c), FUN_0035386c (35386c), FUN_00359b9c (359b9c), FUN_00359be4 (359be4), FUN_00368218 (368218), FUN_0036a548 (36a548), FUN_0036a5ec (36a5ec), FUN_0036c4e0 (36c4e0), FUN_00370d2c (370d2c), FUN_00371228 (371228), FUN_00371448 (371448), FUN_0037165c (37165c), FUN_00375278 (375278), FUN_003787d4 (3787d4)
+All: FUN_00006a1c (6a1c), FUN_00007dc0 (7dc0), FUN_00007f78 (7f78), FUN_00007f98 (7f98), FUN_00009dfc (9dfc), FUN_0000b550 (b550), FUN_0000bf64 (bf64), FUN_0000c2dc (c2dc), FUN_0000c3f8 (c3f8), FUN_0000f154 (f154), FUN_00011f94 (11f94), FUN_00012110 (12110), FUN_00012240 (12240), FUN_000122f4 (122f4), FUN_00012528 (12528), processAudioData2 (12c80), processAndExecute2 (15ed4), processAndExecute3 (15f58), FUN_0001e730 (1e730), FUN_0001f218 (1f218), FUN_0001f3d0 (1f3d0), FUN_0001f908 (1f908), FUN_0001fa08 (1fa08), FUN_0001fa58 (1fa58), FUN_0001fa9c (1fa9c), FUN_00020ea8 (20ea8), setMaxValue (288ec), FUN_000294d4 (294d4), FUN_00029568 (29568), FUN_00029600 (29600), FUN_00029694 (29694), processAudioData5 (2d060), FUN_00032a3c (32a3c), FUN_00032b2c (32b2c), FUN_00035c30 (35c30), FUN_00036c40 (36c40), FUN_000418a8 (418a8), FUN_00044d18 (44d18), FUN_00044f88 (44f88), FUN_0004a648 (4a648), FUN_0004a91c (4a91c), FUN_0004aee0 (4aee0), FUN_000a14e8 (a14e8), FUN_000a1f84 (a1f84), FUN_000a3d58 (a3d58), FUN_000a3dfc (a3dfc), FUN_000a53d0 (a53d0), FUN_000b1cfc (b1cfc), FUN_000b2ee0 (b2ee0), FUN_000b3098 (b3098), FUN_000b3344 (b3344), FUN_000b510c (b510c), FUN_000b9e8c (b9e8c), FUN_000bb55c (bb55c), FUN_000c02d4 (c02d4), FUN_000c0cdc (c0cdc), FUN_000c211c (c211c), FUN_000c3ee4 (c3ee4), FUN_000c4044 (c4044), FUN_000c42dc (c42dc), FUN_000c4a64 (c4a64), FUN_0027f58c (27f58c), FUN_0027f91c (27f91c), FUN_0027ff84 (27ff84), FUN_00280018 (280018), FUN_00280040 (280040), FUN_00280198 (280198), FUN_00280a64 (280a64), FUN_00280fd0 (280fd0), FUN_002818a8 (2818a8), FUN_002818c0 (2818c0), FUN_00282518 (282518), FUN_002826f0 (2826f0), FUN_00282848 (282848), FUN_00282b3c (282b3c), FUN_002835d8 (2835d8), FUN_00285224 (285224), FUN_00285318 (285318), FUN_00285dc8 (285dc8), FUN_00285f5c (285f5c), FUN_0028e32c (28e32c), FUN_0028e668 (28e668), FUN_0028e7b0 (28e7b0), FUN_0028e7c8 (28e7c8), FUN_0028e90c (28e90c), FUN_00290efc (290efc), FUN_00293e98 (293e98), FUN_0029d038 (29d038), FUN_0029f938 (29f938), FUN_0029f958 (29f958), FUN_0029f970 (29f970), FUN_002a1e84 (2a1e84), FUN_002a4744 (2a4744), FUN_0035a7ec (35a7ec), FUN_0035b0fc (35b0fc), FUN_0035c508 (35c508), FUN_0035e788 (35e788), FUN_0035f194 (35f194), FUN_0035f518 (35f518), FUN_00361010 (361010), FUN_0036134c (36134c), FUN_00361c6c (361c6c), FUN_00362e9c (362e9c), FUN_00362f84 (362f84), FUN_003630c4 (3630c4), closeShellWindow (606b4), FUN_000613c4 (613c4), FUN_00062e20 (62e20), FUN_000649d4 (649d4), FUN_00064ec4 (64ec4), FUN_00065504 (65504), FUN_0006574c (6574c), FUN_00069010 (69010), FUN_0006a374 (6a374), FUN_0006a448 (6a448), FUN_0006b57c (6b57c), FUN_0006d900 (6d900), FUN_0006e5cc (6e5cc), FUN_00073074 (73074), FUN_0007c770 (7c770), FUN_0007fff8 (7fff8), FUN_00081280 (81280), FUN_00081a70 (81a70), FUN_00082e14 (82e14), FUN_000862a0 (862a0), FUN_0008a1f0 (8a1f0), FUN_0008a3c0 (8a3c0), FUN_0008a494 (8a494), FUN_0008b06c (8b06c), FUN_0008b804 (8b804), FUN_0008ba84 (8ba84), FUN_0008bb04 (8bb04), FUN_0008bea4 (8bea4), FUN_0008cf64 (8cf64), FUN_0008d278 (8d278), FUN_0008d320 (8d320), FUN_0008dda4 (8dda4), processInput57 (8ee90), FUN_0008fe54 (8fe54), FUN_0009076c (9076c), FUN_0009383c (9383c), FUN_00093878 (93878), FUN_000938b8 (938b8), FUN_000939fc (939fc), FUN_00093a68 (93a68), FUN_00093aa0 (93aa0), FUN_00093ad8 (93ad8), FUN_00093b10 (93b10), FUN_00093bb8 (93bb8), FUN_0009642c (9642c), FUN_00097abc (97abc), FUN_000989a4 (989a4), FUN_0009a8f8 (9a8f8), FUN_0009aea8 (9aea8), FUN_0009af44 (9af44), FUN_0009cfbc (9cfbc), FUN_000c5484 (c5484), FUN_000c8978 (c8978), FUN_000ca578 (ca578), FUN_000cbe40 (cbe40), FUN_000cbf64 (cbf64), FUN_000cc488 (cc488), FUN_000cd0d8 (cd0d8), FUN_000cda4c (cda4c), FUN_000ced74 (ced74), FUN_000cf2dc (cf2dc), FUN_000cf640 (cf640), FUN_000d12b0 (d12b0), FUN_000d1a68 (d1a68), FUN_000d3614 (d3614), FUN_000d5d58 (d5d58), FUN_000d5fdc (d5fdc), FUN_000d7500 (d7500), FUN_000d753c (d753c), FUN_000d84c8 (d84c8), FUN_000d9520 (d9520), FUN_000d96dc (d96dc), FUN_000d9804 (d9804), FUN_000da090 (da090), FUN_000de1c4 (de1c4), FUN_000e08f0 (e08f0), FUN_000e122c (e122c), FUN_000e12d0 (e12d0), FUN_000e1520 (e1520), FUN_000e2dac (e2dac), FUN_000e5ae0 (e5ae0), FUN_000e62c0 (e62c0), FUN_000ea174 (ea174), FUN_000ea2c0 (ea2c0), FUN_000ea340 (ea340), FUN_000ea8dc (ea8dc), FUN_000ebe2c (ebe2c), FUN_000f0888 (f0888), FUN_000f1940 (f1940), FUN_000f4014 (f4014), FUN_000f59e8 (f59e8), FUN_001066f0 (1066f0), FUN_001124f8 (1124f8), FUN_001125e8 (1125e8), FUN_00112840 (112840), FUN_00114ce8 (114ce8), FUN_00117748 (117748), FUN_0011aad0 (11aad0), FUN_0011ab00 (11ab00), FUN_0011acf4 (11acf4), FUN_0011bba4 (11bba4), FUN_0011c850 (11c850), FUN_0011d6a8 (11d6a8), FUN_0011dd8c (11dd8c), FUN_0011e6d0 (11e6d0), FUN_0011ff30 (11ff30), FUN_00120890 (120890), FUN_00121048 (121048), FUN_00121510 (121510), FUN_00121644 (121644), FUN_00121888 (121888), FUN_00121fb4 (121fb4), FUN_00123258 (123258), FUN_00124b94 (124b94), FUN_00125878 (125878), FUN_001258fc (1258fc), FUN_00126948 (126948), FUN_00126c48 (126c48), FUN_00127444 (127444), FUN_00127ad8 (127ad8), FUN_00129240 (129240), FUN_0012cac0 (12cac0), FUN_0012d1b0 (12d1b0), FUN_0012d7d0 (12d7d0), FUN_0012db8c (12db8c), FUN_0012e030 (12e030), FUN_0012e3dc (12e3dc), FUN_0012efcc (12efcc), FUN_0012f684 (12f684), FUN_00131cd8 (131cd8), FUN_00138ad0 (138ad0), FUN_0013a4ac (13a4ac), FUN_0013aec8 (13aec8), FUN_0013d330 (13d330), FUN_0013ea2c (13ea2c), FUN_0013f580 (13f580), FUN_0013f62c (13f62c), FUN_00140b68 (140b68), FUN_00143f88 (143f88), FUN_00145c28 (145c28), FUN_0014cd20 (14cd20), FUN_0014d380 (14d380), FUN_0014f3c4 (14f3c4), FUN_0014f74c (14f74c), FUN_0014f7bc (14f7bc), FUN_00150ba4 (150ba4), FUN_00155f58 (155f58), FUN_00156dec (156dec), FUN_00156e54 (156e54), FUN_0015898c (15898c), FUN_00158fac (158fac), FUN_00163314 (163314), FUN_00163a84 (163a84), FUN_00163c80 (163c80), lowpassFilter2430 (166ba4), FUN_00166dfc (166dfc), FUN_00168268 (168268), FUN_0016828c (16828c), FUN_00175474 (175474), FUN_00176554 (176554), FUN_0017b200 (17b200), FUN_0017f018 (17f018), FUN_001818a0 (1818a0), FUN_0018ce2c (18ce2c), FUN_00191bc4 (191bc4), FUN_0019a4f8 (19a4f8), FUN_001a2d7c (1a2d7c), FUN_001a374c (1a374c), FUN_001a3d00 (1a3d00), FUN_001a8184 (1a8184), FUN_001acfb0 (1acfb0), FUN_001afa08 (1afa08), FUN_001b3180 (1b3180), FUN_001b4580 (1b4580), FUN_001b70ac (1b70ac), FUN_001bac14 (1bac14), FUN_001bb0bc (1bb0bc), FUN_001bb998 (1bb998), FUN_001bd150 (1bd150), FUN_001bd1fc (1bd1fc), FUN_001bd368 (1bd368), FUN_001bd418 (1bd418), FUN_001bd464 (1bd464), FUN_001bd48c (1bd48c), FUN_001bd650 (1bd650), FUN_001bd7e4 (1bd7e4), FUN_001bd8cc (1bd8cc), FUN_001bf064 (1bf064), FUN_001c0c20 (1c0c20), FUN_001c12d0 (1c12d0), FUN_001c19c8 (1c19c8), FUN_001c3084 (1c3084), FUN_001c6a08 (1c6a08), FUN_001c6d78 (1c6d78), FUN_001c9160 (1c9160), FUN_001c9210 (1c9210), LowpassFilter (1c959c), FUN_001c9978 (1c9978), FUN_001c9af0 (1c9af0), FUN_001c9c40 (1c9c40), FUN_001ca15c (1ca15c), FUN_001ca5b8 (1ca5b8), FUN_001cddd8 (1cddd8), FUN_001ce9ec (1ce9ec), FUN_001cfaac (1cfaac), FUN_001d072c (1d072c), FUN_001d0860 (1d0860), FUN_001d0914 (1d0914), FUN_001d09c8 (1d09c8), FUN_001d371c (1d371c), FUN_001d5cc4 (1d5cc4), FUN_001d6a5c (1d6a5c), FUN_001d8018 (1d8018), FUN_001d8520 (1d8520), FUN_001d8ab8 (1d8ab8), FUN_001d9540 (1d9540), FUN_001da698 (1da698), FUN_001db0a0 (1db0a0), FUN_001dbbbc (1dbbbc), FUN_001dbfb8 (1dbfb8), FUN_001dc5bc (1dc5bc), FUN_001e3f0c (1e3f0c), FUN_001e4ba8 (1e4ba8), FUN_001e6414 (1e6414), FUN_001e6c00 (1e6c00), FUN_001e8638 (1e8638), FUN_001e8f90 (1e8f90), FUN_001ecbc8 (1ecbc8), FUN_001efd50 (1efd50), FUN_001f0bf0 (1f0bf0), FUN_001f0e84 (1f0e84), FUN_001f172c (1f172c), FUN_001f73d0 (1f73d0), FUN_001f8650 (1f8650), FUN_001f8844 (1f8844), FUN_001f8b30 (1f8b30), FUN_001f921c (1f921c), FUN_001f955c (1f955c), FUN_001feeb0 (1feeb0), FUN_001ff678 (1ff678), FUN_002010b8 (2010b8), FUN_00201a68 (201a68), FUN_00203ebc (203ebc), FUN_00204ce0 (204ce0), FUN_00206064 (206064), FUN_0020b2fc (20b2fc), FUN_0020e1c0 (20e1c0), FUN_0020eb40 (20eb40), FUN_0020edbc (20edbc), FUN_0020f1f4 (20f1f4), FUN_0020f270 (20f270), FUN_0020f294 (20f294), FUN_0020f4b4 (20f4b4), FUN_0020fa9c (20fa9c), FUN_0020fad4 (20fad4), FUN_00211d20 (211d20), FUN_002150d4 (2150d4), FUN_002150ec (2150ec), FUN_00215554 (215554), FUN_00217130 (217130), FUN_00217618 (217618), FUN_00217b44 (217b44), FUN_002194e8 (2194e8), FUN_0021a01c (21a01c), FUN_0021bb34 (21bb34), FUN_0021e9e4 (21e9e4), FUN_0021f4e4 (21f4e4), FUN_00223c6c (223c6c), FUN_00223ca4 (223ca4), FUN_00225548 (225548), FUN_00225788 (225788), FUN_0022587c (22587c), FUN_00225a0c (225a0c), FUN_00226010 (226010), FUN_0022a7bc (22a7bc), FUN_0022d578 (22d578), FUN_0022ff84 (22ff84), FUN_0023acc4 (23acc4), FUN_0024ac24 (24ac24), FUN_00250f98 (250f98), FUN_00255568 (255568), FUN_002572cc (2572cc), FUN_00259258 (259258), FUN_0025b8f0 (25b8f0), FUN_0025edf8 (25edf8), FUN_0025f37c (25f37c), FUN_0026036c (26036c), FUN_00262894 (262894), FUN_00269a34 (269a34), FUN_0026b58c (26b58c), FUN_0026fb98 (26fb98), FUN_0026fc10 (26fc10), FUN_00274308 (274308), FUN_0027b228 (27b228), FUN_002cd704 (2cd704), FUN_002cdc0c (2cdc0c), FUN_002dc424 (2dc424), FUN_002e9950 (2e9950), FUN_002eaab4 (2eaab4), FUN_002f3e9c (2f3e9c), FUN_002f48bc (2f48bc), FUN_002fa204 (2fa204), FUN_002fb0f0 (2fb0f0), FUN_002fb1c0 (2fb1c0), FUN_002fb374 (2fb374), FUN_002fd224 (2fd224), FUN_0030798c (30798c), FUN_00309314 (309314), FUN_0030ad70 (30ad70), FUN_0030b1ac (30b1ac), FUN_0030d4b8 (30d4b8), FUN_0030e494 (30e494), FUN_0030e644 (30e644), FUN_00310908 (310908), FUN_00311980 (311980), FUN_0031202c (31202c), FUN_00317020 (317020), FUN_0031cda8 (31cda8), FUN_0031e640 (31e640), FUN_00321550 (321550), FUN_00322230 (322230), FUN_00323198 (323198), FUN_00323814 (323814), FUN_00323b90 (323b90), FUN_00324ec8 (324ec8), FUN_00324fa4 (324fa4), FUN_003259f4 (3259f4), FUN_00325ae4 (325ae4), FUN_00325afc (325afc), FUN_003266d0 (3266d0), FUN_0032ff58 (32ff58), FUN_00330314 (330314), FUN_003304bc (3304bc), FUN_00330e04 (330e04), FUN_0033349c (33349c), FUN_00333a68 (333a68), FUN_00334a4c (334a4c), FUN_00334a80 (334a80), FUN_003365dc (3365dc), FUN_0033731c (33731c), FUN_003378e8 (3378e8), FUN_00338124 (338124), FUN_00339d20 (339d20), FUN_0033aa18 (33aa18), FUN_0033aba8 (33aba8), FUN_0033c914 (33c914), FUN_0033d2a8 (33d2a8), FUN_00341384 (341384), FUN_00346e24 (346e24), FUN_0034747c (34747c), FUN_00348264 (348264), FUN_0034bc30 (34bc30), FUN_0034bd7c (34bd7c), FUN_0034e8e0 (34e8e0), FUN_0034ff54 (34ff54), FUN_0035081c (35081c), FUN_003519e4 (3519e4), FUN_003528d8 (3528d8), FUN_0035378c (35378c), FUN_0035386c (35386c), FUN_00359b9c (359b9c), FUN_00359be4 (359be4), FUN_00368218 (368218), FUN_0036a548 (36a548), FUN_0036a5ec (36a5ec), FUN_0036c4e0 (36c4e0), FUN_00370d2c (370d2c), FUN_00371228 (371228), FUN_00371448 (371448), FUN_0037165c (37165c), FUN_00375278 (375278), FUN_003787d4 (3787d4)
 
 #### FUN_00006a1c — funcs/__Z12FUN_00006a1cPl.cpp, Ghidra 6a1c, 0 model attempt(s)
 
@@ -6662,9 +7403,9 @@ void FUN_0000c2dc(uint64_t *param_1) {
 }
 ```
 
-### Not compiling yet — 378 × assigning to 'X' (aka 'X') from incompatible type 'X'
+### Not compiling yet — 375 × assigning to 'X' (aka 'X') from incompatible type 'X'
 
-All: FUN_00005810 (5810), FUN_000176f8 (176f8), FUN_00019e04 (19e04), processVector5 (1da54), FUN_00028ca8 (28ca8), FUN_00029458 (29458), FUN_000297a0 (297a0), FUN_00029f9c (29f9c), FUN_0002b194 (2b194), FUN_0002b2ac (2b2ac), FUN_0002b378 (2b378), FUN_0002b52c (2b52c), FUN_0002c04c (2c04c), FUN_0002c214 (2c214), FUN_000305a8 (305a8), FUN_000371a4 (371a4), FUN_00053af8 (53af8), FUN_000a32dc (a32dc), FUN_000a3db0 (a3db0), FUN_000a588c (a588c), FUN_000a9e40 (a9e40), FUN_000aa640 (aa640), FUN_000b1f88 (b1f88), FUN_000b310c (b310c), FUN_000b33b4 (b33b4), FUN_000b3418 (b3418), FUN_000b54c8 (b54c8), FUN_000b62bc (b62bc), FUN_000c3f28 (c3f28), FUN_000c457c (c457c), FUN_0028175c (28175c), FUN_0028611c (28611c), FUN_00286574 (286574), FUN_00286e64 (286e64), FUN_00288fac (288fac), FUN_0028c70c (28c70c), FUN_0028d870 (28d870), FUN_0028ef54 (28ef54), FUN_00290a28 (290a28), FUN_00290bc4 (290bc4), FUN_00295200 (295200), FUN_0029a26c (29a26c), FUN_0029a434 (29a434), FUN_0029cd68 (29cd68), FUN_0029d948 (29d948), FUN_0029ffac (29ffac), FUN_002a0adc (2a0adc), FUN_002a0fe0 (2a0fe0), FUN_002c1930 (2c1930), FUN_002c6934 (2c6934), FUN_002c6c3c (2c6c3c), FUN_002c6d94 (2c6d94), FUN_002c70ec (2c70ec), FUN_002c7bac (2c7bac), FUN_002c8a4c (2c8a4c), FUN_002c9f44 (2c9f44), FUN_0035b658 (35b658), FUN_003624fc (3624fc), FUN_003642d0 (3642d0), FUN_003648d0 (3648d0), FUN_00064d6c (64d6c), FUN_0006af5c (6af5c), FUN_00074cd0 (74cd0), FUN_00074d04 (74d04), FUN_00075988 (75988), FUN_00077a10 (77a10), FUN_0007be00 (7be00), FUN_0007f924 (7f924), FUN_0007fdd0 (7fdd0), FUN_00080ba4 (80ba4), lowpassFilter686 (80c9c), FUN_00081e18 (81e18), FUN_00089fcc (89fcc), FUN_0008adf4 (8adf4), FUN_0008b410 (8b410), FUN_0009369c (9369c), FUN_00095064 (95064), FUN_00095224 (95224), FUN_00096e74 (96e74), FUN_00098d48 (98d48), FUN_0009f4b8 (9f4b8), FUN_000a0190 (a0190), FUN_000c9968 (c9968), FUN_000ca670 (ca670), FUN_000cbe00 (cbe00), FUN_000ccbc8 (ccbc8), FUN_000ccd00 (ccd00), FUN_000cd9c8 (cd9c8), FUN_000d8324 (d8324), FUN_000d91b0 (d91b0), FUN_000dfafc (dfafc), FUN_000e43dc (e43dc), FUN_000e7a8c (e7a8c), FUN_000e7fb4 (e7fb4), FUN_000e8064 (e8064), FUN_000ebd70 (ebd70), FUN_000ec080 (ec080), FUN_000ec858 (ec858), FUN_000f18e0 (f18e0), FUN_000f3cdc (f3cdc), FUN_000f5678 (f5678), FUN_001090f0 (1090f0), FUN_0011547c (11547c), FUN_00117f50 (117f50), FUN_0011e568 (11e568), FUN_00125230 (125230), FUN_00129378 (129378), FUN_0012cefc (12cefc), FUN_00131f70 (131f70), FUN_00132394 (132394), FUN_00136990 (136990), FUN_00137504 (137504), FUN_001382e8 (1382e8), FUN_0013929c (13929c), FUN_001394f0 (1394f0), FUN_001398c4 (1398c4), FUN_00139a70 (139a70), FUN_00139e94 (139e94), FUN_0013a818 (13a818), FUN_0013dcbc (13dcbc), FUN_0013fcf8 (13fcf8), FUN_0014377c (14377c), FUN_0014d9f8 (14d9f8), FUN_0014e820 (14e820), FUN_00153330 (153330), FUN_0015436c (15436c), FUN_00154788 (154788), FUN_00158d5c (158d5c), FUN_001650c4 (1650c4), FUN_001655b0 (1655b0), FUN_00167054 (167054), FUN_00168088 (168088), createMetalLayer (16c9d0), FUN_0016e488 (16e488), FUN_0016e684 (16e684), FUN_0016eaf4 (16eaf4), FUN_00173b50 (173b50), FUN_00173de8 (173de8), FUN_0017c228 (17c228), FUN_0017d890 (17d890), FUN_0017d8fc (17d8fc), FUN_0017d9c4 (17d9c4), FUN_0017de6c (17de6c), FUN_0017ee84 (17ee84), FUN_0017efc8 (17efc8), FUN_00181430 (181430), FUN_00182ea4 (182ea4), FUN_00183ce4 (183ce4), FUN_001847ec (1847ec), FUN_00184e88 (184e88), FUN_00185918 (185918), FUN_00186108 (186108), FUN_00186750 (186750), FUN_00187500 (187500), FUN_00189c30 (189c30), FUN_0018c750 (18c750), FUN_0018d140 (18d140), FUN_0018d7dc (18d7dc), FUN_0018e23c (18e23c), FUN_0018efdc (18efdc), FUN_0018fd8c (18fd8c), FUN_00191d84 (191d84), FUN_00192454 (192454), FUN_00195090 (195090), FUN_00195a8c (195a8c), FUN_00196128 (196128), FUN_00196b88 (196b88), FUN_00197924 (197924), FUN_001986cc (1986cc), FUN_0019a6b8 (19a6b8), FUN_0019bb00 (19bb00), FUN_0019daa8 (19daa8), FUN_0019e498 (19e498), FUN_0019eb34 (19eb34), FUN_0019f594 (19f594), FUN_001a0324 (1a0324), FUN_001a10c0 (1a10c0), FUN_001a1d80 (1a1d80), FUN_001a3e94 (1a3e94), FUN_001a47b4 (1a47b4), FUN_001a6b04 (1a6b04), FUN_001a713c (1a713c), FUN_001a752c (1a752c), FUN_001a75b4 (1a75b4), FUN_001a7b88 (1a7b88), FUN_001a824c (1a824c), FUN_001aad28 (1aad28), FUN_001aaf50 (1aaf50), FUN_001ab9e8 (1ab9e8), FUN_001ac258 (1ac258), FUN_001acaa0 (1acaa0), FUN_001ae8a4 (1ae8a4), FUN_001aee68 (1aee68), FUN_001af794 (1af794), FUN_001b337c (1b337c), FUN_001b4a84 (1b4a84), FUN_001b94c0 (1b94c0), FUN_001b99c0 (1b99c0), FUN_001bec24 (1bec24), FUN_001bf12c (1bf12c), FUN_001c0050 (1c0050), FUN_001c02b4 (1c02b4), FUN_001c03c8 (1c03c8), FUN_001c0624 (1c0624), FUN_001c0ce8 (1c0ce8), FUN_001cd3e4 (1cd3e4), FUN_001d7054 (1d7054), FUN_001d965c (1d965c), FUN_001d98ac (1d98ac), FUN_001df014 (1df014), FUN_001e1960 (1e1960), FUN_001e1c28 (1e1c28), FUN_001e1ed8 (1e1ed8), FUN_001e2054 (1e2054), FUN_001e257c (1e257c), FUN_001e3050 (1e3050), FUN_001e45d0 (1e45d0), FUN_001e7898 (1e7898), FUN_001fac3c (1fac3c), FUN_001fe78c (1fe78c), FUN_00202974 (202974), FUN_00202df0 (202df0), FUN_002032d0 (2032d0), FUN_002035bc (2035bc), FUN_002036d0 (2036d0), FUN_0020392c (20392c), FUN_002044f4 (2044f4), FUN_00204d5c (204d5c), FUN_002051fc (2051fc), FUN_00205394 (205394), FUN_0020541c (20541c), FUN_00205704 (205704), FUN_002060e0 (2060e0), FUN_0020ec5c (20ec5c), FUN_0020ed08 (20ed08), FUN_0020f6c8 (20f6c8), FUN_002110c8 (2110c8), FUN_00211150 (211150), FUN_002113b4 (2113b4), FUN_002114c8 (2114c8), FUN_00211de8 (211de8), FUN_0021202c (21202c), FUN_00212c48 (212c48), FUN_00217338 (217338), FUN_002187ac (2187ac), FUN_00218b20 (218b20), FUN_00219784 (219784), FUN_0021980c (21980c), FUN_0022357c (22357c), FUN_002238c0 (2238c0), FUN_002239f8 (2239f8), FUN_00225a3c (225a3c), FUN_00226134 (226134), FUN_00226600 (226600), FUN_002271f4 (2271f4), FUN_00228630 (228630), FUN_0022870c (22870c), FUN_0022beb0 (22beb0), FUN_0022c0b4 (22c0b4), FUN_0022c3dc (22c3dc), FUN_0022cba8 (22cba8), FUN_0022cfbc (22cfbc), FUN_0022e09c (22e09c), FUN_0024474c (24474c), FUN_0024b340 (24b340), FUN_0024d608 (24d608), FUN_002521ac (2521ac), processInput60 (2528a4), FUN_00252ad8 (252ad8), FUN_002536a4 (2536a4), FUN_00257f9c (257f9c), FUN_00258e8c (258e8c), FUN_00259388 (259388), FUN_0025a68c (25a68c), FUN_0025bc0c (25bc0c), FUN_002605ac (2605ac), FUN_00262194 (262194), FUN_00263a50 (263a50), FUN_00263f30 (263f30), FUN_00265bd8 (265bd8), FUN_00277478 (277478), FUN_002775e8 (2775e8), FUN_002776c4 (2776c4), FUN_0027ba40 (27ba40), FUN_0027bafc (27bafc), FUN_0027bb2c (27bb2c), FUN_0027bb5c (27bb5c), FUN_0027bb94 (27bb94), FUN_0027bbc4 (27bbc4), FUN_0027bc28 (27bc28), FUN_0027bc68 (27bc68), FUN_0027bda4 (27bda4), FUN_0027bea8 (27bea8), FUN_0027bee0 (27bee0), FUN_0027bf18 (27bf18), FUN_0027bf50 (27bf50), FUN_0027bf7c (27bf7c), FUN_0027c040 (27c040), FUN_0027c0dc (27c0dc), FUN_0027c178 (27c178), FUN_0027c214 (27c214), FUN_0027c2b0 (27c2b0), FUN_0027cc70 (27cc70), FUN_0027cd64 (27cd64), FUN_0027ce30 (27ce30), FUN_002ae1ac (2ae1ac), FUN_002cd99c (2cd99c), FUN_002d2030 (2d2030), FUN_002f0974 (2f0974), FUN_002fb57c (2fb57c), FUN_002fb6ac (2fb6ac), FUN_002fe768 (2fe768), FUN_00303310 (303310), FUN_0030392c (30392c), FUN_00306014 (306014), FUN_003084a0 (3084a0), FUN_0030d964 (30d964), FUN_0030de44 (30de44), FUN_0030ffb8 (30ffb8), FUN_0031045c (31045c), FUN_00311838 (311838), FUN_00311890 (311890), FUN_00316f00 (316f00), FUN_0031705c (31705c), FUN_0031ac40 (31ac40), FUN_0031d0e8 (31d0e8), FUN_0031f2ac (31f2ac), FUN_0031fea0 (31fea0), FUN_00327448 (327448), FUN_00327d54 (327d54), FUN_0032b080 (32b080), FUN_0032b74c (32b74c), FUN_0032e708 (32e708), FUN_0032fea0 (32fea0), FUN_00330ebc (330ebc), FUN_00331c0c (331c0c), FUN_003323ac (3323ac), FUN_00334578 (334578), FUN_003354fc (3354fc), FUN_00335b34 (335b34), FUN_003362bc (3362bc), FUN_00336ca0 (336ca0), FUN_00338c7c (338c7c), FUN_003397f0 (3397f0), FUN_0033a1e4 (33a1e4), FUN_0033a4d4 (33a4d4), FUN_0033ad20 (33ad20), FUN_0033b728 (33b728), FUN_0033f86c (33f86c), FUN_0034140c (34140c), FUN_00343060 (343060), FUN_00343f04 (343f04), FUN_0034a114 (34a114), FUN_0034a54c (34a54c), FUN_0034a8f0 (34a8f0), FUN_0034b684 (34b684), FUN_0034cc70 (34cc70), FUN_0035061c (35061c), FUN_00350e24 (350e24), FUN_00355da8 (355da8), FUN_0036621c (36621c), FUN_00369198 (369198), FUN_00369694 (369694), FUN_00369bd0 (369bd0), FUN_00369d24 (369d24), FUN_00369ee8 (369ee8), FUN_0036ae94 (36ae94), FUN_0036b05c (36b05c), FUN_0036d44c (36d44c), FUN_0037048c (37048c), FUN_00370728 (370728), FUN_00374480 (374480), FUN_0037485c (37485c), FUN_00374ed4 (374ed4), FUN_00375310 (375310), FUN_0037acc8 (37acc8), FUN_0037b7a4 (37b7a4), FUN_0037c6b0 (37c6b0)
+All: FUN_00005810 (5810), FUN_000176f8 (176f8), FUN_00019e04 (19e04), processVector5 (1da54), FUN_00028ca8 (28ca8), FUN_00029458 (29458), FUN_000297a0 (297a0), FUN_00029f9c (29f9c), FUN_0002b194 (2b194), FUN_0002b2ac (2b2ac), FUN_0002b378 (2b378), FUN_0002b52c (2b52c), FUN_0002c04c (2c04c), FUN_0002c214 (2c214), FUN_000305a8 (305a8), FUN_000371a4 (371a4), FUN_00053af8 (53af8), FUN_000a32dc (a32dc), FUN_000a3db0 (a3db0), FUN_000a588c (a588c), FUN_000a9e40 (a9e40), FUN_000aa640 (aa640), FUN_000b1f88 (b1f88), FUN_000b310c (b310c), FUN_000b33b4 (b33b4), FUN_000b3418 (b3418), FUN_000b54c8 (b54c8), FUN_000b62bc (b62bc), FUN_000c3f28 (c3f28), FUN_000c457c (c457c), FUN_0028175c (28175c), FUN_0028611c (28611c), FUN_00286574 (286574), FUN_00286e64 (286e64), FUN_00288fac (288fac), FUN_0028c70c (28c70c), FUN_0028d870 (28d870), FUN_0028ef54 (28ef54), FUN_00290a28 (290a28), FUN_00290bc4 (290bc4), FUN_00295200 (295200), FUN_0029a26c (29a26c), FUN_0029a434 (29a434), FUN_0029cd68 (29cd68), FUN_0029d948 (29d948), FUN_0029ffac (29ffac), FUN_002a0adc (2a0adc), FUN_002a0fe0 (2a0fe0), FUN_002c1930 (2c1930), FUN_002c6934 (2c6934), FUN_002c6c3c (2c6c3c), FUN_002c6d94 (2c6d94), FUN_002c70ec (2c70ec), FUN_002c7bac (2c7bac), FUN_002c8a4c (2c8a4c), FUN_002c9f44 (2c9f44), FUN_0035b658 (35b658), FUN_003624fc (3624fc), FUN_003642d0 (3642d0), FUN_003648d0 (3648d0), FUN_00064d6c (64d6c), FUN_0006af5c (6af5c), FUN_00074cd0 (74cd0), FUN_00074d04 (74d04), FUN_00075988 (75988), FUN_00077a10 (77a10), FUN_0007be00 (7be00), FUN_0007f924 (7f924), FUN_0007fdd0 (7fdd0), FUN_00080ba4 (80ba4), lowpassFilter686 (80c9c), FUN_00081e18 (81e18), FUN_00089fcc (89fcc), FUN_0008adf4 (8adf4), FUN_0008b410 (8b410), FUN_0009369c (9369c), FUN_00095064 (95064), FUN_00095224 (95224), FUN_00096e74 (96e74), FUN_00098d48 (98d48), FUN_0009f4b8 (9f4b8), FUN_000a0190 (a0190), FUN_000c9968 (c9968), FUN_000ca670 (ca670), FUN_000cbe00 (cbe00), FUN_000ccbc8 (ccbc8), FUN_000ccd00 (ccd00), FUN_000cd9c8 (cd9c8), FUN_000d8324 (d8324), FUN_000d91b0 (d91b0), FUN_000dfafc (dfafc), FUN_000e43dc (e43dc), FUN_000e7a8c (e7a8c), FUN_000e7fb4 (e7fb4), FUN_000e8064 (e8064), FUN_000ebd70 (ebd70), FUN_000ec080 (ec080), FUN_000ec858 (ec858), FUN_000f18e0 (f18e0), FUN_000f3cdc (f3cdc), FUN_000f5678 (f5678), FUN_001090f0 (1090f0), FUN_0011547c (11547c), FUN_00117f50 (117f50), FUN_0011e568 (11e568), FUN_00125230 (125230), FUN_00129378 (129378), FUN_0012cefc (12cefc), FUN_00131f70 (131f70), FUN_00132394 (132394), FUN_00136990 (136990), FUN_00137504 (137504), FUN_001382e8 (1382e8), FUN_0013929c (13929c), FUN_001394f0 (1394f0), FUN_001398c4 (1398c4), FUN_00139a70 (139a70), FUN_00139e94 (139e94), FUN_0013a818 (13a818), FUN_0013dcbc (13dcbc), FUN_0013fcf8 (13fcf8), FUN_0014377c (14377c), FUN_0014d9f8 (14d9f8), FUN_0014e820 (14e820), FUN_00153330 (153330), FUN_0015436c (15436c), FUN_00154788 (154788), FUN_00158d5c (158d5c), FUN_001650c4 (1650c4), FUN_001655b0 (1655b0), FUN_00167054 (167054), FUN_00168088 (168088), createMetalLayer (16c9d0), FUN_0016e488 (16e488), FUN_0016e684 (16e684), FUN_0016eaf4 (16eaf4), FUN_00173b50 (173b50), FUN_00173de8 (173de8), FUN_0017c228 (17c228), FUN_0017d890 (17d890), FUN_0017d8fc (17d8fc), FUN_0017d9c4 (17d9c4), FUN_0017de6c (17de6c), FUN_0017ee84 (17ee84), FUN_0017efc8 (17efc8), FUN_00181430 (181430), FUN_00182ea4 (182ea4), FUN_00183ce4 (183ce4), FUN_001847ec (1847ec), FUN_00184e88 (184e88), FUN_00185918 (185918), FUN_00186108 (186108), FUN_00186750 (186750), FUN_00187500 (187500), FUN_00189c30 (189c30), FUN_0018c750 (18c750), FUN_0018d140 (18d140), FUN_0018d7dc (18d7dc), FUN_0018e23c (18e23c), FUN_0018efdc (18efdc), FUN_0018fd8c (18fd8c), FUN_00191d84 (191d84), FUN_00192454 (192454), FUN_00195090 (195090), FUN_00195a8c (195a8c), FUN_00196128 (196128), FUN_00196b88 (196b88), FUN_00197924 (197924), FUN_001986cc (1986cc), FUN_0019a6b8 (19a6b8), FUN_0019bb00 (19bb00), FUN_0019daa8 (19daa8), FUN_0019e498 (19e498), FUN_0019eb34 (19eb34), FUN_0019f594 (19f594), FUN_001a0324 (1a0324), FUN_001a10c0 (1a10c0), FUN_001a1d80 (1a1d80), FUN_001a3e94 (1a3e94), FUN_001a47b4 (1a47b4), FUN_001a6b04 (1a6b04), FUN_001a713c (1a713c), FUN_001a752c (1a752c), FUN_001a75b4 (1a75b4), FUN_001a7b88 (1a7b88), FUN_001a824c (1a824c), FUN_001aad28 (1aad28), FUN_001aaf50 (1aaf50), FUN_001ab9e8 (1ab9e8), FUN_001ac258 (1ac258), FUN_001acaa0 (1acaa0), FUN_001ae8a4 (1ae8a4), FUN_001aee68 (1aee68), FUN_001af794 (1af794), FUN_001b337c (1b337c), FUN_001b4a84 (1b4a84), FUN_001b94c0 (1b94c0), FUN_001b99c0 (1b99c0), FUN_001bec24 (1bec24), FUN_001bf12c (1bf12c), FUN_001c0050 (1c0050), FUN_001c02b4 (1c02b4), FUN_001c03c8 (1c03c8), FUN_001c0624 (1c0624), FUN_001c0ce8 (1c0ce8), FUN_001cd3e4 (1cd3e4), FUN_001d7054 (1d7054), FUN_001d965c (1d965c), FUN_001d98ac (1d98ac), FUN_001df014 (1df014), FUN_001e1960 (1e1960), FUN_001e257c (1e257c), FUN_001e3050 (1e3050), FUN_001e45d0 (1e45d0), FUN_001e7898 (1e7898), FUN_001fac3c (1fac3c), FUN_001fe78c (1fe78c), FUN_00202974 (202974), FUN_00202df0 (202df0), FUN_002032d0 (2032d0), FUN_002035bc (2035bc), FUN_002036d0 (2036d0), FUN_0020392c (20392c), FUN_002044f4 (2044f4), FUN_00204d5c (204d5c), FUN_002051fc (2051fc), FUN_00205394 (205394), FUN_0020541c (20541c), FUN_00205704 (205704), FUN_002060e0 (2060e0), FUN_0020ec5c (20ec5c), FUN_0020ed08 (20ed08), FUN_0020f6c8 (20f6c8), FUN_002110c8 (2110c8), FUN_00211150 (211150), FUN_002113b4 (2113b4), FUN_002114c8 (2114c8), FUN_00211de8 (211de8), FUN_0021202c (21202c), FUN_00212c48 (212c48), FUN_00217338 (217338), FUN_002187ac (2187ac), FUN_00218b20 (218b20), FUN_00219784 (219784), FUN_0021980c (21980c), FUN_0022357c (22357c), FUN_002238c0 (2238c0), FUN_002239f8 (2239f8), FUN_00225a3c (225a3c), FUN_00226134 (226134), FUN_00226600 (226600), FUN_002271f4 (2271f4), FUN_00228630 (228630), FUN_0022870c (22870c), FUN_0022beb0 (22beb0), FUN_0022c0b4 (22c0b4), FUN_0022c3dc (22c3dc), FUN_0022cba8 (22cba8), FUN_0022cfbc (22cfbc), FUN_0022e09c (22e09c), FUN_0024474c (24474c), FUN_0024b340 (24b340), FUN_0024d608 (24d608), FUN_002521ac (2521ac), processInput60 (2528a4), FUN_00252ad8 (252ad8), FUN_002536a4 (2536a4), FUN_00257f9c (257f9c), FUN_00258e8c (258e8c), FUN_00259388 (259388), FUN_0025a68c (25a68c), FUN_0025bc0c (25bc0c), FUN_002605ac (2605ac), FUN_00262194 (262194), FUN_00263a50 (263a50), FUN_00263f30 (263f30), FUN_00265bd8 (265bd8), FUN_00277478 (277478), FUN_002775e8 (2775e8), FUN_002776c4 (2776c4), FUN_0027ba40 (27ba40), FUN_0027bafc (27bafc), FUN_0027bb2c (27bb2c), FUN_0027bb5c (27bb5c), FUN_0027bb94 (27bb94), FUN_0027bbc4 (27bbc4), FUN_0027bc28 (27bc28), FUN_0027bc68 (27bc68), FUN_0027bda4 (27bda4), FUN_0027bea8 (27bea8), FUN_0027bee0 (27bee0), FUN_0027bf18 (27bf18), FUN_0027bf50 (27bf50), FUN_0027bf7c (27bf7c), FUN_0027c040 (27c040), FUN_0027c0dc (27c0dc), FUN_0027c178 (27c178), FUN_0027c214 (27c214), FUN_0027c2b0 (27c2b0), FUN_0027cc70 (27cc70), FUN_0027cd64 (27cd64), FUN_0027ce30 (27ce30), FUN_002ae1ac (2ae1ac), FUN_002cd99c (2cd99c), FUN_002d2030 (2d2030), FUN_002f0974 (2f0974), FUN_002fb57c (2fb57c), FUN_002fb6ac (2fb6ac), FUN_002fe768 (2fe768), FUN_00303310 (303310), FUN_0030392c (30392c), FUN_00306014 (306014), FUN_003084a0 (3084a0), FUN_0030d964 (30d964), FUN_0030de44 (30de44), FUN_0030ffb8 (30ffb8), FUN_0031045c (31045c), FUN_00311838 (311838), FUN_00311890 (311890), FUN_00316f00 (316f00), FUN_0031705c (31705c), FUN_0031ac40 (31ac40), FUN_0031d0e8 (31d0e8), FUN_0031f2ac (31f2ac), FUN_0031fea0 (31fea0), FUN_00327448 (327448), FUN_00327d54 (327d54), FUN_0032b080 (32b080), FUN_0032b74c (32b74c), FUN_0032e708 (32e708), FUN_0032fea0 (32fea0), FUN_00330ebc (330ebc), FUN_00331c0c (331c0c), FUN_003323ac (3323ac), FUN_00334578 (334578), FUN_003354fc (3354fc), FUN_00335b34 (335b34), FUN_003362bc (3362bc), FUN_00336ca0 (336ca0), FUN_00338c7c (338c7c), FUN_003397f0 (3397f0), FUN_0033a1e4 (33a1e4), FUN_0033a4d4 (33a4d4), FUN_0033ad20 (33ad20), FUN_0033b728 (33b728), FUN_0033f86c (33f86c), FUN_0034140c (34140c), FUN_00343060 (343060), FUN_00343f04 (343f04), FUN_0034a114 (34a114), FUN_0034a54c (34a54c), FUN_0034a8f0 (34a8f0), FUN_0034b684 (34b684), FUN_0034cc70 (34cc70), FUN_0035061c (35061c), FUN_00350e24 (350e24), FUN_00355da8 (355da8), FUN_0036621c (36621c), FUN_00369198 (369198), FUN_00369694 (369694), FUN_00369bd0 (369bd0), FUN_00369d24 (369d24), FUN_00369ee8 (369ee8), FUN_0036ae94 (36ae94), FUN_0036b05c (36b05c), FUN_0036d44c (36d44c), FUN_0037048c (37048c), FUN_00370728 (370728), FUN_00374480 (374480), FUN_0037485c (37485c), FUN_00374ed4 (374ed4), FUN_00375310 (375310), FUN_0037acc8 (37acc8), FUN_0037b7a4 (37b7a4), FUN_0037c6b0 (37c6b0)
 
 #### FUN_00005810 — funcs/__Z12FUN_00005810l.cpp, Ghidra 5810, 0 model attempt(s)
 
@@ -7016,9 +7757,9 @@ void FUN_00029f9c(const void *param_1, const void *param_2, const void *param_3,
 }
 ```
 
-### Not compiling yet — 363 × cannot cast from type 'X' to pointer type 'X'
+### Not compiling yet — 360 × cannot cast from type 'X' to pointer type 'X'
 
-All: FUN_00005398 (5398), FUN_0000638c (638c), FUN_00007044 (7044), FUN_00008f18 (8f18), FUN_0000b96c (b96c), FUN_0000bcec (bcec), FUN_0000c0a4 (c0a4), FUN_0000c1f4 (c1f4), FUN_0000ccd4 (ccd4), FUN_0000ee9c (ee9c), FUN_0000f0f0 (f0f0), FUN_0000f1b4 (f1b4), FUN_0000f408 (f408), FUN_0000fb38 (fb38), FUN_00011484 (11484), FUN_00011f3c (11f3c), FUN_00011ff4 (11ff4), FUN_00012170 (12170), FUN_000122a0 (122a0), FUN_00013268 (13268), FUN_000132dc (132dc), FUN_00013388 (13388), FUN_00015dc0 (15dc0), FUN_00015e20 (15e20), FUN_000165b8 (165b8), FUN_00016620 (16620), FUN_00016688 (16688), FUN_000166f0 (166f0), FUN_00016bc8 (16bc8), FUN_00016e10 (16e10), FUN_000171d4 (171d4), FUN_00017968 (17968), FUN_00017f4c (17f4c), FUN_0001939c (1939c), FUN_000195e4 (195e4), FUN_00019b80 (19b80), FUN_00019dcc (19dcc), FUN_0001bdbc (1bdbc), FUN_0001be24 (1be24), FUN_0001d454 (1d454), FUN_0001f9b0 (1f9b0), FUN_0001f9d8 (1f9d8), FUN_000200a4 (200a4), FUN_00020b78 (20b78), FUN_000212c4 (212c4), FUN_000214b8 (214b8), FUN_000216b8 (216b8), FUN_000218ac (218ac), FUN_0002261c (2261c), FUN_00028548 (28548), FUN_000290e0 (290e0), FUN_0002a1a8 (2a1a8), FUN_0002af34 (2af34), FUN_0002d2a0 (2d2a0), FUN_0002db38 (2db38), FUN_0002dba0 (2dba0), FUN_0002dc24 (2dc24), processValues13 (2e1dc), FUN_0002eb98 (2eb98), FUN_00034f3c (34f3c), FUN_00035330 (35330), FUN_00036f94 (36f94), FUN_00037124 (37124), FUN_00037e4c (37e4c), FUN_0003e904 (3e904), FUN_00051444 (51444), FUN_000a0e8c (a0e8c), FUN_000a9b58 (a9b58), FUN_000aa9c4 (aa9c4), FUN_000b6044 (b6044), FUN_000b8f30 (b8f30), FUN_000ba1b8 (ba1b8), FUN_000ba8c8 (ba8c8), FUN_000be330 (be330), FUN_000c10b4 (c10b4), FUN_000c13dc (c13dc), FUN_000c22fc (c22fc), FUN_000c3774 (c3774), FUN_000c37dc (c37dc), FUN_000c3844 (c3844), FUN_000c3e00 (c3e00), FUN_00280970 (280970), FUN_00280ecc (280ecc), FUN_0028209c (28209c), FUN_002820cc (2820cc), FUN_00282a58 (282a58), FUN_00286488 (286488), FUN_0028674c (28674c), FUN_00286c00 (286c00), FUN_0028d6e8 (28d6e8), FUN_0028dbd4 (28dbd4), FUN_0028e1f8 (28e1f8), FUN_0028e4ec (28e4ec), FUN_0028e6f4 (28e6f4), FUN_00290dac (290dac), FUN_0029114c (29114c), FUN_002947b4 (2947b4), FUN_0029f8cc (29f8cc), FUN_002a1154 (2a1154), FUN_002a1654 (2a1654), FUN_0005beb4 (5beb4), openShellWindow (60180), FUN_0006490c (6490c), FUN_00067fe8 (67fe8), FUN_00068624 (68624), FUN_000763dc (763dc), FUN_0007a220 (7a220), FUN_0007a820 (7a820), FUN_0007e95c (7e95c), FUN_0007f830 (7f830), FUN_00080384 (80384), FUN_00080724 (80724), FUN_00080ab0 (80ab0), FUN_000819b0 (819b0), FUN_0008579c (8579c), FUN_00086e30 (86e30), FUN_00088be8 (88be8), FUN_0008a53c (8a53c), FUN_0008a830 (8a830), FUN_0008be6c (8be6c), FUN_0008d124 (8d124), FUN_0008f0ac (8f0ac), FUN_0008f500 (8f500), FUN_0008f63c (8f63c), FUN_0008f6a4 (8f6a4), FUN_00090680 (90680), FUN_00091b9c (91b9c), FUN_00093554 (93554), FUN_000935bc (935bc), FUN_00094ed0 (94ed0), FUN_0009664c (9664c), FUN_00096bc0 (96bc0), FUN_00097104 (97104), FUN_00098bd0 (98bd0), FUN_0009aa78 (9aa78), FUN_0009de0c (9de0c), FUN_0009e964 (9e964), FUN_000c4c20 (c4c20), FUN_000c4e04 (c4e04), FUN_000c4ea0 (c4ea0), FUN_000c4fd8 (c4fd8), FUN_000c5160 (c5160), FUN_000c6a24 (c6a24), FUN_000c6abc (c6abc), FUN_000c7dbc (c7dbc), FUN_000ccb80 (ccb80), FUN_000cec50 (cec50), FUN_000d1098 (d1098), FUN_000d1470 (d1470), FUN_000d4824 (d4824), FUN_000d54f0 (d54f0), FUN_000d58d4 (d58d4), FUN_000d5d10 (d5d10), FUN_000d5edc (d5edc), FUN_000d89d0 (d89d0), FUN_000de508 (de508), FUN_000e0634 (e0634), FUN_000e49e0 (e49e0), FUN_000e5f9c (e5f9c), FUN_000ec35c (ec35c), FUN_000ed8d8 (ed8d8), FUN_000ef2b8 (ef2b8), FUN_000f2f44 (f2f44), FUN_000f3f28 (f3f28), FUN_000f425c (f425c), FUN_000f4428 (f4428), FUN_000f4504 (f4504), FUN_000f461c (f461c), FUN_000f81f0 (f81f0), FUN_000f8918 (f8918), FUN_000fe714 (fe714), FUN_0010a4d0 (10a4d0), FUN_0010ef3c (10ef3c), FUN_0010f14c (10f14c), FUN_0010fc48 (10fc48), FUN_00112648 (112648), FUN_00113264 (113264), FUN_00116140 (116140), FUN_0011850c (11850c), FUN_00119e2c (119e2c), FUN_00119ee8 (119ee8), FUN_0011a1f8 (11a1f8), FUN_0011e2ac (11e2ac), FUN_0011e9d8 (11e9d8), FUN_0011f418 (11f418), FUN_00121cdc (121cdc), FUN_0012630c (12630c), FUN_001266a8 (1266a8), FUN_001277b0 (1277b0), FUN_001282cc (1282cc), FUN_001297e0 (1297e0), FUN_00129934 (129934), FUN_0012c57c (12c57c), FUN_0012f33c (12f33c), FUN_0012f46c (12f46c), FUN_001318a8 (1318a8), FUN_00131d70 (131d70), FUN_00137400 (137400), FUN_00137e24 (137e24), FUN_0013913c (13913c), FUN_00139408 (139408), FUN_00139d84 (139d84), FUN_0013a708 (13a708), FUN_0013e0c4 (13e0c4), FUN_0013e244 (13e244), FUN_0013ea78 (13ea78), FUN_001414d4 (1414d4), FUN_00141e30 (141e30), FUN_00142e94 (142e94), FUN_0014e21c (14e21c), FUN_00156420 (156420), FUN_001571c4 (1571c4), FUN_00166564 (166564), FUN_001671b4 (1671b4), FUN_00167670 (167670), FUN_0016e600 (16e600), FUN_00170704 (170704), FUN_001709e8 (1709e8), FUN_00176c68 (176c68), FUN_00177540 (177540), FUN_001788dc (1788dc), FUN_00178d58 (178d58), FUN_0017ae00 (17ae00), FUN_0017cd1c (17cd1c), FUN_0017f3f4 (17f3f4), FUN_001884f4 (1884f4), FUN_001894f8 (1894f8), FUN_00190928 (190928), FUN_001996bc (1996bc), FUN_001a6458 (1a6458), FUN_001a64d8 (1a64d8), FUN_001a65d0 (1a65d0), FUN_001a65fc (1a65fc), FUN_001a72cc (1a72cc), FUN_001a82d8 (1a82d8), FUN_001a85dc (1a85dc), FUN_001ab5c0 (1ab5c0), FUN_001acc88 (1acc88), FUN_001ae70c (1ae70c), FUN_001aed58 (1aed58), FUN_001af8e4 (1af8e4), FUN_001b2ae4 (1b2ae4), FUN_001b2f14 (1b2f14), FUN_001b4728 (1b4728), FUN_001b98c0 (1b98c0), FUN_001b9e98 (1b9e98), FUN_001b9f04 (1b9f04), FUN_001ba160 (1ba160), FUN_001ba4c0 (1ba4c0), FUN_001ba740 (1ba740), FUN_001be99c (1be99c), FUN_001bf4c8 (1bf4c8), FUN_001bf750 (1bf750), FUN_001c0d74 (1c0d74), FUN_001c6134 (1c6134), FUN_001c699c (1c699c), FUN_001c7584 (1c7584), FUN_001c92c4 (1c92c4), FUN_001c9784 (1c9784), FUN_001c9dd8 (1c9dd8), FUN_001c9f48 (1c9f48), FUN_001cbcf0 (1cbcf0), FUN_001cd708 (1cd708), FUN_001d0eb4 (1d0eb4), FUN_001d2bec (1d2bec), FUN_001d3578 (1d3578), FUN_001d3a30 (1d3a30), FUN_001d3ec8 (1d3ec8), FUN_001d5824 (1d5824), FUN_001d60dc (1d60dc), FUN_001d787c (1d787c), FUN_001d9ad8 (1d9ad8), FUN_001d9f78 (1d9f78), FUN_001dddfc (1dddfc), FUN_001e0544 (1e0544), FUN_001e132c (1e132c), FUN_001e16a4 (1e16a4), FUN_001e1800 (1e1800), FUN_001e1e48 (1e1e48), FUN_001e28b4 (1e28b4), FUN_001e2b24 (1e2b24), FUN_001e347c (1e347c), FUN_001e4f70 (1e4f70), FUN_001e80a8 (1e80a8), FUN_001e873c (1e873c), FUN_001eb36c (1eb36c), FUN_001eba00 (1eba00), FUN_001f14a8 (1f14a8), FUN_001f1530 (1f1530), FUN_001f40a0 (1f40a0), FUN_001f485c (1f485c), FUN_001f7288 (1f7288), FUN_001f7688 (1f7688), FUN_001f8740 (1f8740), FUN_001f968c (1f968c), FUN_001fde5c (1fde5c), FUN_001ff218 (1ff218), FUN_001ff324 (1ff324), FUN_00202b04 (202b04), FUN_00202f80 (202f80), FUN_00203fc4 (203fc4), FUN_00204de8 (204de8), FUN_00205174 (205174), FUN_00205ee4 (205ee4), FUN_0020616c (20616c), FUN_0020aaac (20aaac), FUN_0020e0f4 (20e0f4), FUN_002115b0 (2115b0), FUN_00211e74 (211e74), FUN_00212cd4 (212cd4), FUN_0021893c (21893c), FUN_0021965c (21965c), FUN_00219c4c (219c4c), FUN_002261fc (2261fc), FUN_002266c8 (2266c8), FUN_00226934 (226934), FUN_002272bc (2272bc), FUN_0022767c (22767c), FUN_00227f58 (227f58), FUN_002287d4 (2287d4), FUN_00228a24 (228a24), FUN_0022bb14 (22bb14), FUN_0022ceac (22ceac), FUN_0022d774 (22d774), FUN_00255a54 (255a54), FUN_002565a4 (2565a4), FUN_00269d28 (269d28), FUN_0026d2c4 (26d2c4), FUN_0026f994 (26f994), decompressZTXtChunk (2f05a8), FUN_00301ff0 (301ff0), FUN_0030e718 (30e718), FUN_0030e7b8 (30e7b8), FUN_0031a8fc (31a8fc), FUN_0031aa24 (31aa24), FUN_0031cea8 (31cea8), FUN_0031ec08 (31ec08), FUN_0031eeec (31eeec), FUN_0031f1a8 (31f1a8), FUN_0031f3f8 (31f3f8), FUN_0031f448 (31f448), FUN_0031f804 (31f804), FUN_0031f898 (31f898), FUN_00320874 (320874), FUN_00320ac0 (320ac0), FUN_0032187c (32187c), FUN_00321e34 (321e34), FUN_00322b9c (322b9c), FUN_00323154 (323154), FUN_00323530 (323530), FUN_00323ebc (323ebc), FUN_00325a90 (325a90), FUN_00325d54 (325d54), FUN_0032710c (32710c), FUN_003281a4 (3281a4), FUN_0033035c (33035c), FUN_00331f8c (331f8c), FUN_0033572c (33572c), FUN_0033769c (33769c), FUN_0034fdc0 (34fdc0), FUN_0034ffcc (34ffcc), FUN_00354b8c (354b8c), FUN_0036ea24 (36ea24)
+All: FUN_00005398 (5398), FUN_0000638c (638c), FUN_00007044 (7044), FUN_00008f18 (8f18), FUN_0000b96c (b96c), FUN_0000bcec (bcec), FUN_0000c0a4 (c0a4), FUN_0000c1f4 (c1f4), FUN_0000ccd4 (ccd4), FUN_0000ee9c (ee9c), FUN_0000f0f0 (f0f0), FUN_0000f1b4 (f1b4), FUN_0000f408 (f408), FUN_0000fb38 (fb38), FUN_00011484 (11484), FUN_00011f3c (11f3c), FUN_00011ff4 (11ff4), FUN_00012170 (12170), FUN_000122a0 (122a0), FUN_00013268 (13268), FUN_000132dc (132dc), FUN_00013388 (13388), FUN_00015dc0 (15dc0), FUN_00015e20 (15e20), FUN_000165b8 (165b8), FUN_00016620 (16620), FUN_00016688 (16688), FUN_000166f0 (166f0), FUN_00016bc8 (16bc8), FUN_00016e10 (16e10), FUN_000171d4 (171d4), FUN_00017968 (17968), FUN_00017f4c (17f4c), FUN_0001939c (1939c), FUN_000195e4 (195e4), FUN_00019b80 (19b80), FUN_00019dcc (19dcc), FUN_0001bdbc (1bdbc), FUN_0001be24 (1be24), FUN_0001d454 (1d454), FUN_0001f9b0 (1f9b0), FUN_0001f9d8 (1f9d8), FUN_000200a4 (200a4), FUN_00020b78 (20b78), FUN_000212c4 (212c4), FUN_000214b8 (214b8), FUN_000216b8 (216b8), FUN_000218ac (218ac), FUN_0002261c (2261c), FUN_00028548 (28548), FUN_000290e0 (290e0), FUN_0002a1a8 (2a1a8), FUN_0002af34 (2af34), FUN_0002d2a0 (2d2a0), FUN_0002db38 (2db38), FUN_0002dba0 (2dba0), FUN_0002dc24 (2dc24), processValues13 (2e1dc), FUN_0002eb98 (2eb98), FUN_00034f3c (34f3c), FUN_00035330 (35330), FUN_00036f94 (36f94), FUN_00037124 (37124), FUN_00037e4c (37e4c), FUN_0003e904 (3e904), FUN_00051444 (51444), FUN_000a0e8c (a0e8c), FUN_000a9b58 (a9b58), FUN_000aa9c4 (aa9c4), FUN_000b6044 (b6044), FUN_000b8f30 (b8f30), FUN_000ba1b8 (ba1b8), FUN_000ba8c8 (ba8c8), FUN_000be330 (be330), FUN_000c10b4 (c10b4), FUN_000c13dc (c13dc), FUN_000c22fc (c22fc), FUN_000c3774 (c3774), FUN_000c37dc (c37dc), FUN_000c3844 (c3844), FUN_000c3e00 (c3e00), FUN_00280970 (280970), FUN_00280ecc (280ecc), FUN_0028209c (28209c), FUN_002820cc (2820cc), FUN_00282a58 (282a58), FUN_00286488 (286488), FUN_0028674c (28674c), FUN_00286c00 (286c00), FUN_0028d6e8 (28d6e8), FUN_0028dbd4 (28dbd4), FUN_0028e1f8 (28e1f8), FUN_0028e4ec (28e4ec), FUN_0028e6f4 (28e6f4), FUN_00290dac (290dac), FUN_0029114c (29114c), FUN_002947b4 (2947b4), FUN_0029f8cc (29f8cc), FUN_002a1154 (2a1154), FUN_002a1654 (2a1654), FUN_0005beb4 (5beb4), openShellWindow (60180), FUN_0006490c (6490c), FUN_00067fe8 (67fe8), FUN_00068624 (68624), FUN_000763dc (763dc), FUN_0007a220 (7a220), FUN_0007a820 (7a820), FUN_0007e95c (7e95c), FUN_0007f830 (7f830), FUN_00080384 (80384), FUN_00080724 (80724), FUN_00080ab0 (80ab0), FUN_000819b0 (819b0), FUN_0008579c (8579c), FUN_00086e30 (86e30), FUN_00088be8 (88be8), FUN_0008a53c (8a53c), FUN_0008a830 (8a830), FUN_0008be6c (8be6c), FUN_0008d124 (8d124), FUN_0008f0ac (8f0ac), FUN_0008f500 (8f500), FUN_0008f63c (8f63c), FUN_0008f6a4 (8f6a4), FUN_00090680 (90680), FUN_00091b9c (91b9c), FUN_00093554 (93554), FUN_000935bc (935bc), FUN_00094ed0 (94ed0), FUN_0009664c (9664c), FUN_00096bc0 (96bc0), FUN_00097104 (97104), FUN_00098bd0 (98bd0), FUN_0009aa78 (9aa78), FUN_0009de0c (9de0c), FUN_0009e964 (9e964), FUN_000c4c20 (c4c20), FUN_000c4e04 (c4e04), FUN_000c4ea0 (c4ea0), FUN_000c4fd8 (c4fd8), FUN_000c5160 (c5160), FUN_000c6a24 (c6a24), FUN_000c6abc (c6abc), FUN_000c7dbc (c7dbc), FUN_000ccb80 (ccb80), FUN_000cec50 (cec50), FUN_000d1098 (d1098), FUN_000d1470 (d1470), FUN_000d4824 (d4824), FUN_000d54f0 (d54f0), FUN_000d58d4 (d58d4), FUN_000d5d10 (d5d10), FUN_000d5edc (d5edc), FUN_000d89d0 (d89d0), FUN_000de508 (de508), FUN_000e0634 (e0634), FUN_000e49e0 (e49e0), FUN_000e5f9c (e5f9c), FUN_000ec35c (ec35c), FUN_000ed8d8 (ed8d8), FUN_000ef2b8 (ef2b8), FUN_000f2f44 (f2f44), FUN_000f3f28 (f3f28), FUN_000f425c (f425c), FUN_000f4428 (f4428), FUN_000f4504 (f4504), FUN_000f461c (f461c), FUN_000f81f0 (f81f0), FUN_000f8918 (f8918), FUN_000fe714 (fe714), FUN_0010a4d0 (10a4d0), FUN_0010ef3c (10ef3c), FUN_0010f14c (10f14c), FUN_0010fc48 (10fc48), FUN_00112648 (112648), FUN_00113264 (113264), FUN_00116140 (116140), FUN_0011850c (11850c), FUN_00119e2c (119e2c), FUN_00119ee8 (119ee8), FUN_0011a1f8 (11a1f8), FUN_0011e2ac (11e2ac), FUN_0011e9d8 (11e9d8), FUN_0011f418 (11f418), FUN_00121cdc (121cdc), FUN_0012630c (12630c), FUN_001266a8 (1266a8), FUN_001277b0 (1277b0), FUN_001282cc (1282cc), FUN_001297e0 (1297e0), FUN_00129934 (129934), FUN_0012c57c (12c57c), FUN_0012f33c (12f33c), FUN_0012f46c (12f46c), FUN_001318a8 (1318a8), FUN_00131d70 (131d70), FUN_00137400 (137400), FUN_00137e24 (137e24), FUN_0013913c (13913c), FUN_00139408 (139408), FUN_00139d84 (139d84), FUN_0013a708 (13a708), FUN_0013e0c4 (13e0c4), FUN_0013e244 (13e244), FUN_0013ea78 (13ea78), FUN_001414d4 (1414d4), FUN_00141e30 (141e30), FUN_00142e94 (142e94), FUN_0014e21c (14e21c), FUN_00156420 (156420), FUN_001571c4 (1571c4), FUN_00166564 (166564), FUN_001671b4 (1671b4), FUN_00167670 (167670), FUN_0016e600 (16e600), FUN_00170704 (170704), FUN_001709e8 (1709e8), FUN_00176c68 (176c68), FUN_00177540 (177540), FUN_001788dc (1788dc), FUN_00178d58 (178d58), FUN_0017ae00 (17ae00), FUN_0017cd1c (17cd1c), FUN_0017f3f4 (17f3f4), FUN_001884f4 (1884f4), FUN_001894f8 (1894f8), FUN_00190928 (190928), FUN_001996bc (1996bc), FUN_001a6458 (1a6458), FUN_001a64d8 (1a64d8), FUN_001a65d0 (1a65d0), FUN_001a65fc (1a65fc), FUN_001a72cc (1a72cc), FUN_001a82d8 (1a82d8), FUN_001a85dc (1a85dc), FUN_001ab5c0 (1ab5c0), FUN_001acc88 (1acc88), FUN_001ae70c (1ae70c), FUN_001aed58 (1aed58), FUN_001af8e4 (1af8e4), FUN_001b2ae4 (1b2ae4), FUN_001b2f14 (1b2f14), FUN_001b4728 (1b4728), FUN_001b98c0 (1b98c0), FUN_001b9e98 (1b9e98), FUN_001b9f04 (1b9f04), FUN_001ba160 (1ba160), FUN_001ba4c0 (1ba4c0), FUN_001ba740 (1ba740), FUN_001be99c (1be99c), FUN_001bf4c8 (1bf4c8), FUN_001bf750 (1bf750), FUN_001c0d74 (1c0d74), FUN_001c6134 (1c6134), FUN_001c699c (1c699c), FUN_001c7584 (1c7584), FUN_001c92c4 (1c92c4), FUN_001c9784 (1c9784), FUN_001c9dd8 (1c9dd8), FUN_001c9f48 (1c9f48), FUN_001cbcf0 (1cbcf0), FUN_001cd708 (1cd708), FUN_001d0eb4 (1d0eb4), FUN_001d2bec (1d2bec), FUN_001d3578 (1d3578), FUN_001d3a30 (1d3a30), FUN_001d3ec8 (1d3ec8), FUN_001d5824 (1d5824), FUN_001d60dc (1d60dc), FUN_001d787c (1d787c), FUN_001d9ad8 (1d9ad8), FUN_001d9f78 (1d9f78), FUN_001dddfc (1dddfc), FUN_001e0544 (1e0544), FUN_001e132c (1e132c), FUN_001e16a4 (1e16a4), FUN_001e1e48 (1e1e48), FUN_001e347c (1e347c), FUN_001e4f70 (1e4f70), FUN_001e80a8 (1e80a8), FUN_001e873c (1e873c), FUN_001eb36c (1eb36c), FUN_001eba00 (1eba00), FUN_001f14a8 (1f14a8), FUN_001f1530 (1f1530), FUN_001f40a0 (1f40a0), FUN_001f485c (1f485c), FUN_001f7288 (1f7288), FUN_001f7688 (1f7688), FUN_001f8740 (1f8740), FUN_001f968c (1f968c), FUN_001fde5c (1fde5c), FUN_001ff218 (1ff218), FUN_001ff324 (1ff324), FUN_00202b04 (202b04), FUN_00202f80 (202f80), FUN_00203fc4 (203fc4), FUN_00204de8 (204de8), FUN_00205174 (205174), FUN_00205ee4 (205ee4), FUN_0020616c (20616c), FUN_0020aaac (20aaac), FUN_0020e0f4 (20e0f4), FUN_002115b0 (2115b0), FUN_00211e74 (211e74), FUN_00212cd4 (212cd4), FUN_0021893c (21893c), FUN_0021965c (21965c), FUN_00219c4c (219c4c), FUN_002261fc (2261fc), FUN_002266c8 (2266c8), FUN_00226934 (226934), FUN_002272bc (2272bc), FUN_0022767c (22767c), FUN_00227f58 (227f58), FUN_002287d4 (2287d4), FUN_00228a24 (228a24), FUN_0022bb14 (22bb14), FUN_0022ceac (22ceac), FUN_0022d774 (22d774), FUN_00255a54 (255a54), FUN_002565a4 (2565a4), FUN_00269d28 (269d28), FUN_0026d2c4 (26d2c4), FUN_0026f994 (26f994), decompressZTXtChunk (2f05a8), FUN_00301ff0 (301ff0), FUN_0030e718 (30e718), FUN_0030e7b8 (30e7b8), FUN_0031a8fc (31a8fc), FUN_0031aa24 (31aa24), FUN_0031cea8 (31cea8), FUN_0031ec08 (31ec08), FUN_0031eeec (31eeec), FUN_0031f1a8 (31f1a8), FUN_0031f3f8 (31f3f8), FUN_0031f448 (31f448), FUN_0031f804 (31f804), FUN_0031f898 (31f898), FUN_00320874 (320874), FUN_00320ac0 (320ac0), FUN_0032187c (32187c), FUN_00321e34 (321e34), FUN_00322b9c (322b9c), FUN_00323154 (323154), FUN_00323530 (323530), FUN_00323ebc (323ebc), FUN_00325a90 (325a90), FUN_00325d54 (325d54), FUN_0032710c (32710c), FUN_003281a4 (3281a4), FUN_0033035c (33035c), FUN_00331f8c (331f8c), FUN_0033572c (33572c), FUN_0033769c (33769c), FUN_0034fdc0 (34fdc0), FUN_0034ffcc (34ffcc), FUN_00354b8c (354b8c), FUN_0036ea24 (36ea24)
 
 #### FUN_00005398 — funcs/__Z12FUN_00005398PhdydPlli.cpp, Ghidra 5398, 0 model attempt(s)
 
@@ -7437,227 +8178,6 @@ void FUN_0000c1f4(void) {
 }
 ```
 
-### Not compiling yet — 298 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
-
-All: FUN_0000c050 (c050), FUN_0000c1c8 (c1c8), FUN_0001332c (1332c), FUN_000134f8 (134f8), FUN_00013524 (13524), FUN_000168d0 (168d0), FUN_00016d80 (16d80), FUN_00016e7c (16e7c), FUN_00017ab4 (17ab4), FUN_00019554 (19554), FUN_00019650 (19650), processInput41 (19be8), FUN_00021260 (21260), FUN_0002128c (2128c), FUN_00021600 (21600), FUN_0002162c (2162c), FUN_0002165c (2165c), FUN_00027e38 (27e38), FUN_00037834 (37834), FUN_00045c44 (45c44), FUN_00057184 (57184), FUN_00057350 (57350), FUN_000a2f5c (a2f5c), FUN_000a63ac (a63ac), FUN_000a658c (a658c), FUN_000a827c (a827c), FUN_000a9ec0 (a9ec0), FUN_000aa104 (aa104), FUN_000aa3f0 (aa3f0), FUN_000aa744 (aa744), FUN_000aac28 (aac28), FUN_000aada8 (aada8), FUN_000afc34 (afc34), FUN_000afcc8 (afcc8), FUN_000b0638 (b0638), FUN_000bf988 (bf988), FUN_000c1620 (c1620), FUN_00280264 (280264), FUN_002810e8 (2810e8), FUN_002812a0 (2812a0), FUN_002816ac (2816ac), FUN_00281914 (281914), FUN_002819cc (2819cc), FUN_00282020 (282020), FUN_0028217c (28217c), FUN_0028235c (28235c), FUN_00285498 (285498), FUN_00286340 (286340), FUN_002866d0 (2866d0), FUN_00286830 (286830), FUN_00286a24 (286a24), FUN_00286ba8 (286ba8), FUN_0028a534 (28a534), FUN_0028e688 (28e688), FUN_0028e81c (28e81c), FUN_0029f9f4 (29f9f4), FUN_0029fee0 (29fee0), FUN_0029ff30 (29ff30), FUN_002a0180 (2a0180), FUN_002a0380 (2a0380), FUN_002a0d44 (2a0d44), FUN_002a0db8 (2a0db8), FUN_002a113c (2a113c), FUN_002a1210 (2a1210), FUN_002a1414 (2a1414), FUN_002a1578 (2a1578), FUN_002a189c (2a189c), FUN_002a18ec (2a18ec), FUN_002a1934 (2a1934), FUN_002a1a44 (2a1a44), FUN_0005d46c (5d46c), FUN_0005d9a4 (5d9a4), FUN_00068c30 (68c30), FUN_00068db0 (68db0), FUN_00069748 (69748), FUN_0006b2c8 (6b2c8), FUN_0006ca38 (6ca38), FUN_0006e02c (6e02c), FUN_000772e0 (772e0), FUN_0007afec (7afec), FUN_0007f444 (7f444), FUN_0007f78c (7f78c), FUN_0007fcb0 (7fcb0), FUN_0007fe60 (7fe60), FUN_0007fec8 (7fec8), FUN_000800c0 (800c0), FUN_000802ac (802ac), FUN_000804bc (804bc), FUN_00080a0c (80a0c), FUN_00080f30 (80f30), FUN_000810e4 (810e4), FUN_0008114c (8114c), FUN_00081348 (81348), FUN_00081534 (81534), FUN_00081748 (81748), FUN_00086d84 (86d84), FUN_000896d8 (896d8), FUN_00089724 (89724), FUN_00089770 (89770), FUN_0008a9b0 (8a9b0), FUN_0008ae48 (8ae48), FUN_0008aeb4 (8aeb4), FUN_0008afa8 (8afa8), processInput54 (8b4cc), FUN_0008b55c (8b55c), FUN_0008b580 (8b580), FUN_0008b6e4 (8b6e4), setAndCopyData (8b98c), FUN_0008d908 (8d908), FUN_0009105c (9105c), FUN_00097228 (97228), FUN_000991e4 (991e4), FUN_0009d658 (9d658), FUN_000a059c (a059c), FUN_000a0b7c (a0b7c), FUN_000c9f34 (c9f34), FUN_000cb57c (cb57c), FUN_000ce398 (ce398), FUN_000cea50 (cea50), FUN_000cf3bc (cf3bc), FUN_000d2d54 (d2d54), FUN_000d88d8 (d88d8), FUN_000e7d30 (e7d30), FUN_000e86e4 (e86e4), FUN_000e886c (e886c), FUN_000f90f8 (f90f8), FUN_0012bee4 (12bee4), FUN_0012bfa8 (12bfa8), FUN_0012c558 (12c558), FUN_0012c72c (12c72c), FUN_001385b4 (1385b4), FUN_0013957c (13957c), FUN_00139618 (139618), FUN_00139fe0 (139fe0), FUN_0013a168 (13a168), FUN_0013a96c (13a96c), FUN_0013aaf4 (13aaf4), FUN_001401fc (1401fc), FUN_00140e28 (140e28), FUN_001455e0 (1455e0), FUN_00145d5c (145d5c), FUN_0014e8ec (14e8ec), FUN_00153468 (153468), FUN_0015447c (15447c), FUN_001639e8 (1639e8), FUN_0016536c (16536c), FUN_00165630 (165630), FUN_00165890 (165890), FUN_00165cc0 (165cc0), FUN_00165f54 (165f54), FUN_001667c8 (1667c8), FUN_00166a68 (166a68), FUN_0016f048 (16f048), FUN_0016f56c (16f56c), FUN_00173bd0 (173bd0), FUN_00175f1c (175f1c), FUN_00177180 (177180), FUN_00177a18 (177a18), FUN_0018c84c (18c84c), FUN_0018d8d8 (18d8d8), FUN_001987c8 (1987c8), FUN_0019dba4 (19dba4), FUN_001a0420 (1a0420), FUN_001aabfc (1aabfc), FUN_001aac5c (1aac5c), FUN_001aafd0 (1aafd0), FUN_001ab384 (1ab384), FUN_001ab824 (1ab824), FUN_001ab9a4 (1ab9a4), FUN_001ae660 (1ae660), FUN_001aefb4 (1aefb4), FUN_001af13c (1af13c), FUN_001b7b30 (1b7b30), FUN_001b9a40 (1b9a40), FUN_001ba71c (1ba71c), FUN_001ba884 (1ba884), FUN_001beecc (1beecc), FUN_001bf72c (1bf72c), FUN_001bf8ac (1bf8ac), FUN_001c1db4 (1c1db4), FUN_001c4e88 (1c4e88), FUN_001cd37c (1cd37c), FUN_001cd464 (1cd464), FUN_001cd8f4 (1cd8f4), FUN_001cdf24 (1cdf24), FUN_001cdf48 (1cdf48), FUN_001ce0ac (1ce0ac), FUN_001ce370 (1ce370), FUN_001d0308 (1d0308), FUN_001d10bc (1d10bc), FUN_001d4c90 (1d4c90), FUN_001d5800 (1d5800), FUN_001d5988 (1d5988), FUN_001d67d8 (1d67d8), FUN_001d6840 (1d6840), FUN_001d68ac (1d68ac), FUN_001d6918 (1d6918), FUN_001d70d4 (1d70d4), FUN_001d7ad8 (1d7ad8), FUN_001d7c60 (1d7c60), FUN_001d992c (1d992c), FUN_001d9cc4 (1d9cc4), FUN_001da1d4 (1da1d4), FUN_001da35c (1da35c), FUN_001da95c (1da95c), FUN_001dc730 (1dc730), FUN_001ddc84 (1ddc84), FUN_001de204 (1de204), FUN_001de380 (1de380), FUN_001e1fec (1e1fec), FUN_001e20d0 (1e20d0), FUN_001e248c (1e248c), FUN_001e2b00 (1e2b00), FUN_001e2c68 (1e2c68), FUN_001e2ef4 (1e2ef4), FUN_001e3c6c (1e3c6c), FUN_001e471c (1e471c), FUN_001e48a4 (1e48a4), FUN_001e4b4c (1e4b4c), FUN_001e5a60 (1e5a60), FUN_001e7918 (1e7918), FUN_001e8084 (1e8084), FUN_001e82fc (1e82fc), FUN_001ef730 (1ef730), FUN_001f0800 (1f0800), FUN_001f0e08 (1f0e08), FUN_001fdc20 (1fdc20), FUN_001fe0b4 (1fe0b4), FUN_001fe5cc (1fe5cc), FUN_001fe748 (1fe748), FUN_00201870 (201870), FUN_00202170 (202170), FUN_0020e19c (20e19c), FUN_0020eb68 (20eb68), FUN_0020ed98 (20ed98), FUN_0020f484 (20f484), FUN_00210304 (210304), FUN_00218018 (218018), FUN_0021b72c (21b72c), FUN_0021ec14 (21ec14), FUN_00226860 (226860), FUN_002268cc (2268cc), FUN_00226cb8 (226cb8), FUN_00226f28 (226f28), FUN_00227520 (227520), FUN_002275a8 (2275a8), FUN_00227614 (227614), FUN_00228558 (228558), FUN_00229328 (229328), FUN_0022c134 (22c134), FUN_0022c54c (22c54c), FUN_0022cc24 (22cc24), FUN_0022d110 (22d110), FUN_0022d278 (22d278), FUN_0022d9c0 (22d9c0), FUN_0022dbb0 (22dbb0), FUN_00251934 (251934), FUN_002546dc (2546dc), FUN_002558dc (2558dc), FUN_00255938 (255938), FUN_0025603c (25603c), FUN_00256ac0 (256ac0), FUN_00256c78 (256c78), FUN_00257474 (257474), FUN_002575ac (2575ac), FUN_00257648 (257648), FUN_00257790 (257790), FUN_002585ac (2585ac), FUN_002588f8 (2588f8), FUN_00258a10 (258a10), FUN_00258c7c (258c7c), FUN_00258d70 (258d70), FUN_00259038 (259038), FUN_0025fa3c (25fa3c), FUN_00263828 (263828), FUN_002fd52c (2fd52c), FUN_002ff4dc (2ff4dc), FUN_003010ac (3010ac), FUN_00314830 (314830), FUN_0031fc54 (31fc54), FUN_0031fffc (31fffc), FUN_003200d4 (3200d4), FUN_00320e98 (320e98), FUN_0032107c (32107c), FUN_003217ac (3217ac), FUN_003221f8 (3221f8), FUN_00323518 (323518), FUN_00324578 (324578), FUN_00325b68 (325b68), FUN_00326d94 (326d94), FUN_003270f4 (3270f4), FUN_00327254 (327254), FUN_003279a0 (3279a0), FUN_003279f0 (3279f0), FUN_00327b60 (327b60), FUN_00349194 (349194), FUN_00356d78 (356d78), FUN_00358308 (358308)
-
-#### FUN_0000c050 — funcs/__Z12FUN_0000c050Pyj.cpp, Ghidra c050, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c050Pyj.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-    6 |   puVar1 = (uint64_t *)FUN_0000c088(param_1);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c050Pyj.cpp:7:14: error: use of undeclared identifier 'DAT_00425570'; did you mean 'DAT_00424560'?
-    7 |   *puVar1 = &DAT_00425570;
-      |              ^~~~~~~~~~~~
-      |              DAT_00424560
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1055:19: note: 'DAT_00424560' declared here
- 1055 | extern FilterData DAT_00424560;
-      |                   ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c050Pyj.cpp:7:13: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'FilterData *'
-    7 |   *puVar1 = &DAT_00425570;
-      |             ^~~~~~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0000c050(uint64_t *param_1,uint32_t param_2) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_0000c088(param_1);
-  *puVar1 = &DAT_00425570;
-  *(uint32_t *)(puVar1 + 1) = param_2;
-  return;
-}
-```
-
-#### FUN_0000c1c8 — funcs/__Z12FUN_0000c1c8Py.cpp, Ghidra c1c8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c1c8Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-    6 |   puVar1 = (uint64_t *)FUN_0000c088(param_1);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c1c8Py.cpp:7:14: error: use of undeclared identifier 'DAT_00425600'
-    7 |   *puVar1 = &DAT_00425600;
-      |              ^~~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0000c1c8(uint64_t *param_1) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_0000c088(param_1);
-  *puVar1 = &DAT_00425600;
-  return;
-}
-```
-
-#### FUN_0001332c — funcs/__Z12FUN_0001332cPyS_.cpp, Ghidra 1332c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0001332cPyS_.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-    6 |   puVar1 = (uint64_t *)FUN_000134f8(param_1);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0001332cPyS_.cpp:7:14: error: use of undeclared identifier 'DAT_00425ad8'
-    7 |   *puVar1 = &DAT_00425ad8;
-      |              ^~~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-uint64_t * FUN_0001332c(uint64_t *param_1,uint64_t *param_2) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_000134f8(param_1);
-  *puVar1 = &DAT_00425ad8;
-  FUN_0021aec0(puVar1 + 0xf,param_2);
-  return param_1;
-}
-```
-
-#### FUN_000134f8 — funcs/__Z12FUN_000134f8Py.cpp, Ghidra 134f8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000134f8Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-    6 |   puVar1 = (uint64_t *)FUN_00013524(param_1);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000134f8Py.cpp:7:14: error: use of undeclared identifier 'DAT_004264b0'
-    7 |   *puVar1 = &DAT_004264b0;
-      |              ^~~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000134f8(uint64_t *param_1) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_00013524(param_1);
-  *puVar1 = &DAT_004264b0;
-  return;
-}
-```
-
-#### FUN_00013524 — funcs/__Z12FUN_00013524Py.cpp, Ghidra 13524, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00013524Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-    6 |   puVar1 = (uint64_t *)FUN_001e34c0(param_1);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00013524Py.cpp:7:14: error: use of undeclared identifier 'DAT_00426530'
-    7 |   *puVar1 = &DAT_00426530;
-      |              ^~~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00013524(uint64_t *param_1) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_001e34c0(param_1);
-  *puVar1 = &DAT_00426530;
-  return;
-}
-```
-
-#### FUN_000168d0 — funcs/__Z12FUN_000168d0Py.cpp, Ghidra 168d0, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000168d0Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-    6 |   puVar1 = (uint64_t *)FUN_000134f8(param_1);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000168d0Py.cpp:7:14: error: use of undeclared identifier 'DAT_00425ad8'
-    7 |   *puVar1 = &DAT_00425ad8;
-      |              ^~~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-uint64_t * FUN_000168d0(uint64_t *param_1) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_000134f8(param_1);
-  *puVar1 = &DAT_00425ad8;
-  FUN_0021a214(puVar1 + 0xf);
-  return param_1;
-}
-```
-
-#### FUN_00016d80 — funcs/__Z12FUN_00016d80Py.cpp, Ghidra 16d80, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016d80Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-    6 |   puVar1 = (uint64_t *)FUN_00016e7c(param_1);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016d80Py.cpp:7:14: error: use of undeclared identifier 'DAT_00427140'
-    7 |   *puVar1 = &DAT_00427140;
-      |              ^~~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00016d80(uint64_t *param_1) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_00016e7c(param_1);
-  *puVar1 = &DAT_00427140;
-  return;
-}
-```
-
-#### FUN_00016e7c — funcs/__Z12FUN_00016e7cPy.cpp, Ghidra 16e7c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016e7cPy.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-    6 |   puVar1 = (uint64_t *)FUN_001e34c0(param_1);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016e7cPy.cpp:7:14: error: use of undeclared identifier 'DAT_004271c0'; did you mean 'DAT_00424ac0'?
-    7 |   *puVar1 = &DAT_004271c0;
-      |              ^~~~~~~~~~~~
-      |              DAT_00424ac0
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1053:19: note: 'DAT_00424ac0' declared here
- 1053 | extern FilterData DAT_00424ac0;
-      |                   ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016e7cPy.cpp:7:13: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'FilterData *'
-    7 |   *puVar1 = &DAT_004271c0;
-      |             ^~~~~~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00016e7c(uint64_t *param_1) {
-  uint64_t *puVar1;
-
-  puVar1 = (uint64_t *)FUN_001e34c0(param_1);
-  *puVar1 = &DAT_004271c0;
-  return;
-}
-```
-
 ### Not compiling yet — 297 × expected 'X' after top level declarator
 
 All: uiViewForAudioUnit_withSize_ (5fac0), application_openFile_ (1679ac), windowShouldClose_ (16a37c), validateMenuItem_ (16b0bc), initWithFrame_frame_ (1a8754), CGColorSpace (387940), UTF8String (387960), action (387980), addButtonWithTitle_ (3879a0), addChildWindow_ordered_ (3879c0), addCompletedHandler_ (3879e0), addConstraints_ (387a00), addItem_ (387a20), addObject_ (387a60), addSubview_ (387aa0), addView_inGravity_ (387ac0), applicationShouldTerminate___387ae0 (387ae0), array (387b00), arrayWithCapacity_ (387b20), arrayWithObject_ (387b40), arrayWithObjects_ (387b60), arrayWithObjects_count_ (387b80), arrowCursor (387ba0), autoForwardKeyEvents__387bc0 (387bc0), backingScaleFactor (387be0), beginModalSessionForWindow_ (387c00), blitCommandEncoder (387c20), bounds (387c40), buildMenuGroupEntries_entry___387c60 (387c60), bundlePath (387c80), bundleWithPath_ (387ca0), canBeConvertedToEncoding_ (387cc0), canBecomeKeyWindow__387ce0 (387ce0), canHide (387d00), cancelCurrentMouseDownEvent__387d20 (387d20), changeCount (387d40), characterAtIndex_ (387d60), childWindows (387d80), class (387da0), clickCount (387dc0), close__387de0 (387de0), closeShellWindow__387e00 (387e00), colorSpace (387e20), commandBuffer (387e40), commandQueue__387e60 (387e60), commit (387e80), containsObject_ (387ec0), contentRectForFrameRect_ (387ee0), contentView (387f00), contentsScale (387f20), context (387f40), convertBaseToScreen_ (387f60), convertFont_ (387f80), convertRect_toView_ (387fa0), convertRectFromBacking_ (387fc0), convertRectToBacking_ (387fe0), convertScreenToBase_ (388000), copyPath_toPath_handler_ (388040), count (388060), cppParent__388080 (388080), createLayerTextureWithSize___3880a0 (3880a0), createMetalLayer__3880c0 (3880c0), currentContext (3880e0), currentCursor (388100), currentInputManager (388120), date (388140), declareTypes_owner_ (388160), defaultCenter (388180), defaultManager (3881a0), delegate (3881e0), deltaX (388200), deltaY (388220), deminiaturize___388240 (388240), depth (388260), device (388280), dictionaryWithContentsOfFile_ (3882a0), disableCursorRects (3882c0), display__3882e0 (3882e0), draggingPasteboard (388300), draggingSourceOperationMask (388320), endEncoding (388340), endModalSession_ (388360), error (388380), executablePath (3883a0), fileExistsAtPath_ (3883c0), fileURLWithPath_ (3883e0), filename (388400), filenames (388420), frame (388440), frameRectForContentRect_ (388460), generalPasteboard (388480), getReturnValue_ (3884a0), graphicsContextWithWindow_ (3884c0), graphicsPort (3884e0), hasMarkedText__388500 (388500), hasPrefix_ (388520), height (388540), hide_ (388560), hidesOnDeactivate (388580), init__3885a0 (3885a0), initWithContentsOfFile_ (3885e0), initWithFrame___388600 (388600), initWithFrame_frame___388620 (388620), initWithImage_hotSpot_ (388640), initWithString_ (388660), initWithTitle_ (388680), initWithTitle_action_keyEquivalent_ (3886a0), insertText___3886c0 (3886c0), interpretKeyEvents_ (3886e0), invalidate__388700 (388700), invalidateIntrinsicContentSize (388720), invocationWithMethodSignature_ (388740), invokeWithTarget_ (388760), isARepeat (388780), isExcludedFromWindowsMenu (3887a0), isGeometryFlipped (3887c0), isHiddenOrHasHiddenAncestor (3887e0), isKeyWindow (388800), isKindOfClass_ (388820), isMemberOfClass_ (388840), isMiniaturized (388860), isShellWindowOpen__388880 (388880), isVisible (3888a0), isZoomed (3888c0), itemAtIndex_ (3888e0), itemWithTitle_ (388900), keyCode (388920), keyEquivalentFromMenuEntry___388940 (388940), keyWindow (388960), layer (388980), layoutSubtreeIfNeeded (3889a0), length (3889c0), level (3889e0), localizedDescription (388a00), mainBundle (388a20), mainMenu (388a40), mainScreen (388a60), mainWindow (388a80), makeKeyAndOrderFront_ (388aa0), makeKeyWindow (388ac0), markedTextAbandoned_ (388ae0), menu (388b00), menuBarHeight (388b20), menuBarVisible (388b40), methodSignatureForSelector_ (388b60), miniaturize___388b80 (388b80), modflagsFromMenuEntry___388ba0 (388ba0), modifierFlags (388bc0), mouseLocation (388be0), movePath_toPath_handler_ (388c00), name (388c20), newCommandQueue (388c40), newTextureWithDescriptor_ (388c60), nextDrawable (388c80), numberOfItems (388ca0), object (388cc0), objectAtIndex_ (388ce0), objectForKey_ (388d00), openFile_ (388d20), openPanel (388d40), openShellWindow__388d60 (388d60), orderFront_ (388d80), orderOut_ (388da0), parentWindow (388de0), path (388e00), performClose___388e20 (388e20), pixelFormat (388e60), postEvent_atStart_ (388e80), presentDrawable_ (388ea0), propertyListForType_ (388ec0), registerForDraggedTypes_ (388f00), removeChildWindow_ (388f20), removeConstraints_ (388f40), removeFileAtPath_handler_ (388f60), removeFromSuperview (388f80), removeItemAtIndex_ (388fa0), removeObserver_ (388fc0), resetCursorRects (389000), resourcePath (389020), respondsToSelector_ (389040), runModal (389060), runModalForDirectory_file_ (389080), runModalSession_ (3890c0), savePanel (3890e0), screen (389120), screens (389140), selectedFont (389180), sendEvent___3891a0 (3891a0), separatorItem (3891c0), set (3891e0), setAcceptsMouseMovedEvents_ (389200), setAction_ (389220), setAlertStyle_ (389240), setAllowGPUOptimizedContents_ (389260), setAllowGettingClosed___389280 (389280), setAllowedFileTypes_ (3892a0), setAllowsMultipleSelection_ (3892c0), setAllowsOtherFileTypes_ (3892e0), setAlphaValue_ (389300), setAutoForwardKeyEvents___389320 (389320), setAutoresizingMask_ (389340), setCanChooseDirectories_ (389360), setCanChooseFiles_ (389380), setCanCreateDirectories_ (3893a0), setCanHide_ (3893c0), setCanSelectHiddenExtension_ (3893e0), setCollectionBehavior_ (389400), setColorspace_ (389420), setCommandQueue___389440 (389440), setContentSize___389460 (389460), setContentSizeConstraints___389480 (389480), setContentView_ (3894a0), setContentsScale_ (3894c0), setCppParent___3894e0 (3894e0), setCppWindow___389500 (389500), setCpuCacheMode_ (389520), setDevice_ (389560), setDisplaySyncEnabled_ (389580), setDocumentEdited_ (3895a0), setDrawableSize_ (3895c0), setDrawsAsynchronously_ (3895e0), setEnabled_ (389600), setExcludedFromWindowsMenu_ (389620), setFrame_display___389640 (389640), setFrameSize_ (389660), setFrameTopLeftPoint_ (389680), setFramebufferOnly_ (3896a0), setHasShadow_ (3896c0), setHidesOnDeactivate_ (3896e0), setInformativeText_ (389700), setKeyEquivalent_ (389720), setKeyEquivalentModifierMask_ (389740), setLayer_ (389760), setLayerContentsRedrawPolicy_ (389780), setLevel_ (3897a0), setMaxSize_ (3897c0), setMaximumDrawableCount_ (3897e0), setMenuBarVisible_ (389800), setMessage_ (389820), setMessageText_ (389840), setMinSize_ (389860), setNeedsDisplay (389880), setNeedsDisplayInRect_ (3898a0), setOpaque_ (3898c0), setPixelFormat_ (3898e0), setPluginShell___389900 (389900), setPresentationOptions_ (389960), setReleasedWhenClosed_ (389980), setRepresentedFilename_ (3899a0), setSelector_ (3899c0), setShowsResizeIndicator_ (3899e0), setState_ (389a00), setString_forType_ (389a20), setStyleMask___389a40 (389a40), setSubmenu_ (389a60), setSubmenu_forItem_ (389a80), setTag_ (389aa0), setTarget_ (389ac0), setTexture___389ae0 (389ae0), setTitle_ (389b00), setUsage_ (389b40), setViewsNeedDisplay_ (389b60), setWantsLayer_ (389b80), setWindowsMenu_ (389ba0), sharedDocumentController (389bc0), sharedWorkspace (389be0), shellWindowGlue__389c00 (389c00), standardWindowButton_ (389c20), stop_ (389c40), string__389c60 (389c60), stringForType_ (389c80), stringWithCharacters_length_ (389ca0), stringWithFormat_ (389cc0), stringWithUTF8String_ (389ce0), styleMask (389d00), submenu (389d20), superview (389d40), tag (389d60), target (389d80), texture__389da0 (389da0), timeIntervalSinceReferenceDate (389de0), timestamp (389e00), title (389e20), type (389e40), types (389e60), unregisterDraggedTypes (389e80), updateLayerInRect___389ea0 (389ea0), updateShellWindowWantKeys__389ec0 (389ec0), visibleFrame (389ee0), visibleRect (389f00), wantsLayer (389f40), width (389f60), window (389f80), windowGraphicsContext__389fa0 (389fa0), windowNumber (389fc0), windowWithWindowNumber_ (389fe0), zoom___38a000 (38a000)
@@ -7944,9 +8464,9 @@ ID __objc_msgSend_stub objc_stub::action(uint64_t self,...) {
 }
 ```
 
-### Not compiling yet — 296 × must use 'X' tag to refer to type 'X' in this scope
+### Not compiling yet — 295 × must use 'X' tag to refer to type 'X' in this scope
 
-All: FUN_000073fc (73fc), FUN_000b5304 (b5304), FUN_000b533c (b533c), FUN_000b5b74 (b5b74), FUN_000b88f0 (b88f0), FUN_000b9cb8 (b9cb8), FUN_000ba84c (ba84c), FUN_000bc4ec (bc4ec), FUN_0027e8d8 (27e8d8), FUN_0027ebb8 (27ebb8), FUN_0027f4b8 (27f4b8), FUN_002842f4 (2842f4), FUN_00285624 (285624), FUN_00285760 (285760), FUN_00286db4 (286db4), FUN_0028a6cc (28a6cc), FUN_0028ad60 (28ad60), FUN_0028e264 (28e264), FUN_0028f954 (28f954), FUN_00290d64 (290d64), FUN_00291088 (291088), FUN_00293cb0 (293cb0), FUN_00294714 (294714), FUN_00294fcc (294fcc), FUN_00298664 (298664), FUN_00299f30 (299f30), FUN_0029a3cc (29a3cc), FUN_0029d670 (29d670), FUN_0029dcfc (29dcfc), FUN_002a0304 (2a0304), FUN_002a13a0 (2a13a0), FUN_002a1fb4 (2a1fb4), FUN_002c4a3c (2c4a3c), FUN_002c73f4 (2c73f4), FUN_0035b274 (35b274), FUN_0035cf90 (35cf90), FUN_0035d0d8 (35d0d8), FUN_0035fc70 (35fc70), FUN_0035fe80 (35fe80), FUN_003610e8 (3610e8), FUN_00362614 (362614), FUN_00362aac (362aac), FUN_0036372c (36372c), FUN_00364294 (364294), FUN_0008384c (8384c), FUN_000d03c0 (d03c0), FUN_000d9a48 (d9a48), FUN_000e3c98 (e3c98), FUN_000e43ac (e43ac), FUN_000e7220 (e7220), FUN_000e80b8 (e80b8), FUN_000e8f80 (e8f80), FUN_000e9484 (e9484), FUN_000ea854 (ea854), FUN_000eaa00 (eaa00), FUN_000ec844 (ec844), FUN_000ec8a8 (ec8a8), FUN_000ec93c (ec93c), FUN_000ec988 (ec988), FUN_000eeedc (eeedc), FUN_000eff84 (eff84), FUN_000f01b4 (f01b4), FUN_000f235c (f235c), FUN_000f2d24 (f2d24), FUN_000f3488 (f3488), FUN_000f4704 (f4704), FUN_000f736c (f736c), FUN_000f7c34 (f7c34), FUN_000f907c (f907c), FUN_001004f8 (1004f8), FUN_00103c90 (103c90), FUN_00107a5c (107a5c), FUN_001095a0 (1095a0), FUN_0010a3c4 (10a3c4), FUN_0010a674 (10a674), FUN_0011878c (11878c), FUN_00118928 (118928), FUN_00118f84 (118f84), FUN_0011986c (11986c), FUN_00119de4 (119de4), FUN_0011ee5c (11ee5c), FUN_0011f738 (11f738), FUN_00126178 (126178), FUN_00126518 (126518), FUN_00126cec (126cec), FUN_00128538 (128538), FUN_0012909c (12909c), FUN_001299c8 (1299c8), FUN_0012bc68 (12bc68), FUN_0012cbf4 (12cbf4), FUN_0012d2f0 (12d2f0), FUN_0012e728 (12e728), FUN_00130604 (130604), FUN_001362fc (1362fc), FUN_00138990 (138990), FUN_00139a34 (139a34), FUN_0013f230 (13f230), FUN_0013f294 (13f294), FUN_0013f354 (13f354), FUN_00141cf0 (141cf0), FUN_00144e68 (144e68), FUN_00148e6c (148e6c), FUN_0014e36c (14e36c), FUN_00152ba8 (152ba8), FUN_001534a4 (1534a4), FUN_00155c50 (155c50), FUN_00158ef4 (158ef4), FUN_00166da0 (166da0), FUN_001674ac (1674ac), FUN_0016e7f4 (16e7f4), FUN_00171c94 (171c94), FUN_00177aa4 (177aa4), FUN_00179f78 (179f78), FUN_0017e1e4 (17e1e4), FUN_001842b0 (1842b0), FUN_00184c70 (184c70), FUN_00186b78 (186b78), FUN_0018af44 (18af44), FUN_0019700c (19700c), FUN_0019703c (19703c), FUN_0019e3e0 (19e3e0), FUN_0019f4c8 (19f4c8), FUN_001a0ff4 (1a0ff4), FUN_001a1d5c (1a1d5c), FUN_001a245c (1a245c), FUN_001a46e0 (1a46e0), FUN_001a66a0 (1a66a0), FUN_001a6c34 (1a6c34), FUN_001a7fe8 (1a7fe8), FUN_001a823c (1a823c), FUN_001b2298 (1b2298), FUN_001b3de8 (1b3de8), FUN_001b3e94 (1b3e94), FUN_001b9d94 (1b9d94), FUN_001ba210 (1ba210), FUN_001baa2c (1baa2c), FUN_001babf0 (1babf0), FUN_001bace4 (1bace4), FUN_001bb7e0 (1bb7e0), FUN_001bc598 (1bc598), FUN_001be3c0 (1be3c0), FUN_001bee4c (1bee4c), FUN_001c1228 (1c1228), FUN_001c1744 (1c1744), FUN_001c31c8 (1c31c8), FUN_001c3210 (1c3210), FUN_001c47d0 (1c47d0), FUN_001c5eec (1c5eec), FUN_001cc320 (1cc320), FUN_001ce8fc (1ce8fc), FUN_001cf07c (1cf07c), FUN_001cf238 (1cf238), FUN_001d1544 (1d1544), FUN_001d5e8c (1d5e8c), FUN_001d5f3c (1d5f3c), FUN_001d6784 (1d6784), FUN_001d7230 (1d7230), FUN_001d7d2c (1d7d2c), FUN_001d8468 (1d8468), FUN_001d85c4 (1d85c4), FUN_001da47c (1da47c), FUN_001de068 (1de068), FUN_001de31c (1de31c), FUN_001de95c (1de95c), FUN_001dfe60 (1dfe60), FUN_001e0f40 (1e0f40), FUN_001e3aac (1e3aac), FUN_001e3bec (1e3bec), FUN_001e5224 (1e5224), FUN_001e5dbc (1e5dbc), FUN_001e773c (1e773c), FUN_001eb8b0 (1eb8b0), FUN_001ed098 (1ed098), FUN_001ed720 (1ed720), FUN_001f4a7c (1f4a7c), FUN_001f4c68 (1f4c68), FUN_001f7048 (1f7048), FUN_001f9654 (1f9654), FUN_001f97b4 (1f97b4), FUN_001fec98 (1fec98), FUN_001ffb74 (1ffb74), FUN_002000d0 (2000d0), FUN_00203500 (203500), FUN_00204d2c (204d2c), FUN_0020cba0 (20cba0), FUN_00212c38 (212c38), FUN_00216a60 (216a60), FUN_002191f0 (2191f0), FUN_0021c37c (21c37c), FUN_0021ed9c (21ed9c), FUN_0021ee34 (21ee34), FUN_002236b0 (2236b0), FUN_002275cc (2275cc), FUN_0022956c (22956c), FUN_0022a4d0 (22a4d0), FUN_0022a520 (22a520), FUN_0022a6f4 (22a6f4), FUN_0022acd0 (22acd0), FUN_0022cde8 (22cde8), FUN_0022d394 (22d394), FUN_002335e0 (2335e0), FUN_00234240 (234240), FUN_0023ba78 (23ba78), FUN_002494b4 (2494b4), FUN_0024b0b0 (24b0b0), FUN_0024ccfc (24ccfc), FUN_0025355c (25355c), FUN_00255644 (255644), lowpassFilterProcess (2561f8), FUN_00257ccc (257ccc), FUN_0025b510 (25b510), FUN_0025d944 (25d944), FUN_00262414 (262414), FUN_00268a78 (268a78), FUN_002692ac (2692ac), FUN_002695fc (2695fc), FUN_00271ae0 (271ae0), FUN_00273098 (273098), FUN_0027a5d8 (27a5d8), FUN_0027ab18 (27ab18), FUN_0027ae74 (27ae74), FUN_0027aed4 (27aed4), FUN_0027b380 (27b380), FUN_0027b7d0 (27b7d0), FUN_0027be08 (27be08), FUN_0027c2c8 (27c2c8), FUN_0027c81c (27c81c), FUN_002a70c8 (2a70c8), FUN_002a9d58 (2a9d58), FUN_002ae774 (2ae774), FUN_002b1710 (2b1710), FUN_002d0580 (2d0580), FUN_002d0dc4 (2d0dc4), FUN_002d2298 (2d2298), FUN_002d5a70 (2d5a70), FUN_002d76ec (2d76ec), FUN_002de5a4 (2de5a4), FUN_002e06e0 (2e06e0), FUN_002e5b18 (2e5b18), FUN_002e75e8 (2e75e8), FUN_002e94c4 (2e94c4), FUN_002e9ec8 (2e9ec8), FUN_002ea680 (2ea680), FUN_002ef838 (2ef838), FUN_002efca0 (2efca0), FUN_002f00a4 (2f00a4), FUN_002fa60c (2fa60c), FUN_002facb4 (2facb4), FUN_002fef7c (2fef7c), FUN_002ffc68 (2ffc68), FUN_00301474 (301474), FUN_00302188 (302188), FUN_00302234 (302234), FUN_0030df24 (30df24), FUN_00310010 (310010), FUN_00313f5c (313f5c), FUN_00315c14 (315c14), FUN_0031a6b0 (31a6b0), FUN_0031c620 (31c620), FUN_0031eb14 (31eb14), FUN_0031f688 (31f688), FUN_00324bd0 (324bd0), FUN_00325fb8 (325fb8), FUN_00326794 (326794), FUN_00327170 (327170), FUN_003274b0 (3274b0), FUN_00327ce0 (327ce0), FUN_00327dbc (327dbc), FUN_0032f83c (32f83c), FUN_003311fc (3311fc), FUN_003344ac (3344ac), FUN_00336b88 (336b88), FUN_00337274 (337274), FUN_00339580 (339580), FUN_0033a2bc (33a2bc), FUN_0034455c (34455c), FUN_003445d4 (3445d4), FUN_003479ec (3479ec), FUN_0034fb38 (34fb38), FUN_003510f0 (3510f0), FUN_003533cc (3533cc), FUN_00354e98 (354e98), FUN_00355d0c (355d0c), FUN_00355e9c (355e9c), FUN_003563e4 (3563e4), FUN_00356bdc (356bdc), FUN_00356cc4 (356cc4), FUN_00357100 (357100), FUN_00357dac (357dac), FUN_00358038 (358038), FUN_0036b344 (36b344), FUN_003715c8 (3715c8), FUN_00373368 (373368), FUN_00373468 (373468), FUN_00375198 (375198), FUN_00376468 (376468)
+All: FUN_000073fc (73fc), FUN_000b5304 (b5304), FUN_000b533c (b533c), FUN_000b5b74 (b5b74), FUN_000b88f0 (b88f0), FUN_000b9cb8 (b9cb8), FUN_000ba84c (ba84c), FUN_000bc4ec (bc4ec), FUN_0027e8d8 (27e8d8), FUN_0027ebb8 (27ebb8), FUN_0027f4b8 (27f4b8), FUN_002842f4 (2842f4), FUN_00285624 (285624), FUN_00285760 (285760), FUN_00286db4 (286db4), FUN_0028a6cc (28a6cc), FUN_0028ad60 (28ad60), FUN_0028e264 (28e264), FUN_0028f954 (28f954), FUN_00290d64 (290d64), FUN_00291088 (291088), FUN_00293cb0 (293cb0), FUN_00294714 (294714), FUN_00294fcc (294fcc), FUN_00298664 (298664), FUN_00299f30 (299f30), FUN_0029a3cc (29a3cc), FUN_0029d670 (29d670), FUN_0029dcfc (29dcfc), FUN_002a0304 (2a0304), FUN_002a13a0 (2a13a0), FUN_002a1fb4 (2a1fb4), FUN_002c4a3c (2c4a3c), FUN_002c73f4 (2c73f4), FUN_0035b274 (35b274), FUN_0035cf90 (35cf90), FUN_0035d0d8 (35d0d8), FUN_0035fc70 (35fc70), FUN_0035fe80 (35fe80), FUN_003610e8 (3610e8), FUN_00362614 (362614), FUN_00362aac (362aac), FUN_0036372c (36372c), FUN_00364294 (364294), FUN_0008384c (8384c), FUN_000d03c0 (d03c0), FUN_000d9a48 (d9a48), FUN_000e3c98 (e3c98), FUN_000e43ac (e43ac), FUN_000e7220 (e7220), FUN_000e80b8 (e80b8), FUN_000e8f80 (e8f80), FUN_000e9484 (e9484), FUN_000ea854 (ea854), FUN_000eaa00 (eaa00), FUN_000ec844 (ec844), FUN_000ec8a8 (ec8a8), FUN_000ec93c (ec93c), FUN_000ec988 (ec988), FUN_000eeedc (eeedc), FUN_000eff84 (eff84), FUN_000f01b4 (f01b4), FUN_000f235c (f235c), FUN_000f2d24 (f2d24), FUN_000f3488 (f3488), FUN_000f4704 (f4704), FUN_000f736c (f736c), FUN_000f7c34 (f7c34), FUN_000f907c (f907c), FUN_001004f8 (1004f8), FUN_00103c90 (103c90), FUN_00107a5c (107a5c), FUN_001095a0 (1095a0), FUN_0010a3c4 (10a3c4), FUN_0010a674 (10a674), FUN_0011878c (11878c), FUN_00118928 (118928), FUN_00118f84 (118f84), FUN_0011986c (11986c), FUN_00119de4 (119de4), FUN_0011ee5c (11ee5c), FUN_0011f738 (11f738), FUN_00126178 (126178), FUN_00126518 (126518), FUN_00126cec (126cec), FUN_00128538 (128538), FUN_0012909c (12909c), FUN_001299c8 (1299c8), FUN_0012bc68 (12bc68), FUN_0012cbf4 (12cbf4), FUN_0012d2f0 (12d2f0), FUN_0012e728 (12e728), FUN_00130604 (130604), FUN_001362fc (1362fc), FUN_00138990 (138990), FUN_00139a34 (139a34), FUN_0013f230 (13f230), FUN_0013f294 (13f294), FUN_0013f354 (13f354), FUN_00141cf0 (141cf0), FUN_00144e68 (144e68), FUN_00148e6c (148e6c), FUN_0014e36c (14e36c), FUN_00152ba8 (152ba8), FUN_001534a4 (1534a4), FUN_00155c50 (155c50), FUN_00158ef4 (158ef4), FUN_00166da0 (166da0), FUN_001674ac (1674ac), FUN_0016e7f4 (16e7f4), FUN_00171c94 (171c94), FUN_00177aa4 (177aa4), FUN_00179f78 (179f78), FUN_0017e1e4 (17e1e4), FUN_001842b0 (1842b0), FUN_00184c70 (184c70), FUN_00186b78 (186b78), FUN_0018af44 (18af44), FUN_0019700c (19700c), FUN_0019703c (19703c), FUN_0019e3e0 (19e3e0), FUN_0019f4c8 (19f4c8), FUN_001a0ff4 (1a0ff4), FUN_001a1d5c (1a1d5c), FUN_001a245c (1a245c), FUN_001a46e0 (1a46e0), FUN_001a66a0 (1a66a0), FUN_001a6c34 (1a6c34), FUN_001a7fe8 (1a7fe8), FUN_001a823c (1a823c), FUN_001b2298 (1b2298), FUN_001b3de8 (1b3de8), FUN_001b3e94 (1b3e94), FUN_001b9d94 (1b9d94), FUN_001ba210 (1ba210), FUN_001baa2c (1baa2c), FUN_001babf0 (1babf0), FUN_001bace4 (1bace4), FUN_001bb7e0 (1bb7e0), FUN_001bc598 (1bc598), FUN_001be3c0 (1be3c0), FUN_001bee4c (1bee4c), FUN_001c1228 (1c1228), FUN_001c1744 (1c1744), FUN_001c31c8 (1c31c8), FUN_001c3210 (1c3210), FUN_001c47d0 (1c47d0), FUN_001c5eec (1c5eec), FUN_001cc320 (1cc320), FUN_001ce8fc (1ce8fc), FUN_001cf07c (1cf07c), FUN_001cf238 (1cf238), FUN_001d1544 (1d1544), FUN_001d5e8c (1d5e8c), FUN_001d5f3c (1d5f3c), FUN_001d6784 (1d6784), FUN_001d7230 (1d7230), FUN_001d7d2c (1d7d2c), FUN_001d8468 (1d8468), FUN_001d85c4 (1d85c4), FUN_001da47c (1da47c), FUN_001de068 (1de068), FUN_001de31c (1de31c), FUN_001de95c (1de95c), FUN_001dfe60 (1dfe60), FUN_001e0f40 (1e0f40), FUN_001e3aac (1e3aac), FUN_001e3bec (1e3bec), FUN_001e5224 (1e5224), FUN_001e5dbc (1e5dbc), FUN_001e773c (1e773c), FUN_001eb8b0 (1eb8b0), FUN_001ed098 (1ed098), FUN_001ed720 (1ed720), FUN_001f4a7c (1f4a7c), FUN_001f4c68 (1f4c68), FUN_001f7048 (1f7048), FUN_001f9654 (1f9654), FUN_001f97b4 (1f97b4), FUN_001ffb74 (1ffb74), FUN_002000d0 (2000d0), FUN_00203500 (203500), FUN_00204d2c (204d2c), FUN_0020cba0 (20cba0), FUN_00212c38 (212c38), FUN_00216a60 (216a60), FUN_002191f0 (2191f0), FUN_0021c37c (21c37c), FUN_0021ed9c (21ed9c), FUN_0021ee34 (21ee34), FUN_002236b0 (2236b0), FUN_002275cc (2275cc), FUN_0022956c (22956c), FUN_0022a4d0 (22a4d0), FUN_0022a520 (22a520), FUN_0022a6f4 (22a6f4), FUN_0022acd0 (22acd0), FUN_0022cde8 (22cde8), FUN_0022d394 (22d394), FUN_002335e0 (2335e0), FUN_00234240 (234240), FUN_0023ba78 (23ba78), FUN_002494b4 (2494b4), FUN_0024b0b0 (24b0b0), FUN_0024ccfc (24ccfc), FUN_0025355c (25355c), FUN_00255644 (255644), lowpassFilterProcess (2561f8), FUN_00257ccc (257ccc), FUN_0025b510 (25b510), FUN_0025d944 (25d944), FUN_00262414 (262414), FUN_00268a78 (268a78), FUN_002692ac (2692ac), FUN_002695fc (2695fc), FUN_00271ae0 (271ae0), FUN_00273098 (273098), FUN_0027a5d8 (27a5d8), FUN_0027ab18 (27ab18), FUN_0027ae74 (27ae74), FUN_0027aed4 (27aed4), FUN_0027b380 (27b380), FUN_0027b7d0 (27b7d0), FUN_0027be08 (27be08), FUN_0027c2c8 (27c2c8), FUN_0027c81c (27c81c), FUN_002a70c8 (2a70c8), FUN_002a9d58 (2a9d58), FUN_002ae774 (2ae774), FUN_002b1710 (2b1710), FUN_002d0580 (2d0580), FUN_002d0dc4 (2d0dc4), FUN_002d2298 (2d2298), FUN_002d5a70 (2d5a70), FUN_002d76ec (2d76ec), FUN_002de5a4 (2de5a4), FUN_002e06e0 (2e06e0), FUN_002e5b18 (2e5b18), FUN_002e75e8 (2e75e8), FUN_002e94c4 (2e94c4), FUN_002e9ec8 (2e9ec8), FUN_002ea680 (2ea680), FUN_002ef838 (2ef838), FUN_002efca0 (2efca0), FUN_002f00a4 (2f00a4), FUN_002fa60c (2fa60c), FUN_002facb4 (2facb4), FUN_002fef7c (2fef7c), FUN_002ffc68 (2ffc68), FUN_00301474 (301474), FUN_00302188 (302188), FUN_00302234 (302234), FUN_0030df24 (30df24), FUN_00310010 (310010), FUN_00313f5c (313f5c), FUN_00315c14 (315c14), FUN_0031a6b0 (31a6b0), FUN_0031c620 (31c620), FUN_0031eb14 (31eb14), FUN_0031f688 (31f688), FUN_00324bd0 (324bd0), FUN_00325fb8 (325fb8), FUN_00326794 (326794), FUN_00327170 (327170), FUN_003274b0 (3274b0), FUN_00327ce0 (327ce0), FUN_00327dbc (327dbc), FUN_0032f83c (32f83c), FUN_003311fc (3311fc), FUN_003344ac (3344ac), FUN_00336b88 (336b88), FUN_00337274 (337274), FUN_00339580 (339580), FUN_0033a2bc (33a2bc), FUN_0034455c (34455c), FUN_003445d4 (3445d4), FUN_003479ec (3479ec), FUN_0034fb38 (34fb38), FUN_003510f0 (3510f0), FUN_003533cc (3533cc), FUN_00354e98 (354e98), FUN_00355d0c (355d0c), FUN_00355e9c (355e9c), FUN_003563e4 (3563e4), FUN_00356bdc (356bdc), FUN_00356cc4 (356cc4), FUN_00357100 (357100), FUN_00357dac (357dac), FUN_00358038 (358038), FUN_0036b344 (36b344), FUN_003715c8 (3715c8), FUN_00373368 (373368), FUN_00373468 (373468), FUN_00375198 (375198), FUN_00376468 (376468)
 
 #### FUN_000073fc — funcs/__Z12FUN_000073fcPffm.cpp, Ghidra 73fc, 0 model attempt(s)
 
@@ -8259,6 +8779,227 @@ void FUN_000bc4ec(float *input, float *output, int length, LowpassFilter filter)
         output[i] = filter.filterCoeff * input[i] + (1.0f - filter.filterCoeff) * filter.lastSample;
         filter.lastSample = input[i];
     }
+}
+```
+
+### Not compiling yet — 294 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
+
+All: FUN_0000c050 (c050), FUN_0000c1c8 (c1c8), FUN_0001332c (1332c), FUN_000134f8 (134f8), FUN_00013524 (13524), FUN_000168d0 (168d0), FUN_00016d80 (16d80), FUN_00016e7c (16e7c), FUN_00017ab4 (17ab4), FUN_00019554 (19554), FUN_00019650 (19650), processInput41 (19be8), FUN_00021260 (21260), FUN_0002128c (2128c), FUN_00021600 (21600), FUN_0002162c (2162c), FUN_0002165c (2165c), FUN_00027e38 (27e38), FUN_00037834 (37834), FUN_00045c44 (45c44), FUN_00057184 (57184), FUN_00057350 (57350), FUN_000a2f5c (a2f5c), FUN_000a63ac (a63ac), FUN_000a658c (a658c), FUN_000a827c (a827c), FUN_000a9ec0 (a9ec0), FUN_000aa104 (aa104), FUN_000aa3f0 (aa3f0), FUN_000aa744 (aa744), FUN_000aac28 (aac28), FUN_000aada8 (aada8), FUN_000afc34 (afc34), FUN_000afcc8 (afcc8), FUN_000b0638 (b0638), FUN_000b5bdc (b5bdc), FUN_000b5c5c (b5c5c), FUN_000bf988 (bf988), FUN_000c1620 (c1620), FUN_00280264 (280264), FUN_002810e8 (2810e8), FUN_002812a0 (2812a0), FUN_002816ac (2816ac), FUN_00281914 (281914), FUN_002819cc (2819cc), FUN_00282020 (282020), FUN_0028217c (28217c), FUN_0028235c (28235c), FUN_00285498 (285498), FUN_00286340 (286340), FUN_002866d0 (2866d0), FUN_00286830 (286830), FUN_00286a24 (286a24), FUN_00286ba8 (286ba8), FUN_0028a534 (28a534), FUN_0028e688 (28e688), FUN_0028e81c (28e81c), FUN_0029f9f4 (29f9f4), FUN_0029fee0 (29fee0), FUN_0029ff30 (29ff30), FUN_002a0180 (2a0180), FUN_002a0380 (2a0380), FUN_002a0d44 (2a0d44), FUN_002a0db8 (2a0db8), FUN_002a113c (2a113c), FUN_002a1210 (2a1210), FUN_002a1414 (2a1414), FUN_002a1578 (2a1578), FUN_002a189c (2a189c), FUN_002a18ec (2a18ec), FUN_002a1934 (2a1934), FUN_002a1a44 (2a1a44), FUN_0005d46c (5d46c), FUN_0005d9a4 (5d9a4), FUN_00068c30 (68c30), FUN_00068db0 (68db0), FUN_00069748 (69748), FUN_0006b2c8 (6b2c8), FUN_0006ca38 (6ca38), FUN_0006e02c (6e02c), FUN_000772e0 (772e0), FUN_0007afec (7afec), FUN_0007f444 (7f444), FUN_0007f78c (7f78c), FUN_0007fcb0 (7fcb0), FUN_0007fe60 (7fe60), FUN_0007fec8 (7fec8), FUN_000800c0 (800c0), FUN_000802ac (802ac), FUN_000804bc (804bc), FUN_00080a0c (80a0c), FUN_00080f30 (80f30), FUN_000810e4 (810e4), FUN_0008114c (8114c), FUN_00081348 (81348), FUN_00081534 (81534), FUN_00081748 (81748), FUN_00086d84 (86d84), FUN_000896d8 (896d8), FUN_00089724 (89724), FUN_00089770 (89770), FUN_0008a9b0 (8a9b0), FUN_0008ae48 (8ae48), FUN_0008aeb4 (8aeb4), FUN_0008afa8 (8afa8), processInput54 (8b4cc), FUN_0008b55c (8b55c), FUN_0008b580 (8b580), FUN_0008b6e4 (8b6e4), setAndCopyData (8b98c), FUN_0008d908 (8d908), FUN_0009105c (9105c), FUN_00097228 (97228), FUN_000991e4 (991e4), FUN_0009d658 (9d658), FUN_000a059c (a059c), FUN_000a0b7c (a0b7c), FUN_000c9f34 (c9f34), FUN_000cb57c (cb57c), FUN_000ce398 (ce398), FUN_000cea50 (cea50), FUN_000cf3bc (cf3bc), FUN_000d2d54 (d2d54), FUN_000d88d8 (d88d8), FUN_000e7d30 (e7d30), FUN_000e86e4 (e86e4), FUN_000e886c (e886c), FUN_000f90f8 (f90f8), FUN_0012bee4 (12bee4), FUN_0012bfa8 (12bfa8), FUN_0012c558 (12c558), FUN_0012c72c (12c72c), FUN_001385b4 (1385b4), FUN_0013957c (13957c), FUN_00139618 (139618), FUN_00139fe0 (139fe0), FUN_0013a168 (13a168), FUN_0013a96c (13a96c), FUN_0013aaf4 (13aaf4), FUN_001401fc (1401fc), FUN_00140e28 (140e28), FUN_001455e0 (1455e0), FUN_00145d5c (145d5c), FUN_0014e8ec (14e8ec), FUN_00153468 (153468), FUN_0015447c (15447c), FUN_001639e8 (1639e8), FUN_0016536c (16536c), FUN_00165630 (165630), FUN_00165890 (165890), FUN_00165cc0 (165cc0), FUN_00165f54 (165f54), FUN_001667c8 (1667c8), FUN_00166a68 (166a68), FUN_0016f048 (16f048), FUN_0016f56c (16f56c), FUN_00173bd0 (173bd0), FUN_00175f1c (175f1c), FUN_00177180 (177180), FUN_00177a18 (177a18), FUN_0018c84c (18c84c), FUN_0018d8d8 (18d8d8), FUN_001987c8 (1987c8), FUN_0019dba4 (19dba4), FUN_001a0420 (1a0420), FUN_001aabfc (1aabfc), FUN_001aac5c (1aac5c), FUN_001aafd0 (1aafd0), FUN_001ab384 (1ab384), FUN_001ab824 (1ab824), FUN_001ab9a4 (1ab9a4), FUN_001ae660 (1ae660), FUN_001aefb4 (1aefb4), FUN_001af13c (1af13c), FUN_001b7b30 (1b7b30), FUN_001b9a40 (1b9a40), FUN_001ba71c (1ba71c), FUN_001ba884 (1ba884), FUN_001beecc (1beecc), FUN_001bf72c (1bf72c), FUN_001bf8ac (1bf8ac), FUN_001c1db4 (1c1db4), FUN_001c4e88 (1c4e88), FUN_001cd37c (1cd37c), FUN_001cd464 (1cd464), FUN_001cd8f4 (1cd8f4), FUN_001cdf24 (1cdf24), FUN_001cdf48 (1cdf48), FUN_001ce0ac (1ce0ac), FUN_001ce370 (1ce370), FUN_001d0308 (1d0308), FUN_001d10bc (1d10bc), FUN_001d4c90 (1d4c90), FUN_001d5800 (1d5800), FUN_001d5988 (1d5988), FUN_001d67d8 (1d67d8), FUN_001d6840 (1d6840), FUN_001d68ac (1d68ac), FUN_001d6918 (1d6918), FUN_001d70d4 (1d70d4), FUN_001d7ad8 (1d7ad8), FUN_001d7c60 (1d7c60), FUN_001d992c (1d992c), FUN_001d9cc4 (1d9cc4), FUN_001da1d4 (1da1d4), FUN_001da35c (1da35c), FUN_001dc730 (1dc730), FUN_001ddc84 (1ddc84), FUN_001de204 (1de204), FUN_001de380 (1de380), FUN_001e1fec (1e1fec), FUN_001e3c6c (1e3c6c), FUN_001e471c (1e471c), FUN_001e48a4 (1e48a4), FUN_001e4b4c (1e4b4c), FUN_001e5a60 (1e5a60), FUN_001e7918 (1e7918), FUN_001e8084 (1e8084), FUN_001e82fc (1e82fc), FUN_001ef730 (1ef730), FUN_001f0800 (1f0800), FUN_001f0e08 (1f0e08), FUN_001fdc20 (1fdc20), FUN_001fe0b4 (1fe0b4), FUN_001fe5cc (1fe5cc), FUN_001fe748 (1fe748), FUN_00201870 (201870), FUN_00202170 (202170), FUN_0020e19c (20e19c), FUN_0020eb68 (20eb68), FUN_0020ed98 (20ed98), FUN_0020f484 (20f484), FUN_00210304 (210304), FUN_00218018 (218018), FUN_0021b72c (21b72c), FUN_0021ec14 (21ec14), FUN_00226860 (226860), FUN_002268cc (2268cc), FUN_00226cb8 (226cb8), FUN_00226f28 (226f28), FUN_00227520 (227520), FUN_002275a8 (2275a8), FUN_00227614 (227614), FUN_00228558 (228558), FUN_00229328 (229328), FUN_0022c134 (22c134), FUN_0022c54c (22c54c), FUN_0022cc24 (22cc24), FUN_0022d110 (22d110), FUN_0022d278 (22d278), FUN_0022d9c0 (22d9c0), FUN_0022dbb0 (22dbb0), FUN_00251934 (251934), FUN_002546dc (2546dc), FUN_002558dc (2558dc), FUN_00255938 (255938), FUN_0025603c (25603c), FUN_00256ac0 (256ac0), FUN_00256c78 (256c78), FUN_00257474 (257474), FUN_002575ac (2575ac), FUN_00257648 (257648), FUN_00257790 (257790), FUN_002585ac (2585ac), FUN_002588f8 (2588f8), FUN_00258a10 (258a10), FUN_00258c7c (258c7c), FUN_00258d70 (258d70), FUN_00259038 (259038), FUN_0025fa3c (25fa3c), FUN_00263828 (263828), FUN_002fd52c (2fd52c), FUN_002ff4dc (2ff4dc), FUN_003010ac (3010ac), FUN_00314830 (314830), FUN_0031fc54 (31fc54), FUN_0031fffc (31fffc), FUN_003200d4 (3200d4), FUN_00320e98 (320e98), FUN_0032107c (32107c), FUN_003217ac (3217ac), FUN_003221f8 (3221f8), FUN_00323518 (323518), FUN_00324578 (324578), FUN_00325b68 (325b68), FUN_00326d94 (326d94), FUN_003270f4 (3270f4), FUN_00327254 (327254), FUN_003279a0 (3279a0), FUN_003279f0 (3279f0), FUN_00327b60 (327b60), FUN_00349194 (349194), FUN_00356d78 (356d78), FUN_00358308 (358308)
+
+#### FUN_0000c050 — funcs/__Z12FUN_0000c050Pyj.cpp, Ghidra c050, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c050Pyj.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+    6 |   puVar1 = (uint64_t *)FUN_0000c088(param_1);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c050Pyj.cpp:7:14: error: use of undeclared identifier 'DAT_00425570'; did you mean 'DAT_00424560'?
+    7 |   *puVar1 = &DAT_00425570;
+      |              ^~~~~~~~~~~~
+      |              DAT_00424560
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1055:19: note: 'DAT_00424560' declared here
+ 1055 | extern FilterData DAT_00424560;
+      |                   ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c050Pyj.cpp:7:13: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'FilterData *'
+    7 |   *puVar1 = &DAT_00425570;
+      |             ^~~~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0000c050(uint64_t *param_1,uint32_t param_2) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_0000c088(param_1);
+  *puVar1 = &DAT_00425570;
+  *(uint32_t *)(puVar1 + 1) = param_2;
+  return;
+}
+```
+
+#### FUN_0000c1c8 — funcs/__Z12FUN_0000c1c8Py.cpp, Ghidra c1c8, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c1c8Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+    6 |   puVar1 = (uint64_t *)FUN_0000c088(param_1);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000c1c8Py.cpp:7:14: error: use of undeclared identifier 'DAT_00425600'
+    7 |   *puVar1 = &DAT_00425600;
+      |              ^~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0000c1c8(uint64_t *param_1) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_0000c088(param_1);
+  *puVar1 = &DAT_00425600;
+  return;
+}
+```
+
+#### FUN_0001332c — funcs/__Z12FUN_0001332cPyS_.cpp, Ghidra 1332c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0001332cPyS_.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+    6 |   puVar1 = (uint64_t *)FUN_000134f8(param_1);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0001332cPyS_.cpp:7:14: error: use of undeclared identifier 'DAT_00425ad8'
+    7 |   *puVar1 = &DAT_00425ad8;
+      |              ^~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint64_t * FUN_0001332c(uint64_t *param_1,uint64_t *param_2) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_000134f8(param_1);
+  *puVar1 = &DAT_00425ad8;
+  FUN_0021aec0(puVar1 + 0xf,param_2);
+  return param_1;
+}
+```
+
+#### FUN_000134f8 — funcs/__Z12FUN_000134f8Py.cpp, Ghidra 134f8, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000134f8Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+    6 |   puVar1 = (uint64_t *)FUN_00013524(param_1);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000134f8Py.cpp:7:14: error: use of undeclared identifier 'DAT_004264b0'
+    7 |   *puVar1 = &DAT_004264b0;
+      |              ^~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000134f8(uint64_t *param_1) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_00013524(param_1);
+  *puVar1 = &DAT_004264b0;
+  return;
+}
+```
+
+#### FUN_00013524 — funcs/__Z12FUN_00013524Py.cpp, Ghidra 13524, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00013524Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+    6 |   puVar1 = (uint64_t *)FUN_001e34c0(param_1);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00013524Py.cpp:7:14: error: use of undeclared identifier 'DAT_00426530'
+    7 |   *puVar1 = &DAT_00426530;
+      |              ^~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00013524(uint64_t *param_1) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_001e34c0(param_1);
+  *puVar1 = &DAT_00426530;
+  return;
+}
+```
+
+#### FUN_000168d0 — funcs/__Z12FUN_000168d0Py.cpp, Ghidra 168d0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000168d0Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+    6 |   puVar1 = (uint64_t *)FUN_000134f8(param_1);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000168d0Py.cpp:7:14: error: use of undeclared identifier 'DAT_00425ad8'
+    7 |   *puVar1 = &DAT_00425ad8;
+      |              ^~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint64_t * FUN_000168d0(uint64_t *param_1) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_000134f8(param_1);
+  *puVar1 = &DAT_00425ad8;
+  FUN_0021a214(puVar1 + 0xf);
+  return param_1;
+}
+```
+
+#### FUN_00016d80 — funcs/__Z12FUN_00016d80Py.cpp, Ghidra 16d80, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016d80Py.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+    6 |   puVar1 = (uint64_t *)FUN_00016e7c(param_1);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016d80Py.cpp:7:14: error: use of undeclared identifier 'DAT_00427140'
+    7 |   *puVar1 = &DAT_00427140;
+      |              ^~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00016d80(uint64_t *param_1) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_00016e7c(param_1);
+  *puVar1 = &DAT_00427140;
+  return;
+}
+```
+
+#### FUN_00016e7c — funcs/__Z12FUN_00016e7cPy.cpp, Ghidra 16e7c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016e7cPy.cpp:6:12: error: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+    6 |   puVar1 = (uint64_t *)FUN_001e34c0(param_1);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016e7cPy.cpp:7:14: error: use of undeclared identifier 'DAT_004271c0'; did you mean 'DAT_00424ac0'?
+    7 |   *puVar1 = &DAT_004271c0;
+      |              ^~~~~~~~~~~~
+      |              DAT_00424ac0
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1053:19: note: 'DAT_00424ac0' declared here
+ 1053 | extern FilterData DAT_00424ac0;
+      |                   ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00016e7cPy.cpp:7:13: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'FilterData *'
+    7 |   *puVar1 = &DAT_004271c0;
+      |             ^~~~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00016e7c(uint64_t *param_1) {
+  uint64_t *puVar1;
+
+  puVar1 = (uint64_t *)FUN_001e34c0(param_1);
+  *puVar1 = &DAT_004271c0;
+  return;
 }
 ```
 
@@ -8823,9 +9564,9 @@ void FUN_000130fc(uint64_t param_1,uint32_t param_2,long param_3) {
 }
 ```
 
-### Not compiling yet — 203 × no matching constructor for initialization of 'X'
+### Not compiling yet — 201 × no matching constructor for initialization of 'X'
 
-All: FUN_000b55d8 (b55d8), FUN_000bd064 (bd064), FUN_000be7b4 (be7b4), FUN_000c08e0 (c08e0), FUN_0027e2bc (27e2bc), FUN_0027e86c (27e86c), FUN_0027f264 (27f264), FUN_0027f434 (27f434), FUN_0027f860 (27f860), FUN_0027f9b8 (27f9b8), FUN_00280f34 (280f34), FUN_00282424 (282424), FUN_002893d0 (2893d0), FUN_0028957c (28957c), FUN_0029fb54 (29fb54), FUN_002a0610 (2a0610), FUN_002a18b4 (2a18b4), FUN_002a1f84 (2a1f84), FUN_002bcea8 (2bcea8), FUN_002c7b30 (2c7b30), FUN_002c841c (2c841c), FUN_0035b474 (35b474), FUN_0035f1ec (35f1ec), FUN_000ce010 (ce010), FUN_000cfa9c (cfa9c), FUN_000db2f0 (db2f0), FUN_000e7750 (e7750), FUN_000ecbbc (ecbbc), FUN_000f0700 (f0700), FUN_000f12e0 (f12e0), FUN_000f3ed0 (f3ed0), FUN_0010f0e4 (10f0e4), FUN_00111f80 (111f80), FUN_001134a8 (1134a8), FUN_00113540 (113540), FUN_00118438 (118438), FUN_0011aaa8 (11aaa8), FUN_0011d8d0 (11d8d0), FUN_00125f68 (125f68), FUN_00127878 (127878), FUN_0012918c (12918c), FUN_001294c0 (1294c0), FUN_0012bf54 (12bf54), FUN_0012ef18 (12ef18), FUN_0012f27c (12f27c), FUN_0012f3e4 (12f3e4), FUN_0013052c (13052c), FUN_00131630 (131630), FUN_00131bec (131bec), FUN_00131c4c (131c4c), FUN_00131da8 (131da8), FUN_00136608 (136608), FUN_00137704 (137704), FUN_00137778 (137778), FUN_001378b8 (1378b8), FUN_00137b38 (137b38), FUN_001384f8 (1384f8), FUN_0013a004 (13a004), FUN_0013dda0 (13dda0), FUN_0013e178 (13e178), FUN_00141d14 (141d14), FUN_00143c68 (143c68), FUN_001445a4 (1445a4), FUN_00144f00 (144f00), FUN_001493ac (1493ac), FUN_001497b0 (1497b0), FUN_0014d74c (14d74c), FUN_001522d4 (1522d4), FUN_00152f48 (152f48), FUN_001530bc (1530bc), FUN_001561a8 (1561a8), FUN_00156520 (156520), FUN_00156610 (156610), FUN_001567ec (1567ec), FUN_001652b0 (1652b0), FUN_00165ce4 (165ce4), FUN_001667ec (1667ec), FUN_001668d8 (1668d8), FUN_00170914 (170914), FUN_0017309c (17309c), FUN_0017f938 (17f938), FUN_0017fa90 (17fa90), FUN_00184734 (184734), FUN_0018aba4 (18aba4), FUN_0018d724 (18d724), FUN_0018dba0 (18dba0), FUN_00198a90 (198a90), FUN_0019bc08 (19bc08), FUN_001a06e8 (1a06e8), FUN_001a6ff8 (1a6ff8), FUN_001a81bc (1a81bc), FUN_001a9da0 (1a9da0), FUN_001a9dd4 (1a9dd4), FUN_001ac368 (1ac368), FUN_001ac4c8 (1ac4c8), FUN_001ac500 (1ac500), FUN_001ae964 (1ae964), FUN_001aebd0 (1aebd0), FUN_001aefd8 (1aefd8), FUN_001afccc (1afccc), FUN_001b208c (1b208c), FUN_001b35d4 (1b35d4), FUN_001b774c (1b774c), FUN_001b966c (1b966c), FUN_001ba190 (1ba190), FUN_001ba9a4 (1ba9a4), FUN_001bb374 (1bb374), FUN_001bfda8 (1bfda8), FUN_001c0c58 (1c0c58), FUN_001c16d8 (1c16d8), FUN_001c2770 (1c2770), FUN_001c3020 (1c3020), FUN_001c3450 (1c3450), FUN_001c785c (1c785c), FUN_001ccfa0 (1ccfa0), FUN_001cd7f0 (1cd7f0), FUN_001cd960 (1cd960), FUN_001ce250 (1ce250), FUN_001d0f00 (1d0f00), FUN_001d1880 (1d1880), FUN_001d4bd4 (1d4bd4), FUN_001d6120 (1d6120), FUN_001d7018 (1d7018), FUN_001d9040 (1d9040), FUN_001d91f4 (1d91f4), FUN_001d9d30 (1d9d30), FUN_001da088 (1da088), FUN_001dbea4 (1dbea4), FUN_001dd968 (1dd968), FUN_001e1280 (1e1280), FUN_001e33a8 (1e33a8), FUN_001e378c (1e378c), FUN_001e49c4 (1e49c4), FUN_001e81dc (1e81dc), FUN_001ec758 (1ec758), FUN_001ef6b8 (1ef6b8), FUN_001f4f18 (1f4f18), FUN_001f93dc (1f93dc), FUN_001f9414 (1f9414), FUN_001f949c (1f949c), FUN_001f96c4 (1f96c4), FUN_001f9958 (1f9958), FUN_001fabc0 (1fabc0), FUN_001fdf44 (1fdf44), FUN_0020237c (20237c), FUN_002039cc (2039cc), FUN_00211904 (211904), FUN_00218698 (218698), FUN_00218e68 (218e68), FUN_002251cc (2251cc), FUN_00226b1c (226b1c), FUN_00227044 (227044), FUN_0022897c (22897c), FUN_00228a5c (228a5c), FUN_0022b90c (22b90c), FUN_0022d134 (22d134), FUN_0022d9e4 (22d9e4), FUN_0022e118 (22e118), FUN_00249198 (249198), FUN_00249d58 (249d58), FUN_0024ab8c (24ab8c), FUN_0024bccc (24bccc), FUN_0024d35c (24d35c), FUN_00252cf8 (252cf8), FUN_00257848 (257848), FUN_002625d0 (2625d0), FUN_00274a44 (274a44), FUN_002777a4 (2777a4), FUN_0027a840 (27a840), FUN_0027b528 (27b528), FUN_0027b5b0 (27b5b0), FUN_0027da6c (27da6c), FUN_002ad7a8 (2ad7a8), FUN_002ada70 (2ada70), FUN_002b1848 (2b1848), FUN_002ce5f8 (2ce5f8), FUN_002e3370 (2e3370), FUN_002e3908 (2e3908), FUN_002e3f38 (2e3f38), FUN_002e4b4c (2e4b4c), FUN_002e4bac (2e4bac), FUN_002e4e4c (2e4e4c), FUN_002e52f0 (2e52f0), FUN_002e55f8 (2e55f8), FUN_002ea454 (2ea454), FUN_003020bc (3020bc), FUN_0031e114 (31e114), FUN_0031e9e0 (31e9e0), FUN_00322674 (322674), FUN_0032291c (32291c), FUN_00324d80 (324d80), FUN_003267d4 (3267d4), FUN_00326a80 (326a80), FUN_003272dc (3272dc), FUN_0032c380 (32c380), FUN_00330ad0 (330ad0), FUN_00336880 (336880), FUN_00344bc8 (344bc8), FUN_003486f4 (3486f4), FUN_00354360 (354360), FUN_00358418 (358418), FUN_00358b08 (358b08), FUN_00359400 (359400)
+All: FUN_000b55d8 (b55d8), FUN_000bd064 (bd064), FUN_000be7b4 (be7b4), FUN_000c08e0 (c08e0), FUN_0027e2bc (27e2bc), FUN_0027e86c (27e86c), FUN_0027f264 (27f264), FUN_0027f434 (27f434), FUN_0027f860 (27f860), FUN_0027f9b8 (27f9b8), FUN_00280f34 (280f34), FUN_00282424 (282424), FUN_002893d0 (2893d0), FUN_0028957c (28957c), FUN_0029fb54 (29fb54), FUN_002a0610 (2a0610), FUN_002a18b4 (2a18b4), FUN_002a1f84 (2a1f84), FUN_002bcea8 (2bcea8), FUN_002c7b30 (2c7b30), FUN_002c841c (2c841c), FUN_0035b474 (35b474), FUN_0035f1ec (35f1ec), FUN_000ce010 (ce010), FUN_000cfa9c (cfa9c), FUN_000db2f0 (db2f0), FUN_000e7750 (e7750), FUN_000ecbbc (ecbbc), FUN_000f0700 (f0700), FUN_000f12e0 (f12e0), FUN_000f3ed0 (f3ed0), FUN_0010f0e4 (10f0e4), FUN_00111f80 (111f80), FUN_001134a8 (1134a8), FUN_00113540 (113540), FUN_00118438 (118438), FUN_0011aaa8 (11aaa8), FUN_0011d8d0 (11d8d0), FUN_00125f68 (125f68), FUN_00127878 (127878), FUN_0012918c (12918c), FUN_001294c0 (1294c0), FUN_0012bf54 (12bf54), FUN_0012ef18 (12ef18), FUN_0012f27c (12f27c), FUN_0012f3e4 (12f3e4), FUN_0013052c (13052c), FUN_00131630 (131630), FUN_00131bec (131bec), FUN_00131c4c (131c4c), FUN_00131da8 (131da8), FUN_00136608 (136608), FUN_00137704 (137704), FUN_00137778 (137778), FUN_001378b8 (1378b8), FUN_00137b38 (137b38), FUN_001384f8 (1384f8), FUN_0013a004 (13a004), FUN_0013dda0 (13dda0), FUN_0013e178 (13e178), FUN_00141d14 (141d14), FUN_00143c68 (143c68), FUN_001445a4 (1445a4), FUN_00144f00 (144f00), FUN_001493ac (1493ac), FUN_001497b0 (1497b0), FUN_0014d74c (14d74c), FUN_001522d4 (1522d4), FUN_00152f48 (152f48), FUN_001530bc (1530bc), FUN_001561a8 (1561a8), FUN_00156520 (156520), FUN_00156610 (156610), FUN_001567ec (1567ec), FUN_001652b0 (1652b0), FUN_00165ce4 (165ce4), FUN_001667ec (1667ec), FUN_001668d8 (1668d8), FUN_00170914 (170914), FUN_0017309c (17309c), FUN_0017f938 (17f938), FUN_0017fa90 (17fa90), FUN_00184734 (184734), FUN_0018aba4 (18aba4), FUN_0018d724 (18d724), FUN_0018dba0 (18dba0), FUN_00198a90 (198a90), FUN_0019bc08 (19bc08), FUN_001a06e8 (1a06e8), FUN_001a6ff8 (1a6ff8), FUN_001a81bc (1a81bc), FUN_001a9da0 (1a9da0), FUN_001a9dd4 (1a9dd4), FUN_001ac368 (1ac368), FUN_001ac4c8 (1ac4c8), FUN_001ac500 (1ac500), FUN_001ae964 (1ae964), FUN_001aebd0 (1aebd0), FUN_001aefd8 (1aefd8), FUN_001afccc (1afccc), FUN_001b208c (1b208c), FUN_001b35d4 (1b35d4), FUN_001b774c (1b774c), FUN_001b966c (1b966c), FUN_001ba190 (1ba190), FUN_001ba9a4 (1ba9a4), FUN_001bb374 (1bb374), FUN_001bfda8 (1bfda8), FUN_001c0c58 (1c0c58), FUN_001c16d8 (1c16d8), FUN_001c2770 (1c2770), FUN_001c3020 (1c3020), FUN_001c3450 (1c3450), FUN_001c785c (1c785c), FUN_001ccfa0 (1ccfa0), FUN_001cd7f0 (1cd7f0), FUN_001cd960 (1cd960), FUN_001ce250 (1ce250), FUN_001d0f00 (1d0f00), FUN_001d1880 (1d1880), FUN_001d4bd4 (1d4bd4), FUN_001d6120 (1d6120), FUN_001d7018 (1d7018), FUN_001d9040 (1d9040), FUN_001d91f4 (1d91f4), FUN_001d9d30 (1d9d30), FUN_001da088 (1da088), FUN_001dd968 (1dd968), FUN_001e33a8 (1e33a8), FUN_001e378c (1e378c), FUN_001e49c4 (1e49c4), FUN_001e81dc (1e81dc), FUN_001ec758 (1ec758), FUN_001ef6b8 (1ef6b8), FUN_001f4f18 (1f4f18), FUN_001f93dc (1f93dc), FUN_001f9414 (1f9414), FUN_001f949c (1f949c), FUN_001f96c4 (1f96c4), FUN_001f9958 (1f9958), FUN_001fabc0 (1fabc0), FUN_001fdf44 (1fdf44), FUN_0020237c (20237c), FUN_002039cc (2039cc), FUN_00211904 (211904), FUN_00218698 (218698), FUN_00218e68 (218e68), FUN_002251cc (2251cc), FUN_00226b1c (226b1c), FUN_00227044 (227044), FUN_0022897c (22897c), FUN_00228a5c (228a5c), FUN_0022b90c (22b90c), FUN_0022d134 (22d134), FUN_0022d9e4 (22d9e4), FUN_0022e118 (22e118), FUN_00249198 (249198), FUN_00249d58 (249d58), FUN_0024ab8c (24ab8c), FUN_0024bccc (24bccc), FUN_0024d35c (24d35c), FUN_00252cf8 (252cf8), FUN_00257848 (257848), FUN_002625d0 (2625d0), FUN_00274a44 (274a44), FUN_002777a4 (2777a4), FUN_0027a840 (27a840), FUN_0027b528 (27b528), FUN_0027b5b0 (27b5b0), FUN_0027da6c (27da6c), FUN_002ad7a8 (2ad7a8), FUN_002ada70 (2ada70), FUN_002b1848 (2b1848), FUN_002ce5f8 (2ce5f8), FUN_002e3370 (2e3370), FUN_002e3908 (2e3908), FUN_002e3f38 (2e3f38), FUN_002e4b4c (2e4b4c), FUN_002e4bac (2e4bac), FUN_002e4e4c (2e4e4c), FUN_002e52f0 (2e52f0), FUN_002e55f8 (2e55f8), FUN_002ea454 (2ea454), FUN_003020bc (3020bc), FUN_0031e114 (31e114), FUN_0031e9e0 (31e9e0), FUN_00322674 (322674), FUN_0032291c (32291c), FUN_00324d80 (324d80), FUN_003267d4 (3267d4), FUN_00326a80 (326a80), FUN_003272dc (3272dc), FUN_0032c380 (32c380), FUN_00330ad0 (330ad0), FUN_00336880 (336880), FUN_00344bc8 (344bc8), FUN_003486f4 (3486f4), FUN_00354360 (354360), FUN_00358418 (358418), FUN_00358b08 (358b08), FUN_00359400 (359400)
 
 #### FUN_000b55d8 — funcs/__Z12FUN_000b55d8PfS_if.cpp, Ghidra b55d8, 0 model attempt(s)
 
@@ -10771,9 +11512,9 @@ void FUN_000af00c(long param_1) {
 }
 ```
 
-### Not compiling yet — 91 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
+### Not compiling yet — 90 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
 
-All: FUN_00005230 (5230), FUN_00009ec0 (9ec0), FUN_0000bed0 (bed0), processInput36 (1654c), FUN_000173a0 (173a0), processValues7 (177b4), FUN_0001e7b4 (1e7b4), FUN_0001e800 (1e800), FUN_0001e8bc (1e8bc), processInput43 (1e998), FUN_0001ee2c (1ee2c), processAndTransformData (1f334), setAndProcessData3 (2cd0c), FUN_0002d6bc (2d6bc), FUN_0003f8c8 (3f8c8), FUN_00040fb0 (40fb0), FUN_00043800 (43800), FUN_0004410c (4410c), FUN_0004a728 (4a728), FUN_0005217c (5217c), FUN_000ab6f4 (ab6f4), FUN_000b186c (b186c), FUN_000b2f2c (b2f2c), FUN_000be050 (be050), FUN_00280d74 (280d74), FUN_00286cbc (286cbc), FUN_00289044 (289044), FUN_002907fc (2907fc), FUN_00299e9c (299e9c), FUN_0029c84c (29c84c), FUN_002c3524 (2c3524), FUN_0005e958 (5e958), FUN_0005f4f0 (5f4f0), FUN_000621ec (621ec), FUN_000699f8 (699f8), FUN_0006e554 (6e554), processInput55 (8d2e0), FUN_0008f9c0 (8f9c0), FUN_00093a30 (93a30), FUN_0009ae28 (9ae28), FUN_000d7598 (d7598), FUN_000e8c34 (e8c34), FUN_000ebca8 (ebca8), FUN_000f1808 (f1808), FUN_000f3da4 (f3da4), FUN_000f6b80 (f6b80), FUN_000ffc8c (ffc8c), FUN_00111fe0 (111fe0), FUN_00112200 (112200), FUN_00113c8c (113c8c), FUN_001214cc (1214cc), FUN_00126924 (126924), FUN_00126ff8 (126ff8), FUN_0012e0e8 (12e0e8), FUN_0013f1d8 (13f1d8), FUN_00145bc8 (145bc8), FUN_001465bc (1465bc), FUN_001510f8 (1510f8), FUN_0015321c (15321c), FUN_00153768 (153768), FUN_0015633c (15633c), FUN_00157bac (157bac), FUN_0015889c (15889c), FUN_001795d4 (1795d4), FUN_00190d80 (190d80), FUN_001a792c (1a792c), FUN_001b96cc (1b96cc), FUN_001bcd4c (1bcd4c), FUN_001bdd38 (1bdd38), FUN_001bfed4 (1bfed4), FUN_001c66b8 (1c66b8), FUN_001c6ca4 (1c6ca4), FUN_001d4308 (1d4308), FUN_001d80b4 (1d80b4), FUN_001dc410 (1dc410), FUN_001e072c (1e072c), FUN_001e4c44 (1e4c44), FUN_001e7538 (1e7538), FUN_001f1988 (1f1988), FUN_001f75b4 (1f75b4), FUN_00227388 (227388), FUN_0022c6ac (22c6ac), FUN_0022def4 (22def4), FUN_0022e28c (22e28c), FUN_00306de0 (306de0), FUN_00324494 (324494), FUN_003257e0 (3257e0), FUN_00328274 (328274), removeWhitespaceAndQuotes (33e324), FUN_003499e4 (3499e4), FUN_003751d8 (3751d8)
+All: FUN_00005230 (5230), FUN_00009ec0 (9ec0), FUN_0000bed0 (bed0), processInput36 (1654c), FUN_000173a0 (173a0), processValues7 (177b4), FUN_0001e7b4 (1e7b4), FUN_0001e800 (1e800), FUN_0001e8bc (1e8bc), processInput43 (1e998), FUN_0001ee2c (1ee2c), processAndTransformData (1f334), setAndProcessData3 (2cd0c), FUN_0002d6bc (2d6bc), FUN_0003f8c8 (3f8c8), FUN_00040fb0 (40fb0), FUN_00043800 (43800), FUN_0004410c (4410c), FUN_0004a728 (4a728), FUN_0005217c (5217c), FUN_000ab6f4 (ab6f4), FUN_000b186c (b186c), FUN_000b2f2c (b2f2c), FUN_000be050 (be050), FUN_00280d74 (280d74), FUN_00286cbc (286cbc), FUN_00289044 (289044), FUN_002907fc (2907fc), FUN_00299e9c (299e9c), FUN_0029c84c (29c84c), FUN_002c3524 (2c3524), FUN_0005e958 (5e958), FUN_0005f4f0 (5f4f0), FUN_000621ec (621ec), FUN_000699f8 (699f8), FUN_0006e554 (6e554), processInput55 (8d2e0), FUN_0008f9c0 (8f9c0), FUN_00093a30 (93a30), FUN_0009ae28 (9ae28), FUN_000d7598 (d7598), FUN_000e8c34 (e8c34), FUN_000ebca8 (ebca8), FUN_000f1808 (f1808), FUN_000f3da4 (f3da4), FUN_000f6b80 (f6b80), FUN_000ffc8c (ffc8c), FUN_00111fe0 (111fe0), FUN_00112200 (112200), FUN_00113c8c (113c8c), FUN_001214cc (1214cc), FUN_00126924 (126924), FUN_00126ff8 (126ff8), FUN_0012e0e8 (12e0e8), FUN_0013f1d8 (13f1d8), FUN_00145bc8 (145bc8), FUN_001465bc (1465bc), FUN_001510f8 (1510f8), FUN_0015321c (15321c), FUN_00153768 (153768), FUN_0015633c (15633c), FUN_00157bac (157bac), FUN_0015889c (15889c), FUN_001795d4 (1795d4), FUN_00190d80 (190d80), FUN_001a792c (1a792c), FUN_001b96cc (1b96cc), FUN_001bcd4c (1bcd4c), FUN_001bdd38 (1bdd38), FUN_001bfed4 (1bfed4), FUN_001c66b8 (1c66b8), FUN_001c6ca4 (1c6ca4), FUN_001d4308 (1d4308), FUN_001d80b4 (1d80b4), FUN_001e072c (1e072c), FUN_001e4c44 (1e4c44), FUN_001e7538 (1e7538), FUN_001f1988 (1f1988), FUN_001f75b4 (1f75b4), FUN_00227388 (227388), FUN_0022c6ac (22c6ac), FUN_0022def4 (22def4), FUN_0022e28c (22e28c), FUN_00306de0 (306de0), FUN_00324494 (324494), FUN_003257e0 (3257e0), FUN_00328274 (328274), removeWhitespaceAndQuotes (33e324), FUN_003499e4 (3499e4), FUN_003751d8 (3751d8)
 
 #### FUN_00005230 — funcs/__Z12FUN_00005230PldhdS_ii.cpp, Ghidra 5230, 0 model attempt(s)
 
@@ -11239,9 +11980,9 @@ void FUN_0001e800(long param_1) {
 }
 ```
 
-### Not compiling yet — 88 × brackets are not allowed here; to declare an array, place the brackets after the name
+### Not compiling yet — 87 × brackets are not allowed here; to declare an array, place the brackets after the name
 
-All: FUN_000a127c (a127c), FUN_000a22fc (a22fc), FUN_000a2a9c (a2a9c), FUN_000b0c48 (b0c48), FUN_00281810 (281810), FUN_00062258 (62258), FUN_00068504 (68504), FUN_00087068 (87068), FUN_0008989c (8989c), FUN_000899b0 (899b0), FUN_0008fd60 (8fd60), FUN_0008fd90 (8fd90), FUN_0009c908 (9c908), FUN_0009c9ec (9c9ec), FUN_0009d498 (9d498), FUN_0009d4cc (9d4cc), FUN_000a0458 (a0458), FUN_000ccfd4 (ccfd4), FUN_000cd004 (cd004), FUN_000cda14 (cda14), FUN_000ce59c (ce59c), FUN_000cef04 (cef04), FUN_000cefc4 (cefc4), FUN_000ceff4 (ceff4), FUN_000d1964 (d1964), FUN_000d1994 (d1994), FUN_000d23d0 (d23d0), FUN_000d2f58 (d2f58), FUN_000d38cc (d38cc), FUN_000db420 (db420), FUN_000e77e0 (e77e0), FUN_0011bf7c (11bf7c), FUN_00127194 (127194), FUN_00141c54 (141c54), FUN_0014d81c (14d81c), FUN_00159238 (159238), FUN_00159268 (159268), FUN_00159cd8 (159cd8), FUN_00166470 (166470), FUN_00184bc4 (184bc4), FUN_00186b14 (186b14), FUN_0018cb14 (18cb14), FUN_0018d504 (18d504), FUN_0018e600 (18e600), FUN_00190164 (190164), FUN_001964ec (1964ec), FUN_00196f4c (196f4c), FUN_001a06fc (1a06fc), FUN_001a1498 (1a1498), FUN_001a80c4 (1a80c4), FUN_001ab49c (1ab49c), FUN_001ae2fc (1ae2fc), FUN_001b09b8 (1b09b8), FUN_001b7c74 (1b7c74), FUN_001ba3fc (1ba3fc), FUN_001c0b60 (1c0b60), FUN_001c0cb8 (1c0cb8), FUN_001c4468 (1c4468), FUN_001c792c (1c792c), FUN_001d77b8 (1d77b8), FUN_001e188c (1e188c), FUN_001e18c0 (1e18c0), FUN_001e37e8 (1e37e8), FUN_001e50c4 (1e50c4), FUN_001facb8 (1facb8), FUN_002018c0 (2018c0), FUN_00201a38 (201a38), FUN_00202038 (202038), FUN_00203e58 (203e58), FUN_00204c7c (204c7c), FUN_00206000 (206000), FUN_0020f8ec (20f8ec), FUN_0020f95c (20f95c), FUN_00211c60 (211c60), FUN_00212b68 (212b68), FUN_00219428 (219428), FUN_0021a8f0 (21a8f0), FUN_00223524 (223524), FUN_00223abc (223abc), FUN_00223b2c (223b2c), FUN_0022b940 (22b940), FUN_002708a8 (2708a8), FUN_0027abe4 (27abe4), FUN_0027da5c (27da5c), FUN_00321be8 (321be8), FUN_00322f08 (322f08), FUN_0032440c (32440c), FUN_00324874 (324874)
+All: FUN_000a127c (a127c), FUN_000a22fc (a22fc), FUN_000a2a9c (a2a9c), FUN_000b0c48 (b0c48), FUN_00281810 (281810), FUN_00062258 (62258), FUN_00068504 (68504), FUN_00087068 (87068), FUN_0008989c (8989c), FUN_000899b0 (899b0), FUN_0008fd60 (8fd60), FUN_0008fd90 (8fd90), FUN_0009c908 (9c908), FUN_0009c9ec (9c9ec), FUN_0009d498 (9d498), FUN_0009d4cc (9d4cc), FUN_000a0458 (a0458), FUN_000ccfd4 (ccfd4), FUN_000cd004 (cd004), FUN_000cda14 (cda14), FUN_000ce59c (ce59c), FUN_000cef04 (cef04), FUN_000cefc4 (cefc4), FUN_000ceff4 (ceff4), FUN_000d1964 (d1964), FUN_000d1994 (d1994), FUN_000d23d0 (d23d0), FUN_000d2f58 (d2f58), FUN_000d38cc (d38cc), FUN_000db420 (db420), FUN_000e77e0 (e77e0), FUN_0011bf7c (11bf7c), FUN_00127194 (127194), FUN_00141c54 (141c54), FUN_0014d81c (14d81c), FUN_00159238 (159238), FUN_00159268 (159268), FUN_00159cd8 (159cd8), FUN_00166470 (166470), FUN_00184bc4 (184bc4), FUN_00186b14 (186b14), FUN_0018cb14 (18cb14), FUN_0018d504 (18d504), FUN_0018e600 (18e600), FUN_00190164 (190164), FUN_001964ec (1964ec), FUN_00196f4c (196f4c), FUN_001a06fc (1a06fc), FUN_001a1498 (1a1498), FUN_001a80c4 (1a80c4), FUN_001ab49c (1ab49c), FUN_001ae2fc (1ae2fc), FUN_001b09b8 (1b09b8), FUN_001b7c74 (1b7c74), FUN_001ba3fc (1ba3fc), FUN_001c0b60 (1c0b60), FUN_001c0cb8 (1c0cb8), FUN_001c4468 (1c4468), FUN_001c792c (1c792c), FUN_001d77b8 (1d77b8), FUN_001e18c0 (1e18c0), FUN_001e37e8 (1e37e8), FUN_001e50c4 (1e50c4), FUN_001facb8 (1facb8), FUN_002018c0 (2018c0), FUN_00201a38 (201a38), FUN_00202038 (202038), FUN_00203e58 (203e58), FUN_00204c7c (204c7c), FUN_00206000 (206000), FUN_0020f8ec (20f8ec), FUN_0020f95c (20f95c), FUN_00211c60 (211c60), FUN_00212b68 (212b68), FUN_00219428 (219428), FUN_0021a8f0 (21a8f0), FUN_00223524 (223524), FUN_00223abc (223abc), FUN_00223b2c (223b2c), FUN_0022b940 (22b940), FUN_002708a8 (2708a8), FUN_0027abe4 (27abe4), FUN_0027da5c (27da5c), FUN_00321be8 (321be8), FUN_00322f08 (322f08), FUN_0032440c (32440c), FUN_00324874 (324874)
 
 #### FUN_000a127c — funcs/__Z12FUN_000a127clyll.cpp, Ghidra a127c, 0 model attempt(s)
 
@@ -15911,9 +16652,9 @@ void FUN_00067e7c(undefined8 *param_1, undefined8 param_2) {
 }
 ```
 
-### Not compiling yet — 62 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
+### Not compiling yet — 63 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
 
-All: FUN_00031734 (31734), FUN_000320c4 (320c4), FUN_00059f84 (59f84), FUN_000a890c (a890c), FUN_000b7074 (b7074), FUN_000b8888 (b8888), FUN_000bdae4 (bdae4), FUN_000bf950 (bf950), FUN_002c7034 (2c7034), FUN_0035ecc4 (35ecc4), FUN_00088c34 (88c34), FUN_000940bc (940bc), FUN_00094144 (94144), FUN_000d0218 (d0218), FUN_000d3d20 (d3d20), FUN_000d44e8 (d44e8), FUN_000d4b48 (d4b48), FUN_000d56dc (d56dc), FUN_000d70b4 (d70b4), FUN_000d70dc (d70dc), FUN_000d7304 (d7304), FUN_000de7e4 (de7e4), FUN_000e9844 (e9844), FUN_000e9950 (e9950), FUN_000eacc4 (eacc4), FUN_000ebc24 (ebc24), FUN_00113bd0 (113bd0), FUN_00114b0c (114b0c), FUN_0011afa8 (11afa8), FUN_0011d550 (11d550), FUN_001201fc (1201fc), FUN_00120e44 (120e44), FUN_00120f98 (120f98), FUN_00121148 (121148), FUN_0012136c (12136c), FUN_00121c74 (121c74), FUN_0012701c (12701c), FUN_00155b50 (155b50), drawRect_ (16d1bc), FUN_0016f90c (16f90c), FUN_001a2f74 (1a2f74), FUN_001a3394 (1a3394), FUN_001a3a5c (1a3a5c), FUN_001a406c (1a406c), FUN_001a40b8 (1a40b8), FUN_001a6a48 (1a6a48), FUN_001a9258 (1a9258), FUN_001a9c4c (1a9c4c), FUN_001bc954 (1bc954), FUN_001bcc84 (1bcc84), FUN_001f53e0 (1f53e0), FUN_002b50cc (2b50cc), FUN_002d4c34 (2d4c34), FUN_002d4d24 (2d4d24), FUN_002d5934 (2d5934), FUN_002d5a24 (2d5a24), FUN_002e42d0 (2e42d0), FUN_00307860 (307860), FUN_0031b738 (31b738), FUN_0031b77c (31b77c), FUN_00326994 (326994), FUN_0032c888 (32c888)
+All: FUN_00031734 (31734), FUN_000320c4 (320c4), FUN_00059f84 (59f84), FUN_000a890c (a890c), FUN_000b7074 (b7074), FUN_000b8888 (b8888), FUN_000bdae4 (bdae4), FUN_000bf950 (bf950), FUN_002c7034 (2c7034), FUN_0035ecc4 (35ecc4), FUN_00088c34 (88c34), FUN_000940bc (940bc), FUN_00094144 (94144), FUN_000d0218 (d0218), FUN_000d3d20 (d3d20), FUN_000d44e8 (d44e8), FUN_000d4b48 (d4b48), FUN_000d56dc (d56dc), FUN_000d70b4 (d70b4), FUN_000d70dc (d70dc), FUN_000d7304 (d7304), FUN_000de7e4 (de7e4), FUN_000e9844 (e9844), FUN_000e9950 (e9950), FUN_000eacc4 (eacc4), FUN_000ebc24 (ebc24), FUN_00113bd0 (113bd0), FUN_00114b0c (114b0c), FUN_0011afa8 (11afa8), FUN_0011d550 (11d550), FUN_001201fc (1201fc), FUN_00120e44 (120e44), FUN_00120f98 (120f98), FUN_00121148 (121148), FUN_0012136c (12136c), FUN_00121c74 (121c74), FUN_0012701c (12701c), FUN_00155b50 (155b50), drawRect_ (16d1bc), FUN_0016f90c (16f90c), FUN_001a2f74 (1a2f74), FUN_001a3394 (1a3394), FUN_001a3a5c (1a3a5c), FUN_001a406c (1a406c), FUN_001a40b8 (1a40b8), FUN_001a6a48 (1a6a48), FUN_001a9258 (1a9258), FUN_001a9c4c (1a9c4c), FUN_001bc954 (1bc954), FUN_001bcc84 (1bcc84), FUN_001e27f0 (1e27f0), FUN_001f53e0 (1f53e0), FUN_002b50cc (2b50cc), FUN_002d4c34 (2d4c34), FUN_002d4d24 (2d4d24), FUN_002d5934 (2d5934), FUN_002d5a24 (2d5a24), FUN_002e42d0 (2e42d0), FUN_00307860 (307860), FUN_0031b738 (31b738), FUN_0031b77c (31b77c), FUN_00326994 (326994), FUN_0032c888 (32c888)
 
 #### FUN_00031734 — funcs/__Z12FUN_00031734PhS_ddlyyj.cpp, Ghidra 31734, 0 model attempt(s)
 
@@ -18753,9 +19494,9 @@ void FUN_00165c30(uint64_t param_1,uint64_t param_2,uint64_t *param_3,uint64_t *
 }
 ```
 
-### Not compiling yet — 34 × array type 'X' (aka 'X') is not assignable
+### Not compiling yet — 35 × array type 'X' (aka 'X') is not assignable
 
-All: FUN_0000e748 (e748), FUN_00012e5c (12e5c), FUN_00030924 (30924), FUN_000409f0 (409f0), FUN_00046e1c (46e1c), FUN_000512ec (512ec), FUN_000519ec (519ec), FUN_00053124 (53124), FUN_000548c4 (548c4), FUN_000a8898 (a8898), FUN_000ac698 (ac698), FUN_00063944 (63944), FUN_00084694 (84694), FUN_0008fdd0 (8fdd0), FUN_000c9cc8 (c9cc8), FUN_000c9d04 (c9d04), FUN_000cbc3c (cbc3c), FUN_000cd044 (cd044), FUN_000d19d4 (d19d4), FUN_000d315c (d315c), FUN_000d5310 (d5310), FUN_000e1d58 (e1d58), FUN_000feb74 (feb74), FUN_00108a68 (108a68), FUN_00114b9c (114b9c), FUN_001161d0 (1161d0), FUN_00171bd4 (171bd4), FUN_0017b3fc (17b3fc), FUN_00199c00 (199c00), FUN_001b09f0 (1b09f0), FUN_001f1ea4 (1f1ea4), FUN_0020f794 (20f794), FUN_00264edc (264edc), FUN_0030f600 (30f600)
+All: FUN_0000e748 (e748), FUN_00012e5c (12e5c), FUN_00030924 (30924), FUN_000409f0 (409f0), FUN_00046e1c (46e1c), FUN_000512ec (512ec), FUN_000519ec (519ec), FUN_00053124 (53124), FUN_000548c4 (548c4), FUN_000a8898 (a8898), FUN_000ac698 (ac698), FUN_00063944 (63944), FUN_00084694 (84694), FUN_0008fdd0 (8fdd0), FUN_000c9cc8 (c9cc8), FUN_000c9d04 (c9d04), FUN_000cbc3c (cbc3c), FUN_000cd044 (cd044), FUN_000d19d4 (d19d4), FUN_000d315c (d315c), FUN_000d5310 (d5310), FUN_000e1d58 (e1d58), FUN_000feb74 (feb74), FUN_00108a68 (108a68), FUN_00114b9c (114b9c), FUN_001161d0 (1161d0), FUN_00171bd4 (171bd4), FUN_0017b3fc (17b3fc), FUN_00199c00 (199c00), FUN_001b09f0 (1b09f0), FUN_001e188c (1e188c), FUN_001f1ea4 (1f1ea4), FUN_0020f794 (20f794), FUN_00264edc (264edc), FUN_0030f600 (30f600)
 
 #### FUN_0000e748 — funcs/__Z12FUN_0000e748PdS_S_.cpp, Ghidra e748, 0 model attempt(s)
 
@@ -25234,9 +25975,470 @@ void FUN_00248060(long param_1, long param_2) {
 }
 ```
 
-### Not compiling yet — 19 × incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')
+### Not compiling yet — 17 × call to 'X' is ambiguous
 
-All: FUN_00069bc8 (69bc8), FUN_0006b8b8 (6b8b8), FUN_000e7ecc (e7ecc), FUN_00145e5c (145e5c), FUN_0014c740 (14c740), FUN_0014d528 (14d528), FUN_001506ec (1506ec), FUN_001955ac (1955ac), FUN_001c55c8 (1c55c8), FUN_001e2314 (1e2314), FUN_001e27f0 (1e27f0), FUN_00217a00 (217a00), FUN_00277ff0 (277ff0), FUN_002e5818 (2e5818), FUN_002ebe78 (2ebe78), FUN_00309090 (309090), FUN_00312658 (312658), FUN_00320ed0 (320ed0), FUN_00322fbc (322fbc)
+All: processInputAndApplyFilter (6890), FUN_0000f548 (f548), FUN_0001a1cc (1a1cc), FUN_000b02b8 (b02b8), FUN_000b071c (b071c), FUN_00071b80 (71b80), FUN_000c6af4 (c6af4), FUN_000d1650 (d1650), FUN_000d5c80 (d5c80), FUN_000daaa8 (daaa8), FUN_000f0d84 (f0d84), FUN_000f30e4 (f30e4), FUN_00115774 (115774), FUN_001185b4 (1185b4), FUN_00118980 (118980), FUN_0012d430 (12d430), FUN_001e76ac (1e76ac)
+
+#### processInputAndApplyFilter — funcs/__Z26processInputAndApplyFilterP4DataPhPi.cpp, Ghidra 6890, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z26processInputAndApplyFilterP4DataPhPi.cpp:5:26: error: call to 'getData4' is ambiguous
+    5 |         input[i].value = getData4(input[i].value);
+      |                          ^~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1245:6: note: candidate function
+ 1245 | long getData4(long);
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1943:7: note: candidate function
+ 1943 | Data *getData4(uint64_t);
+      |       ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void processInputAndApplyFilter(Data *input, uint8_t *mask, int *output) {
+    for (int i = 0; i < 4; i++) {
+        input[i].value = getData4(input[i].value);
+    }
+}
+```
+
+#### FUN_0000f548 — funcs/__Z12FUN_0000f548Py.cpp, Ghidra f548, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000f548Py.cpp:6:5: error: call to 'FUN_0022ba38' is ambiguous
+    6 |     FUN_0022ba38(param_1[2], (ulong)param_1);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1215:6: note: candidate function
+ 1215 | void FUN_0022ba38(uint64_t, uint64_t);
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:44065:6: note: candidate function
+ 44065 | void FUN_0022ba38(ulong, ulong);
+       |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000f548Py.cpp:9:3: error: void function 'FUN_0000f548' should not return a value [-Wreturn-mismatch]
+    9 |   return param_1;
+      |   ^      ~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0000f548(undefined8 *param_1) {
+  std::cout << "Processing param_1 with param_2: " << param_1[2] << ", " << param_1[3] << std::endl;
+  if (param_1[2] != 0) {
+    FUN_0022ba38(param_1[2], (ulong)param_1);
+  }
+  FUN_000046dc();
+  return param_1;
+}
+```
+
+#### FUN_0001a1cc — funcs/__Z12FUN_0001a1ccPy.cpp, Ghidra 1a1cc, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0001a1ccPy.cpp:6:3: error: call to 'FUN_0022ba38' is ambiguous
+    6 |   FUN_0022ba38(param_1[2], (ulong)param_1);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1215:6: note: candidate function
+ 1215 | void FUN_0022ba38(uint64_t, uint64_t);
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:44065:6: note: candidate function
+ 44065 | void FUN_0022ba38(ulong, ulong);
+       |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0001a1ccPy.cpp:10:3: error: void function 'FUN_0001a1cc' should not return a value [-Wreturn-mismatch]
+   10 |   return param_1[0];
+      |   ^      ~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001a1cc(undefined8 *param_1) {
+  uint32_t param_2 = *(uint32_t *)param_1;
+
+  FUN_0022ba38(param_1[2], (ulong)param_1);
+
+  std::cout << "Filtered value: " << param_2 << std::endl;
+
+  return param_1[0];
+}
+```
+
+#### FUN_000b02b8 — funcs/__Z12FUN_000b02b8Pyl.cpp, Ghidra b02b8, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b02b8Pyl.cpp:6:11: error: call to 'FUN_000041f4' is ambiguous
+    6 |   uVar1 = FUN_000041f4(0x433368);
+      |           ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1207:6: note: candidate function
+ 1207 | void FUN_000041f4(float);
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1579:6: note: candidate function
+ 1579 | void FUN_000041f4(long);
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b02b8Pyl.cpp:6:11: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+    6 |   uVar1 = FUN_000041f4(0x433368);
+      |           ^~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b02b8Pyl.cpp:7:3: error: no matching function for call to 'FUN_001f4bcc'
+    7 |   FUN_001f4bcc(param_1, uVar1, 0x88, param_2);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:39085:6: note: candidate function not viable: no known conversion from 'uint64_t *' (aka 'unsigned long long *') to 'const std::vector<double>' for 1st argument
+ 39085 | void FUN_001f4bcc(const std::vector<double> &, const std::vector<double> &, const std::vector<double> &, const std::vector<double> &);
+       |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b02b8Pyl.cpp:8:15: error: use of undeclared identifier 'DAT_00433390'
+    8 |   *param_1 = &DAT_00433390;
+      |               ^~~~~~~~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000b02b8(uint64_t *param_1,long param_2) {
+  undefined8 uVar1;
+
+  uVar1 = FUN_000041f4(0x433368);
+  FUN_001f4bcc(param_1, uVar1, 0x88, param_2);
+  *param_1 = &DAT_00433390;
+  return;
+}
+```
+
+#### FUN_000b071c — funcs/__Z12FUN_000b071cPyl.cpp, Ghidra b071c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b071cPyl.cpp:6:11: error: call to 'FUN_000041f4' is ambiguous
+    6 |   uVar1 = FUN_000041f4(0x433498);
+      |           ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1207:6: note: candidate function
+ 1207 | void FUN_000041f4(float);
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1579:6: note: candidate function
+ 1579 | void FUN_000041f4(long);
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b071cPyl.cpp:6:11: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+    6 |   uVar1 = FUN_000041f4(0x433498);
+      |           ^~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b071cPyl.cpp:7:3: error: no matching function for call to 'FUN_001f4bcc'
+    7 |   FUN_001f4bcc(param_1, uVar1, 0x80, param_2);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:39085:6: note: candidate function not viable: no known conversion from 'uint64_t *' (aka 'unsigned long long *') to 'const std::vector<double>' for 1st argument
+ 39085 | void FUN_001f4bcc(const std::vector<double> &, const std::vector<double> &, const std::vector<double> &, const std::vector<double> &);
+       |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b071cPyl.cpp:8:15: error: use of undeclared identifier 'DAT_004334c0'
+    8 |   *param_1 = &DAT_004334c0;
+      |               ^~~~~~~~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000b071c(uint64_t *param_1,long param_2) {
+  undefined8 uVar1;
+
+  uVar1 = FUN_000041f4(0x433498);
+  FUN_001f4bcc(param_1, uVar1, 0x80, param_2);
+  *param_1 = &DAT_004334c0;
+  return;
+}
+```
+
+#### FUN_00071b80 — funcs/FUN_00071b80.cpp, Ghidra 71b80, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00071b80.cpp:5:27: error: call to 'FUN_000b50b8' is ambiguous
+    5 |     float filteredValue = FUN_000b50b8(param_1);
+      |                           ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1183:9: note: candidate function
+ 1183 | uint8_t FUN_000b50b8(uint64_t);
+      |         ^
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1213:6: note: candidate function
+ 1213 | void FUN_000b50b8(long);
+      |      ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+int FUN_00071b80() {
+    float param_1 = 0.5;
+    float filteredValue = FUN_000b50b8(param_1);
+
+    std::cout << "Filtered value: " << filteredValue << std::endl;
+
+    return 0;
+}
+```
+
+#### FUN_000c6af4 — funcs/FUN_000c6af4.cpp, Ghidra c6af4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000c6af4.cpp:6:5: error: call to 'FUN_0022ba38' is ambiguous
+    6 |     FUN_0022ba38(param_1[2], (ulong)param_1);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1215:6: note: candidate function
+ 1215 | void FUN_0022ba38(uint64_t, uint64_t);
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:44065:6: note: candidate function
+ 44065 | void FUN_0022ba38(ulong, ulong);
+       |      ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000c6af4(undefined8 *param_1) {
+  std::cout << "Applying lowpass filter with param_1: " << param_1 << std::endl;
+  if (param_1[2] != 0) {
+    FUN_0022ba38(param_1[2], (ulong)param_1);
+  }
+  FUN_000046dc();
+}
+```
+
+#### FUN_000d1650 — funcs/FUN_000d1650.cpp, Ghidra d1650, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000d1650.cpp:8:7: error: call to 'FUN_0022ba38' is ambiguous
+    8 |       FUN_0022ba38(*(ulong *)(param_1 + 0x10), param_1);
+      |       ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:44065:6: note: candidate function
+ 44065 | void FUN_0022ba38(ulong, ulong);
+       |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1215:6: note: candidate function
+ 1215 | void FUN_0022ba38(uint64_t, uint64_t);
+      |      ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint64_t FUN_000d1650(uint64_t param_1,long param_2) {
+  long lVar1;
+
+  if (*(long *)(param_1 + 8) != *(long *)(param_2 + 8)) {
+    if (*(long *)(param_1 + 0x10) != 0) {
+      FUN_0022ba38(*(ulong *)(param_1 + 0x10), param_1);
+    }
+    lVar1 = *(long *)(param_2 + 0x10);
+    *(undefined8 *)(param_1 + 8) = *(undefined8 *)(param_2 + 8);
+    *(long *)(param_1 + 0x10) = lVar1;
+    if (lVar1 != 0) {
+      FUN_0022b7d0(*(ulong *)(param_1 + 0x10), param_1);
+    }
+  }
+}
+```
+
+### Not compiling yet — 17 × no member named 'X' in namespace 'X'
+
+All: FUN_00033554 (33554), FUN_00035098 (35098), FUN_0003dacc (3dacc), FUN_00042fdc (42fdc), FUN_000be010 (be010), FUN_0027e8a4 (27e8a4), FUN_00362c1c (362c1c), FUN_00068168 (68168), FUN_00073060 (73060), FUN_000e7c74 (e7c74), FUN_00136808 (136808), FUN_00154348 (154348), worksWhenModal (169bb0), FUN_0017678c (17678c), FUN_001d47d0 (1d47d0), FUN_0031b8a8 (31b8a8), __throw_length_error (385d80)
+
+#### FUN_00033554 — funcs/__Z12FUN_00033554Pfi.cpp, Ghidra 33554, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00033554Pfi.cpp:6:46: error: no member named 'mean' in namespace 'std'
+    6 |         float filteredSample = sample - std::mean(data);
+      |                                              ^~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00033554(float* data, int size) {
+    for (int i = 0; i < size; ++i) {
+        float sample = data[i];
+        float filteredSample = sample - std::mean(data);
+        data[i] = filteredSample;
+    }
+}
+```
+
+#### FUN_00035098 — funcs/__Z12FUN_00035098Pfi.cpp, Ghidra 35098, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00035098Pfi.cpp:6:46: error: no member named 'mean' in namespace 'std'
+    6 |         float filteredSample = sample - std::mean(data);
+      |                                              ^~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00035098(float *data, int size) {
+    for (int i = 0; i < size; ++i) {
+        float sample = data[i];
+        float filteredSample = sample - std::mean(data);
+        data[i] = filteredSample;
+    }
+}
+```
+
+#### FUN_0003dacc — funcs/__Z12FUN_0003daccPfi.cpp, Ghidra 3dacc, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0003daccPfi.cpp:6:46: error: no member named 'mean' in namespace 'std'
+    6 |         float filteredSample = sample - std::mean(data);
+      |                                              ^~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0003dacc(float* data, int size) {
+    for (int i = 0; i < size; ++i) {
+        float sample = data[i];
+        float filteredSample = sample - std::mean(data);
+        data[i] = filteredSample;
+    }
+}
+```
+
+#### FUN_00042fdc — funcs/__Z12FUN_00042fdcPfm.cpp, Ghidra 42fdc, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00042fdcPfm.cpp:6:46: error: no member named 'mean' in namespace 'std'
+    6 |         float filteredSample = sample - std::mean(data);
+      |                                              ^~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00042fdc(float *data, size_t length) {
+    for (size_t i = 0; i < length; ++i) {
+        float sample = data[i];
+        float filteredSample = sample - std::mean(data);
+        data[i] = filteredSample;
+    }
+}
+```
+
+#### FUN_000be010 — funcs/__Z12FUN_000be010Pll.cpp, Ghidra be010, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000be010Pll.cpp:6:27: error: no member named 'accumulate' in namespace 'std'
+    6 |     float totalSum = std::accumulate(floatArray.begin(), floatArray.end(), 0.0f);
+      |                           ^~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000be010(long *plVar1, long param_2) {
+    std::vector<float> floatArray = {0.1f, 0.2f, 0.3f, 0.4f};
+
+    float totalSum = std::accumulate(floatArray.begin(), floatArray.end(), 0.0f);
+
+    float average = totalSum / floatArray.size();
+
+    std::cout << "Average of floats: " << average << std::endl;
+}
+```
+
+#### FUN_0027e8a4 — funcs/__Z12FUN_0027e8a4lPv.cpp, Ghidra 27e8a4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027e8a4lPv.cpp:6:21: error: no member named 'accumulate' in namespace 'std'
+    6 |   float mean = std::accumulate(floatArray, floatArray + sizeof(floatArray) / sizeof(float), 0.0f) / (sizeof(floatArray) / sizeof(float));
+      |                     ^~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027e8a4lPv.cpp:8:17: error: invalid range expression of type 'float *'; no viable 'begin' function available
+    8 |   for (float *f : floatArray) {
+      |                 ^ ~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0027e8a4(long param_1, void *param_2) {
+  float *floatArray = static_cast<float *>(param_2);
+
+  float mean = std::accumulate(floatArray, floatArray + sizeof(floatArray) / sizeof(float), 0.0f) / (sizeof(floatArray) / sizeof(float));
+
+  for (float *f : floatArray) {
+    *f -= mean;
+  }
+}
+```
+
+#### FUN_00362c1c — funcs/__Z12FUN_00362c1clPm.cpp, Ghidra 362c1c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00362c1clPm.cpp:6:25: error: no member named 'accumulate' in namespace 'std'
+    6 |   float totalSum = std::accumulate(floatArray, floatArray + sizeof(floatArray) / sizeof(float), 0.0f);
+      |                         ^~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00362c1c(long param_1, ulong *param_2) {
+  float *floatArray = (float *)param_2;
+
+  float totalSum = std::accumulate(floatArray, floatArray + sizeof(floatArray) / sizeof(float), 0.0f);
+
+  float average = totalSum / sizeof(floatArray) / sizeof(float);
+
+  for (float *floatPtr = floatArray; floatPtr < floatArray + sizeof(floatArray) / sizeof(float); ++floatPtr) {
+    *floatPtr -= average;
+  }
+}
+```
+
+#### FUN_00068168 — funcs/FUN_00068168.cpp, Ghidra 68168, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00068168.cpp:6:46: error: no member named 'mean' in namespace 'std'
+    6 |         float filteredSample = sample - std::mean(data);
+      |                                              ^~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00068168(float* data, int size) {
+    for (int i = 0; i < size; ++i) {
+        float sample = data[i];
+        float filteredSample = sample - std::mean(data);
+        data[i] = filteredSample;
+    }
+}
+```
+
+### Not compiling yet — 17 × incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')
+
+All: FUN_00069bc8 (69bc8), FUN_0006b8b8 (6b8b8), FUN_000e7ecc (e7ecc), FUN_00145e5c (145e5c), FUN_0014c740 (14c740), FUN_0014d528 (14d528), FUN_001506ec (1506ec), FUN_001955ac (1955ac), FUN_001c55c8 (1c55c8), FUN_00217a00 (217a00), FUN_00277ff0 (277ff0), FUN_002e5818 (2e5818), FUN_002ebe78 (2ebe78), FUN_00309090 (309090), FUN_00312658 (312658), FUN_00320ed0 (320ed0), FUN_00322fbc (322fbc)
 
 #### FUN_00069bc8 — funcs/FUN_00069bc8.cpp, Ghidra 69bc8, 0 model attempt(s)
 
@@ -25745,467 +26947,6 @@ void FUN_001955ac(uint *param_1, int param_2, int param_3) {
     *(char *)((long)param_1 + 0x12) = (char)uVar1;
     *(char *)((long)param_1 + 0x13) = (char)((uVar1 >> 0x18) * (uint)*(byte *)(param_1 + 1) >> 8);
   }
-}
-```
-
-### Not compiling yet — 17 × call to 'X' is ambiguous
-
-All: processInputAndApplyFilter (6890), FUN_0000f548 (f548), FUN_0001a1cc (1a1cc), FUN_000b02b8 (b02b8), FUN_000b071c (b071c), FUN_00071b80 (71b80), FUN_000c6af4 (c6af4), FUN_000d1650 (d1650), FUN_000d5c80 (d5c80), FUN_000daaa8 (daaa8), FUN_000f0d84 (f0d84), FUN_000f30e4 (f30e4), FUN_00115774 (115774), FUN_001185b4 (1185b4), FUN_00118980 (118980), FUN_0012d430 (12d430), FUN_001e76ac (1e76ac)
-
-#### processInputAndApplyFilter — funcs/__Z26processInputAndApplyFilterP4DataPhPi.cpp, Ghidra 6890, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z26processInputAndApplyFilterP4DataPhPi.cpp:5:26: error: call to 'getData4' is ambiguous
-    5 |         input[i].value = getData4(input[i].value);
-      |                          ^~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1245:6: note: candidate function
- 1245 | long getData4(long);
-      |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1943:7: note: candidate function
- 1943 | Data *getData4(uint64_t);
-      |       ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void processInputAndApplyFilter(Data *input, uint8_t *mask, int *output) {
-    for (int i = 0; i < 4; i++) {
-        input[i].value = getData4(input[i].value);
-    }
-}
-```
-
-#### FUN_0000f548 — funcs/__Z12FUN_0000f548Py.cpp, Ghidra f548, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000f548Py.cpp:6:5: error: call to 'FUN_0022ba38' is ambiguous
-    6 |     FUN_0022ba38(param_1[2], (ulong)param_1);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1215:6: note: candidate function
- 1215 | void FUN_0022ba38(uint64_t, uint64_t);
-      |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:44065:6: note: candidate function
- 44065 | void FUN_0022ba38(ulong, ulong);
-       |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0000f548Py.cpp:9:3: error: void function 'FUN_0000f548' should not return a value [-Wreturn-mismatch]
-    9 |   return param_1;
-      |   ^      ~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0000f548(undefined8 *param_1) {
-  std::cout << "Processing param_1 with param_2: " << param_1[2] << ", " << param_1[3] << std::endl;
-  if (param_1[2] != 0) {
-    FUN_0022ba38(param_1[2], (ulong)param_1);
-  }
-  FUN_000046dc();
-  return param_1;
-}
-```
-
-#### FUN_0001a1cc — funcs/__Z12FUN_0001a1ccPy.cpp, Ghidra 1a1cc, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0001a1ccPy.cpp:6:3: error: call to 'FUN_0022ba38' is ambiguous
-    6 |   FUN_0022ba38(param_1[2], (ulong)param_1);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1215:6: note: candidate function
- 1215 | void FUN_0022ba38(uint64_t, uint64_t);
-      |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:44065:6: note: candidate function
- 44065 | void FUN_0022ba38(ulong, ulong);
-       |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0001a1ccPy.cpp:10:3: error: void function 'FUN_0001a1cc' should not return a value [-Wreturn-mismatch]
-   10 |   return param_1[0];
-      |   ^      ~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0001a1cc(undefined8 *param_1) {
-  uint32_t param_2 = *(uint32_t *)param_1;
-
-  FUN_0022ba38(param_1[2], (ulong)param_1);
-
-  std::cout << "Filtered value: " << param_2 << std::endl;
-
-  return param_1[0];
-}
-```
-
-#### FUN_000b02b8 — funcs/__Z12FUN_000b02b8Pyl.cpp, Ghidra b02b8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b02b8Pyl.cpp:6:11: error: call to 'FUN_000041f4' is ambiguous
-    6 |   uVar1 = FUN_000041f4(0x433368);
-      |           ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1207:6: note: candidate function
- 1207 | void FUN_000041f4(float);
-      |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1579:6: note: candidate function
- 1579 | void FUN_000041f4(long);
-      |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b02b8Pyl.cpp:6:11: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-    6 |   uVar1 = FUN_000041f4(0x433368);
-      |           ^~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b02b8Pyl.cpp:7:3: error: no matching function for call to 'FUN_001f4bcc'
-    7 |   FUN_001f4bcc(param_1, uVar1, 0x88, param_2);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:39085:6: note: candidate function not viable: no known conversion from 'uint64_t *' (aka 'unsigned long long *') to 'const std::vector<double>' for 1st argument
- 39085 | void FUN_001f4bcc(const std::vector<double> &, const std::vector<double> &, const std::vector<double> &, const std::vector<double> &);
-       |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b02b8Pyl.cpp:8:15: error: use of undeclared identifier 'DAT_00433390'
-    8 |   *param_1 = &DAT_00433390;
-      |               ^~~~~~~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b02b8(uint64_t *param_1,long param_2) {
-  undefined8 uVar1;
-
-  uVar1 = FUN_000041f4(0x433368);
-  FUN_001f4bcc(param_1, uVar1, 0x88, param_2);
-  *param_1 = &DAT_00433390;
-  return;
-}
-```
-
-#### FUN_000b071c — funcs/__Z12FUN_000b071cPyl.cpp, Ghidra b071c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b071cPyl.cpp:6:11: error: call to 'FUN_000041f4' is ambiguous
-    6 |   uVar1 = FUN_000041f4(0x433498);
-      |           ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1207:6: note: candidate function
- 1207 | void FUN_000041f4(float);
-      |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1579:6: note: candidate function
- 1579 | void FUN_000041f4(long);
-      |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b071cPyl.cpp:6:11: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-    6 |   uVar1 = FUN_000041f4(0x433498);
-      |           ^~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b071cPyl.cpp:7:3: error: no matching function for call to 'FUN_001f4bcc'
-    7 |   FUN_001f4bcc(param_1, uVar1, 0x80, param_2);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:39085:6: note: candidate function not viable: no known conversion from 'uint64_t *' (aka 'unsigned long long *') to 'const std::vector<double>' for 1st argument
- 39085 | void FUN_001f4bcc(const std::vector<double> &, const std::vector<double> &, const std::vector<double> &, const std::vector<double> &);
-       |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b071cPyl.cpp:8:15: error: use of undeclared identifier 'DAT_004334c0'
-    8 |   *param_1 = &DAT_004334c0;
-      |               ^~~~~~~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b071c(uint64_t *param_1,long param_2) {
-  undefined8 uVar1;
-
-  uVar1 = FUN_000041f4(0x433498);
-  FUN_001f4bcc(param_1, uVar1, 0x80, param_2);
-  *param_1 = &DAT_004334c0;
-  return;
-}
-```
-
-#### FUN_00071b80 — funcs/FUN_00071b80.cpp, Ghidra 71b80, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00071b80.cpp:5:27: error: call to 'FUN_000b50b8' is ambiguous
-    5 |     float filteredValue = FUN_000b50b8(param_1);
-      |                           ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1183:9: note: candidate function
- 1183 | uint8_t FUN_000b50b8(uint64_t);
-      |         ^
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1213:6: note: candidate function
- 1213 | void FUN_000b50b8(long);
-      |      ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-int FUN_00071b80() {
-    float param_1 = 0.5;
-    float filteredValue = FUN_000b50b8(param_1);
-
-    std::cout << "Filtered value: " << filteredValue << std::endl;
-
-    return 0;
-}
-```
-
-#### FUN_000c6af4 — funcs/FUN_000c6af4.cpp, Ghidra c6af4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000c6af4.cpp:6:5: error: call to 'FUN_0022ba38' is ambiguous
-    6 |     FUN_0022ba38(param_1[2], (ulong)param_1);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1215:6: note: candidate function
- 1215 | void FUN_0022ba38(uint64_t, uint64_t);
-      |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:44065:6: note: candidate function
- 44065 | void FUN_0022ba38(ulong, ulong);
-       |      ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000c6af4(undefined8 *param_1) {
-  std::cout << "Applying lowpass filter with param_1: " << param_1 << std::endl;
-  if (param_1[2] != 0) {
-    FUN_0022ba38(param_1[2], (ulong)param_1);
-  }
-  FUN_000046dc();
-}
-```
-
-#### FUN_000d1650 — funcs/FUN_000d1650.cpp, Ghidra d1650, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000d1650.cpp:8:7: error: call to 'FUN_0022ba38' is ambiguous
-    8 |       FUN_0022ba38(*(ulong *)(param_1 + 0x10), param_1);
-      |       ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:44065:6: note: candidate function
- 44065 | void FUN_0022ba38(ulong, ulong);
-       |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1215:6: note: candidate function
- 1215 | void FUN_0022ba38(uint64_t, uint64_t);
-      |      ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-uint64_t FUN_000d1650(uint64_t param_1,long param_2) {
-  long lVar1;
-
-  if (*(long *)(param_1 + 8) != *(long *)(param_2 + 8)) {
-    if (*(long *)(param_1 + 0x10) != 0) {
-      FUN_0022ba38(*(ulong *)(param_1 + 0x10), param_1);
-    }
-    lVar1 = *(long *)(param_2 + 0x10);
-    *(undefined8 *)(param_1 + 8) = *(undefined8 *)(param_2 + 8);
-    *(long *)(param_1 + 0x10) = lVar1;
-    if (lVar1 != 0) {
-      FUN_0022b7d0(*(ulong *)(param_1 + 0x10), param_1);
-    }
-  }
-}
-```
-
-### Not compiling yet — 17 × no member named 'X' in namespace 'X'
-
-All: FUN_00033554 (33554), FUN_00035098 (35098), FUN_0003dacc (3dacc), FUN_00042fdc (42fdc), FUN_000be010 (be010), FUN_0027e8a4 (27e8a4), FUN_00362c1c (362c1c), FUN_00068168 (68168), FUN_00073060 (73060), FUN_000e7c74 (e7c74), FUN_00136808 (136808), FUN_00154348 (154348), worksWhenModal (169bb0), FUN_0017678c (17678c), FUN_001d47d0 (1d47d0), FUN_0031b8a8 (31b8a8), __throw_length_error (385d80)
-
-#### FUN_00033554 — funcs/__Z12FUN_00033554Pfi.cpp, Ghidra 33554, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00033554Pfi.cpp:6:46: error: no member named 'mean' in namespace 'std'
-    6 |         float filteredSample = sample - std::mean(data);
-      |                                              ^~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00033554(float* data, int size) {
-    for (int i = 0; i < size; ++i) {
-        float sample = data[i];
-        float filteredSample = sample - std::mean(data);
-        data[i] = filteredSample;
-    }
-}
-```
-
-#### FUN_00035098 — funcs/__Z12FUN_00035098Pfi.cpp, Ghidra 35098, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00035098Pfi.cpp:6:46: error: no member named 'mean' in namespace 'std'
-    6 |         float filteredSample = sample - std::mean(data);
-      |                                              ^~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00035098(float *data, int size) {
-    for (int i = 0; i < size; ++i) {
-        float sample = data[i];
-        float filteredSample = sample - std::mean(data);
-        data[i] = filteredSample;
-    }
-}
-```
-
-#### FUN_0003dacc — funcs/__Z12FUN_0003daccPfi.cpp, Ghidra 3dacc, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0003daccPfi.cpp:6:46: error: no member named 'mean' in namespace 'std'
-    6 |         float filteredSample = sample - std::mean(data);
-      |                                              ^~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0003dacc(float* data, int size) {
-    for (int i = 0; i < size; ++i) {
-        float sample = data[i];
-        float filteredSample = sample - std::mean(data);
-        data[i] = filteredSample;
-    }
-}
-```
-
-#### FUN_00042fdc — funcs/__Z12FUN_00042fdcPfm.cpp, Ghidra 42fdc, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00042fdcPfm.cpp:6:46: error: no member named 'mean' in namespace 'std'
-    6 |         float filteredSample = sample - std::mean(data);
-      |                                              ^~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00042fdc(float *data, size_t length) {
-    for (size_t i = 0; i < length; ++i) {
-        float sample = data[i];
-        float filteredSample = sample - std::mean(data);
-        data[i] = filteredSample;
-    }
-}
-```
-
-#### FUN_000be010 — funcs/__Z12FUN_000be010Pll.cpp, Ghidra be010, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000be010Pll.cpp:6:27: error: no member named 'accumulate' in namespace 'std'
-    6 |     float totalSum = std::accumulate(floatArray.begin(), floatArray.end(), 0.0f);
-      |                           ^~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000be010(long *plVar1, long param_2) {
-    std::vector<float> floatArray = {0.1f, 0.2f, 0.3f, 0.4f};
-
-    float totalSum = std::accumulate(floatArray.begin(), floatArray.end(), 0.0f);
-
-    float average = totalSum / floatArray.size();
-
-    std::cout << "Average of floats: " << average << std::endl;
-}
-```
-
-#### FUN_0027e8a4 — funcs/__Z12FUN_0027e8a4lPv.cpp, Ghidra 27e8a4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027e8a4lPv.cpp:6:21: error: no member named 'accumulate' in namespace 'std'
-    6 |   float mean = std::accumulate(floatArray, floatArray + sizeof(floatArray) / sizeof(float), 0.0f) / (sizeof(floatArray) / sizeof(float));
-      |                     ^~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027e8a4lPv.cpp:8:17: error: invalid range expression of type 'float *'; no viable 'begin' function available
-    8 |   for (float *f : floatArray) {
-      |                 ^ ~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0027e8a4(long param_1, void *param_2) {
-  float *floatArray = static_cast<float *>(param_2);
-
-  float mean = std::accumulate(floatArray, floatArray + sizeof(floatArray) / sizeof(float), 0.0f) / (sizeof(floatArray) / sizeof(float));
-
-  for (float *f : floatArray) {
-    *f -= mean;
-  }
-}
-```
-
-#### FUN_00362c1c — funcs/__Z12FUN_00362c1clPm.cpp, Ghidra 362c1c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00362c1clPm.cpp:6:25: error: no member named 'accumulate' in namespace 'std'
-    6 |   float totalSum = std::accumulate(floatArray, floatArray + sizeof(floatArray) / sizeof(float), 0.0f);
-      |                         ^~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00362c1c(long param_1, ulong *param_2) {
-  float *floatArray = (float *)param_2;
-
-  float totalSum = std::accumulate(floatArray, floatArray + sizeof(floatArray) / sizeof(float), 0.0f);
-
-  float average = totalSum / sizeof(floatArray) / sizeof(float);
-
-  for (float *floatPtr = floatArray; floatPtr < floatArray + sizeof(floatArray) / sizeof(float); ++floatPtr) {
-    *floatPtr -= average;
-  }
-}
-```
-
-#### FUN_00068168 — funcs/FUN_00068168.cpp, Ghidra 68168, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00068168.cpp:6:46: error: no member named 'mean' in namespace 'std'
-    6 |         float filteredSample = sample - std::mean(data);
-      |                                              ^~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00068168(float* data, int size) {
-    for (int i = 0; i < size; ++i) {
-        float sample = data[i];
-        float filteredSample = sample - std::mean(data);
-        data[i] = filteredSample;
-    }
 }
 ```
 
@@ -27790,268 +28531,11 @@ void FUN_0014e774(const std::string &param_1, const std::string &param_2) {
 }
 ```
 
-### Not compiling yet — 14 × cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'
-
-All: FUN_00005000 (5000), processAndCopyData (922c), FUN_000b5d64 (b5d64), FUN_000bc50c (bc50c), FUN_00361d0c (361d0c), FUN_0012e2a4 (12e2a4), FUN_00136414 (136414), FUN_0026db30 (26db30), FUN_003077f0 (3077f0), FUN_0030f6d0 (30f6d0), FUN_0032f7c4 (32f7c4), FUN_003430c0 (3430c0), FUN_00343108 (343108), FUN_00373d14 (373d14)
-
-#### FUN_00005000 — funcs/__Z12FUN_00005000Py.cpp, Ghidra 5000, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00005000Py.cpp:5:17: error: cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of type 'void'
-    5 |     undefined8* outputBuffer = FUN_000050fc(inputBuffer);
-      |                 ^              ~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00005000Py.cpp:6:22: error: use of undeclared identifier 'DAT_00424ce0'
-    6 |     *outputBuffer = &DAT_00424ce0;
-      |                      ^~~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00005000(undefined8 * inputBuffer)
-{
-    undefined8* outputBuffer = FUN_000050fc(inputBuffer);
-    *outputBuffer = &DAT_00424ce0;
-}
-```
-
-#### processAndCopyData — funcs/__Z18processAndCopyDatali.cpp, Ghidra 922c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z18processAndCopyDatali.cpp:13:21: error: cannot initialize a variable of type 'undefined1 *' (aka 'unsigned char *') with an rvalue of type 'float'
-   13 |         undefined1 *buffer = FUN_00217aac(currentPtr);
-      |                     ^        ~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void processAndCopyData(long dataPtr, int count) {
-    long currentPtr = FUN_0000b3b4((undefined8 *)(dataPtr + 0xaf8));
-    FUN_00217a54(currentPtr, count);
-
-    int index = 0;
-    while (index < count) {
-        currentPtr = FUN_0000b3c8();
-        if ((int)currentPtr <= index) break;
-
-        currentPtr = FUN_0000b3b4((undefined8 *)(dataPtr + 0xaf8));
-        undefined1 *buffer = FUN_00217aac(currentPtr);
-        undefined8 *destPtr = (undefined8 *)FUN_0000b388(dataPtr + 0xb38, index);
-
-        destPtr[0] = buffer[0];
-        index++;
-    }
-}
-```
-
-#### FUN_000b5d64 — funcs/__Z12FUN_000b5d64llm.cpp, Ghidra b5d64, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b5d64llm.cpp:13:10: error: cannot initialize a variable of type 'ulong *' (aka 'unsigned long *') with an rvalue of type 'long *'
-   13 |   ulong *puVar2 = &params.param2;
-      |          ^        ~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b5d64llm.cpp:17:14: error: incompatible pointer types assigning to 'long *' from 'undefined8 *' (aka 'unsigned long long *')
-   17 |     puVar1 = (undefined8 *)(puVar1 + local_20 * 0x10);
-      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b5d64llm.cpp:18:5: error: use of undeclared identifier 'uVar3'
-   18 |     uVar3 = *puVar1;
-      |     ^~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b5d64llm.cpp:19:14: error: incompatible pointer types assigning to 'ulong *' (aka 'unsigned long *') from 'undefined8 *' (aka 'unsigned long long *')
-   19 |     puVar2 = (undefined8 *)(puVar1 + local_20 * 0x10);
-      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b5d64llm.cpp:21:15: error: use of undeclared identifier 'uVar3'
-   21 |     *puVar2 = uVar3;
-      |               ^~~~~
-5 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b5d64(long param_1, long param_2, ulong param_3) {
-  struct Parameters {
-    long param1;
-    long param2;
-    ulong param3;
-  };
-
-  Parameters params = {param_1, param_2, param_3};
-
-  long *puVar1 = &params.param1;
-  ulong *puVar2 = &params.param2;
-  ulong *puVar3 = &params.param3;
-
-  for (long local_20 = 0; local_20 < params.param3; local_20++) {
-    puVar1 = (undefined8 *)(puVar1 + local_20 * 0x10);
-    uVar3 = *puVar1;
-    puVar2 = (undefined8 *)(puVar1 + local_20 * 0x10);
-    puVar2[1] = puVar1[1];
-    *puVar2 = uVar3;
-  }
-
-  std::cout << "Filtered Values: " << puVar1[0] << ", " << puVar2[0] << std::endl;
-}
-```
-
-#### FUN_000bc50c — funcs/__Z12FUN_000bc50cPyl.cpp, Ghidra bc50c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:4:17: error: cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of type 'void'
-    4 |     undefined8 *puVar1 = FUN_000bc50c(param_1, 3);
-      |                 ^        ~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:5:16: error: use of undeclared identifier 'DAT_00434ed8'
-    5 |     *puVar1 = &DAT_00434ed8;
-      |                ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:6:20: error: use of undeclared identifier 'DAT_00435110'; did you mean 'DAT_00435400'?
-    6 |     puVar1[0xd] = &DAT_00435110;
-      |                    ^~~~~~~~~~~~
-      |                    DAT_00435400
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1037:20: note: 'DAT_00435400' declared here
- 1037 | extern FilterState DAT_00435400;
-      |                    ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:6:19: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'FilterState *'
-    6 |     puVar1[0xd] = &DAT_00435110;
-      |                   ^~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:9:5: error: void function 'FUN_000bc50c' should not return a value [-Wreturn-mismatch]
-    9 |     return param_1;
-      |     ^      ~~~~~~~
-5 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000bc50c(undefined8 *param_1, long param_2) {
-    undefined8 *puVar1 = FUN_000bc50c(param_1, 3);
-    *puVar1 = &DAT_00434ed8;
-    puVar1[0xd] = &DAT_00435110;
-    FUN_00028b14(puVar1 + 0x33);
-    FUN_000bc598(param_1 + 0x35, param_2);
-    return param_1;
-}
-```
-
-#### FUN_00361d0c — funcs/__Z12FUN_00361d0clll.cpp, Ghidra 361d0c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00361d0clll.cpp:4:11: error: cannot initialize a variable of type 'ulong' (aka 'unsigned long') with an rvalue of type 'void'
-    4 |     ulong uVar1 = FUN_0036ae94(param_1);
-      |           ^       ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00361d0clll.cpp:5:13: error: assigning to 'ulong' (aka 'unsigned long') from incompatible type 'void'
-    5 |     uVar1 = FUN_0032fe5c(param_3, uVar1);
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00361d0c(long param_1, long param_2, long param_3) {
-    ulong uVar1 = FUN_0036ae94(param_1);
-    uVar1 = FUN_0032fe5c(param_3, uVar1);
-    *(ulong *)(*(long *)(param_1 + 0x2a8) + param_2 * 8) =
-       *(ulong *)(*(long *)(param_1 + 0x2a8) + param_2 * 8) + uVar1;
-    return;
-}
-```
-
-#### FUN_0012e2a4 — funcs/FUN_0012e2a4.cpp, Ghidra 12e2a4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0012e2a4.cpp:4:17: error: cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of type 'void'
-    4 |     undefined8 *puVar1 = FUN_00127678(param_1, 4);
-      |                 ^        ~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0012e2a4.cpp:5:16: error: use of undeclared identifier 'DAT_0043e028'; did you mean 'DAT_0043d078'?
-    5 |     *puVar1 = &DAT_0043e028;
-      |                ^~~~~~~~~~~~
-      |                DAT_0043d078
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1049:19: note: 'DAT_0043d078' declared here
- 1049 | extern FilterData DAT_0043d078;
-      |                   ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0012e2a4.cpp:5:15: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'FilterData *'
-    5 |     *puVar1 = &DAT_0043e028;
-      |               ^~~~~~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0012e2a4(undefined8 *param_1) {
-    undefined8 *puVar1 = FUN_00127678(param_1, 4);
-    *puVar1 = &DAT_0043e028;
-    return;
-}
-```
-
-#### FUN_00136414 — funcs/FUN_00136414.cpp, Ghidra 136414, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00136414.cpp:5:14: error: cannot initialize a variable of type 'undefined8' (aka 'unsigned long long') with an rvalue of type 'void'
-    5 |   undefined8 local_38 = FUN_0013b090();
-      |              ^          ~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-int FUN_00136414(long param_1,uint64_t *param_2) {
-  int iVar1;
-  undefined8 local_38 = FUN_0013b090();
-  iVar1 = FUN_00136474(param_1, param_2, local_38);
-  return iVar1;
-}
-```
-
-#### FUN_0026db30 — funcs/FUN_0026db30.cpp, Ghidra 26db30, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0026db30.cpp:5:14: error: cannot initialize a variable of type 'undefined8' (aka 'unsigned long long') with an rvalue of type 'std::nullptr_t'
-    5 |   undefined8 param_2 = nullptr;
-      |              ^         ~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0026db30.cpp:6:14: error: cannot initialize a variable of type 'undefined8' (aka 'unsigned long long') with an rvalue of type 'std::nullptr_t'
-    6 |   undefined8 param_3 = nullptr;
-      |              ^         ~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0026db30.cpp:8:3: error: no matching function for call to 'FUN_0026db30'
-    8 |   FUN_0026db30(param_1, param_2, param_3);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0026db30.cpp:3:5: note: candidate function not viable: requires 0 arguments, but 3 were provided
-    3 | int FUN_0026db30() {
-      |     ^
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-int FUN_0026db30() {
-  long *param_1 = nullptr;
-  undefined8 param_2 = nullptr;
-  undefined8 param_3 = nullptr;
-
-  FUN_0026db30(param_1, param_2, param_3);
-
-  return 0;
-}
-```
-
 ### Not compiling yet — 13 × functions that differ only in their return type cannot be overloaded
 
 All: FUN_00005fc0 (5fc0), FUN_00049354 (49354), FUN_002a0094 (2a0094), FUN_00061330 (61330), FUN_0006dca4 (6dca4), FUN_0007ad44 (7ad44), FUN_00086d48 (86d48), FUN_00086d5c (86d5c), FUN_00088584 (88584), FUN_0013fb78 (13fb78), FUN_00141888 (141888), FUN_001dabec (1dabec), FUN_00201c00 (201c00)
 
-#### FUN_00005fc0 — funcs/__Z12FUN_00005fc0l.cpp, Ghidra 5fc0, 0 model attempt(s)
+#### FUN_00005fc0 — funcs/__Z12FUN_00005fc0l.cpp, Ghidra 5fc0, 3 model attempt(s)
 
 Compiler output:
 ```
@@ -28256,6 +28740,257 @@ Code:
 
 uint32_t FUN_00086d5c(long param_1) {
   return *(uint32_t *)(param_1 + 0x18);
+}
+```
+
+### Not compiling yet — 13 × cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'
+
+All: processAndCopyData (922c), FUN_000b5d64 (b5d64), FUN_000bc50c (bc50c), FUN_00361d0c (361d0c), FUN_0012e2a4 (12e2a4), FUN_00136414 (136414), FUN_0026db30 (26db30), FUN_003077f0 (3077f0), FUN_0030f6d0 (30f6d0), FUN_0032f7c4 (32f7c4), FUN_003430c0 (3430c0), FUN_00343108 (343108), FUN_00373d14 (373d14)
+
+#### processAndCopyData — funcs/__Z18processAndCopyDatali.cpp, Ghidra 922c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z18processAndCopyDatali.cpp:13:21: error: cannot initialize a variable of type 'undefined1 *' (aka 'unsigned char *') with an rvalue of type 'float'
+   13 |         undefined1 *buffer = FUN_00217aac(currentPtr);
+      |                     ^        ~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void processAndCopyData(long dataPtr, int count) {
+    long currentPtr = FUN_0000b3b4((undefined8 *)(dataPtr + 0xaf8));
+    FUN_00217a54(currentPtr, count);
+
+    int index = 0;
+    while (index < count) {
+        currentPtr = FUN_0000b3c8();
+        if ((int)currentPtr <= index) break;
+
+        currentPtr = FUN_0000b3b4((undefined8 *)(dataPtr + 0xaf8));
+        undefined1 *buffer = FUN_00217aac(currentPtr);
+        undefined8 *destPtr = (undefined8 *)FUN_0000b388(dataPtr + 0xb38, index);
+
+        destPtr[0] = buffer[0];
+        index++;
+    }
+}
+```
+
+#### FUN_000b5d64 — funcs/__Z12FUN_000b5d64llm.cpp, Ghidra b5d64, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b5d64llm.cpp:15:13: error: cannot initialize a variable of type 'uint64_t *' (aka 'unsigned long long *') with an rvalue of type 'long *'
+   15 |   uint64_t *puVar2 = &params.param2;
+      |             ^        ~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b5d64llm.cpp:19:14: error: incompatible pointer types assigning to 'long *' from 'undefined8 *' (aka 'unsigned long long *')
+   19 |     puVar1 = (undefined8 *)(puVar1 + local_20 * 0x10);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000b5d64(long param_1, long param_2, ulong param_3) {
+    uint64_t uVar3 = 0; // auto-declared (undeclared in the rewrite)
+
+  struct Parameters {
+    long param1;
+    long param2;
+    ulong param3;
+  };
+
+  Parameters params = {param_1, param_2, param_3};
+
+  long *puVar1 = &params.param1;
+  uint64_t *puVar2 = &params.param2;
+  ulong *puVar3 = &params.param3;
+
+  for (long local_20 = 0; local_20 < params.param3; local_20++) {
+    puVar1 = (undefined8 *)(puVar1 + local_20 * 0x10);
+    uVar3 = *puVar1;
+    puVar2 = (undefined8 *)(puVar1 + local_20 * 0x10);
+    puVar2[1] = puVar1[1];
+    *puVar2 = uVar3;
+  }
+
+  std::cout << "Filtered Values: " << puVar1[0] << ", " << puVar2[0] << std::endl;
+}
+```
+Notes:
+- 10-20 19:35 [compile] cannot initialize a variable of type 'ulong *' (aka 'unsigned long *') with an rvalue of type 'long *' — plan: Change `ulong *puVar2 = &params.param2;` to `uint64_t *puVar2 = &params.param2;` — still fails: cannot initialize a variable of type 'uint64_t *' (aka 'unsigned long long *') with an rvalue of typ
+- 10-20 19:35 [compile] cannot initialize a variable of type 'uint64_t *' (aka 'unsigned long long *') with an rvalue of type 'long *' — plan: Change `long *puVar1 = &params.param1;` to `uint64_t *puVar1 = &params.param1;` — still fails: redefinition of 'puVar1' with a different type: 'uint64_t *' (aka 'unsigned long long *') vs 'long *
+- 10-20 19:35 [compile] that edit didn't help — undone.
+
+#### FUN_000bc50c — funcs/__Z12FUN_000bc50cPyl.cpp, Ghidra bc50c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:4:17: error: cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of type 'void'
+    4 |     undefined8 *puVar1 = FUN_000bc50c(param_1, 3);
+      |                 ^        ~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:5:16: error: use of undeclared identifier 'DAT_00434ed8'
+    5 |     *puVar1 = &DAT_00434ed8;
+      |                ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:6:20: error: use of undeclared identifier 'DAT_00435110'; did you mean 'DAT_00435400'?
+    6 |     puVar1[0xd] = &DAT_00435110;
+      |                    ^~~~~~~~~~~~
+      |                    DAT_00435400
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1037:20: note: 'DAT_00435400' declared here
+ 1037 | extern FilterState DAT_00435400;
+      |                    ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:6:19: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'FilterState *'
+    6 |     puVar1[0xd] = &DAT_00435110;
+      |                   ^~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc50cPyl.cpp:9:5: error: void function 'FUN_000bc50c' should not return a value [-Wreturn-mismatch]
+    9 |     return param_1;
+      |     ^      ~~~~~~~
+5 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000bc50c(undefined8 *param_1, long param_2) {
+    undefined8 *puVar1 = FUN_000bc50c(param_1, 3);
+    *puVar1 = &DAT_00434ed8;
+    puVar1[0xd] = &DAT_00435110;
+    FUN_00028b14(puVar1 + 0x33);
+    FUN_000bc598(param_1 + 0x35, param_2);
+    return param_1;
+}
+```
+
+#### FUN_00361d0c — funcs/__Z12FUN_00361d0clll.cpp, Ghidra 361d0c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00361d0clll.cpp:4:11: error: cannot initialize a variable of type 'ulong' (aka 'unsigned long') with an rvalue of type 'void'
+    4 |     ulong uVar1 = FUN_0036ae94(param_1);
+      |           ^       ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00361d0clll.cpp:5:13: error: assigning to 'ulong' (aka 'unsigned long') from incompatible type 'void'
+    5 |     uVar1 = FUN_0032fe5c(param_3, uVar1);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00361d0c(long param_1, long param_2, long param_3) {
+    ulong uVar1 = FUN_0036ae94(param_1);
+    uVar1 = FUN_0032fe5c(param_3, uVar1);
+    *(ulong *)(*(long *)(param_1 + 0x2a8) + param_2 * 8) =
+       *(ulong *)(*(long *)(param_1 + 0x2a8) + param_2 * 8) + uVar1;
+    return;
+}
+```
+
+#### FUN_0012e2a4 — funcs/FUN_0012e2a4.cpp, Ghidra 12e2a4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0012e2a4.cpp:4:17: error: cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of type 'void'
+    4 |     undefined8 *puVar1 = FUN_00127678(param_1, 4);
+      |                 ^        ~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0012e2a4.cpp:5:16: error: use of undeclared identifier 'DAT_0043e028'; did you mean 'DAT_0043d078'?
+    5 |     *puVar1 = &DAT_0043e028;
+      |                ^~~~~~~~~~~~
+      |                DAT_0043d078
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1049:19: note: 'DAT_0043d078' declared here
+ 1049 | extern FilterData DAT_0043d078;
+      |                   ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0012e2a4.cpp:5:15: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'FilterData *'
+    5 |     *puVar1 = &DAT_0043e028;
+      |               ^~~~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0012e2a4(undefined8 *param_1) {
+    undefined8 *puVar1 = FUN_00127678(param_1, 4);
+    *puVar1 = &DAT_0043e028;
+    return;
+}
+```
+
+#### FUN_00136414 — funcs/FUN_00136414.cpp, Ghidra 136414, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00136414.cpp:5:14: error: cannot initialize a variable of type 'undefined8' (aka 'unsigned long long') with an rvalue of type 'void'
+    5 |   undefined8 local_38 = FUN_0013b090();
+      |              ^          ~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+int FUN_00136414(long param_1,uint64_t *param_2) {
+  int iVar1;
+  undefined8 local_38 = FUN_0013b090();
+  iVar1 = FUN_00136474(param_1, param_2, local_38);
+  return iVar1;
+}
+```
+
+#### FUN_0026db30 — funcs/FUN_0026db30.cpp, Ghidra 26db30, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0026db30.cpp:5:14: error: cannot initialize a variable of type 'undefined8' (aka 'unsigned long long') with an rvalue of type 'std::nullptr_t'
+    5 |   undefined8 param_2 = nullptr;
+      |              ^         ~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0026db30.cpp:6:14: error: cannot initialize a variable of type 'undefined8' (aka 'unsigned long long') with an rvalue of type 'std::nullptr_t'
+    6 |   undefined8 param_3 = nullptr;
+      |              ^         ~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0026db30.cpp:8:3: error: no matching function for call to 'FUN_0026db30'
+    8 |   FUN_0026db30(param_1, param_2, param_3);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0026db30.cpp:3:5: note: candidate function not viable: requires 0 arguments, but 3 were provided
+    3 | int FUN_0026db30() {
+      |     ^
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+int FUN_0026db30() {
+  long *param_1 = nullptr;
+  undefined8 param_2 = nullptr;
+  undefined8 param_3 = nullptr;
+
+  FUN_0026db30(param_1, param_2, param_3);
+
+  return 0;
+}
+```
+
+#### FUN_003077f0 — funcs/FUN_003077f0.cpp, Ghidra 3077f0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_003077f0.cpp:5:12: error: cannot initialize a variable of type 'uint32_t' (aka 'unsigned int') with an rvalue of type 'void'
+    5 |   uint32_t uVar1 = FUN_003021b0(param_1, 0x0, "No \"get\" routine setup");
+      |            ^       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+int FUN_003077f0() {
+  uint32_t param_1[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+  uint32_t uVar1 = FUN_003021b0(param_1, 0x0, "No \"get\" routine setup");
+  return uVar1;
 }
 ```
 
@@ -43009,263 +43744,6 @@ void FUN_0036d920(uint FUN_0036dd84(long param_1, long *plVar6, void *pvVar7, in
 }
 ```
 
-### Not compiling yet — 6 × comparison between pointer and integer ('X' and 'X')
-
-All: FUN_0027fe2c (27fe2c), FUN_00299fa0 (299fa0), FUN_0011eee8 (11eee8), FUN_00154604 (154604), FUN_0027a640 (27a640), FUN_0027c9c4 (27c9c4)
-
-#### FUN_0027fe2c — funcs/__Z12FUN_0027fe2cPl.cpp, Ghidra 27fe2c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027fe2cPl.cpp:5:16: error: comparison between pointer and integer ('long' and 'long *')
-    5 |   if (*param_1 != (long *)0x0) {
-      |       ~~~~~~~~ ^  ~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-bool FUN_0027fe2c(long *param_1) {
-  std::cout << "Processing param_1: " << *param_1 << std::endl;
-  if (*param_1 != (long *)0x0) {
-    std::cout << "Processing param_1: " << *param_1 << std::endl;
-  }
-  return false;
-}
-```
-
-#### FUN_00299fa0 — funcs/__Z12FUN_00299fa0Pll.cpp, Ghidra 299fa0, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00299fa0Pll.cpp:4:19: error: comparison between pointer and integer ('long' and 'long *')
-    4 |   if ((param_1[2] <= (param_1 + param_2)) {
-      |        ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00299fa0Pll.cpp:4:43: error: expected ')'
-    4 |   if ((param_1[2] <= (param_1 + param_2)) {
-      |                                           ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00299fa0Pll.cpp:4:6: note: to match this '('
-    4 |   if ((param_1[2] <= (param_1 + param_2)) {
-      |      ^
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00299fa0(long *param_1, long param_2) {
-  if ((param_1[2] <= (param_1 + param_2)) {
-    *param_1 = param_1[1];
-    **(code **)(param_1[4] + 0x10) = -((param_1[1] - *param_1) + param_1[3]);
-    *param_1 = param_1[1];
-  }
-  *param_1 = *param_1 + param_2;
-  return;
-}
-```
-
-#### FUN_0011eee8 — funcs/FUN_0011eee8.cpp, Ghidra 11eee8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0011eee8.cpp:8:23: error: comparison between pointer and integer ('int' and 'int *')
-    8 |     for (int i = 0; i < ptr - 1; ++i) {
-      |                     ~ ^ ~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0011eee8.cpp:12:20: error: invalid operands to binary expression ('int' and 'int *')
-   12 |     int mean = sum / (ptr - 1);
-      |                ~~~ ^ ~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0011eee8(long *param_1) {
-  if (*param_1 != 0) {
-    int *ptr = (int *)param_1;
-
-    int sum = 0;
-    for (int i = 0; i < ptr - 1; ++i) {
-      sum += *ptr;
-    }
-
-    int mean = sum / (ptr - 1);
-
-    float filteredValue = mean * (1.0 - std::exp(-mean / 256.0));
-
-    *param_1 = (long)filteredValue;
-  }
-
-  return;
-}
-```
-
-#### FUN_00154604 — funcs/FUN_00154604.cpp, Ghidra 154604, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:18: error: comparison between pointer and integer ('int *' and 'int')
-    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
-      |          ~~~~~~~ ^  ~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:35: error: indirection requires pointer operand ('int' invalid)
-    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
-      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:68: error: indirection requires pointer operand ('int' invalid)
-    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
-      |                                                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:98: error: expected ')'
-    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
-      |                                                                                                  ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:6: note: to match this '('
-    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
-      |      ^
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-bool FUN_00154604(int *param_1, int *param_2) {
-  if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
-    return (*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]));
-  }
-  return false;
-}
-```
-
-#### FUN_0027a640 — funcs/FUN_0027a640.cpp, Ghidra 27a640, 0 model attempt(s)
-
-Compiler output:
-```
-67 | int FUN_000781b0();
-       |     ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:8:46: error: comparison between pointer and integer ('long' and 'int (*)()')
-    8 |   if (*param_2 == DAT_008781a8 && param_2[1] == DAT_008781b0) {
-      |                                   ~~~~~~~~~~ ^  ~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:13:19: error: use of undeclared identifier 'DAT_00878118'
-   13 |     if ((lVar2 == DAT_00878118) && (param_2[1] == DAT_00878120)) {
-      |                   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:13:51: error: use of undeclared identifier 'DAT_00878120'
-   13 |     if ((lVar2 == DAT_00878118) && (param_2[1] == DAT_00878120)) {
-      |                                                   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:17:24: error: use of undeclared identifier 'DAT_00878130'; did you mean 'DAT_00424a30'?
-   17 |     else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
-      |                        ^~~~~~~~~~~~
-      |                        DAT_00424a30
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1051:19: note: 'DAT_00424a30' declared here
- 1051 | extern FilterData DAT_00424a30;
-      |                   ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:17:21: error: invalid operands to binary expression ('long' and 'FilterData')
-   17 |     else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
-      |               ~~~~~ ^  ~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:17:56: error: use of undeclared identifier 'DAT_00878138'; did you mean 'DAT_00435538'?
-   17 |     else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
-      |                                                        ^~~~~~~~~~~~
-      |                                                        DAT_00435538
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1039:20: note: 'DAT_00435538' declared here
- 1039 | extern FilterState DAT_00435538;
-      |                    ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:17:53: error: invalid operands to binary expression ('long' and 'FilterState')
-   17 |     else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
-      |                                          ~~~~~~~~~~ ^  ~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:21:15: error: use of undeclared identifier 'DAT_00878190'; did you mean 'FUN_00078190'?
-   21 | if ((lVar2 == DAT_00878190) || (param_2[1] != DAT_00878198)) {
-      |               ^~~~~~~~~~~~
-      |               FUN_00078190
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:10265:6: note: 'FUN_00078190' declared here
- 10265 | void FUN_00078190();
-       |      ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:21:12: error: comparison between pointer and integer ('long' and 'void (*)()')
-   21 | if ((lVar2 == DAT_00878190) || (param_2[1] != DAT_00878198)) {
-      |      ~~~~~ ^  ~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:21:47: error: use of undeclared identifier 'DAT_00878198'
-   21 | if ((lVar2 == DAT_00878190) || (param_2[1] != DAT_00878198)) {
-      |                                               ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:27:9: error: use of undeclared identifier 'code'
-   27 |     (**(code **)(lVar2 + 8))();
-      |         ^~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:27:16: error: expected expression
-   27 |     (**(code **)(lVar2 + 8))();
-      |                ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:29:16: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
-   29 |     *param_3 = plVar3;
-      |                ^~~~~~
-15 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-uint64_t FUN_0027a640(long *param_1,long *param_2,uint64_t *param_3) {
-  uint64_t uVar1;
-  long lVar2;
-  long *plVar3;
-
-  if (*param_2 == DAT_008781a8 && param_2[1] == DAT_008781b0) {
-    uVar1 = 0xffffffff;
-  }
-  else {
-    lVar2 = *param_2;
-    if ((lVar2 == DAT_00878118) && (param_2[1] == DAT_00878120)) {
-      plVar3 = param_1 + 0x19;
-      lVar2 = *param_1;
-    }
-    else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
-      plVar3 = param_1 + 0x1a;
-      lVar2 = *param_1;
-    }
-if ((lVar2 == DAT_00878190) || (param_2[1] != DAT_00878198)) {
-      uVar1 = FUN_0027bc98(param_1, param_2, param_3);
-      return uVar1;
-    }
-    plVar3 = param_1 + 0xe;
-    lVar2 = *param_1;
-    (**(code **)(lVar2 + 8))();
-    uVar1 = 0;
-    *param_3 = plVar3;
-  }
-  return uVar1;
-}
-```
-
-#### FUN_0027c9c4 — funcs/FUN_0027c9c4.cpp, Ghidra 27c9c4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027c9c4.cpp:6:15: error: comparison between pointer and integer ('long' and 'long *')
-    6 |   if (param_1 != (long *)0x0 && param_1 == param_2) {
-      |       ~~~~~~~ ^  ~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027c9c4.cpp:6:41: error: comparison between pointer and integer ('long' and 'long *')
-    6 |   if (param_1 != (long *)0x0 && param_1 == param_2) {
-      |                                 ~~~~~~~ ^  ~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027c9c4.cpp:11:20: error: comparison between pointer and integer ('long' and 'long *')
-   11 |     return param_1 == (long *)0x0 || param_1 != param_2;
-      |            ~~~~~~~ ^  ~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027c9c4.cpp:11:46: error: comparison between pointer and integer ('long' and 'long *')
-   11 |     return param_1 == (long *)0x0 || param_1 != param_2;
-      |                                      ~~~~~~~ ^  ~~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-bool FUN_0027c9c4(long param_1, long *param_2) {
-  std::cout << "Processing input data..." << std::endl;
-
-  if (param_1 != (long *)0x0 && param_1 == param_2) {
-    std::cout << "Processing input data..." << std::endl;
-
-    *(undefined8 *)(param_1 + 0x10) = 0;
-
-    return param_1 == (long *)0x0 || param_1 != param_2;
-  }
-
-  return false;
-}
-```
-
 ### Not compiling yet — 6 × expected 'X' after expression
 
 All: FUN_002c3980 (2c3980), FUN_001a63e8 (1a63e8), FUN_002cd95c (2cd95c), FUN_0030c890 (30c890), FUN_00332f78 (332f78), FUN_00357c4c (357c4c)
@@ -45756,171 +46234,226 @@ LAB_002327f4:
 }
 ```
 
-### Not compiling yet — 5 × variable-sized object may not be initialized
+### Not compiling yet — 5 × comparison between pointer and integer ('X' and 'X')
 
-All: FUN_00056ce4 (56ce4), FUN_00061310 (61310), FUN_00078124 (78124), FUN_0007b19c (7b19c), FUN_000f80f4 (f80f4)
+All: FUN_0027fe2c (27fe2c), FUN_00299fa0 (299fa0), FUN_00154604 (154604), FUN_0027a640 (27a640), FUN_0027c9c4 (27c9c4)
 
-#### FUN_00056ce4 — funcs/__Z12FUN_00056ce4Pfi.cpp, Ghidra 56ce4, 0 model attempt(s)
+#### FUN_0027fe2c — funcs/__Z12FUN_0027fe2cPl.cpp, Ghidra 27fe2c, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00056ce4Pfi.cpp:8:28: error: variable-sized object may not be initialized
-    8 |         float filteredData[i] = {0.9 * x + 0.1 * y};
-      |                            ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027fe2cPl.cpp:5:16: error: comparison between pointer and integer ('long' and 'long *')
+    5 |   if (*param_1 != (long *)0x0) {
+      |       ~~~~~~~~ ^  ~~~~~~~~~~~
 1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_00056ce4(float *data, int size) {
-    for (int i = 0; i < size; ++i) {
-        float x = data[i];
-        float y = -x;
-
-        float filteredData[i] = {0.9 * x + 0.1 * y};
-
-        for (int j = 0; j < size; ++j) {
-            data[j] = filteredData[j];
-        }
-    }
+bool FUN_0027fe2c(long *param_1) {
+  std::cout << "Processing param_1: " << *param_1 << std::endl;
+  if (*param_1 != (long *)0x0) {
+    std::cout << "Processing param_1: " << *param_1 << std::endl;
+  }
+  return false;
 }
 ```
 
-#### FUN_00061310 — funcs/FUN_00061310.cpp, Ghidra 61310, 0 model attempt(s)
+#### FUN_00299fa0 — funcs/__Z12FUN_00299fa0Pll.cpp, Ghidra 299fa0, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00061310.cpp:8:28: error: variable-sized object may not be initialized
-    8 |         float filteredData[i] = {0.9 * x + 0.1 * y};
-      |                            ^
-1 error generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00299fa0Pll.cpp:4:19: error: comparison between pointer and integer ('long' and 'long *')
+    4 |   if ((param_1[2] <= (param_1 + param_2)) {
+      |        ~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00299fa0Pll.cpp:4:43: error: expected ')'
+    4 |   if ((param_1[2] <= (param_1 + param_2)) {
+      |                                           ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00299fa0Pll.cpp:4:6: note: to match this '('
+    4 |   if ((param_1[2] <= (param_1 + param_2)) {
+      |      ^
+2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_00061310(float *data, int size) {
-    for (int i = 0; i < size; ++i) {
-        float x = data[i];
-        float y = data[size - 1 - i];
-
-        float filteredData[i] = {0.9 * x + 0.1 * y};
-
-        for (int j = 0; j < size; ++j) {
-            data[j] = filteredData[j];
-        }
-    }
+void FUN_00299fa0(long *param_1, long param_2) {
+  if ((param_1[2] <= (param_1 + param_2)) {
+    *param_1 = param_1[1];
+    **(code **)(param_1[4] + 0x10) = -((param_1[1] - *param_1) + param_1[3]);
+    *param_1 = param_1[1];
+  }
+  *param_1 = *param_1 + param_2;
+  return;
 }
 ```
 
-#### FUN_00078124 — funcs/FUN_00078124.cpp, Ghidra 78124, 0 model attempt(s)
+#### FUN_00154604 — funcs/FUN_00154604.cpp, Ghidra 154604, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00078124.cpp:8:28: error: variable-sized object may not be initialized
-    8 |         float filteredData[i] = {0.9 * x + 0.1 * y, 0.9 * x - 0.1 * y};
-      |                            ^
-1 error generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:18: error: comparison between pointer and integer ('int *' and 'int')
+    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
+      |          ~~~~~~~ ^  ~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:35: error: indirection requires pointer operand ('int' invalid)
+    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
+      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:68: error: indirection requires pointer operand ('int' invalid)
+    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
+      |                                                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:98: error: expected ')'
+    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
+      |                                                                                                  ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00154604.cpp:4:6: note: to match this '('
+    4 |   if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
+      |      ^
+4 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_00078124(float *data, int size) {
-    for (int i = 0; i < size; ++i) {
-        float x = data[i];
-        float y = -x;
-
-        float filteredData[i] = {0.9 * x + 0.1 * y, 0.9 * x - 0.1 * y};
-
-        for (int j = 0; j < size; ++j) {
-            data[j] = filteredData[j];
-        }
-    }
+bool FUN_00154604(int *param_1, int *param_2) {
+  if ((*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]))) {
+    return (*(param_1 == *param_2) && (*(param_1[1] == param_2[1])) && (*(param_1[2] == param_2[2]));
+  }
+  return false;
 }
 ```
 
-#### FUN_0007b19c — funcs/FUN_0007b19c.cpp, Ghidra 7b19c, 0 model attempt(s)
+#### FUN_0027a640 — funcs/FUN_0027a640.cpp, Ghidra 27a640, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0007b19c.cpp:8:28: error: variable-sized object may not be initialized
-    8 |         float filteredData[i] = {0.9 * x + 0.1 * y};
-      |                            ^
-1 error generated.
+67 | int FUN_000781b0();
+       |     ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:8:46: error: comparison between pointer and integer ('long' and 'int (*)()')
+    8 |   if (*param_2 == DAT_008781a8 && param_2[1] == DAT_008781b0) {
+      |                                   ~~~~~~~~~~ ^  ~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:13:19: error: use of undeclared identifier 'DAT_00878118'
+   13 |     if ((lVar2 == DAT_00878118) && (param_2[1] == DAT_00878120)) {
+      |                   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:13:51: error: use of undeclared identifier 'DAT_00878120'
+   13 |     if ((lVar2 == DAT_00878118) && (param_2[1] == DAT_00878120)) {
+      |                                                   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:17:24: error: use of undeclared identifier 'DAT_00878130'; did you mean 'DAT_00424a30'?
+   17 |     else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
+      |                        ^~~~~~~~~~~~
+      |                        DAT_00424a30
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1051:19: note: 'DAT_00424a30' declared here
+ 1051 | extern FilterData DAT_00424a30;
+      |                   ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:17:21: error: invalid operands to binary expression ('long' and 'FilterData')
+   17 |     else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
+      |               ~~~~~ ^  ~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:17:56: error: use of undeclared identifier 'DAT_00878138'; did you mean 'DAT_00435538'?
+   17 |     else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
+      |                                                        ^~~~~~~~~~~~
+      |                                                        DAT_00435538
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1039:20: note: 'DAT_00435538' declared here
+ 1039 | extern FilterState DAT_00435538;
+      |                    ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:17:53: error: invalid operands to binary expression ('long' and 'FilterState')
+   17 |     else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
+      |                                          ~~~~~~~~~~ ^  ~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:21:15: error: use of undeclared identifier 'DAT_00878190'; did you mean 'FUN_00078190'?
+   21 | if ((lVar2 == DAT_00878190) || (param_2[1] != DAT_00878198)) {
+      |               ^~~~~~~~~~~~
+      |               FUN_00078190
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:10265:6: note: 'FUN_00078190' declared here
+ 10265 | void FUN_00078190();
+       |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:21:12: error: comparison between pointer and integer ('long' and 'void (*)()')
+   21 | if ((lVar2 == DAT_00878190) || (param_2[1] != DAT_00878198)) {
+      |      ~~~~~ ^  ~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:21:47: error: use of undeclared identifier 'DAT_00878198'
+   21 | if ((lVar2 == DAT_00878190) || (param_2[1] != DAT_00878198)) {
+      |                                               ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:27:9: error: use of undeclared identifier 'code'
+   27 |     (**(code **)(lVar2 + 8))();
+      |         ^~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:27:16: error: expected expression
+   27 |     (**(code **)(lVar2 + 8))();
+      |                ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a640.cpp:29:16: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
+   29 |     *param_3 = plVar3;
+      |                ^~~~~~
+15 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_0007b19c(float *data, int size) {
-    for (int i = 0; i < size; ++i) {
-        float x = data[i];
-        float y = -x;
+uint64_t FUN_0027a640(long *param_1,long *param_2,uint64_t *param_3) {
+  uint64_t uVar1;
+  long lVar2;
+  long *plVar3;
 
-        float filteredData[i] = {0.9 * x + 0.1 * y};
-
-        for (int j = 0; j < size; ++j) {
-            data[j] = filteredData[j];
-        }
+  if (*param_2 == DAT_008781a8 && param_2[1] == DAT_008781b0) {
+    uVar1 = 0xffffffff;
+  }
+  else {
+    lVar2 = *param_2;
+    if ((lVar2 == DAT_00878118) && (param_2[1] == DAT_00878120)) {
+      plVar3 = param_1 + 0x19;
+      lVar2 = *param_1;
     }
+    else if ((lVar2 == DAT_00878130) && (param_2[1] == DAT_00878138)) {
+      plVar3 = param_1 + 0x1a;
+      lVar2 = *param_1;
+    }
+if ((lVar2 == DAT_00878190) || (param_2[1] != DAT_00878198)) {
+      uVar1 = FUN_0027bc98(param_1, param_2, param_3);
+      return uVar1;
+    }
+    plVar3 = param_1 + 0xe;
+    lVar2 = *param_1;
+    (**(code **)(lVar2 + 8))();
+    uVar1 = 0;
+    *param_3 = plVar3;
+  }
+  return uVar1;
 }
 ```
 
-#### FUN_000f80f4 — funcs/FUN_000f80f4.cpp, Ghidra f80f4, 3 model attempt(s)
+#### FUN_0027c9c4 — funcs/FUN_0027c9c4.cpp, Ghidra 27c9c4, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000f80f4.cpp:6:13: error: variable-sized object may not be initialized
-    6 |     float a[filterOrder + 1] = {1.0, -2.5};
-      |             ^~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000f80f4.cpp:11:21: error: subscript of pointer to incomplete type 'void'
-   11 |         outputBuffer[i] = 0.0f;
-      |         ~~~~~~~~~~~~^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000f80f4.cpp:15:39: error: subscript of pointer to incomplete type 'void'
-   15 |         float sum = b[0] * inputBuffer[i];
-      |                            ~~~~~~~~~~~^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000f80f4.cpp:17:38: error: subscript of pointer to incomplete type 'void'
-   17 |             sum += b[j] * inputBuffer[i - j];
-      |                           ~~~~~~~~~~~^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000f80f4.cpp:19:21: error: subscript of pointer to incomplete type 'void'
-   19 |         outputBuffer[i] = sum / (1.0f + a[0]);
-      |         ~~~~~~~~~~~~^
-5 errors generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027c9c4.cpp:6:15: error: comparison between pointer and integer ('long' and 'long *')
+    6 |   if (param_1 != (long *)0x0 && param_1 == param_2) {
+      |       ~~~~~~~ ^  ~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027c9c4.cpp:6:41: error: comparison between pointer and integer ('long' and 'long *')
+    6 |   if (param_1 != (long *)0x0 && param_1 == param_2) {
+      |                                 ~~~~~~~ ^  ~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027c9c4.cpp:11:20: error: comparison between pointer and integer ('long' and 'long *')
+   11 |     return param_1 == (long *)0x0 || param_1 != param_2;
+      |            ~~~~~~~ ^  ~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027c9c4.cpp:11:46: error: comparison between pointer and integer ('long' and 'long *')
+   11 |     return param_1 == (long *)0x0 || param_1 != param_2;
+      |                                      ~~~~~~~ ^  ~~~~~~~
+4 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000f80f4(void* inputBuffer, int sampleRate, int filterOrder) {
-    float b[filterOrder + 1];
-        memset(b, 0, sizeof(float) * (filterOrder + 1));
-    float a[filterOrder + 1] = {1.0, -2.5};
+bool FUN_0027c9c4(long param_1, long *param_2) {
+  std::cout << "Processing input data..." << std::endl;
 
-    void* outputBuffer = malloc(sampleRate * sizeof(float));
+  if (param_1 != (long *)0x0 && param_1 == param_2) {
+    std::cout << "Processing input data..." << std::endl;
 
-    for (int i = 0; i < sampleRate; i++) {
-        outputBuffer[i] = 0.0f;
-    }
+    *(undefined8 *)(param_1 + 0x10) = 0;
 
-    for (int i = 0; i < sampleRate; i++) {
-        float sum = b[0] * inputBuffer[i];
-        for (int j = 1; j <= filterOrder; j++) {
-            sum += b[j] * inputBuffer[i - j];
-        }
-        outputBuffer[i] = sum / (1.0f + a[0]);
-    }
+    return param_1 == (long *)0x0 || param_1 != param_2;
+  }
 
-    free(inputBuffer);
-
-    memcpy(inputBuffer, outputBuffer, sampleRate * sizeof(float));
+  return false;
 }
 ```
-Notes:
-- 10-20 18:43 [compile] expected expression — plan: Change line 4 to `float b[filterOrder + 1] = {0.5, -0.25};` — still fails: variable-sized object may not be initialized
-- 10-20 18:43 [compile] variable-sized object may not be initialized — plan: Change line 4 to `float b[filterOrder + 1] = {0.5, -0.25};` — still fails: expected expression
-- 10-20 18:44 [compile] expected expression — plan: Change line 6 to `float a[filterOrder + 1] = {1.0, -2.5};` — still fails: variable-sized object may not be initialized
 
 ### Not compiling yet — 5 × incompatible pointer to integer conversion assigning to 'X' from 'X'
 
@@ -46963,296 +47496,6 @@ void FUN_002daecc(long param_1) {
 }
 ```
 
-### Not compiling yet — 5 × N error generated.
-
-All: FUN_001c5054 (1c5054), FUN_001cbbd8 (1cbbd8), FUN_001e18f0 (1e18f0), FUN_00208990 (208990), FUN_00253858 (253858)
-
-#### FUN_001c5054 — funcs/FUN_001c5054.cpp, Ghidra 1c5054, 0 model attempt(s)
-
-Compiler output:
-```
-le: requires 2 arguments, but 3 were provided
-  269 |   vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:281:3: note: candidate constructor not viable: requires 2 arguments, but 3 were provided
-  281 |   vector(initializer_list<value_type> __il, const allocator_type& __a)
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:300:3: note: candidate constructor not viable: requires 2 arguments, but 3 were provided
-  300 |   vector(vector&& __x, const __type_identity_t<allocator_type>& __a);
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:193:55: note: candidate constructor template not viable: requires 2 arguments, but 3 were provided
-  193 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_InputIterator __first, _InputIterator __last) {
-      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:212:55: note: candidate constructor template not viable: requires 2 arguments, but 3 were provided
-  212 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_ForwardIterator __first, _ForwardIterator __last) {
-      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:138:64: note: candidate constructor not viable: requires single argument '__a', but 3 arguments were provided
-  138 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(const allocator_type& __a)
-      |                                                                ^      ~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:147:64: note: candidate constructor not viable: requires single argument '__n', but 3 arguments were provided
-  147 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(size_type __n) {
-      |                                                                ^      ~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:264:55: note: candidate constructor not viable: requires single argument '__x', but 3 arguments were provided
-  264 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(const vector& __x)
-      |                                                       ^      ~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:276:55: note: candidate constructor not viable: requires single argument '__il', but 3 arguments were provided
-  276 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(initializer_list<value_type> __il) {
-      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:292:55: note: candidate constructor not viable: requires single argument '__x', but 3 arguments were provided
-  292 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(vector&& __x)
-      |                                                       ^      ~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:136:55: note: candidate constructor not viable: requires 0 arguments, but 3 were provided
-  136 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector()
-      |                                                       ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_001c5054(long *param_1, undefined8 *param_2, byte param_3) {
-    std::vector<long> params = {param_1, param_2, param_3};
-    std::vector<long> results;
-
-    for (long param : params) {
-        if (param == 0) {
-            results.push_back(-1);
-        } else {
-            results.push_back(1);
-        }
-    }
-
-    std::cout << "Results: ";
-    for (long result : results) {
-        std::cout << result << " ";
-    }
-    std::cout << std::endl;
-}
-```
-
-#### FUN_001cbbd8 — funcs/FUN_001cbbd8.cpp, Ghidra 1cbbd8, 0 model attempt(s)
-
-Compiler output:
-```
-le: requires 2 arguments, but 3 were provided
-  269 |   vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:281:3: note: candidate constructor not viable: requires 2 arguments, but 3 were provided
-  281 |   vector(initializer_list<value_type> __il, const allocator_type& __a)
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:300:3: note: candidate constructor not viable: requires 2 arguments, but 3 were provided
-  300 |   vector(vector&& __x, const __type_identity_t<allocator_type>& __a);
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:193:55: note: candidate constructor template not viable: requires 2 arguments, but 3 were provided
-  193 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_InputIterator __first, _InputIterator __last) {
-      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:212:55: note: candidate constructor template not viable: requires 2 arguments, but 3 were provided
-  212 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_ForwardIterator __first, _ForwardIterator __last) {
-      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:138:64: note: candidate constructor not viable: requires single argument '__a', but 3 arguments were provided
-  138 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(const allocator_type& __a)
-      |                                                                ^      ~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:147:64: note: candidate constructor not viable: requires single argument '__n', but 3 arguments were provided
-  147 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(size_type __n) {
-      |                                                                ^      ~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:264:55: note: candidate constructor not viable: requires single argument '__x', but 3 arguments were provided
-  264 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(const vector& __x)
-      |                                                       ^      ~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:276:55: note: candidate constructor not viable: requires single argument '__il', but 3 arguments were provided
-  276 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(initializer_list<value_type> __il) {
-      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:292:55: note: candidate constructor not viable: requires single argument '__x', but 3 arguments were provided
-  292 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(vector&& __x)
-      |                                                       ^      ~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:136:55: note: candidate constructor not viable: requires 0 arguments, but 3 were provided
-  136 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector()
-      |                                                       ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_001cbbd8(long param_1, long *param_2, long *param_3, uint param_4) {
-  std::vector<long> params = {param_1, param_2, param_3};
-  std::vector<long> filteredParams;
-
-  for (long param : params) {
-    if (((byte)param >> 2 & 1) != 0) {
-      filteredParams.push_back(param);
-    }
-  }
-
-  for (long param : filteredParams) {
-    std::cout << "Filtered value: " << param << std::endl;
-  }
-}
-```
-
-#### FUN_001e18f0 — funcs/FUN_001e18f0.cpp, Ghidra 1e18f0, 0 model attempt(s)
-
-Compiler output:
-```
-type 'void' to 'int' for 1st argument
-  146 |   basic_ostream& operator<<(int __n);
-      |                  ^          ~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:147:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'unsigned int' for 1st argument
-  147 |   basic_ostream& operator<<(unsigned int __n);
-      |                  ^          ~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:148:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'long' for 1st argument
-  148 |   basic_ostream& operator<<(long __n);
-      |                  ^          ~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:149:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'unsigned long' for 1st argument
-  149 |   basic_ostream& operator<<(unsigned long __n);
-      |                  ^          ~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:150:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'long long' for 1st argument
-  150 |   basic_ostream& operator<<(long long __n);
-      |                  ^          ~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:151:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'unsigned long long' for 1st argument
-  151 |   basic_ostream& operator<<(unsigned long long __n);
-      |                  ^          ~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:152:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'float' for 1st argument
-  152 |   basic_ostream& operator<<(float __f);
-      |                  ^          ~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:153:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'double' for 1st argument
-  153 |   basic_ostream& operator<<(double __f);
-      |                  ^          ~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:154:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'long double' for 1st argument
-  154 |   basic_ostream& operator<<(long double __f);
-      |                  ^          ~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:155:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'const void *' for 1st argument
-  155 |   basic_ostream& operator<<(const void* __p);
-      |                  ^          ~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:163:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'basic_streambuf<char_type, traits_type> *' (aka 'basic_streambuf<char, std::char_traits<char>> *') for 1st argument
-  163 |   basic_ostream& operator<<(basic_streambuf<char_type, traits_type>* __sb);
-      |                  ^          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:168:40: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'nullptr_t' (aka 'std::nullptr_t') for 1st argument
-  168 |   _LIBCPP_HIDE_FROM_ABI basic_ostream& operator<<(nullptr_t) { return *this << "nullptr"; }
-      |                                        ^          ~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_001e18f0(int *param_1, long param_2) {
-  int iVar1;
-
-  if (param_2 == 0) {
-    iVar1 = -1;
-  }
-  else {
-    iVar1 = FUN_001db464(param_2);
-  }
-
-  std::cout << "Filtered value: " << FUN_0022a5e4(param_1, iVar1) << std::endl;
-}
-```
-
-#### FUN_00208990 — funcs/FUN_00208990.cpp, Ghidra 208990, 0 model attempt(s)
-
-Compiler output:
-```
-rsion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'unsigned int' for 1st argument
-  147 |   basic_ostream& operator<<(unsigned int __n);
-      |                  ^          ~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:148:18: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'long' for 1st argument
-  148 |   basic_ostream& operator<<(long __n);
-      |                  ^          ~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:149:18: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'unsigned long' for 1st argument
-  149 |   basic_ostream& operator<<(unsigned long __n);
-      |                  ^          ~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:150:18: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'long long' for 1st argument
-  150 |   basic_ostream& operator<<(long long __n);
-      |                  ^          ~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:151:18: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'unsigned long long' for 1st argument
-  151 |   basic_ostream& operator<<(unsigned long long __n);
-      |                  ^          ~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:152:18: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'float' for 1st argument
-  152 |   basic_ostream& operator<<(float __f);
-      |                  ^          ~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:153:18: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'double' for 1st argument
-  153 |   basic_ostream& operator<<(double __f);
-      |                  ^          ~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:154:18: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'long double' for 1st argument
-  154 |   basic_ostream& operator<<(long double __f);
-      |                  ^          ~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:155:18: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'const void *' for 1st argument; remove *
-  155 |   basic_ostream& operator<<(const void* __p);
-      |                  ^          ~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:163:18: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'basic_streambuf<char_type, traits_type> *' (aka 'basic_streambuf<char, std::char_traits<char>> *') for 1st argument
-  163 |   basic_ostream& operator<<(basic_streambuf<char_type, traits_type>* __sb);
-      |                  ^          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:168:40: note: candidate function not viable: no known conversion from 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t') to 'nullptr_t' (aka 'std::nullptr_t') for 1st argument
-  168 |   _LIBCPP_HIDE_FROM_ABI basic_ostream& operator<<(nullptr_t) { return *this << "nullptr"; }
-      |                                        ^          ~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00208990(pthread_mutex_t *param_1) {
-    std::cout << "Processing lowpass filter with param_1: " << *param_1 << std::endl;
-}
-```
-
-#### FUN_00253858 — funcs/FUN_00253858.cpp, Ghidra 253858, 0 model attempt(s)
-
-Compiler output:
-```
-.h:136:55: note: candidate constructor not viable: requires 0 arguments, but 1 was provided
-  136 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector()
-      |                                                       ^
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:157:64: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
-  157 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(size_type __n, const allocator_type& __a)
-      |                                                                ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:168:55: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
-  168 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(size_type __n, const value_type& __x) {
-      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:269:3: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
-  269 |   vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:281:3: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
-  281 |   vector(initializer_list<value_type> __il, const allocator_type& __a)
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:300:3: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
-  300 |   vector(vector&& __x, const __type_identity_t<allocator_type>& __a);
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:193:55: note: candidate constructor template not viable: requires 2 arguments, but 1 was provided
-  193 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_InputIterator __first, _InputIterator __last) {
-      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:212:55: note: candidate constructor template not viable: requires 2 arguments, but 1 was provided
-  212 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_ForwardIterator __first, _ForwardIterator __last) {
-      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:179:3: note: candidate constructor template not viable: requires 3 arguments, but 1 was provided
-  179 |   vector(size_type __n, const value_type& __x, const allocator_type& __a)
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:202:3: note: candidate constructor template not viable: requires 3 arguments, but 1 was provided
-  202 |   vector(_InputIterator __first, _InputIterator __last, const allocator_type& __a)
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:223:3: note: candidate constructor template not viable: requires 3 arguments, but 1 was provided
-  223 |   vector(_ForwardIterator __first, _ForwardIterator __last, const allocator_type& __a)
-      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00253858(int *param_1) {
-  std::vector<int> params = {param_1};
-
-  for (int i = 0; i < params.size(); ++i) {
-    if (params[i] != 0) {
-      std::cout << "Processing param: " << params[i] << std::endl;
-    }
-  }
-
-  return;
-}
-```
-
 ### Not compiling yet — 4 × cannot initialize a member subobject of type 'X' with an lvalue of type 'X'
 
 All: FUN_00006ff8 (6ff8), FUN_0003d22c (3d22c), FUN_0004fbac (4fbac), FUN_0007e5e0 (7e5e0)
@@ -47915,6 +48158,118 @@ uint64_t FUN_00339e64(uint32_t *param_1,long *param_2,uint64_t param_3,void *par
     } while (param_5 != (void *)0x0);
   }
   return 0;
+}
+```
+
+### Not compiling yet — 4 × variable-sized object may not be initialized
+
+All: FUN_00056ce4 (56ce4), FUN_00061310 (61310), FUN_00078124 (78124), FUN_0007b19c (7b19c)
+
+#### FUN_00056ce4 — funcs/__Z12FUN_00056ce4Pfi.cpp, Ghidra 56ce4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00056ce4Pfi.cpp:8:28: error: variable-sized object may not be initialized
+    8 |         float filteredData[i] = {0.9 * x + 0.1 * y};
+      |                            ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00056ce4(float *data, int size) {
+    for (int i = 0; i < size; ++i) {
+        float x = data[i];
+        float y = -x;
+
+        float filteredData[i] = {0.9 * x + 0.1 * y};
+
+        for (int j = 0; j < size; ++j) {
+            data[j] = filteredData[j];
+        }
+    }
+}
+```
+
+#### FUN_00061310 — funcs/FUN_00061310.cpp, Ghidra 61310, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00061310.cpp:8:28: error: variable-sized object may not be initialized
+    8 |         float filteredData[i] = {0.9 * x + 0.1 * y};
+      |                            ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00061310(float *data, int size) {
+    for (int i = 0; i < size; ++i) {
+        float x = data[i];
+        float y = data[size - 1 - i];
+
+        float filteredData[i] = {0.9 * x + 0.1 * y};
+
+        for (int j = 0; j < size; ++j) {
+            data[j] = filteredData[j];
+        }
+    }
+}
+```
+
+#### FUN_00078124 — funcs/FUN_00078124.cpp, Ghidra 78124, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00078124.cpp:8:28: error: variable-sized object may not be initialized
+    8 |         float filteredData[i] = {0.9 * x + 0.1 * y, 0.9 * x - 0.1 * y};
+      |                            ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00078124(float *data, int size) {
+    for (int i = 0; i < size; ++i) {
+        float x = data[i];
+        float y = -x;
+
+        float filteredData[i] = {0.9 * x + 0.1 * y, 0.9 * x - 0.1 * y};
+
+        for (int j = 0; j < size; ++j) {
+            data[j] = filteredData[j];
+        }
+    }
+}
+```
+
+#### FUN_0007b19c — funcs/FUN_0007b19c.cpp, Ghidra 7b19c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0007b19c.cpp:8:28: error: variable-sized object may not be initialized
+    8 |         float filteredData[i] = {0.9 * x + 0.1 * y};
+      |                            ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0007b19c(float *data, int size) {
+    for (int i = 0; i < size; ++i) {
+        float x = data[i];
+        float y = -x;
+
+        float filteredData[i] = {0.9 * x + 0.1 * y};
+
+        for (int j = 0; j < size; ++j) {
+            data[j] = filteredData[j];
+        }
+    }
 }
 ```
 
@@ -49098,6 +49453,248 @@ LAB_0025a06c:
 }
 ```
 
+### Not compiling yet — 4 × N error generated.
+
+All: FUN_001c5054 (1c5054), FUN_001cbbd8 (1cbbd8), FUN_001e18f0 (1e18f0), FUN_00253858 (253858)
+
+#### FUN_001c5054 — funcs/FUN_001c5054.cpp, Ghidra 1c5054, 0 model attempt(s)
+
+Compiler output:
+```
+le: requires 2 arguments, but 3 were provided
+  269 |   vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:281:3: note: candidate constructor not viable: requires 2 arguments, but 3 were provided
+  281 |   vector(initializer_list<value_type> __il, const allocator_type& __a)
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:300:3: note: candidate constructor not viable: requires 2 arguments, but 3 were provided
+  300 |   vector(vector&& __x, const __type_identity_t<allocator_type>& __a);
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:193:55: note: candidate constructor template not viable: requires 2 arguments, but 3 were provided
+  193 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_InputIterator __first, _InputIterator __last) {
+      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:212:55: note: candidate constructor template not viable: requires 2 arguments, but 3 were provided
+  212 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_ForwardIterator __first, _ForwardIterator __last) {
+      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:138:64: note: candidate constructor not viable: requires single argument '__a', but 3 arguments were provided
+  138 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(const allocator_type& __a)
+      |                                                                ^      ~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:147:64: note: candidate constructor not viable: requires single argument '__n', but 3 arguments were provided
+  147 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(size_type __n) {
+      |                                                                ^      ~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:264:55: note: candidate constructor not viable: requires single argument '__x', but 3 arguments were provided
+  264 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(const vector& __x)
+      |                                                       ^      ~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:276:55: note: candidate constructor not viable: requires single argument '__il', but 3 arguments were provided
+  276 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(initializer_list<value_type> __il) {
+      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:292:55: note: candidate constructor not viable: requires single argument '__x', but 3 arguments were provided
+  292 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(vector&& __x)
+      |                                                       ^      ~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:136:55: note: candidate constructor not viable: requires 0 arguments, but 3 were provided
+  136 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector()
+      |                                                       ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001c5054(long *param_1, undefined8 *param_2, byte param_3) {
+    std::vector<long> params = {param_1, param_2, param_3};
+    std::vector<long> results;
+
+    for (long param : params) {
+        if (param == 0) {
+            results.push_back(-1);
+        } else {
+            results.push_back(1);
+        }
+    }
+
+    std::cout << "Results: ";
+    for (long result : results) {
+        std::cout << result << " ";
+    }
+    std::cout << std::endl;
+}
+```
+
+#### FUN_001cbbd8 — funcs/FUN_001cbbd8.cpp, Ghidra 1cbbd8, 0 model attempt(s)
+
+Compiler output:
+```
+le: requires 2 arguments, but 3 were provided
+  269 |   vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:281:3: note: candidate constructor not viable: requires 2 arguments, but 3 were provided
+  281 |   vector(initializer_list<value_type> __il, const allocator_type& __a)
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:300:3: note: candidate constructor not viable: requires 2 arguments, but 3 were provided
+  300 |   vector(vector&& __x, const __type_identity_t<allocator_type>& __a);
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:193:55: note: candidate constructor template not viable: requires 2 arguments, but 3 were provided
+  193 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_InputIterator __first, _InputIterator __last) {
+      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:212:55: note: candidate constructor template not viable: requires 2 arguments, but 3 were provided
+  212 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_ForwardIterator __first, _ForwardIterator __last) {
+      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:138:64: note: candidate constructor not viable: requires single argument '__a', but 3 arguments were provided
+  138 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(const allocator_type& __a)
+      |                                                                ^      ~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:147:64: note: candidate constructor not viable: requires single argument '__n', but 3 arguments were provided
+  147 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(size_type __n) {
+      |                                                                ^      ~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:264:55: note: candidate constructor not viable: requires single argument '__x', but 3 arguments were provided
+  264 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(const vector& __x)
+      |                                                       ^      ~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:276:55: note: candidate constructor not viable: requires single argument '__il', but 3 arguments were provided
+  276 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(initializer_list<value_type> __il) {
+      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:292:55: note: candidate constructor not viable: requires single argument '__x', but 3 arguments were provided
+  292 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(vector&& __x)
+      |                                                       ^      ~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:136:55: note: candidate constructor not viable: requires 0 arguments, but 3 were provided
+  136 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector()
+      |                                                       ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001cbbd8(long param_1, long *param_2, long *param_3, uint param_4) {
+  std::vector<long> params = {param_1, param_2, param_3};
+  std::vector<long> filteredParams;
+
+  for (long param : params) {
+    if (((byte)param >> 2 & 1) != 0) {
+      filteredParams.push_back(param);
+    }
+  }
+
+  for (long param : filteredParams) {
+    std::cout << "Filtered value: " << param << std::endl;
+  }
+}
+```
+
+#### FUN_001e18f0 — funcs/FUN_001e18f0.cpp, Ghidra 1e18f0, 0 model attempt(s)
+
+Compiler output:
+```
+type 'void' to 'int' for 1st argument
+  146 |   basic_ostream& operator<<(int __n);
+      |                  ^          ~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:147:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'unsigned int' for 1st argument
+  147 |   basic_ostream& operator<<(unsigned int __n);
+      |                  ^          ~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:148:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'long' for 1st argument
+  148 |   basic_ostream& operator<<(long __n);
+      |                  ^          ~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:149:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'unsigned long' for 1st argument
+  149 |   basic_ostream& operator<<(unsigned long __n);
+      |                  ^          ~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:150:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'long long' for 1st argument
+  150 |   basic_ostream& operator<<(long long __n);
+      |                  ^          ~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:151:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'unsigned long long' for 1st argument
+  151 |   basic_ostream& operator<<(unsigned long long __n);
+      |                  ^          ~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:152:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'float' for 1st argument
+  152 |   basic_ostream& operator<<(float __f);
+      |                  ^          ~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:153:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'double' for 1st argument
+  153 |   basic_ostream& operator<<(double __f);
+      |                  ^          ~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:154:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'long double' for 1st argument
+  154 |   basic_ostream& operator<<(long double __f);
+      |                  ^          ~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:155:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'const void *' for 1st argument
+  155 |   basic_ostream& operator<<(const void* __p);
+      |                  ^          ~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:163:18: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'basic_streambuf<char_type, traits_type> *' (aka 'basic_streambuf<char, std::char_traits<char>> *') for 1st argument
+  163 |   basic_ostream& operator<<(basic_streambuf<char_type, traits_type>* __sb);
+      |                  ^          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__ostream/basic_ostream.h:168:40: note: candidate function not viable: cannot convert argument of incomplete type 'void' to 'nullptr_t' (aka 'std::nullptr_t') for 1st argument
+  168 |   _LIBCPP_HIDE_FROM_ABI basic_ostream& operator<<(nullptr_t) { return *this << "nullptr"; }
+      |                                        ^          ~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001e18f0(int *param_1, long param_2) {
+  int iVar1;
+
+  if (param_2 == 0) {
+    iVar1 = -1;
+  }
+  else {
+    iVar1 = FUN_001db464(param_2);
+  }
+
+  std::cout << "Filtered value: " << FUN_0022a5e4(param_1, iVar1) << std::endl;
+}
+```
+
+#### FUN_00253858 — funcs/FUN_00253858.cpp, Ghidra 253858, 0 model attempt(s)
+
+Compiler output:
+```
+.h:136:55: note: candidate constructor not viable: requires 0 arguments, but 1 was provided
+  136 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector()
+      |                                                       ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:157:64: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+  157 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI explicit vector(size_type __n, const allocator_type& __a)
+      |                                                                ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:168:55: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+  168 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(size_type __n, const value_type& __x) {
+      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:269:3: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+  269 |   vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:281:3: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+  281 |   vector(initializer_list<value_type> __il, const allocator_type& __a)
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:300:3: note: candidate constructor not viable: requires 2 arguments, but 1 was provided
+  300 |   vector(vector&& __x, const __type_identity_t<allocator_type>& __a);
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:193:55: note: candidate constructor template not viable: requires 2 arguments, but 1 was provided
+  193 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_InputIterator __first, _InputIterator __last) {
+      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:212:55: note: candidate constructor template not viable: requires 2 arguments, but 1 was provided
+  212 |   _LIBCPP_CONSTEXPR_SINCE_CXX20 _LIBCPP_HIDE_FROM_ABI vector(_ForwardIterator __first, _ForwardIterator __last) {
+      |                                                       ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:179:3: note: candidate constructor template not viable: requires 3 arguments, but 1 was provided
+  179 |   vector(size_type __n, const value_type& __x, const allocator_type& __a)
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:202:3: note: candidate constructor template not viable: requires 3 arguments, but 1 was provided
+  202 |   vector(_InputIterator __first, _InputIterator __last, const allocator_type& __a)
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/vector.h:223:3: note: candidate constructor template not viable: requires 3 arguments, but 1 was provided
+  223 |   vector(_ForwardIterator __first, _ForwardIterator __last, const allocator_type& __a)
+      |   ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00253858(int *param_1) {
+  std::vector<int> params = {param_1};
+
+  for (int i = 0; i < params.size(); ++i) {
+    if (params[i] != 0) {
+      std::cout << "Processing param: " << params[i] << std::endl;
+    }
+  }
+
+  return;
+}
+```
+
 ### Not compiling yet — 4 × incompatible integer to pointer conversion assigning to 'X' from 'X'
 
 All: FUN_001f4434 (1f4434), FUN_0023c130 (23c130), FUN_0023c734 (23c734), FUN_0025247c (25247c)
@@ -50183,131 +50780,6 @@ LAB_00375834:
   param_1[0x1d] = 0;
 LAB_00375848:
   return (long *)(ulong)local_64;
-}
-```
-
-### Not compiling yet — 3 × type 'X' does not provide a subscript operator
-
-All: FUN_00004424 (4424), FUN_00032704 (32704), FUN_0033f3a0 (33f3a0)
-
-#### FUN_00004424 — funcs/__Z12FUN_00004424Phj.cpp, Ghidra 4424, 3 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00004424Phj.cpp:5:42: error: type 'FilterData' does not provide a subscript operator
-    5 |         data[i] = (data[i] + DAT_00424998[i]) / 2;
-      |                              ~~~~~~~~~~~~^~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00004424(uint8_t* data, uint32_t size) {
-    for (uint32_t i = 0; i < size; ++i) {
-        data[i] = (data[i] + DAT_00424998[i]) / 2;
-    }
-}
-```
-Notes:
-- 10-20 18:43 [compile] no member named 'data' in 'FilterData' — plan: Change line 5 to: `data[i] = (data[i] + DAT_00424998[i]) / 2;` — still fails: type 'FilterData' does not provide a subscript operator
-
-#### FUN_00032704 — funcs/__Z12FUN_00032704Py.cpp, Ghidra 32704, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00032704Py.cpp:6:13: error: type 'DAT_00429e10' does not provide a subscript operator
-    6 |   if (param1[2] != 0) {
-      |       ~~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00032704Py.cpp:7:24: error: type 'DAT_00429e10' does not provide a subscript operator
-    7 |     FUN_0022ba38(param1[2], (ulong)param1);
-      |                  ~~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00032704Py.cpp:7:29: error: cannot convert 'DAT_00429e10' to 'ulong' (aka 'unsigned long') without a conversion operator
-    7 |     FUN_0022ba38(param1[2], (ulong)param1);
-      |                             ^~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00032704Py.cpp:12:3: error: void function 'FUN_00032704' should not return a value [-Wreturn-mismatch]
-   12 |   return param_1;
-      |   ^      ~~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00032704(undefined8 *param_1) {
-  DAT_00429e10 param1;
-
-  if (param1[2] != 0) {
-    FUN_0022ba38(param1[2], (ulong)param1);
-  }
-
-  FUN_000046dc();
-
-  return param_1;
-}
-```
-
-#### FUN_0033f3a0 — funcs/FUN_0033f3a0.cpp, Ghidra 33f3a0, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:15:10: error: type 'LowpassFilterState' does not provide a subscript operator
-   15 |     state[0] = alpha * state[0] + (1 - alpha) * input;
-      |     ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:15:29: error: type 'LowpassFilterState' does not provide a subscript operator
-   15 |     state[0] = alpha * state[0] + (1 - alpha) * input;
-      |                        ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:16:10: error: type 'LowpassFilterState' does not provide a subscript operator
-   16 |     state[1] = alpha * state[1] + (1 - alpha) * state[2];
-      |     ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:16:29: error: type 'LowpassFilterState' does not provide a subscript operator
-   16 |     state[1] = alpha * state[1] + (1 - alpha) * state[2];
-      |                        ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:16:54: error: type 'LowpassFilterState' does not provide a subscript operator
-   16 |     state[1] = alpha * state[1] + (1 - alpha) * state[2];
-      |                                                 ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:17:10: error: type 'LowpassFilterState' does not provide a subscript operator
-   17 |     state[2] = alpha * state[2] + (1 - alpha) * state[3];
-      |     ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:17:29: error: type 'LowpassFilterState' does not provide a subscript operator
-   17 |     state[2] = alpha * state[2] + (1 - alpha) * state[3];
-      |                        ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:17:54: error: type 'LowpassFilterState' does not provide a subscript operator
-   17 |     state[2] = alpha * state[2] + (1 - alpha) * state[3];
-      |                                                 ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:18:10: error: type 'LowpassFilterState' does not provide a subscript operator
-   18 |     state[3] = alpha * state[3] + (1 - alpha) * input;
-      |     ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:18:29: error: type 'LowpassFilterState' does not provide a subscript operator
-   18 |     state[3] = alpha * state[3] + (1 - alpha) * input;
-      |                        ~~~~~^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:20:17: error: type 'LowpassFilterState' does not provide a subscript operator
-   20 |     return state[0];
-      |            ~~~~~^~
-11 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-float FUN_0033f3a0(float input, LowpassFilterState &state, float cutoffFrequency, int filterType) {
-    static const float PI = 3.14159265358979323846;
-
-    float alpha;
-    if (filterType == 0) {
-        alpha = cutoffFrequency / PI;
-    } else if (filterType == 1) {
-        alpha = 2.0f / PI * cutoffFrequency;
-    } else {
-        return input;
-    }
-
-    state[0] = alpha * state[0] + (1 - alpha) * input;
-    state[1] = alpha * state[1] + (1 - alpha) * state[2];
-    state[2] = alpha * state[2] + (1 - alpha) * state[3];
-    state[3] = alpha * state[3] + (1 - alpha) * input;
-
-    return state[0];
 }
 ```
 
@@ -53249,6 +53721,109 @@ LAB_0036ac18:
       uVar15 = -(ulong)((uVar6 & 0xff00ff) >> 7) & 0xfffffffffffc0000 |
                (ulong)((uint)(uVar6 >> 8) | (uVar6 & 0xff00ff) << 8) << 2;
     } while( true );
+}
+```
+
+### Not compiling yet — 2 × type 'X' does not provide a subscript operator
+
+All: FUN_00032704 (32704), FUN_0033f3a0 (33f3a0)
+
+#### FUN_00032704 — funcs/__Z12FUN_00032704Py.cpp, Ghidra 32704, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00032704Py.cpp:6:13: error: type 'DAT_00429e10' does not provide a subscript operator
+    6 |   if (param1[2] != 0) {
+      |       ~~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00032704Py.cpp:7:24: error: type 'DAT_00429e10' does not provide a subscript operator
+    7 |     FUN_0022ba38(param1[2], (ulong)param1);
+      |                  ~~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00032704Py.cpp:7:29: error: cannot convert 'DAT_00429e10' to 'ulong' (aka 'unsigned long') without a conversion operator
+    7 |     FUN_0022ba38(param1[2], (ulong)param1);
+      |                             ^~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00032704Py.cpp:12:3: error: void function 'FUN_00032704' should not return a value [-Wreturn-mismatch]
+   12 |   return param_1;
+      |   ^      ~~~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00032704(undefined8 *param_1) {
+  DAT_00429e10 param1;
+
+  if (param1[2] != 0) {
+    FUN_0022ba38(param1[2], (ulong)param1);
+  }
+
+  FUN_000046dc();
+
+  return param_1;
+}
+```
+
+#### FUN_0033f3a0 — funcs/FUN_0033f3a0.cpp, Ghidra 33f3a0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:15:10: error: type 'LowpassFilterState' does not provide a subscript operator
+   15 |     state[0] = alpha * state[0] + (1 - alpha) * input;
+      |     ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:15:29: error: type 'LowpassFilterState' does not provide a subscript operator
+   15 |     state[0] = alpha * state[0] + (1 - alpha) * input;
+      |                        ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:16:10: error: type 'LowpassFilterState' does not provide a subscript operator
+   16 |     state[1] = alpha * state[1] + (1 - alpha) * state[2];
+      |     ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:16:29: error: type 'LowpassFilterState' does not provide a subscript operator
+   16 |     state[1] = alpha * state[1] + (1 - alpha) * state[2];
+      |                        ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:16:54: error: type 'LowpassFilterState' does not provide a subscript operator
+   16 |     state[1] = alpha * state[1] + (1 - alpha) * state[2];
+      |                                                 ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:17:10: error: type 'LowpassFilterState' does not provide a subscript operator
+   17 |     state[2] = alpha * state[2] + (1 - alpha) * state[3];
+      |     ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:17:29: error: type 'LowpassFilterState' does not provide a subscript operator
+   17 |     state[2] = alpha * state[2] + (1 - alpha) * state[3];
+      |                        ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:17:54: error: type 'LowpassFilterState' does not provide a subscript operator
+   17 |     state[2] = alpha * state[2] + (1 - alpha) * state[3];
+      |                                                 ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:18:10: error: type 'LowpassFilterState' does not provide a subscript operator
+   18 |     state[3] = alpha * state[3] + (1 - alpha) * input;
+      |     ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:18:29: error: type 'LowpassFilterState' does not provide a subscript operator
+   18 |     state[3] = alpha * state[3] + (1 - alpha) * input;
+      |                        ~~~~~^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0033f3a0.cpp:20:17: error: type 'LowpassFilterState' does not provide a subscript operator
+   20 |     return state[0];
+      |            ~~~~~^~
+11 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+float FUN_0033f3a0(float input, LowpassFilterState &state, float cutoffFrequency, int filterType) {
+    static const float PI = 3.14159265358979323846;
+
+    float alpha;
+    if (filterType == 0) {
+        alpha = cutoffFrequency / PI;
+    } else if (filterType == 1) {
+        alpha = 2.0f / PI * cutoffFrequency;
+    } else {
+        return input;
+    }
+
+    state[0] = alpha * state[0] + (1 - alpha) * input;
+    state[1] = alpha * state[1] + (1 - alpha) * state[2];
+    state[2] = alpha * state[2] + (1 - alpha) * state[3];
+    state[3] = alpha * state[3] + (1 - alpha) * input;
+
+    return state[0];
 }
 ```
 
@@ -57501,31 +58076,6 @@ float FUN_001a6914(float param_1) {
   filteredValue = std::sinf(2 * M_PI * param_1 / (float)LowPassFilterParams::cutoffFrequency);
 
   return filteredValue;
-}
-```
-
-### Not compiling yet — 1 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); remove &
-
-All: FUN_001da8a8 (1da8a8)
-
-#### FUN_001da8a8 — funcs/FUN_001da8a8.cpp, Ghidra 1da8a8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001da8a8.cpp:6:16: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &
-    6 |     *param_1 = &DAT_0042fbd0;
-      |                ^~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_001da8a8(undefined8 *param_1) {
-    uint64_t DAT_0042fbd0 = 0; // auto-declared (undeclared in the rewrite)
-
-    *param_1 = &DAT_0042fbd0;
-    *(undefined4 *)(param_1 + 1) = 0;
 }
 ```
 
@@ -75101,11 +75651,6 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "examples": {
 "use of undeclared identifier 'X'": [
 {
-"error": "use of undeclared identifier '_mach_timebase_info'",
-"before": "kVar1 = _mach_timebase_info(&local_18);",
-"after": "kVar1 = mach_timebase_info(&local_18);"
-},
-{
 "error": "use of undeclared identifier 'rotateVectorAndRotateFunction'",
 "before": "rotateVectorAndRotateFunction(inputVector);",
 "after": "processVectorAndRotateFunction(inputVector, inputVector);"
@@ -75119,85 +75664,80 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "error": "use of undeclared identifier 'updateFilter'",
 "before": "updateFilter(data, filterSize);",
 "after": "processVectorAndRotateFunction(data, data);"
+},
+{
+"error": "use of undeclared identifier 'printInt'",
+"before": "printInt(data);",
+"after": "if (!filterEnabled) {\n        // printInt(data);\n    } else {\n        applyFilter(data, settings);\n    }"
 }
 ],
 "no matching function for call to 'X'": [
 {
-"error": "no matching function for call to 'FUN_001fb680'",
-"before": "if (((local_31 & 1) != 0) && (iVar3 = FUN_001fb680(param_1), 1 < iVar3)) {\n      FUN_001fb5f4((undefined8 *)local_48, param_1);\n      plVar4 = FUN_001fb6a8((undefined8 *)local_48);\n      FUN_001fb5f4((undefined8 *)asStack_70, plVar4);\n      FUN_0001dbb4((long)local_48);",
-"after": "if (((local_31 & 1) != 0) && (iVar3 = FUN_001fb680((uint64_t *)param_1), 1 < iVar3)) {\n          FUN_001fb5f4((undefined8 *)local_48, (uint64_t *)param_1);\n          plVar4 = FUN_001fb6a8((undefined8 *)local_48);\n          FUN_001fb5f4((undefined8 *)asStack_70, plVar4);\n          FUN_0001dbb4((long)local_48);"
+"error": "no matching function for call to 'FUN_001e2fb4'",
+"before": "FUN_001e2fb4(param_1,param_2,param_3);",
+"after": "FUN_001e2fb4((float *)param_1, (float *)(param_1 + 1), 1);"
 },
 {
-"error": "no matching function for call to 'FUN_000041f4'",
-"before": "pvVar1 = FUN_000041f4((void *)0x444ba0L);",
-"after": "pvVar1 = FUN_000041f4(0x444ba0L);"
+"error": "no matching function for call to 'FUN_001e2fd8'",
+"before": "FUN_001e2fd8(param_1,param_2);",
+"after": "FUN_001e2fd8((const std::vector<long> &)*param_1, (const std::vector<long> &)*param_2);"
 },
 {
-"error": "no matching function for call to 'FUN_00219d24'",
-"before": "float *outputBuffer = FUN_00219d24(inputBuffer);",
-"after": "float *outputBuffer = FUN_00219d24((uint64_t *)inputBuffer);"
+"error": "no matching function for call to 'FUN_001e1dd4'",
+"before": "FUN_001e1dd4(param_1,param_2,param_3);",
+"after": "FUN_001e1dd4((float *)param_1, (float *)(param_1 + 1), *param_3);"
 },
 {
-"error": "no matching function for call to 'FUN_0021abf4'",
-"before": "FUN_0021abf4(param_1,param_2);",
-"after": "FUN_0021rbf4((uint64_t *)param_1,param_2);"
+"error": "no matching function for call to 'FUN_0000a1d8'",
+"before": "FUN_0000a1d8(&lStack_48, param_1 + 0x10);",
+"after": "FUN_0000a1d8((long *)&lStack_48, param_1 + 0x10);"
 }
 ],
 "use of undeclared identifier 'X'; did you mean 'X'?": [
 {
+"error": "use of undeclared identifier '_pthread_mutexattr_settype'; did you mean 'pthread_mutexattr_settype'?",
+"before": "_pthread_mutexattr_settype(&pStack_38,2);",
+"after": "pthread_mutexattr_settype(&pStack_38,PTHREAD_MUTEX_RECURSIVE_NP);"
+},
+{
+"error": "use of undeclared identifier '_pthread_mutex_init'; did you mean 'pthread_mutex_init'?",
+"before": "iVar1 = _pthread_mutex_init(param_1,&pStack_38);",
+"after": "iVar1 = pthread_mutex_init(param_1,&pStack_38);"
+},
+{
 "error": "use of undeclared identifier '_free'; did you mean 'free'?",
-"before": "_free(*(void **)(\"No space for CIE L*a*b*->RGB conversion state.\" + param_1 + 0x17));",
-"after": "free(*(void **)(\"No space for CIE L*a*b*->RGB conversion state.\" + param_1 + 0x17));"
+"before": "_free(param_1);",
+"after": "free(param_1);"
 },
 {
-"error": "use of undeclared identifier '_malloc'; did you mean 'malloc'?",
-"before": "local_40 = _malloc(param_2);",
-"after": "local_40 = malloc(param_2);"
-},
-{
-"error": "use of undeclared identifier '___cxa_allocate_exception'; did you mean '__cxxabiv1::__cxa_allocate_exception'?",
-"before": "plVar1 = (long *)___cxa_allocate_exception(0x18);",
-"after": "plVar1 = (long *)__cxxabiv1::__cxa_allocate_exception(0x18);"
-},
-{
-"error": "use of undeclared identifier '_bzero'; did you mean 'bzero'?",
-"before": "_bzero(param_1,param_2);",
-"after": "bzero(param_1,param_2);"
+"error": "use of undeclared identifier 'FUN_001fec98'; did you mean 'FUN_0017ec98'?",
+"before": "FUN_001fec98(local_30);",
+"after": "FUN_0017ec98(local_30);"
 }
 ],
 "ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]": [
 {
 "error": "ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]",
-"before": "(*(void *)PTR_assign_004503f0)();",
-"after": "int iVar1 = (*(int (*)(void))PTR_assign_004503f0)();"
-},
-{
-"error": "ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]",
-"before": "pvVar1 = (void *)(*(void *)PTR__malloc_004507f8)();",
-"after": "pvVar1 = (void *)(*(int (*)(void))PTR__malloc_004507f8)();"
-},
-{
-"error": "ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]",
-"before": "iVar1 = (*(void *)PTR__abs_004505b0)(param_1);",
-"after": "iVar1 = (*(int (*)(void))PTR__abs_004505b0)(param_1);"
-},
-{
-"error": "ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]",
 "before": "lVar1 = (*(void *)PTR__labs_00450798)();",
 "after": "lVar1 = (*(int (*)(void))PTR__labs_00450798)();"
+},
+{
+"error": "ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]",
+"before": "iVar1 = (*(void *)PTR__pthread_mutex_init_00450908)((int)(uintptr_t)param_1);",
+"after": "iVar1 = (*(int (*)(void))PTR__pthread_mutex_init_00450908)(param_1);"
+},
+{
+"error": "ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]",
+"before": "iVar1 = (*(void *)PTR__pthread_mutexattr_init_00450930)((int)(uintptr_t)param_1);",
+"after": "iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_init_00450930)((int)(uintptr_t)param_1);"
+},
+{
+"error": "ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]",
+"before": "iVar1 = (*(void *)PTR__pthread_mutexattr_settype_00450938)((int)(uintptr_t)param_1,param_2);",
+"after": "iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_settype_00450938)(param_1,param_2);"
 }
 ],
 "incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); remove &": [
-{
-"error": "incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &",
-"before": "*puVar3 = &DAT_00444fc8;",
-"after": "*puVar3 = (undefined8)&DAT_00444fc8;"
-},
-{
-"error": "incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &",
-"before": "*param_1 = &DAT_00444f20;",
-"after": "*param_1 = (uint64_t)&DAT_00444f20;"
-},
 {
 "error": "incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &",
 "before": "*puVar1 = &DAT_00444cd0;",
@@ -75207,50 +75747,60 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "error": "incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &",
 "before": "*puVar1 = &DAT_0043af48;",
 "after": "*puVar1 = (undefined8)&DAT_0043af48;"
+},
+{
+"error": "incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &",
+"before": "*param_1 = &DAT_0042fbd0;",
+"after": "*param_1 = (uint64_t)&DAT_0042fbd0;"
+},
+{
+"error": "incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &",
+"before": "*param_1 = &DAT_004368e8;",
+"after": "*param_1 = (uint64_t)&DAT_004368e8;"
 }
 ],
 "cannot cast from type 'X' to pointer type 'X'": [
 {
-"error": "cannot cast from type 'void' to pointer type 'long *'",
-"before": "puVar4 = (long*)FUN_0021ad3c(0x20);",
-"after": "puVar4 = FUN_0021ad3c(0x20);"
-},
-{
-"error": "cannot cast from type 'void' to pointer type 'float *'",
-"before": "float *inputBuffer = (float *)FUN_0020e24c();",
-"after": "float *inputBuffer = (float*)malloc(sizeof(float)*3);"
+"error": "cannot cast from type 'void' to pointer type 'void *'",
+"before": "pvVar1 = (void *)FUN_001e2258(*param_1);",
+"after": "pvVar1 = (uint64_t *)FUN_001e2258(*param_1);"
 },
 {
 "error": "cannot cast from type 'void' to pointer type 'long *'",
-"before": "local_40 = (long *)FUN_00216154(0x470e90, param_2);",
-"after": "local_40 = (long *)___cxa_allocate_exception(0x18);"
+"before": "pvVar1 = (long *)FUN_001e2258(*param_1);",
+"after": "pvVar1 = (uint64_t *)FUN_001e2258(*param_1);"
 },
 {
-"error": "cannot cast from type 'void' to pointer type 'long *'",
-"before": "puVar1 = (long *)FUN_00228f14(param_1 + 0x238);",
-"after": "puVar1 = (uint64_t *)FUN_00228f14(param_1 + 0x238);"
+"error": "cannot cast from type 'void' to pointer type 'void *'",
+"before": "pvVar1 = (void *)FUN_000b5c5c(param_2);",
+"after": "pvVar1 = (uint64_t *)FUN_000b5c5c(param_2);"
+},
+{
+"error": "cannot cast from type 'void' to pointer type 'void *'",
+"before": "pvVar1 = (void *)FUN_000041f4(0x4341c8L);",
+"after": "pvVar1 = (uint64_t *)FUN_000041f4(0x4341c8L);"
 }
 ],
 "assigning to 'X' from incompatible type 'X'": [
 {
 "error": "assigning to 'long' from incompatible type 'void'",
-"before": "lVar1 = FUN_002066a0();",
-"after": "lVar1 = (long)FUN_002066a0();"
+"before": "lVar5 = FUN_001f6d2c((undefined8 *)(local_50 + 0x10));",
+"after": "long lVar5 = FUN_001f6d2c((undefined8 *)(local_50 + 0x10));"
 },
 {
 "error": "assigning to 'void *' from incompatible type 'void'",
-"before": "local_40 = FUN_00216154(0x470e90, param_2);",
-"after": "local_40 = (long *)FUN_00216154(0x470e90, param_2);"
+"before": "pvVar1 = FUN_000041f4(0x443540L);",
+"after": "pvVar1 = (void *)FUN_000041f4(0x443540L);"
 },
 {
-"error": "assigning to 'long' from incompatible type 'void'",
-"before": "lVar1 = FUN_001f78c8((long)param_2);",
-"after": "long lVar1 = FUN_001f78c8(param_2);"
+"error": "assigning to 'void *' from incompatible type 'void'",
+"before": "pvVar1 = FUN_000b5c5c((long)param_2);",
+"after": "pvVar1 = (void *)FUN_000b5c5c(param_2);"
 },
 {
-"error": "assigning to 'long' from incompatible type 'void'",
-"before": "lVar5 = FUN_001f6d2c((undefined8 *)(local_50 + 0x10));",
-"after": "long lVar5 = FUN_001f6d2c((undefined8 *)(local_50 + 0x10));"
+"error": "assigning to 'void *' from incompatible type 'void'",
+"before": "pvVar1 = FUN_000041f4(0x4341c8L);",
+"after": "pvVar1 = (void *)FUN_000041f4(0x4341c8L);"
 }
 ],
 "incompatible pointer to integer conversion assigning to 'X' from 'X'; dereference with *": [
@@ -75263,16 +75813,6 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "C-style cast from 'X' to 'X' is not allowed": [
 {
 "error": "C-style cast from 'void' to 'int' is not allowed",
-"before": "lVar1 = (int)FUN_00227308();",
-"after": "long lVar1 = (int)(long long)FUN_00227308();"
-},
-{
-"error": "C-style cast from 'void' to 'int' is not allowed",
-"before": "iVar1 = (int)((*(void (*)(int))PTR__stat_004509f8)((uintptr_t)param_1));",
-"after": "iVar1 = (int)((*(void (*)(int))PTR__stat_004509f8)(param_1));"
-},
-{
-"error": "C-style cast from 'void' to 'int' is not allowed",
 "before": "iVar1 = (int)FUN_00208bd4(param_1);",
 "after": "iVar1 = (int)(long long)FUN_00208bd4(param_1);"
 },
@@ -75280,14 +75820,19 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "error": "C-style cast from 'void' to 'int' is not allowed",
 "before": "pvVar1 = (int)FUN_0022b04c(param_2);",
 "after": "pvVar1 = (int)(long long)FUN_0022b04c(param_2);"
+},
+{
+"error": "C-style cast from 'void' to 'long' is not allowed",
+"before": "long filteredValue = (long)FUN_001dbe84((undefined8 *)(param_1 + i * 0x28));",
+"after": "long filteredValue = (long)(long long)FUN_001dbe84((undefined8 *)(param_1 + i * 0x28));"
+},
+{
+"error": "C-style cast from 'void' to 'long long' is not allowed",
+"before": "bVar1 = (int)(long long)FUN_001fec1c(param_1);",
+"after": "bVar1 = (int)(long long)FUN_001fec1c(plVar2);"
 }
 ],
 "cannot initialize a variable of type 'X' with an rvalue of type 'X'": [
-{
-"error": "cannot initialize a variable of type 'int' with an rvalue of type 'void *'",
-"before": "int newResult = FUN_00008858(newValue);",
-"after": "long newResult = FUN_00008858(newValue);"
-},
 {
 "error": "cannot initialize a variable of type 'int' with an rvalue of type 'void * _Nullable'",
 "before": "int iVar1 = pthread_getspecific(*param_1);",
@@ -75302,6 +75847,11 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "error": "cannot initialize a variable of type 'long *' with an rvalue of type 'void'",
 "before": "long *plVar1 = FUN_002231ac(param_1, (undefined8 *)&DAT_00873c40);",
 "after": "int *plVar1 = FUN_002231ac(param_1, (undefined8 *)&DAT_00873c40);"
+},
+{
+"error": "cannot initialize a variable of type 'long' with an rvalue of type 'void'",
+"before": "long filteredValue = FUN_001dbe84((undefined8 *)(param_1 + i * 0x28));",
+"after": "long filteredValue = (long)FUN_001dbe84((undefined8 *)(param_1 + i * 0x28));"
 }
 ],
 "comparison between pointer and integer ('X' and 'X')": [
@@ -75309,6 +75859,11 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "error": "comparison between pointer and integer ('long' and 'long *')",
 "before": "if (plVar1 != (long *)0x0) {\n      processAudioData9(plVar1);\n    }",
 "after": "if(*(long **)param_1 != 0) {\n          processAudioData9(*((long **)param_1 + 1));\n        }"
+},
+{
+"error": "comparison between pointer and integer ('int' and 'int *')",
+"before": "for (int i = 0; i < ptr - 1; ++i) {\n      sum += *ptr;\n    }",
+"after": "for (int i = 0; i < ptr - param_1; ++i){\n          sum += *ptr;\n        }"
 }
 ],
 "static_cast from 'X' to 'X' is not allowed": [
@@ -75320,24 +75875,24 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ],
 "cannot cast from type 'X' to pointer type 'X' (aka 'X')": [
 {
-"error": "cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')",
-"before": "puVar1 = (uint64_t *)FUN_0020e018();",
-"after": "puVar1 = (long *)FUN_0020e018();"
+"error": "cannot cast from type 'void' to pointer type 'ulong *' (aka 'unsigned long *')",
+"before": "puVar2 = (ulong *)FUN_001e253c();",
+"after": "puVar2 = (long *)FUN_001e253c();"
 },
 {
-"error": "cannot cast from type 'void' to pointer type 'FILE *' (aka '__sFILE *')",
-"before": "local_58[0] = (FILE *)FUN_00200b48((uint64_t*)param_1);",
-"after": "local_58[0] = (long *)FUN_00200b48((uint64_t*)param_1);"
+"error": "cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')",
+"before": "pvVar1 = (uint64_t *)FUN_000041f4(0x443540L);",
+"after": "pvVar1 = (long *)FUN_000041f4(0x443540L);"
 },
 {
 "error": "cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *')",
-"before": "puVar1 = (undefined8 *)FUN_00228f14(param_1 + 0x238);",
-"after": "puVar1 = (long *)FUN_00228f14(param_1 + 0x238);"
+"before": "puVar1 = (undefined8 *)FUN_001e2e90();",
+"after": "puVar1 = (long *)FUN_001e2e90();"
 },
 {
 "error": "cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')",
-"before": "puVar1 = (uint64_t *)FUN_00228f14(param_1 + 0x238);",
-"after": "puVar1 = (long *)FUN_00228f14(param_1 + 0x238);"
+"before": "pvVar1 = (uint64_t *)FUN_001e2258(*param_1);",
+"after": "pvVar1 = (long *)FUN_001e2258(*param_1);"
 }
 ],
 "functions that differ only in their return type cannot be overloaded": [
@@ -75349,16 +75904,6 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ],
 "redefinition of 'X'": [
 {
-"error": "redefinition of 'lVar2'",
-"before": "long lVar2;",
-"after": "undefined8 auVar2[16];"
-},
-{
-"error": "redefinition of 'auVar2'",
-"before": "undefined8 auVar2[16];",
-"after": "undefined8 auVar3[16];"
-},
-{
 "error": "redefinition of 'local_30'",
 "before": "uint64_t local_30 = (uint64_t)param_2;",
 "after": "undefined8 auVar2[16];"
@@ -75367,6 +75912,16 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "error": "redefinition of 'iVar1'",
 "before": "int iVar1 = (*(int (*)(void))PTR__abs_004505b0)(param_1);",
 "after": "int iVar2 = (*(int (*)(void))PTR__abs_004505b0)(param_1);"
+},
+{
+"error": "redefinition of 'local_48'",
+"before": "ulong *local_48 = (ulong *)param_2;",
+"after": "undefined8 auVar2[16];"
+},
+{
+"error": "redefinition of 'local_30'",
+"before": "ulong *local_30 = (ulong *)param_2;",
+"after": "undefined8 auVar2[16];"
 }
 ],
 "subscripted value is not an array, pointer, or vector": [
@@ -75383,24 +75938,24 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ],
 "no member named 'X' in 'X'": [
 {
-"error": "no member named 'beta' in 'LowpassFilter'",
-"before": "filter.beta = 1.0f - filter.alpha;",
-"after": "beta = 1.0f - alpha;"
+"error": "no member named 'alpha' in 'LowPassFilter'",
+"before": "filter.alpha = alpha;",
+"after": "filter.cutoffFrequency = alpha;"
 },
 {
-"error": "no member named 'a' in 'LowpassFilter'",
-"before": "output[i] = filter.a * input[i] + filter.b * (input[i - 1] + output[i - 1]);",
-"after": "filter.beta = 1.0f - filter.alpha;\n                output[i] = filter.alpha * input[i] + filter.beta * (input[i - 1] + output[i - 1]);"
+"error": "no member named 'a' in 'FilterState'",
+"before": "float newOutput = state.a * input[i] + state.b * output[i - 1];",
+"after": "float newOutput = state.state[0] * input[i] + state.state[1] * output[i - 1];"
 },
 {
-"error": "no member named 'state1' in 'FilterState'",
-"before": "state->state1 = 0;",
-"after": "state->state2 = 0.0f;"
+"error": "no member named 'b' in 'FilterState'",
+"before": "state.b = state.a;",
+"after": "state.state[1] = state.state[0];"
 },
 {
-"error": "no member named 'data' in 'FilterData'",
-"before": "data[i] = (data[i] + DAT_00424998.data[i]) / 2;",
-"after": "data[i] = (data[i] + DAT_00424998[i]) / 2;"
+"error": "no member named 'a' in 'FilterState'",
+"before": "state.a = newOutput;",
+"after": "state.state[0] = newOutput;"
 }
 ],
 "indirection requires pointer operand ('X' (aka 'X') invalid)": [
@@ -75471,23 +76026,23 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "call to 'X' is ambiguous": [
 {
 "error": "call to 'FUN_000041f4' is ambiguous",
-"before": "FUN_000041f4(0x424978);",
-"after": "FUN_000041f4(0x424978L);"
+"before": "pvVar1 = FUN_000041f4(0x443540);",
+"after": "pvVar1 = FUN_000041f4(0x443540L);"
 },
 {
 "error": "call to 'FUN_000041f4' is ambiguous",
-"before": "DAT_00453278 = FUN_000041f4(0x425378);",
-"after": "DAT_00453278 = FUN_000041f4(0x425378L);"
+"before": "DAT_00453c28 = FUN_000041f4(0x443fc0);",
+"after": "DAT_00453c28 = FUN_000041f4(0x443fc0L);"
 },
 {
 "error": "call to 'FUN_000041f4' is ambiguous",
-"before": "pvVar1 = FUN_000041f4(0x445200);",
-"after": "pvVar1 = FUN_000041f4(0x445200L);"
+"before": "DAT_00453c28 = FUN_000041f4((uint64_t)0x443fc0L);",
+"after": "DAT_00453c28 = FUN_000041f4(0x443fc0L);"
 },
 {
 "error": "call to 'FUN_000041f4' is ambiguous",
-"before": "pvVar1 = FUN_000041f4(0x444ba0);",
-"after": "pvVar1 = FUN_000041f4(0x444ba0L);"
+"before": "pvVar1 = FUN_000041f4(0x4341c8);",
+"after": "pvVar1 = FUN_000041f4(0x4341c8L);"
 }
 ],
 "incompatible pointer types assigning to 'X' from 'X'": [
@@ -75500,52 +76055,67 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "assigning to 'X' (aka 'X') from incompatible type 'X'": [
 {
 "error": "assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'",
-"before": "DAT_00453278 = FUN_000041f4(0x425378L);",
-"after": "DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);"
+"before": "DAT_00453678 = FUN_000041f4(0x43ccc0L);",
+"after": "DAT_00453678 = (uint64_t)FUN_000041f4(0x43ccc0L);"
 },
 {
-"error": "assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'",
-"before": "puVar4 = FUN_0021ad3c(0x20);",
-"after": "puVar4 = (undefined8*)FUN_0021ad3c(0x20);"
+"error": "assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'",
+"before": "uVar1 = FUN_001e2118();",
+"after": "undefined8 uVar1 = FUN_001e2118();"
+},
+{
+"error": "assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'",
+"before": "uVar1 = FUN_001e1ccc();",
+"after": "uVar1 = (undefined8)FUN_001e1ccc();"
+},
+{
+"error": "assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'",
+"before": "DAT_00453c28 = FUN_000041f4(0x443fc0L);",
+"after": "DAT_00453c28 = (uint64_t)FUN_000041f4(0x443fc0L);"
 }
 ],
 "too many arguments to function call, expected N, have N": [
 {
 "error": "too many arguments to function call, expected 0, have 1",
-"before": "(*(int (*)(void))PTR__CFRelease_004500f8)(iVar1);",
-"after": "int iVar1 = (*(int (*)(void))PTR__CFRelease_004500f8)();"
-},
-{
-"error": "too many arguments to function call, expected 0, have 1",
-"before": "iVar1 = (*(int (*)(void))PTR__fflush_00450698)((int)(uintptr_t)param_1);",
-"after": "iVar1 = (*(int (*)(void))PTR__fflush_00450698)();"
-},
-{
-"error": "too many arguments to function call, expected 0, have 1",
-"before": "iVar1 = (*(int (*)(void))PTR__pthread_setspecific_00450948)((int)param_1);",
-"after": "iVar1 = (*(int (*)(void))PTR__pthread_setspecific_00450948)();"
-},
-{
-"error": "too many arguments to function call, expected 0, have 1",
 "before": "int iVar2 = (*(int (*)(void))PTR__abs_004505b0)(param_1);",
 "after": "int iVar2 = (*(int (*)(void))PTR__abs_004505b0)();"
+},
+{
+"error": "too many arguments to function call, expected 0, have 1",
+"before": "iVar1 = (*(int (*)(void))PTR__pthread_mutex_init_00450908)(param_1);",
+"after": "iVar1 = (*(int (*)(void))PTR__pthread_mutex_init_00450908)();"
+},
+{
+"error": "too many arguments to function call, expected 0, have 1",
+"before": "iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_init_00450930)((int)(uintptr_t)param_1);",
+"after": "iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_init_00450930)();"
+},
+{
+"error": "too many arguments to function call, expected 0, have 2",
+"before": "iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_settype_00450938)(param_1,param_2);",
+"after": "iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_settype_00450938)(param_1);"
 }
 ],
 "C-style cast from 'X' to 'X' (aka 'X') is not allowed": [
 {
-"error": "C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed",
-"before": "DAT_00453278 = (uint64_t)FUN_000041f4(0x425378L);",
-"after": "DAT_00453278 = FUN_000041f4(0x425378L);"
-},
-{
-"error": "C-style cast from 'void' to 'uint8_t' (aka 'unsigned char') is not allowed",
-"before": "lVar1 = (uint8_t)FUN_0020e018();",
-"after": "lVar1 = FUN_0020e018();"
-},
-{
 "error": "C-style cast from 'void' to 'pthread_key_t' (aka 'unsigned long') is not allowed",
 "before": "local_30 = (pthread_key_t)FUN_00215b64((pthread_key_t *)(param_1 + 0x58));",
 "after": "local_30 = FUN_00215b64((pthread_key_t *)(param_1 + 0x58));"
+},
+{
+"error": "C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed",
+"before": "DAT_00453678 = (uint64_t)FUN_000041f4(0x43ccc0L);",
+"after": "DAT_00453678 = FUN_000041f4((uint64_t)0x43ccc0L);"
+},
+{
+"error": "C-style cast from 'void' to 'undefined8' (aka 'unsigned long long') is not allowed",
+"before": "uVar1 = (undefined8)FUN_001e1ccc();",
+"after": "uVar1 = FUN_001e1ccc();"
+},
+{
+"error": "C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed",
+"before": "DAT_00453c28 = (uint64_t)FUN_000041f4(0x443fc0L);",
+"after": "DAT_00453c28 = FUN_000041f4((uint64_t)0x443fc0L);"
 }
 ],
 "too few arguments to function call, expected N, have N": [
@@ -75642,11 +76212,6 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "must use 'X' tag to refer to type 'X' in this scope": [
 {
 "error": "must use 'struct' tag to refer to type 'LowpassFilter' in this scope",
-"before": "void FUN_001f9ca8(float *input, int length, LowpassFilter filter) {",
-"after": "void FUN_001f9ca8(float *input, int length, struct LowpassFilter filter) {"
-},
-{
-"error": "must use 'struct' tag to refer to type 'LowpassFilter' in this scope",
 "before": "void FUN_001fadc4(LowpassFilter &filter, float *input, float *output, int size) {\n    for (int i = 0; i < size; i++) {\n        float sum = filter.buffer[filter.bufferSize - 1];\n        for (int j = 0; j < filter.bufferSize - 1; j++) {",
 "after": "void FUN_001fadc4(struct LowpassFilter &filter, float *input, float *output, int size) {\n    for (int i = 0; i < size; i++) {\n        float sum = filter.buffer[filter.bufferSize - 1];\n        for (int j=0; j<filter.bufferSize - 1; j++) {"
 },
@@ -75659,6 +76224,11 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "error": "must use 'struct' tag to refer to type 'LowpassFilter' in this scope",
 "before": "LowpassFilter filter;",
 "after": "struct LowpassFilter filter;"
+},
+{
+"error": "must use 'struct' tag to refer to type 'LowpassFilter' in this scope",
+"before": "void FUN_001fec98(LowpassFilter *filter) {\n    float sampleRate = 44100.0f;\n    float dt = 1.0f / sampleRate;\n\n    for (int i = 0; i < filter->input->size(); ++i) {",
+"after": "void FUN_001fec98(struct LowpassFilter *filter) {\n    float sampleRate = 44100.0f;\n    float dt = 1.0f / sampleRate;\n\n    for (int i = 0; i < filter->input->size(); ++i){"
 }
 ],
 "incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')": [
@@ -75769,6 +76339,11 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "error": "no matching constructor for initialization of 'LowPassFilter'",
 "before": "LowPassFilter filter(cutoff, alpha);",
 "after": "LowPassFilter filter{cutoff, alpha};"
+},
+{
+"error": "no matching constructor for initialization of 'LowPassFilter'",
+"before": "LowPassFilter filter(0.5f, 0.4f);",
+"after": "LowPassFilter filter{0.5f, 0.4f};"
 }
 ],
 "incompatible integer to pointer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')": [
@@ -75882,6 +76457,73 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "error": "variable-sized object may not be initialized",
 "before": "float b[filterOrder + 1] = {0.5, -0.25};",
 "after": "float b[filterOrder + 1];\n        memset(b, 0, sizeof(float) * (filterOrder + 1));"
+},
+{
+"error": "variable-sized object may not be initialized",
+"before": "float a[filterOrder + 1] = {1.0, -2.5};",
+"after": "float a[filterOrder + 1];\n        memset(a, 0, sizeof(float) * (filterOrder + 1));"
+}
+],
+"subscript of pointer to incomplete type 'X'": [
+{
+"error": "subscript of pointer to incomplete type 'void'",
+"before": "outputBuffer[i] = 0.0f;",
+"after": "memset(outputBuffer, 0, sizeof(float) *filterOrder);"
+}
+],
+"cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'": [
+{
+"error": "cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of type 'void'",
+"before": "undefined8* outputBuffer = FUN_000050fc(inputBuffer);",
+"after": "uint64_t* outputBuffer = FUN_000050fc(inputBuffer);"
+},
+{
+"error": "cannot initialize a variable of type 'undefined8' (aka 'unsigned long long') with an rvalue of type 'void'",
+"before": "undefined8 uVar1 = FUN_001e2118();",
+"after": "uint64_t uVar1 = FUN_001e2118();"
+},
+{
+"error": "cannot initialize a variable of type 'ulong *' (aka 'unsigned long *') with an rvalue of type 'long *'",
+"before": "ulong *puVar2 = &params.param2;",
+"after": "uint64_t *puVar2 = &params.param2;"
+}
+],
+"cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')": [
+{
+"error": "cannot initialize a variable of type 'undefined8 *' (aka 'unsigned long long *') with an rvalue of type 'uint8_t' (aka 'unsigned char')",
+"before": "undefined8* result = FUN_000b50b8(*param_1);",
+"after": "uint8_t* result = FUN_000b50b8(*param_1);"
+}
+],
+"'X' and 'X' are not pointers to compatible types": [
+{
+"error": "'int *' and 'long *' are not pointers to compatible types",
+"before": "for (int i = 0; i < ptr - param_1; ++i){\n          sum += *ptr;\n        }",
+"after": "for (long i = 0; i < static_cast<long>(ptr) - param_1; ++i){\n              sum += *ptr;\n            }"
+}
+],
+"incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')": [
+{
+"error": "incompatible pointer types assigning to 'ulong *' (aka 'unsigned long *') from 'uint64_t *' (aka 'unsigned long long *')",
+"before": "local_48 = param_2;",
+"after": "ulong *local_48 = (ulong *)param_2;"
+},
+{
+"error": "incompatible pointer types assigning to 'undefined8 *' (aka 'unsigned long long *') from 'ulong *' (aka 'unsigned long *')",
+"before": "local_58 = param_3;",
+"after": "ulong *local_58 = (ulong *)param_3;"
+},
+{
+"error": "incompatible pointer types assigning to 'ulong *' (aka 'unsigned long *') from 'uint64_t *' (aka 'unsigned long long *')",
+"before": "local_30 = param_2;",
+"after": "ulong *local_30 = (ulong *)param_2;"
+}
+],
+"brackets are not allowed here; to declare an array, place the brackets after the name": [
+{
+"error": "brackets are not allowed here; to declare an array, place the brackets after the name",
+"before": "uint8_t [16] FUN_001e188c(uint64_t param_1,uint64_t *param_2) {\n  undefined1 local_40 [16];\n  ulong *local_30;\n  undefined8 uStack_28;\n  undefined1 local_20 [16];",
+"after": "uint8_t FUN_001e188c(uint64_t param_1,uint64_t *param_2) {\n  uint8_t local_40[16];\n  ulong *local_30;\n  undefined8 uStack_28;\n  undefined1 local_20[16];"
 }
 ]
 },
@@ -76743,6 +77385,11 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "sha": "ae53ddc12ca94ffe",
 "before": "FUN_00201514(param_1,param_2,param_3,param_4);",
 "after": "FUN_00201514((void *)param_1,param_2,(size_t)param_3,param_4);"
+},
+{
+"sha": "17c64c1399c71adc",
+"before": "FUN_00201514(param_1,param_2,param_3,param_4);",
+"after": "FUN_00201514((void *)param_1, (void *)param_2, param_3, param_4);"
 }
 ],
 "funcs/__Z12FUN_00003438Pyyyy.cpp": [
@@ -76750,6 +77397,212 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "sha": "a6bcffba05ad08bc",
 "before": "FUN_00004b88(data, filterParams, input, output);",
 "after": "float *result = FUN_00004b88(data, filterParams, input, output);"
+},
+{
+"sha": "9bacaadf45c27a21",
+"before": "FUN_00004b88(data, filterParams, input, output);",
+"after": "float *result = FUN_00004b88((uint64_t *)data, filterParams, input, output);"
+},
+{
+"sha": "d8fb22df68a36fa2",
+"before": "FUN_00004b88(data, filterParams, input, output);",
+"after": "FUN_00004b88((uint64_t *)data, filterParams, input, output);"
+}
+],
+"funcs/__Z12FUN_00004b88Pffff.cpp": [
+{
+"sha": "c86edb2ffe6a8f92",
+"before": "processAndExecuteFunction(params.param1, params.param2, &params.param3, 4);",
+"after": "processAndExecuteFunction(&params.param1);"
+},
+{
+"sha": "a1e7615611fd1621",
+"before": "processAndExecuteFunction(params.param1, params.param2, &params.param3, 4);",
+"after": "processAndExecuteFunction(params.param1, params.param2, &params.param3);"
+},
+{
+"sha": "d60a6baac379b048",
+"before": "processAndExecuteFunction(params.param1, params.param2, &params.param3, 4);",
+"after": "processAndExecuteFunction(&params);"
+}
+],
+"funcs/_pthread_mutexattr_init.cpp": [
+{
+"sha": "e29eaf10bd45b84f",
+"before": "iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_init_00450930)((int)(uintptr_t)param_1);",
+"after": "iVar1 = (*(int (*)(void))PTR__pthread_mutexattr_init_00450930)(param_1);"
+}
+],
+"funcs/FUN_0011f078.cpp": [
+{
+"sha": "d7112525932dd00b",
+"before": "lVar1 = FUN_0011c180(param_2);",
+"after": "lVar1 = FUN_0011c180((uint64_t*)param_2);"
+},
+{
+"sha": "704f70b4abbbc232",
+"before": "lVar1 = FUN_0011c180(param_2);",
+"after": "lVar1 = FUN_0011c180(param_2, param_1);"
+}
+],
+"funcs/__Z13processValuesP4Dataf.cpp": [
+{
+"sha": "85b151330225ce12",
+"before": "setValues(&output, 0.0f, 0.0f, 0, 0.0f);",
+"after": "setValues(&output, static_cast<uint64_t>(0), static_cast<uint64_t>(0), 0, 0.0f);"
+},
+{
+"sha": "ac61f075a087c1a5",
+"before": "setValues(&output, 0.0f, 0.0f, 0, 0.0f);",
+"after": "setValues(&output, static_cast<uint64_t>(value5), 0, 0, 0);"
+}
+],
+"funcs/FUN_0011bf98.cpp": [
+{
+"sha": "5364a4b65cbea1a0",
+"before": "FUN_0011c018(stack[0], stack[1]);",
+"after": "FUN_0011c018(&stack[0], &stack[1]);"
+},
+{
+"sha": "60d6e5f68610e8d3",
+"before": "FUN_0011c018(stack[0], stack[1]);",
+"after": "FUN_0011c018(&stack[0], &lStack_38);"
+}
+],
+"funcs/__Z12FUN_00004ce8PffS_S_.cpp": [
+{
+"sha": "a86eb9f9006118c1",
+"before": "processValues(input, param_2, &filter);",
+"after": "processValues((Data *)input, param_2, &filter);"
+}
+],
+"funcs/__Z12FUN_000034ccPvS_S_S_.cpp": [
+{
+"sha": "984addd44cb9869e",
+"before": "FUN_00004ce8(input, filterCoefficients, output, state);",
+"after": "FUN_00004ce8((float *)input, (float *)filterCoefficients, (float *)output, (float *)state);"
+}
+],
+"funcs/FUN_0011eee8.cpp": [
+{
+"sha": "90952f12c4ac485e",
+"before": "for (int i = 0; i < ptr - param_1; ++i){\n          sum += *ptr;\n        }",
+"after": "for (long i = 0; i < ptr - param_1; ++i){\n              sum += *ptr;\n            }"
+}
+],
+"funcs/FUN_001dab18.cpp": [
+{
+"sha": "cae744457505a02a",
+"before": "plVar1 = *(code **)(*plVar1 + ((ulong)pcVar2 & 0xffffffff));",
+"after": "plVar1 = *(code **)(*plVar1 + (pcVar2 & 0xffffffff));"
+}
+],
+"funcs/FUN_001dbe84.cpp": [
+{
+"sha": "eda81be9776153ef",
+"before": "FUN_001dbea4(param_1);",
+"after": "FUN_001dbea4(*param_1);"
+}
+],
+"funcs/__Z12FUN_000059a8P9InputData.cpp": [
+{
+"sha": "afc0ff524a94cdf3",
+"before": "data->input1 = processInput10(data);",
+"after": "data->input1 = processInput10(data->input1);"
+}
+],
+"funcs/FUN_001e1280.cpp": [
+{
+"sha": "1bde8743dc339000",
+"before": "filter.processSample(sample);",
+"after": "filter.processSample(&sample);"
+}
+],
+"funcs/FUN_001dbea4.cpp": [
+{
+"sha": "4b55675625e04a8e",
+"before": "filter.process(input, output);",
+"after": "filter.process(input, output, sampleRate);"
+}
+],
+"funcs/FUN_001e22b8.cpp": [
+{
+"sha": "e1b0fb8783760218",
+"before": "FUN_001e22d8(param_1);",
+"after": "FUN_001e22d8(param_1, param_1 + 1);"
+},
+{
+"sha": "73ccc0202605b171",
+"before": "FUN_001e22d8(param_1);",
+"after": "FUN_001e22d8((float *)param_1, (float *)(param_1 + 1));"
+}
+],
+"funcs/FUN_001e1ed8.cpp": [
+{
+"sha": "b3b31a155c618f90",
+"before": "undefined8 uVar1 = (undefined8)FUN_001e1ccc();",
+"after": "undefined8 uVar1 = FUN_001e1ccc();"
+}
+],
+"funcs/FUN_001e2d64.cpp": [
+{
+"sha": "a93a449e50bdbdfb",
+"before": "FUN_001e2d88(param_1,param_2,param_3);",
+"after": "FUN_001e2d88(*param_1, *param_2, *param_3);"
+}
+],
+"funcs/FUN_001fec98.cpp": [
+{
+"sha": "2febdd1dbc818340",
+"before": "for (int i = 0; i < filter->input->size(); ++i){\n        float inputSample = filter->input->at(i);\n        float outputSample = filter->output->at(i);\n\n        float filteredSample = (inputSample + outputSample) * 0.5f - filter->output->at(i - 1);",
+"after": "for (int i = 0; i < filter->input.size(); ++i){\n            float inputSample = filter->input[i];\n            float outputSample = filter->output[i];\n\n            float filteredSample = (inputSample + outputSample) * 0.5f - filter->output[i - 1];"
+}
+],
+"funcs/FUN_001e27c8.cpp": [
+{
+"sha": "d955643afee62fd6",
+"before": "FUN_001e27f0(param_1,param_2,param_2);",
+"after": "FUN_001e27f0(&param_1, param_2, &param_2);"
+}
+],
+"funcs/FUN_001e188c.cpp": [
+{
+"sha": "eb9f542152f02575",
+"before": "uint8_t [16] FUN_001e188c(uint64_t param_1,uint64_t *param_2) {\n  undefined1 local_40 [16];\n  ulong *local_30;\n  undefined8 uStack_28;\n  undefined1 local_20 [16];",
+"after": "uint8_t FUN_001e188c(uint64_t param_1,uint64_t *param_2) {\n  undefined1 local_40[16];"
+}
+],
+"funcs/FUN_001e27f0.cpp": [
+{
+"sha": "79684a5ab052f37c",
+"before": "ulong *local_58 = (ulong *)param_3;",
+"after": "ulong *local_58 = param_3;"
+}
+],
+"funcs/FUN_001e16d0.cpp": [
+{
+"sha": "d734e3f4edb35575",
+"before": "lVar3 = FUN_001e1204(plVar1);",
+"after": "lVar3 = FUN_001e1204((long *)&lStack_48);"
+},
+{
+"sha": "4358cd0b479e30ae",
+"before": "lVar3 = FUN_001e1204(plVar1);",
+"after": "lVar3 = FUN_001e1204((long *)&plVar1);"
+}
+],
+"funcs/__Z12FUN_000b5d64llm.cpp": [
+{
+"sha": "642af5ec1165a234",
+"before": "uint64_t *puVar2 = &params.param2;",
+"after": "uint64_t *puVar1 = &params.param1;"
+}
+],
+"funcs/__Z12FUN_000b5da4PiPyi.cpp": [
+{
+"sha": "29738fc47f1b275e",
+"before": "iVar3 = FUN_000b5da4(0x10, param_1[1], 0);",
+"after": "iVar3 = FUN_000b5da4(param_1 + 0x10, param_1[1], 0);"
 }
 ]
 },
@@ -76824,7 +77677,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ")",
 ";"
 ],
-"ok": 1,
+"ok": 2,
 "bad": 0
 },
 "6090a9ee22e4d0ab": {
@@ -76931,7 +77784,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ")",
 ";"
 ],
-"ok": 4,
+"ok": 5,
 "bad": 0
 },
 "9258e4d0b001e316": {
@@ -77051,7 +77904,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "@2",
 ";"
 ],
-"ok": 1,
+"ok": 3,
 "bad": 0
 },
 "27ccc87b256b111c": {
@@ -77442,7 +78295,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ";"
 ],
 "ok": 7,
-"bad": 3
+"bad": 4
 },
 "3d93898353e096af": {
 "kind": "assigning to 'X' from incompatible type 'X'",
@@ -77510,7 +78363,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ")",
 ";"
 ],
-"ok": 3,
+"ok": 4,
 "bad": 0
 },
 "53ed86c0f4404fc5": {
@@ -78100,7 +78953,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "@3",
 ";"
 ],
-"ok": 1,
+"ok": 2,
 "bad": 0
 },
 "70a07b8c38eefdd6": {
@@ -78521,7 +79374,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ")",
 ";"
 ],
-"ok": 1,
+"ok": 2,
 "bad": 0
 },
 "b3e4d3721a6ab358": {
@@ -79303,7 +80156,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ")",
 ";"
 ],
-"ok": 4,
+"ok": 27,
 "bad": 0
 },
 "942a785c5cb5f627": {
@@ -79375,7 +80228,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ")",
 ";"
 ],
-"ok": 3,
+"ok": 25,
 "bad": 0
 },
 "091371357f4bfeac": {
@@ -80110,7 +80963,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 "}",
 ";"
 ],
-"ok": 1,
+"ok": 2,
 "bad": 0
 },
 "4dabbd386c58d9c4": {
@@ -80797,7 +81650,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ")",
 ";"
 ],
-"ok": 1,
+"ok": 2,
 "bad": 0
 },
 "604c1823dd9e2a8c": {
@@ -82055,6 +82908,1711 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ],
 "ok": 1,
 "bad": 0
+},
+"77aca0406726d52a": {
+"kind": "variable-sized object may not be initialized",
+"before": [
+"float",
+"@1",
+"[",
+"@2",
+"+",
+"1",
+"]",
+"=",
+"{",
+"1.0",
+",",
+"-",
+"2.5",
+"}",
+";"
+],
+"after": [
+"float",
+"@1",
+"[",
+"@2",
+"+",
+"1",
+"]",
+";",
+"memset",
+"(",
+"@1",
+",",
+"0",
+",",
+"sizeof",
+"(",
+"float",
+")",
+"*",
+"(",
+"@2",
+"+",
+"1",
+")",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"c43cedeecbad0ee1": {
+"kind": "ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]",
+"before": [
+"@1",
+"=",
+"(",
+"*",
+"(",
+"void",
+"*",
+")",
+"@2",
+")",
+"(",
+"(",
+"int",
+")",
+"(",
+"uintptr_t",
+")",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"*",
+"(",
+"int",
+"(",
+"*",
+")",
+"(",
+"void",
+")",
+")",
+"@2",
+")",
+"(",
+"@3",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"344db72e651acd1e": {
+"kind": "too many arguments to function call, expected N, have N",
+"before": [
+"@1",
+"=",
+"(",
+"*",
+"(",
+"int",
+"(",
+"*",
+")",
+"(",
+"void",
+")",
+")",
+"@2",
+")",
+"(",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"*",
+"(",
+"int",
+"(",
+"*",
+")",
+"(",
+"void",
+")",
+")",
+"@2",
+")",
+"(",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"035a18c58e53f512": {
+"kind": "ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]",
+"before": [
+"@1",
+"=",
+"(",
+"*",
+"(",
+"void",
+"*",
+")",
+"@2",
+")",
+"(",
+"(",
+"int",
+")",
+"(",
+"uintptr_t",
+")",
+"@3",
+",",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"*",
+"(",
+"int",
+"(",
+"*",
+")",
+"(",
+"void",
+")",
+")",
+"@2",
+")",
+"(",
+"@3",
+",",
+"@4",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"3665213b90be6a44": {
+"kind": "too many arguments to function call, expected N, have N",
+"before": [
+"@1",
+"=",
+"(",
+"*",
+"(",
+"int",
+"(",
+"*",
+")",
+"(",
+"void",
+")",
+")",
+"@2",
+")",
+"(",
+"@3",
+",",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"*",
+"(",
+"int",
+"(",
+"*",
+")",
+"(",
+"void",
+")",
+")",
+"@2",
+")",
+"(",
+"@3",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"db97e7313904f8bd": {
+"kind": "cannot cast from type 'X' to pointer type 'X' (aka 'X')",
+"before": [
+"@1",
+"=",
+"(",
+"@2",
+"*",
+")",
+"@3",
+"(",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@3",
+"(",
+"@4",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"67f604e5665a4200": {
+"kind": "no matching function for call to 'X'",
+"before": [
+"@1",
+"*",
+"@2",
+"=",
+"@3",
+"(",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"*",
+"@2",
+"=",
+"@3",
+"(",
+"*",
+"@4",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"730f3d1297dda630": {
+"kind": "cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'",
+"before": [
+"@1",
+"*",
+"@2",
+"=",
+"@3",
+"(",
+"@4",
+")",
+";"
+],
+"after": [
+"uint64_t",
+"*",
+"@2",
+"=",
+"@3",
+"(",
+"@4",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"74278eb7b4b4ed5f": {
+"kind": "call to 'X' is ambiguous",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"0x43ccc0",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"@2",
+"(",
+"0x43ccc0L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"fb6a9f3cf2c13bab": {
+"kind": "cannot cast from type 'X' to pointer type 'X'",
+"before": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@2",
+"(",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"@3",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"15f8a4b2fe8fc4db": {
+"kind": "cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')",
+"before": [
+"@1",
+"*",
+"@2",
+"=",
+"@3",
+"(",
+"*",
+"@4",
+")",
+";"
+],
+"after": [
+"uint8_t",
+"*",
+"@2",
+"=",
+"@3",
+"(",
+"*",
+"@4",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"467da1198404df55": {
+"kind": "assigning to 'X' (aka 'X') from incompatible type 'X'",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"0x43ccc0L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+")",
+"@2",
+"(",
+"0x43ccc0L",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"3676411f05c619da": {
+"kind": "cannot cast from type 'X' to pointer type 'X' (aka 'X')",
+"before": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"@3",
+"+",
+"1",
+",",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@2",
+"(",
+"@3",
+"+",
+"1",
+",",
+"@4",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"163d8d62587bfa56": {
+"kind": "cannot cast from type 'X' to pointer type 'X' (aka 'X')",
+"before": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@2",
+"(",
+"@3",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"a4aac7cd461991f8": {
+"kind": "C-style cast from 'X' to 'X' (aka 'X') is not allowed",
+"before": [
+"@1",
+"=",
+"(",
+"uint64_t",
+")",
+"@2",
+"(",
+"0x43ccc0L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"@2",
+"(",
+"(",
+"uint64_t",
+")",
+"0x43ccc0L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"bba2d9ce75c96621": {
+"kind": "cannot cast from type 'X' to pointer type 'X'",
+"before": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@2",
+"(",
+"@3",
+"+",
+"1",
+",",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"@3",
+"+",
+"1",
+",",
+"@4",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"ff15fd4e07f7c66e": {
+"kind": "call to 'X' is ambiguous",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"(",
+"uint64_t",
+")",
+"0x43ccc0L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"@2",
+"(",
+"0x43ccc0L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"fc49c02f33942a17": {
+"kind": "no matching function for call to 'X'",
+"before": [
+"@1",
+"(",
+"@2",
+")",
+";"
+],
+"after": [
+"@1",
+"(",
+"@2",
+",",
+"@2",
+"+",
+"1",
+",",
+"1",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"475416f0f816d156": {
+"kind": "no matching function for call to 'X'",
+"before": [
+"@1",
+"(",
+"@2",
+")",
+";"
+],
+"after": [
+"@1",
+"(",
+"(",
+"float",
+"*",
+")",
+"@2",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"9d7a4edfbaf0b117": {
+"kind": "cannot cast from type 'X' to pointer type 'X'",
+"before": [
+"@1",
+"=",
+"(",
+"float",
+"*",
+")",
+"@2",
+"(",
+"(",
+"@3",
+"*",
+")",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"float",
+"*",
+")",
+"@2",
+"(",
+"@4",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"4fc901d19a6693be": {
+"kind": "cannot initialize a variable of type 'X' with an rvalue of type 'X'",
+"before": [
+"long",
+"@1",
+"=",
+"@2",
+"(",
+"(",
+"@3",
+"*",
+")",
+"(",
+"@4",
+"+",
+"@5",
+"*",
+"0x28",
+")",
+")",
+";"
+],
+"after": [
+"long",
+"@1",
+"=",
+"(",
+"long",
+")",
+"@2",
+"(",
+"(",
+"@3",
+"*",
+")",
+"(",
+"@4",
+"+",
+"@5",
+"*",
+"0x28",
+")",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"13c1c03c78438f1a": {
+"kind": "call to 'X' is ambiguous",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"0x443540",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"@2",
+"(",
+"0x443540L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"6a7e6ea5a1246925": {
+"kind": "no matching constructor for initialization of 'X'",
+"before": [
+"@1",
+"@2",
+"(",
+"0.5f",
+",",
+"0.4f",
+")",
+";"
+],
+"after": [
+"@1",
+"@2",
+"{",
+"0.5f",
+",",
+"0.4f",
+"}",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"1f2ad76ff44edcfb": {
+"kind": "cannot cast from type 'X' to pointer type 'X' (aka 'X')",
+"before": [
+"@1",
+"=",
+"(",
+"@2",
+"*",
+")",
+"@3",
+"(",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@3",
+"(",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"8a2823ce095083aa": {
+"kind": "assigning to 'X' from incompatible type 'X'",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"0x443540L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"void",
+"*",
+")",
+"@2",
+"(",
+"0x443540L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"3476e0ce60c88dde": {
+"kind": "C-style cast from 'X' to 'X' (aka 'X') is not allowed",
+"before": [
+"@1",
+"=",
+"(",
+"@2",
+")",
+"@3",
+"(",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"@3",
+"(",
+")",
+";"
+],
+"ok": 5,
+"bad": 0
+},
+"b4f5ab1125bef6e7": {
+"kind": "C-style cast from 'X' to 'X' is not allowed",
+"before": [
+"long",
+"@1",
+"=",
+"(",
+"long",
+")",
+"@2",
+"(",
+"(",
+"@3",
+"*",
+")",
+"(",
+"@4",
+"+",
+"@5",
+"*",
+"0x28",
+")",
+")",
+";"
+],
+"after": [
+"long",
+"@1",
+"=",
+"(",
+"long",
+")",
+"(",
+"long",
+"long",
+")",
+"@2",
+"(",
+"(",
+"@3",
+"*",
+")",
+"(",
+"@4",
+"+",
+"@5",
+"*",
+"0x28",
+")",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"142eeff8ae7ad77b": {
+"kind": "cannot cast from type 'X' to pointer type 'X'",
+"before": [
+"@1",
+"=",
+"(",
+"void",
+"*",
+")",
+"@2",
+"(",
+"0x443540L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"0x443540L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"f3f312d124a8c4c5": {
+"kind": "cannot cast from type 'X' to pointer type 'X' (aka 'X')",
+"before": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"0x443540L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@2",
+"(",
+"0x443540L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"02ddcccba0779c32": {
+"kind": "cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'",
+"before": [
+"@1",
+"@2",
+"=",
+"@3",
+"(",
+")",
+";"
+],
+"after": [
+"uint64_t",
+"@2",
+"=",
+"@3",
+"(",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"5f3c6d22dd4515be": {
+"kind": "cannot cast from type 'X' to pointer type 'X'",
+"before": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@2",
+"(",
+"0x443540L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"0x443540L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"3da692c91616c49a": {
+"kind": "cannot cast from type 'X' to pointer type 'X'",
+"before": [
+"@1",
+"=",
+"(",
+"void",
+"*",
+")",
+"@2",
+"(",
+"*",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"*",
+"@3",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"f75f10305818fb04": {
+"kind": "call to 'X' is ambiguous",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"0x443fc0",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"@2",
+"(",
+"0x443fc0L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"1df95838769f12bf": {
+"kind": "cannot cast from type 'X' to pointer type 'X' (aka 'X')",
+"before": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"*",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@2",
+"(",
+"*",
+"@3",
+")",
+";"
+],
+"ok": 3,
+"bad": 0
+},
+"180f82aaaf57eaf4": {
+"kind": "no matching function for call to 'X'",
+"before": [
+"@1",
+"(",
+"@2",
+",",
+"@3",
+",",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"(",
+"(",
+"float",
+"*",
+")",
+"@2",
+",",
+"(",
+"float",
+"*",
+")",
+"(",
+"@2",
+"+",
+"8",
+")",
+",",
+"@4",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"c37d4824935effdc": {
+"kind": "assigning to 'X' (aka 'X') from incompatible type 'X'",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"0x443fc0L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+")",
+"@2",
+"(",
+"0x443fc0L",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"ff2dc58803817ad9": {
+"kind": "no matching function for call to 'X'",
+"before": [
+"@1",
+"(",
+"@2",
+",",
+"@3",
+",",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"(",
+"(",
+"float",
+"*",
+")",
+"@2",
+",",
+"(",
+"float",
+"*",
+")",
+"(",
+"@2",
+"+",
+"1",
+")",
+",",
+"1",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"ac8d4d12293185af": {
+"kind": "cannot cast from type 'X' to pointer type 'X'",
+"before": [
+"@1",
+"=",
+"(",
+"long",
+"*",
+")",
+"@2",
+"(",
+"*",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"*",
+"@3",
+")",
+";"
+],
+"ok": 2,
+"bad": 0
+},
+"a036209ac2736869": {
+"kind": "no matching function for call to 'X'",
+"before": [
+"@1",
+"(",
+"@2",
+",",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"(",
+"(",
+"float",
+"*",
+")",
+"@2",
+",",
+"(",
+"float",
+"*",
+")",
+"(",
+"@2",
+"+",
+"1",
+")",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"ef76399b90c1d35c": {
+"kind": "C-style cast from 'X' to 'X' (aka 'X') is not allowed",
+"before": [
+"@1",
+"=",
+"(",
+"uint64_t",
+")",
+"@2",
+"(",
+"0x443fc0L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"@2",
+"(",
+"(",
+"uint64_t",
+")",
+"0x443fc0L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"59e5a6fda197d492": {
+"kind": "no matching function for call to 'X'",
+"before": [
+"@1",
+"(",
+"@2",
+",",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"(",
+"@3",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"c9557a536aa602d9": {
+"kind": "call to 'X' is ambiguous",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"(",
+"uint64_t",
+")",
+"0x443fc0L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"@2",
+"(",
+"0x443fc0L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"ccc212a7b1b0baa4": {
+"kind": "no matching function for call to 'X'",
+"before": [
+"@1",
+"(",
+"@2",
+",",
+"@3",
+",",
+"@4",
+")",
+";"
+],
+"after": [
+"@1",
+"(",
+"(",
+"float",
+"*",
+")",
+"@2",
+",",
+"(",
+"float",
+"*",
+")",
+"(",
+"@2",
+"+",
+"1",
+")",
+",",
+"*",
+"@4",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"1d45df2e9f8b4563": {
+"kind": "no matching function for call to 'X'",
+"before": [
+"@1",
+"(",
+"&",
+"@2",
+",",
+"@3",
+"+",
+"0x10",
+")",
+";"
+],
+"after": [
+"@1",
+"(",
+"(",
+"long",
+"*",
+")",
+"&",
+"@2",
+",",
+"@3",
+"+",
+"0x10",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"771bc2ed4921eba0": {
+"kind": "no member named 'X' in 'X'",
+"before": [
+"float",
+"@1",
+"=",
+"@2",
+".",
+"@3",
+"*",
+"@4",
+"[",
+"@5",
+"]",
+"+",
+"@2",
+".",
+"@6",
+"*",
+"@7",
+"[",
+"@5",
+"-",
+"1",
+"]",
+";"
+],
+"after": [
+"float",
+"@1",
+"=",
+"@2",
+".",
+"@2",
+"[",
+"0",
+"]",
+"*",
+"@4",
+"[",
+"@5",
+"]",
+"+",
+"@2",
+".",
+"@2",
+"[",
+"1",
+"]",
+"*",
+"@7",
+"[",
+"@5",
+"-",
+"1",
+"]",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"95341c42df6cc7c9": {
+"kind": "call to 'X' is ambiguous",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"0x4341c8",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"@2",
+"(",
+"0x4341c8L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"38171d52486563f9": {
+"kind": "cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'",
+"before": [
+"@1",
+"*",
+"@2",
+"=",
+"&",
+"@3",
+".",
+"@4",
+";"
+],
+"after": [
+"uint64_t",
+"*",
+"@2",
+"=",
+"&",
+"@3",
+".",
+"@4",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"a2bbd9e5db31a6a1": {
+"kind": "no member named 'X' in 'X'",
+"before": [
+"@1",
+".",
+"@2",
+"=",
+"@1",
+".",
+"@3",
+";"
+],
+"after": [
+"@1",
+".",
+"@1",
+"[",
+"1",
+"]",
+"=",
+"@1",
+".",
+"@1",
+"[",
+"0",
+"]",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"94fb1a6a6968c0ab": {
+"kind": "assigning to 'X' from incompatible type 'X'",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"(",
+"long",
+")",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"void",
+"*",
+")",
+"@2",
+"(",
+"@3",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"b5ab89707f978f25": {
+"kind": "assigning to 'X' from incompatible type 'X'",
+"before": [
+"@1",
+"=",
+"@2",
+"(",
+"0x4341c8L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"void",
+"*",
+")",
+"@2",
+"(",
+"0x4341c8L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"32054b8e9be7fc39": {
+"kind": "cannot cast from type 'X' to pointer type 'X'",
+"before": [
+"@1",
+"=",
+"(",
+"void",
+"*",
+")",
+"@2",
+"(",
+"@3",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"@3",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
+},
+"f2e82572eb3a4cc6": {
+"kind": "cannot cast from type 'X' to pointer type 'X'",
+"before": [
+"@1",
+"=",
+"(",
+"void",
+"*",
+")",
+"@2",
+"(",
+"0x4341c8L",
+")",
+";"
+],
+"after": [
+"@1",
+"=",
+"(",
+"uint64_t",
+"*",
+")",
+"@2",
+"(",
+"0x4341c8L",
+")",
+";"
+],
+"ok": 1,
+"bad": 0
 }
 }
 }
@@ -82063,7 +84621,132 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ## Build log of this run (build/worklist.log)
 
 ```
-
+[19:23:48] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/rewritten.cpp
+[19:23:48] Resume check (30464 functions in manifest):
+[19:23:49]   [ok]   split + header are current
+[19:23:49]   [ok]   header compiles
+[19:23:49]   [ok]   compile sweep done
+[19:23:49]   status: 17329 compile, 12980 still to fix, 155 quarantined
+[19:23:49]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
+[19:23:49]   » dependency order + fixer loop
+[19:23:49]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
+[19:23:50]   callgraph: 12 callee name(s) not in our TU set (external/library calls) — ignored for ordering
+[19:23:50]   callgraph: exact deps for 21996/30464 functions
+[19:23:50]   fixer loop over 12980 failing TU(s), dependency-ordered
+[19:24:07]     [12/12980] FUN_001da8a8 -> fixed (17s)
+[19:24:12]     [7/12980] FUN_000033bc -> fixed (21s)
+[19:25:13]     [13/12980] _pthread_mutex_init -> fixed (1m)
+[19:25:44]     [14/12980] _pthread_mutexattr_init -> fixed (1m)
+[19:25:59]     [4/12980] FUN_00003340 -> fixed (2m)
+[19:26:18]   QUARANTINE FUN_00004b88: no matching function for call to 'processAndExecuteFunction'
+[19:26:18]     [10/12980] FUN_00004b88 -> quarantined (2m)
+[19:26:20]   QUARANTINE FUN_000f80f4: subscript of pointer to incomplete type 'void'
+[19:26:20]     [5/12980] FUN_000f80f4 -> quarantined (2m)
+[19:26:21]   QUARANTINE FUN_0021a1f4: use of undeclared identifier 'FUN_0021rbf4'; did you mean 'FUN_0021abf4'?
+[19:26:21]     [3/12980] FUN_0021a1f4 -> quarantined (2m)
+[19:26:22]   QUARANTINE FUN_0020157c: no matching function for call to 'FUN_00201514'
+[19:26:22]     [9/12980] FUN_0020157c -> quarantined (2m)
+[19:26:24]   QUARANTINE FUN_00003438: no matching function for call to 'FUN_00004b88'
+[19:26:24]     [11/12980] FUN_00003438 -> quarantined (2m)
+[19:26:26]   QUARANTINE FUN_00004424: type 'FilterData' does not provide a subscript operator
+[19:26:26]     [6/12980] FUN_00004424 -> quarantined (2m)
+[19:26:27]   QUARANTINE FUN_0021ad3c: no matching function for call to 'FUN_00216668'
+[19:26:27]     [1/12980] FUN_0021ad3c -> quarantined (2m)
+[19:26:28]   QUARANTINE FUN_000033e0: no matching function for call to 'FUN_00216668'
+[19:26:28]     [8/12980] FUN_000033e0 -> quarantined (2m)
+[19:26:29]   QUARANTINE FUN_0021abf4: no member named 'size' in 'LowPassFilter'
+[19:26:29]     [2/12980] FUN_0021abf4 -> quarantined (2m)
+[19:27:11]   QUARANTINE _pthread_mutexattr_settype: too many arguments to function call, expected 0, have 1
+[19:27:11]     [15/12980] _pthread_mutexattr_settype -> quarantined (1m)
+[19:27:41]   QUARANTINE FUN_00208af0: use of undeclared identifier '__chk_fail'
+[19:27:41]     [16/12980] FUN_00208af0 -> quarantined (1m)
+[19:28:47]   QUARANTINE FUN_001da95c: cannot cast from type 'void' to pointer type 'long *'
+[19:28:47]     [18/12980] FUN_001da95c -> quarantined (2m)
+[19:28:49]   QUARANTINE FUN_000050fc: cannot initialize a variable of type 'uint8_t *' (aka 'unsigned char *') with an rvalue of type 'uint8_t' (aka 'unsigned char')
+[19:28:49]     [19/12980] FUN_000050fc -> quarantined (2m)
+[19:28:50]   QUARANTINE FUN_00005000: cannot initialize a variable of type 'uint64_t *' (aka 'unsigned long long *') with an rvalue of type 'void'
+[19:28:50]     [20/12980] FUN_00005000 -> quarantined (2m)
+[19:28:53]   QUARANTINE FUN_0011f0c0: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+[19:28:53]     [22/12980] FUN_0011f0c0 -> quarantined (2m)
+[19:28:54]   QUARANTINE FUN_00208990: invalid operands to binary expression ('basic_ostream<char, std::char_traits<char>>' and 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t'))
+[19:28:54]     [17/12980] FUN_00208990 -> quarantined (2m)
+[19:28:58]   QUARANTINE FUN_000c80a0: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+[19:28:58]     [25/12980] FUN_000c80a0 -> quarantined (2m)
+[19:29:12]   QUARANTINE processValues: no matching function for call to 'setValues'
+[19:29:12]     [26/12980] processValues -> quarantined (2m)
+[19:29:17]   QUARANTINE FUN_0011eee8: static_cast from 'int *' to 'long' is not allowed
+[19:29:17]     [21/12980] FUN_0011eee8 -> quarantined (2m)
+[19:29:21]   QUARANTINE FUN_0011f078: no matching function for call to 'FUN_0011c180'
+[19:29:21]     [23/12980] FUN_0011f078 -> quarantined (2m)
+[19:29:22]   QUARANTINE FUN_0011bf98: no matching function for call to 'FUN_0011c018'
+[19:29:22]     [24/12980] FUN_0011bf98 -> quarantined (2m)
+[19:29:26]     [30/12980] FUN_00005358 -> fixed (37s)
+[19:29:31]     [33/12980] FUN_001db8d0 -> fixed (36s)
+[19:29:33]   QUARANTINE FUN_001e20d0: cannot cast from type 'void' to pointer type 'long *'
+[19:29:33]     [40/12980] FUN_001e20d0 -> quarantined (2s)
+[19:30:00]   QUARANTINE FUN_00004ce8: no matching function for call to 'processValues'
+[19:30:00]     [27/12980] FUN_00004ce8 -> quarantined (2m)
+[19:30:10]   QUARANTINE FUN_001e248c: cannot cast from type 'void' to pointer type 'long *'
+[19:30:10]     [41/12980] FUN_001e248c -> quarantined (36s)
+[19:30:29]   QUARANTINE FUN_000034cc: no matching function for call to 'FUN_00004ce8'
+[19:30:29]     [28/12980] FUN_000034cc -> quarantined (2m)
+[19:30:46]     [43/12980] FUN_00216730 -> fixed (36s)
+[19:31:01]   QUARANTINE FUN_000058ac: cannot cast from type 'void' to pointer type 'float *'
+[19:31:01]     [29/12980] FUN_000058ac -> quarantined (2m)
+[19:31:03]   QUARANTINE FUN_001e2314: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+[19:31:03]     [42/12980] FUN_001e2314 -> quarantined (1m)
+[19:31:07]   QUARANTINE FUN_001dab18: expected expression
+[19:31:07]     [32/12980] FUN_001dab18 -> quarantined (2m)
+[19:31:09]   QUARANTINE FUN_001e28b4: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+[19:31:09]     [48/12980] FUN_001e28b4 -> quarantined (2s)
+[19:31:32]   QUARANTINE FUN_000059a8: no matching function for call to 'processInput10'
+[19:31:32]     [31/12980] FUN_000059a8 -> quarantined (2m)
+[19:31:36]   QUARANTINE FUN_001dc350: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
+[19:31:36]     [37/12980] FUN_001dc350 -> quarantined (2m)
+[19:31:40]   QUARANTINE FUN_001dbea4: no member named 'process' in 'LowPassFilter'
+[19:31:40]     [34/12980] FUN_001dbea4 -> quarantined (2m)
+[19:31:53]   QUARANTINE FUN_001dbe84: no matching function for call to 'FUN_001dbea4'
+[19:31:53]     [35/12980] FUN_001dbe84 -> quarantined (2m)
+[19:31:59]   QUARANTINE FUN_001dc410: C-style cast from 'void' to 'long long' is not allowed
+[19:31:59]     [36/12980] FUN_001dc410 -> quarantined (2m)
+[19:32:04]   QUARANTINE FUN_001e1ed8: redefinition of 'uVar1'
+[19:32:04]     [38/12980] FUN_001e1ed8 -> quarantined (2m)
+[19:32:07]   QUARANTINE FUN_001e2c68: cannot cast from type 'void' to pointer type 'long *'
+[19:32:07]     [55/12980] FUN_001e2c68 -> quarantined (2s)
+[19:32:09]   QUARANTINE FUN_001e1280: no member named 'processSample' in 'LowPassFilter'
+[19:32:09]     [39/12980] FUN_001e1280 -> quarantined (2m)
+[19:32:11]     [50/12980] FUN_001e2bf0 -> fixed (38s)
+[19:32:37]     [53/12980] FUN_001e2c18 -> fixed (43s)
+[19:32:39]   QUARANTINE FUN_001e2b00: cannot cast from type 'void' to pointer type 'long *'
+[19:32:39]     [59/12980] FUN_001e2b00 -> quarantined (2s)
+[19:32:42]     [54/12980] FUN_001e2df0 -> fixed (42s)
+[19:33:09]   QUARANTINE FUN_001e1c28: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+[19:33:09]     [47/12980] FUN_001e1c28 -> quarantined (2m)
+[19:33:24]     [58/12980] FUN_001fea4c -> fixed (1m)
+[19:33:26]   QUARANTINE FUN_001e2054: cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'void'
+[19:33:26]     [44/12980] FUN_001e2054 -> quarantined (2m)
+[19:33:27]   QUARANTINE FUN_001e2ef4: cannot cast from type 'void' to pointer type 'long *'
+[19:33:27]     [61/12980] FUN_001e2ef4 -> quarantined (44s)
+[19:33:43]   QUARANTINE FUN_001e2cac: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+[19:33:43]     [49/12980] FUN_001e2cac -> quarantined (2m)
+[19:33:46]   QUARANTINE FUN_001e22b8: no matching function for call to 'FUN_001e22d8'
+[19:33:46]     [45/12980] FUN_001e22b8 -> quarantined (2m)
+[19:33:52]     [62/12980] FUN_001e2b88 -> fixed (43s)
+[19:34:03]   QUARANTINE FUN_001e1800: cannot cast from type 'void' to pointer type 'long *'
+[19:34:03]     [46/12980] FUN_001e1800 -> quarantined (3m)
+[19:34:10]     [65/12980] FUN_001e2784 -> fixed (42s)
+[19:34:14]   QUARANTINE FUN_001fec1c: no matching function for call to 'FUN_001fec1c'
+[19:34:14]     [56/12980] FUN_001fec1c -> quarantined (2m)
+[19:34:27]     [67/12980] FUN_001e1db0 -> fixed (41s)
+[19:34:36]   QUARANTINE FUN_001e2d88: no member named 'inputBuffer' in 'LowPassFilter'
+[19:34:36]     [51/12980] FUN_001e2d88 -> quarantined (2m)
+[19:34:39]   QUARANTINE FUN_001e2d64: no matching function for call to 'FUN_001e2d88'
+[19:34:39]     [52/12980] FUN_001e2d64 -> quarantined (2m)
+[19:35:09]   QUARANTINE FUN_001fec98: no member named 'input' in 'LowpassFilter'
+[19:35:09]     [57/12980] FUN_001fec98 -> quarantined (3m)
+[19:35:38]   QUARANTINE FUN_001e2b24: cannot cast from type 'void' to pointer type 'float *'
+[19:35:38]     [60/12980] FUN_001e2b24 -> quarantined (2m)
+[19:35:44]     [70/12980] FUN_00006038 -> fixed (1m)
 ```
 
 ## pipeline_state.json
@@ -82072,16 +84755,16 @@ disabled global lVar10   <- a type specifier is required for all declarations
 {
   "stages": {
     "export": {
-      "done": false,
-      "started": "2026-10-20 19:21:47",
-      "at": "2026-10-20 19:21:47",
-      "seconds": 8,
+      "done": true,
+      "started": "2026-10-20 19:23:21",
+      "at": "2026-10-20 19:23:28",
+      "seconds": 7,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-20 18:02:30",
-      "at": "2026-10-20 18:02:50",
+      "started": "2026-10-20 19:23:28",
+      "at": "2026-10-20 19:23:48",
       "seconds": 20,
       "model": "",
       "note": "30489/30489 rewritten",
@@ -82089,15 +84772,15 @@ disabled global lVar10   <- a type specifier is required for all declarations
     },
     "split": {
       "done": true,
-      "started": "2026-10-20 18:02:50",
-      "at": "2026-10-20 18:02:51",
+      "started": "2026-10-20 19:23:48",
+      "at": "2026-10-20 19:23:49",
       "seconds": 1,
-      "note": "17261/30464 compile after the sweep"
+      "note": "17329/30464 compile after the sweep"
     },
     "fix": {
       "done": false,
-      "started": "2026-10-20 18:02:51",
-      "at": "2026-10-20 18:02:51",
+      "started": "2026-10-20 19:23:49",
+      "at": "2026-10-20 19:23:49",
       "seconds": 86,
       "model": "qwen2.5-coder-0.5b-instruct-mlx"
     },
@@ -82113,28 +84796,6 @@ disabled global lVar10   <- a type specifier is required for all declarations
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-20 17:27:08",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: use of undeclared identifier 'X'": 7,
-        "fix|quarantined: type 'X' cannot be narrowed to 'X' in initializer list [-Wc++N-narrowing]": 1,
-        "fix|quarantined: no matching function for call to 'X'": 1,
-        "fix|quarantined: cast from pointer to smaller type 'X' loses information": 1,
-        "fix|not compiling yet (not reached before the run ended)": 18243,
-        "split|declarations in shared.h that didn't compile (switched off)": 17,
-        "split|declarations in globals.cpp that didn't compile (switched off)": 21,
-        "split|function files that had gone missing (rebuilt from the rewrite)": 1,
-        "rewrite|drafts whose function had a different name than the one its callers use (renamed)": 4715,
-        "split|functions libclang didn't list (swallowed by the function before it), cut out by marker": 26691,
-        "split|functions libclang didn't list (var decl), cut out by marker": 1,
-        "split|functions libclang didn't list (not understood by libclang), cut out by marker": 232,
-        "split|functions libclang ran past the end of, swallowing the ones after them (cut at the next marker)": 10,
-        "split|runaway function cause: braces don't balance (+N)": 5,
-        "split|runaway function cause: parentheses don't balance (-N)": 4,
-        "split|functions sharing a name with another (renamed __dupN)": 7
-      }
-    },
     {
       "at": "2026-10-20 17:39:12",
       "keys": {
@@ -82265,6 +84926,65 @@ disabled global lVar10   <- a type specifier is required for all declarations
         "fix|quarantined: 'X' does not name a template but is followed by template arguments; did you mean 'X'?": 1,
         "fix|not compiling yet (not reached before the run ended)": 12980
       }
+    },
+    {
+      "at": "2026-10-20 19:36:03",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "fix|quarantined: no matching function for call to 'X'": 73,
+        "fix|quarantined: cannot cast from type 'X' to pointer type 'X'": 19,
+        "fix|quarantined: use of undeclared identifier 'X'": 15,
+        "fix|quarantined: no member named 'X' in 'X'": 11,
+        "fix|quarantined: redefinition of 'X'": 10,
+        "fix|quarantined: C-style cast from 'X' to 'X' is not allowed": 6,
+        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 5,
+        "fix|quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')": 4,
+        "fix|quarantined: too many arguments to function call, expected N, have N": 3,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *": 3,
+        "fix|quarantined: expected expression": 3,
+        "fix|quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'": 3,
+        "fix|quarantined: void function 'X' should not return a value [-Wreturn-mismatch]": 2,
+        "fix|quarantined: variable has incomplete type 'X'": 2,
+        "fix|quarantined: unknown type name 'X'": 2,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 2,
+        "fix|quarantined: must use 'X' tag to refer to type 'X' in this scope": 2,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'": 2,
+        "fix|quarantined: expected unqualified-id": 2,
+        "fix|quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'": 2,
+        "fix|quarantined: assignment to cast is illegal, lvalue casts are not supported": 2,
+        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 2,
+        "fix|quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed": 2,
+        "fix|quarantined: use of undeclared label 'X'": 1,
+        "fix|quarantined: use of undeclared identifier 'X'; did you mean 'X'?": 1,
+        "fix|quarantined: unknown type name 'X'; did you mean 'X'?": 1,
+        "fix|quarantined: type 'X' does not provide a subscript operator": 1,
+        "fix|quarantined: subscripted value is not an array, pointer, or vector": 1,
+        "fix|quarantined: subscript of pointer to incomplete type 'X'": 1,
+        "fix|quarantined: static_cast from 'X' to 'X' is not allowed": 1,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X'": 1,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 1,
+        "fix|quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'": 1,
+        "fix|quarantined: no viable conversion from 'X' to 'X'": 1,
+        "fix|quarantined: no matching constructor for initialization of 'X'": 1,
+        "fix|quarantined: member reference base type 'X' is not a structure or union": 1,
+        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 1,
+        "fix|quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))": 1,
+        "fix|quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')": 1,
+        "fix|quarantined: function definition is not allowed here": 1,
+        "fix|quarantined: expression is not assignable": 1,
+        "fix|quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')": 1,
+        "fix|quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X'": 1,
+        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'": 1,
+        "fix|quarantined: cannot cast from type 'X' (aka 'X') to pointer type 'X' (aka 'X')": 1,
+        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 1,
+        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 1,
+        "fix|quarantined: arithmetic on a pointer to void": 1,
+        "fix|quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]": 1,
+        "fix|quarantined: 'X' does not name a template but is followed by template arguments; did you mean 'X'?": 1,
+        "fix|not compiling yet (not reached before the run ended)": 12915,
+        "rewrite|drafts whose function had a different name than the one its callers use (renamed)": 4710,
+        "fix|the model repeated an edit that had already failed (skipped)": 96
+      }
     }
   ]
 }
@@ -82274,7 +84994,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 
 ```json
 {
-  "generated": "2026-10-20 18:44:28",
+  "generated": "2026-10-20 19:21:52",
   "pipeline_version": "2026-10-18.1",
   "workdir": "/Users/admin/glitchdecomp/fastpass 3",
   "export": {
@@ -82328,9 +85048,9 @@ disabled global lVar10   <- a type specifier is required for all declarations
   },
   "stages": {
     "export": {
-      "done": true,
-      "started": "2026-10-20 18:02:22",
-      "at": "2026-10-20 18:02:30",
+      "done": false,
+      "started": "2026-10-20 19:21:47",
+      "at": "2026-10-20 19:21:47",
       "seconds": 8,
       "note": "30489/30489 with pseudocode"
     },
