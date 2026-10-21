@@ -5237,7 +5237,7 @@ def compile_sweep(cfg: Config, records: dict[str, FuncRecord]) -> None:
             for i, ((rec, k), (ok, err, _)) in enumerate(zip(recs, results), 1):
                 _sweep_record(rec, ok, err)
                 if k:
-                    known[rec.mangled] = [k, ok, "" if ok else err[-4000:]]
+                    known[rec.mangled] = [k, ok, "" if ok else keep_error(err)]
                 if ok:
                     ok_n += 1
                 prog.end(rec.mangled)
@@ -5254,7 +5254,7 @@ def compile_sweep(cfg: Config, records: dict[str, FuncRecord]) -> None:
 def _sweep_record(rec: FuncRecord, ok: bool, err: str) -> None:
     rec.compiles = ok
     if not ok:
-        rec.last_error = err[-4000:]
+        rec.last_error = keep_error(err)
 
 
 # ----------------------------------------------------------------------------
@@ -5614,6 +5614,32 @@ _FIXCTX: dict = {}
 _FIX_TL = threading.local()       # this thread's last plan (fix stage)
 
 
+def keep_error(err: str, limit: int = 4000) -> str:
+    """Compiler output to keep: the start (where the first error is), not the end.
+    One error can be followed by pages of notes (every candidate of an overload,
+    template instantiation steps); keeping only the end lost the error itself."""
+    if len(err) <= limit:
+        return err
+    return err[:limit - 600] + "\n...\n" + err[-500:]
+
+
+def error_notes(err: str, rel: str, n: int = 4) -> list[str]:
+    """The compiler's notes after the first error in this file ("candidate
+    function not viable: requires 2 arguments, but 3 were provided")."""
+    name, out, seen = Path(rel).name, [], False
+    for l in err.splitlines():
+        m = DIAG_RE.match(l.strip())
+        if not m:
+            continue
+        if "error" in m.group("sev"):
+            if seen:
+                break
+            seen = Path(m.group("file")).name == name
+        elif seen and m.group("sev") == "note" and len(out) < n:
+            out.append(" ".join(m.group("msg").split())[:200])
+    return out
+
+
 def _first_error(err: str, rel: str) -> tuple[int, str]:
     name = Path(rel).name
     for l in err.splitlines():
@@ -5815,6 +5841,9 @@ def compile_fix_edit(cfg: Config, rec: FuncRecord, src: str, err: str) -> Option
     context = "\n".join(x for x in (
         f"Declarations the program already has (use them, don't redefine them):\n{decls}"
         if decls else "", learned) if x)
+    notes = error_notes(err, rec.file)
+    if notes:
+        msg += " (" + "; ".join(notes) + ")"
     new = ctx.line_edit(rec, src, line, f"The compiler says: {msg}. Fix it without changing "
                         f"what the code does; don't rename the function.", context=context)
     _FIX_TL.plan = ctx.last_plan
@@ -5858,7 +5887,7 @@ def _rule_fix(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str, line: 
                                  + (" — compiles now." if ok else "."))
             rec.compiles = ok
             if not ok:
-                rec.last_error = err2[-4000:]
+                rec.last_error = keep_error(err2)
             return True
         (cfg.workdir / rel).write_text(src)
         lessons.rule_result(rid, False)
@@ -5877,7 +5906,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
         if ok:
             rec.compiles = True
             return True
-        rec.last_error = err[-4000:]
+        rec.last_error = keep_error(err)
 
         # 0) if this failure comes from a shared header, fix the HEADER, not the
         #    body — otherwise we rewrite a fine function that can never pass.
@@ -5950,7 +5979,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             # try starts from the same code instead of from a broken edit.
             before, after = _first_error(err, rel), _first_error(err3, rel)
             if n_errors(err3) < n_errors(err) or (after != before and n_errors(err3) <= n_errors(err)):
-                rec.last_error = err3[-4000:]
+                rec.last_error = keep_error(err3)
                 if before[0] and before not in _all_errors(err3, rel):
                     lessons.learned(kind, emsg, src, new_text)    # that error is gone
             else:
