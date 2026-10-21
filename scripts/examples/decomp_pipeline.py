@@ -6099,7 +6099,7 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
             prog.end(m)
         if ok:
             fixed[0] += 1
-        log(cfg, f"    [{i}/{total}] {rec.name} -> "
+        log(cfg, show=True, msg=f"    [{i}/{total}] {rec.name} -> "
                  f"{'fixed' if ok else 'quarantined'} ({fmt_duration(time.time() - t1)})")
 
     lessons = fix_lessons(cfg)
@@ -6487,9 +6487,9 @@ def pseudocode_recovery(cfg: Config, records: dict[str, FuncRecord]) -> None:
             counts["fixed"] += 1
             if rec.recovery == "faithful-pseudocode":
                 counts["faithful"] += 1
-            log(cfg, f"    [{i}/{len(targets)}] {rec.name} -> re-derived ({rec.recovery})")
+            log(cfg, show=True, msg=f"    [{i}/{len(targets)}] {rec.name} -> re-derived ({rec.recovery})")
         else:
-            log(cfg, f"    [{i}/{len(targets)}] {rec.name} -> still quarantined")
+            log(cfg, show=True, msg=f"    [{i}/{len(targets)}] {rec.name} -> still quarantined")
     try:
         work_pool(cfg.workers, list(enumerate(targets, 1)), one, 20,
                   lambda: save_manifest(cfg, records))
