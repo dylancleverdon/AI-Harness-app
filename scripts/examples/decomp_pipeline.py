@@ -217,6 +217,17 @@ def say(text: str) -> None:
 _BAR_TL = threading.local()       # the bar item this thread is working on
 
 
+@contextlib.contextmanager
+def busy(title: str):
+    """A live line with a timer for a step that has nothing to count (a long parse),
+    so the console never sits silent."""
+    p = Progress(None, title=title)
+    try:
+        yield p
+    finally:
+        p.close()
+
+
 def phase(text: str) -> None:
     """Tell the bar what this thread's item is doing now."""
     p = BAR["p"]
@@ -2998,6 +3009,7 @@ class Progress:
     SPIN = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
 
     def __init__(self, total, already=0, title=""):
+        # total None: a step with nothing to count; the bar shows the step and a timer
         self.total, self.done = total, already
         self.title = title                    # what this bar is counting
         self.finished_at = []                 # when each function finished, this run
@@ -3010,7 +3022,7 @@ class Progress:
         self.lock = threading.RLock()
         self.stop_flag = threading.Event()
         self.thread = None
-        self.every = max(10, total // 40)     # without a live bar: print it this often
+        self.every = max(10, (total or 0) // 40)   # without a live bar: print it this often
         if BAR["p"] is not None:
             BAR["p"].close()
         BAR["p"] = self
@@ -3037,6 +3049,11 @@ class Progress:
         return f"{speed}, about {fmt_duration(secs)} left, done around {fmt_clock(secs)}"
 
     def bar_line(self, spin=""):
+        if self.total is None:
+            head = " ".join(x for x in (BAR["stage"], self.title) if x)
+            line = f"{spin} {head} | working, no count for this step | running " \
+                   f"{fmt_duration(time.time() - self.started)}"
+            return line[:max(20, shutil.get_terminal_size((160, 20)).columns - 1)]
         frac = self.done / self.total if self.total else 1.0
         width = 22
         full = int(frac * width)
@@ -3106,7 +3123,12 @@ class Progress:
             self.thread.join(timeout=1)
         if self.live:
             with self.lock:
-                sys.stdout.write("\r\x1b[K" + self.bar_line(" ") + "\n")
+                if self.total is None:
+                    head = " ".join(x for x in (BAR["stage"], self.title) if x)
+                    sys.stdout.write(f"\r\x1b[K  {head}: done in "
+                                     f"{fmt_duration(time.time() - self.started)}\n")
+                else:
+                    sys.stdout.write("\r\x1b[K" + self.bar_line(" ") + "\n")
                 sys.stdout.flush()
 
 # ---------------------------------------------------------------- export stage
@@ -6346,7 +6368,8 @@ def compile_sweep(cfg: Config, records: dict[str, FuncRecord]) -> None:
     ok_n = 0
     total = len(records)
     t0 = time.time()
-    _pch_flags(cfg)   # build the PCH once before the workers start
+    with busy("building the precompiled header"):
+        _pch_flags(cfg)   # build the PCH once before the workers start
     cache_path = cfg.workdir / "compile_cache.json"
     try:
         cache = json.loads(cache_path.read_text())
@@ -8532,7 +8555,9 @@ def _header_is_current(cfg: Config) -> bool:
 # ----------------------------------------------------------------------------
 
 def _gate_header(cfg: Config, records: dict[str, FuncRecord]) -> None:
-    if not validate_headers(cfg):
+    with busy("checking (and repairing) the shared header"):
+        ok = validate_headers(cfg)
+    if not ok:
         save_manifest(cfg, records)
         if not cfg.force:
             log(cfg, "STOPPED: shared.h does not compile, so every function would "
@@ -8546,7 +8571,9 @@ def _gate_header(cfg: Config, records: dict[str, FuncRecord]) -> None:
 def _sweep_all(cfg: Config, records: dict[str, FuncRecord]) -> None:
     log(cfg, f"  » preflight diagnose (surface any systemic cause before "
              f"spending model time on {len(records)} functions)")
-    if preflight_diagnose(cfg, records):
+    with busy("preflight: compiling a sample of functions"):
+        systemic = preflight_diagnose(cfg, records)
+    if systemic:
         save_manifest(cfg, records)
         if not cfg.force:
             log(cfg, "STOPPED: every sampled function fails for a shared reason "
@@ -11286,13 +11313,15 @@ def build_split(cfg: Config, redo_split: bool) -> dict[str, FuncRecord]:
         # was copied to a snapshot first (see run_pipeline)
         log(cfg, "  » split (parsing the whole file with libclang — "
                  "this can take a minute on a large monolith with no output; not stalled)")
-        records = split_monolith(cfg)
-        _set_aside_unused(cfg, records)
+        with busy("parsing the whole file with libclang"):
+            records = split_monolith(cfg)
+            _set_aside_unused(cfg, records)
         save_state(cfg, input_sha=_input_sha(cfg), split_done=True,
                    header_ok=False, sweep_done=False)
         log(cfg, "  » de-ghidra text pass")
-        apply_deghidra_pass(cfg, records)
-        replay_overlay(cfg, records)
+        with busy("cleaning up Ghidra's notation"):
+            apply_deghidra_pass(cfg, records)
+            replay_overlay(cfg, records)
         save_manifest(cfg, records)
         log(cfg, "  » validate/repair shared headers (gate — a broken "
                  "header fails every TU identically)")
@@ -12798,8 +12827,11 @@ def run_pipeline(args) -> int:
                 info = {"note": f"{pi.get('replaced', 0)} replacement(s)"}
             elif stage == "rewrite":
                 try:
-                    s = (run_pseudo_source(P, args) if args.lang == "c"
-                         else run_rewrite(P, args, redo, client))
+                    if args.lang == "c":
+                        with busy("writing Ghidra's pseudocode out as C"):
+                            s = run_pseudo_source(P, args)
+                    else:
+                        s = run_rewrite(P, args, redo, client)
                 except ModelError as e:
                     plog(P, f"STOPPED: {e}")
                     return 2
