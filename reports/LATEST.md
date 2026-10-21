@@ -1,4 +1,4 @@
-# Diagnostics — fastpass 3 — 2026-10-20 23:23:37
+# Diagnostics — fastpass 3 — 2026-10-20 23:43:58
 
 
 ## Run
@@ -10,9 +10,9 @@ python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
 compile flags: -Wno-c++11-narrowing
 --ctx 8192, chars per token 2.06
-model: qwen2.5-coder-3b-instruct-mlx
+model: ?
 model requests turned down this run: 0, thinking-only answers: 0
-fix stage model edits: {'calls': 651, 'no_answer': 106, 'rejected': 0}
+fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 ```
 
 ## What the script struggled with
@@ -24,158 +24,136 @@ fix stage model edits: {'calls': 651, 'no_answer': 106, 'rejected': 0}
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %
   10-20 23:23                57.9                0.5              12662                194               15.5                369                  -
+  10-20 23:43                57.9                0.5              12662                  -                  -                  -                  -
 couldn't handle:
   fix       12662 × not compiling yet (not reached before the run ended)   e.g. FUN_00001a3c, updateParameter, processAndFilterInput   [also in the last 5 run(s)]
-  fix          30 × quarantined: no matching function for call to 'X'   e.g. FUN_000034cc, FUN_0000408c, FUN_00004130   [also in the last 4 run(s)]
-  fix          18 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. FUN_000c80a0, FUN_001e20d0, FUN_001e248c   [also in the last 4 run(s)]
-  fix          10 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_00037ecc, FUN_000b5bdc, FUN_001f66f0   [also in the last 4 run(s)]
-  fix           8 × quarantined: redefinition of 'X'   e.g. FUN_0000315c, FUN_001f9bc4, FUN_001f9e9c   [also in the last 4 run(s)]
-  fix           8 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_000058ac, FUN_000442e8, FUN_001dc350   [also in the last 4 run(s)]
-  fix           7 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_001e188c, FUN_001e27f0, FUN_001f9dec   [also in the last 1 run(s)]
-  fix           7 × quarantined: no member named 'X' in 'X'   e.g. processValues, FUN_00006e48, FUN_0000877c   [also in the last 4 run(s)]
-  fix           7 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_001ff028, FUN_002084e8, FUN_0020dfa4   [also in the last 4 run(s)]
-  fix           6 × quarantined: use of undeclared identifier 'X'   e.g. FUN_001fac98, FUN_00208af0, FUN_0020b8b4   [also in the last 4 run(s)]
-  fix           5 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, FUN_001dc410, FUN_001e2b24   [also in the last 4 run(s)]
-  fix           5 × quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed   e.g. FUN_0011f0c0, FUN_001e1c28, FUN_001e1ed8   [also in the last 2 run(s)]
-  fix           4 × quarantined: subscripted value is not an array, pointer, or vector   e.g. processBuffer4, FUN_0011f17c, FUN_00206ac0   [also in the last 4 run(s)]
-  fix           4 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00008858, FUN_001da95c, FUN_001e2cac   [also in the last 4 run(s)]
-  fix           3 × quarantined: unknown type name 'X'   e.g. FUN_00208bd4, FUN_00208d74, FUN_00215c10   [also in the last 4 run(s)]
-  fix           3 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. FUN_001f896c, FUN_00200cb8, FUN_00208364   [also in the last 4 run(s)]
-  fix           3 × quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')   e.g. FUN_00005000, FUN_001e28b4, FUN_0021b230   [also in the last 2 run(s)]
-  fix           2 × quarantined: variable has incomplete type 'X'   e.g. openFile, _mach_timebase_info   [also in the last 4 run(s)]
-  fix           2 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_0021a1f4, FUN_00224594   [also in the last 2 run(s)]
-  fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_001e1280, FUN_001f9f64   [also in the last 4 run(s)]
-  fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_00004ce8, FUN_00037de8   [also in the last 4 run(s)]
-  fix           1 × quarantined: type 'X' does not provide a subscript operator   e.g. FUN_00004424   [also in the last 2 run(s)]
-  fix           1 × quarantined: subscript of pointer to incomplete type 'X'   e.g. FUN_000f80f4   [also in the last 2 run(s)]
-  fix           1 × quarantined: static_cast from 'X' to 'X' is not allowed   e.g. FUN_0011eee8   [also in the last 2 run(s)]
-  fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_002075bc   [also in the last 4 run(s)]
-  fix           1 × quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'   e.g. FUN_00202428   [also in the last 4 run(s)]
-  fix           1 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_0021f318   [also in the last 4 run(s)]
-  fix           1 × quarantined: no matching conversion for C-style cast from 'X' to 'X'   e.g. FUN_0020df60   [also in the last 1 run(s)]
-  fix           1 × quarantined: no matching conversion for C-style cast from 'X' (aka 'X') to 'X'   e.g. FUN_0020a438
-  fix           1 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_001fadc4   [also in the last 4 run(s)]
-  fix           1 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00220624   [also in the last 4 run(s)]
-  fix           1 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_002246d4
-  fix           1 × quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))   e.g. FUN_00208990   [also in the last 2 run(s)]
-  fix           1 × quarantined: indirection requires pointer operand ('X' invalid)   e.g. FUN_0021adb4   [also in the last 1 run(s)]
-  fix           1 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_0020af54   [also in the last 4 run(s)]
-  fix           1 × quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')   e.g. _memmove   [also in the last 1 run(s)]
-  fix           1 × quarantined: function definition is not allowed here   e.g. FUN_002008cc   [also in the last 4 run(s)]
-  fix           1 × quarantined: expected variable name or 'X' in lambda capture list   e.g. FUN_002145e4   [also in the last 1 run(s)]
-  fix           1 × quarantined: expected unqualified-id   e.g. string   [also in the last 4 run(s)]
-  fix           1 × quarantined: expected expression   e.g. FUN_001dab18   [also in the last 4 run(s)]
-  fix           1 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. checkDataValue   [also in the last 2 run(s)]
-  fix           1 × quarantined: cannot initialize a parameter of type 'X' with an rvalue of type 'X' (aka 'X')   e.g. FUN_00225de8
-  fix           1 × quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X' (aka 'X')   e.g. _vsnprintf   [also in the last 1 run(s)]
-  fix           1 × quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00208274   [also in the last 4 run(s)]
-  fix           1 × quarantined: cannot convert 'X' to 'X' (aka 'X') without a conversion operator   e.g. FUN_00003fd4
-  fix           1 × quarantined: cannot assign to return value because function 'X' returns a const value   e.g. FUN_00223db4   [also in the last 1 run(s)]
-  fix           1 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_001dbea4   [also in the last 4 run(s)]
-  fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00208454   [also in the last 4 run(s)]
+  fix          30 × quarantined: no matching function for call to 'X'   e.g. FUN_000034cc, FUN_0000408c, FUN_00004130   [also in the last 5 run(s)]
+  fix          18 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. FUN_000c80a0, FUN_001e20d0, FUN_001e248c   [also in the last 5 run(s)]
+  fix          10 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_00037ecc, FUN_000b5bdc, FUN_001f66f0   [also in the last 5 run(s)]
+  fix           8 × quarantined: redefinition of 'X'   e.g. FUN_0000315c, FUN_001f9bc4, FUN_001f9e9c   [also in the last 5 run(s)]
+  fix           8 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_000058ac, FUN_000442e8, FUN_001dc350   [also in the last 5 run(s)]
+  fix           7 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_001e188c, FUN_001e27f0, FUN_001f9dec   [also in the last 2 run(s)]
+  fix           7 × quarantined: no member named 'X' in 'X'   e.g. processValues, FUN_00006e48, FUN_0000877c   [also in the last 5 run(s)]
+  fix           7 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_001ff028, FUN_002084e8, FUN_0020dfa4   [also in the last 5 run(s)]
+  fix           6 × quarantined: use of undeclared identifier 'X'   e.g. FUN_001fac98, FUN_00208af0, FUN_0020b8b4   [also in the last 5 run(s)]
+  fix           5 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, FUN_001dc410, FUN_001e2b24   [also in the last 5 run(s)]
+  fix           5 × quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed   e.g. FUN_0011f0c0, FUN_001e1c28, FUN_001e1ed8   [also in the last 3 run(s)]
+  fix           4 × quarantined: subscripted value is not an array, pointer, or vector   e.g. processBuffer4, FUN_0011f17c, FUN_00206ac0   [also in the last 5 run(s)]
+  fix           4 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00008858, FUN_001da95c, FUN_001e2cac   [also in the last 5 run(s)]
+  fix           3 × quarantined: unknown type name 'X'   e.g. FUN_00208bd4, FUN_00208d74, FUN_00215c10   [also in the last 5 run(s)]
+  fix           3 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. FUN_001f896c, FUN_00200cb8, FUN_00208364   [also in the last 5 run(s)]
+  fix           3 × quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')   e.g. FUN_00005000, FUN_001e28b4, FUN_0021b230   [also in the last 3 run(s)]
+  fix           2 × quarantined: variable has incomplete type 'X'   e.g. openFile, _mach_timebase_info   [also in the last 5 run(s)]
+  fix           2 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_0021a1f4, FUN_00224594   [also in the last 3 run(s)]
+  fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_001e1280, FUN_001f9f64   [also in the last 5 run(s)]
+  fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_00004ce8, FUN_00037de8   [also in the last 5 run(s)]
+  fix           1 × quarantined: type 'X' does not provide a subscript operator   e.g. FUN_00004424   [also in the last 3 run(s)]
+  fix           1 × quarantined: subscript of pointer to incomplete type 'X'   e.g. FUN_000f80f4   [also in the last 3 run(s)]
+  fix           1 × quarantined: static_cast from 'X' to 'X' is not allowed   e.g. FUN_0011eee8   [also in the last 3 run(s)]
+  fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_002075bc   [also in the last 5 run(s)]
+  fix           1 × quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'   e.g. FUN_00202428   [also in the last 5 run(s)]
+  fix           1 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_0021f318   [also in the last 5 run(s)]
+  fix           1 × quarantined: no matching conversion for C-style cast from 'X' to 'X'   e.g. FUN_0020df60   [also in the last 2 run(s)]
+  fix           1 × quarantined: no matching conversion for C-style cast from 'X' (aka 'X') to 'X'   e.g. FUN_0020a438   [also in the last 1 run(s)]
+  fix           1 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_001fadc4   [also in the last 5 run(s)]
+  fix           1 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00220624   [also in the last 5 run(s)]
+  fix           1 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_002246d4   [also in the last 1 run(s)]
+  fix           1 × quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))   e.g. FUN_00208990   [also in the last 3 run(s)]
+  fix           1 × quarantined: indirection requires pointer operand ('X' invalid)   e.g. FUN_0021adb4   [also in the last 2 run(s)]
+  fix           1 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_0020af54   [also in the last 5 run(s)]
+  fix           1 × quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')   e.g. _memmove   [also in the last 2 run(s)]
+  fix           1 × quarantined: function definition is not allowed here   e.g. FUN_002008cc   [also in the last 5 run(s)]
+  fix           1 × quarantined: expected variable name or 'X' in lambda capture list   e.g. FUN_002145e4   [also in the last 2 run(s)]
+  fix           1 × quarantined: expected unqualified-id   e.g. string   [also in the last 5 run(s)]
+  fix           1 × quarantined: expected expression   e.g. FUN_001dab18   [also in the last 5 run(s)]
+  fix           1 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. checkDataValue   [also in the last 3 run(s)]
+  fix           1 × quarantined: cannot initialize a parameter of type 'X' with an rvalue of type 'X' (aka 'X')   e.g. FUN_00225de8   [also in the last 1 run(s)]
+  fix           1 × quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X' (aka 'X')   e.g. _vsnprintf   [also in the last 2 run(s)]
+  fix           1 × quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00208274   [also in the last 5 run(s)]
+  fix           1 × quarantined: cannot convert 'X' to 'X' (aka 'X') without a conversion operator   e.g. FUN_00003fd4   [also in the last 1 run(s)]
+  fix           1 × quarantined: cannot assign to return value because function 'X' returns a const value   e.g. FUN_00223db4   [also in the last 2 run(s)]
+  fix           1 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_001dbea4   [also in the last 5 run(s)]
+  fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00208454   [also in the last 5 run(s)]
 worked around (cost time, nothing lost):
-  fix         259 × the model repeated an edit that had already failed (skipped)   e.g. FUN_0021c718, FUN_00223444, _memmove   [also in the last 2 run(s)]
-  rewrite    4710 × drafts whose function had a different name than the one its callers use (renamed)   e.g. FUN_000b50b8, getFloatValue, main   [also in the last 2 run(s)]
-  rewrite    2978 × drafts whose parameters were changed to Ghidra's signature (so callers and callee agree)   e.g. FUN_0000315c, processAndFilterInput, checkDataValue
-  rewrite     901 × drafts calling functions by made-up names (the real names put back)   e.g. FUN_0000315c: setZeroes->setZeroes2, FUN_00003340: printInt->FUN_0021a1f4, applyFilter->FUN_0021aec0, FUN_000033bc: updateFilter->FUN_00004424   [also in the last 1 run(s)]
-  split     23890 × functions libclang didn't list (swallowed by the function before it), cut out by marker   [also in the last 1 run(s)]
-  split       233 × functions libclang didn't list (not understood by libclang), cut out by marker   [also in the last 1 run(s)]
-  split       102 × guessed declarations of called functions dropped from shared.h (they conflicted with the real definition)   [also in the last 1 run(s)]
-  split        42 × functions sharing a name with another (renamed __dupN)   [also in the last 1 run(s)]
-                    → the model gave different functions the same name
-  split         5 × functions libclang ran past the end of, swallowing the ones after them (cut at the next marker)   e.g. FUN_0005a2c8   [also in the last 1 run(s)]
-                    → 23890 swallowed function(s) were cut out by their markers; the causes are in split_report.txt
-  split         1 × functions libclang didn't list (inside another function), cut out by marker   [also in the last 1 run(s)]
-  split         1 × functions libclang didn't list (var decl), cut out by marker   [also in the last 1 run(s)]
-  split         1 × runaway function cause: braces don't balance (+1)   [also in the last 1 run(s)]
-  split         1 × runaway function cause: parentheses don't balance (-1)   [also in the last 1 run(s)]
+  rewrite    4710 × drafts whose function had a different name than the one its callers use (renamed)   e.g. FUN_000b50b8, getFloatValue, main   [also in the last 3 run(s)]
+  rewrite    2978 × drafts whose parameters were changed to Ghidra's signature (so callers and callee agree)   e.g. FUN_0000315c, processAndFilterInput, checkDataValue   [also in the last 1 run(s)]
+  rewrite     901 × drafts calling functions by made-up names (the real names put back)   e.g. FUN_0000315c: setZeroes->setZeroes2, FUN_00003340: printInt->FUN_0021a1f4, applyFilter->FUN_0021aec0, FUN_000033bc: updateFilter->FUN_00004424   [also in the last 2 run(s)]
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[22:40:51] decomp_pipeline 2026-10-18.1: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
-[22:40:51]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[22:40:51] ━━━━ Stage 1/8 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
-[22:40:51]   using the existing ghidra_export.json (Ghidra not needed)
-[22:40:58]   callgraph.json: 22076 functions with internal calls
-[22:40:59]   export: 30489/30489 functions have pseudocode
-[22:40:59] ━━━━ Stage 2/8 · rewrite ━━━━ the model rewrites each function as readable C++, gives placeholder names real ones, and strips identifying strings
-[22:40:59]   12705 function(s) are still marked to be rewritten again from an earlier --redo-suspect / --redo rewrite; they keep their current version. Turn that option on again to carry on, or use --cancel-redo to drop the marks.
-[22:40:59]   30489 already have a rewrite, 0 to go
-[22:41:29] ━━━━ Stage 3/8 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
-[22:52:02] ━━━━ Stage 4/8 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
-[23:23:37] 
-[23:23:37] ━━━━ what the script struggled with this run ━━━━
-[23:23:37] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[23:23:37] rates (this run last; earlier runs above it):
-[23:23:37]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %
-[23:23:37]   10-20 23:23                57.9                0.5              12662                194               15.5                369                  -
-[23:23:37] couldn't handle:
-[23:23:37]   fix       12662 × not compiling yet (not reached before the run ended)   e.g. FUN_00001a3c, updateParameter, processAndFilterInput   [also in the last 5 run(s)]
-[23:23:37]   fix          30 × quarantined: no matching function for call to 'X'   e.g. FUN_000034cc, FUN_0000408c, FUN_00004130   [also in the last 4 run(s)]
-[23:23:37]   fix          18 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. FUN_000c80a0, FUN_001e20d0, FUN_001e248c   [also in the last 4 run(s)]
-[23:23:37]   fix          10 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_00037ecc, FUN_000b5bdc, FUN_001f66f0   [also in the last 4 run(s)]
-[23:23:37]   fix           8 × quarantined: redefinition of 'X'   e.g. FUN_0000315c, FUN_001f9bc4, FUN_001f9e9c   [also in the last 4 run(s)]
-[23:23:37]   fix           8 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_000058ac, FUN_000442e8, FUN_001dc350   [also in the last 4 run(s)]
-[23:23:37]   fix           7 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_001e188c, FUN_001e27f0, FUN_001f9dec   [also in the last 1 run(s)]
-[23:23:37]   fix           7 × quarantined: no member named 'X' in 'X'   e.g. processValues, FUN_00006e48, FUN_0000877c   [also in the last 4 run(s)]
-[23:23:37]   fix           7 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_001ff028, FUN_002084e8, FUN_0020dfa4   [also in the last 4 run(s)]
-[23:23:37]   fix           6 × quarantined: use of undeclared identifier 'X'   e.g. FUN_001fac98, FUN_00208af0, FUN_0020b8b4   [also in the last 4 run(s)]
-[23:23:37]   fix           5 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, FUN_001dc410, FUN_001e2b24   [also in the last 4 run(s)]
-[23:23:37]   fix           5 × quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed   e.g. FUN_0011f0c0, FUN_001e1c28, FUN_001e1ed8   [also in the last 2 run(s)]
-[23:23:37]   fix           4 × quarantined: subscripted value is not an array, pointer, or vector   e.g. processBuffer4, FUN_0011f17c, FUN_00206ac0   [also in the last 4 run(s)]
-[23:23:37]   fix           4 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00008858, FUN_001da95c, FUN_001e2cac   [also in the last 4 run(s)]
-[23:23:37]   fix           3 × quarantined: unknown type name 'X'   e.g. FUN_00208bd4, FUN_00208d74, FUN_00215c10   [also in the last 4 run(s)]
-[23:23:37]   fix           3 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. FUN_001f896c, FUN_00200cb8, FUN_00208364   [also in the last 4 run(s)]
-[23:23:37]   fix           3 × quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')   e.g. FUN_00005000, FUN_001e28b4, FUN_0021b230   [also in the last 2 run(s)]
-[23:23:37]   fix           2 × quarantined: variable has incomplete type 'X'   e.g. openFile, _mach_timebase_info   [also in the last 4 run(s)]
-[23:23:37]   fix           2 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_0021a1f4, FUN_00224594   [also in the last 2 run(s)]
-[23:23:37]   fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_001e1280, FUN_001f9f64   [also in the last 4 run(s)]
-[23:23:37]   fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_00004ce8, FUN_00037de8   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: type 'X' does not provide a subscript operator   e.g. FUN_00004424   [also in the last 2 run(s)]
-[23:23:37]   fix           1 × quarantined: subscript of pointer to incomplete type 'X'   e.g. FUN_000f80f4   [also in the last 2 run(s)]
-[23:23:37]   fix           1 × quarantined: static_cast from 'X' to 'X' is not allowed   e.g. FUN_0011eee8   [also in the last 2 run(s)]
-[23:23:37]   fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_002075bc   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'   e.g. FUN_00202428   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_0021f318   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: no matching conversion for C-style cast from 'X' to 'X'   e.g. FUN_0020df60   [also in the last 1 run(s)]
-[23:23:37]   fix           1 × quarantined: no matching conversion for C-style cast from 'X' (aka 'X') to 'X'   e.g. FUN_0020a438
-[23:23:37]   fix           1 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_001fadc4   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00220624   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_002246d4
-[23:23:37]   fix           1 × quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))   e.g. FUN_00208990   [also in the last 2 run(s)]
-[23:23:37]   fix           1 × quarantined: indirection requires pointer operand ('X' invalid)   e.g. FUN_0021adb4   [also in the last 1 run(s)]
-[23:23:37]   fix           1 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_0020af54   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')   e.g. _memmove   [also in the last 1 run(s)]
-[23:23:37]   fix           1 × quarantined: function definition is not allowed here   e.g. FUN_002008cc   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: expected variable name or 'X' in lambda capture list   e.g. FUN_002145e4   [also in the last 1 run(s)]
-[23:23:37]   fix           1 × quarantined: expected unqualified-id   e.g. string   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: expected expression   e.g. FUN_001dab18   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. checkDataValue   [also in the last 2 run(s)]
-[23:23:37]   fix           1 × quarantined: cannot initialize a parameter of type 'X' with an rvalue of type 'X' (aka 'X')   e.g. FUN_00225de8
-[23:23:37]   fix           1 × quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X' (aka 'X')   e.g. _vsnprintf   [also in the last 1 run(s)]
-[23:23:37]   fix           1 × quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00208274   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: cannot convert 'X' to 'X' (aka 'X') without a conversion operator   e.g. FUN_00003fd4
-[23:23:37]   fix           1 × quarantined: cannot assign to return value because function 'X' returns a const value   e.g. FUN_00223db4   [also in the last 1 run(s)]
-[23:23:37]   fix           1 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_001dbea4   [also in the last 4 run(s)]
-[23:23:37]   fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00208454   [also in the last 4 run(s)]
-[23:23:37] worked around (cost time, nothing lost):
-[23:23:37]   fix         259 × the model repeated an edit that had already failed (skipped)   e.g. FUN_0021c718, FUN_00223444, _memmove   [also in the last 2 run(s)]
-[23:23:37]   rewrite    4710 × drafts whose function had a different name than the one its callers use (renamed)   e.g. FUN_000b50b8, getFloatValue, main   [also in the last 2 run(s)]
-[23:23:37]   rewrite    2978 × drafts whose parameters were changed to Ghidra's signature (so callers and callee agree)   e.g. FUN_0000315c, processAndFilterInput, checkDataValue
-[23:23:37]   rewrite     901 × drafts calling functions by made-up names (the real names put back)   e.g. FUN_0000315c: setZeroes->setZeroes2, FUN_00003340: printInt->FUN_0021a1f4, applyFilter->FUN_0021aec0, FUN_000033bc: updateFilter->FUN_00004424   [also in the last 1 run(s)]
-[23:23:37]   split     23890 × functions libclang didn't list (swallowed by the function before it), cut out by marker   [also in the last 1 run(s)]
-[23:23:37]   split       233 × functions libclang didn't list (not understood by libclang), cut out by marker   [also in the last 1 run(s)]
-[23:23:37]   split       102 × guessed declarations of called functions dropped from shared.h (they conflicted with the real definition)   [also in the last 1 run(s)]
-[23:23:37]   split        42 × functions sharing a name with another (renamed __dupN)   [also in the last 1 run(s)]
-[23:23:37]                     → the model gave different functions the same name
-[23:23:37]   split         5 × functions libclang ran past the end of, swallowing the ones after them (cut at the next marker)   e.g. FUN_0005a2c8   [also in the last 1 run(s)]
-[23:23:37]                     → 23890 swallowed function(s) were cut out by their markers; the causes are in split_report.txt
-[23:23:37]   split         1 × functions libclang didn't list (inside another function), cut out by marker   [also in the last 1 run(s)]
-[23:23:37]   split         1 × functions libclang didn't list (var decl), cut out by marker   [also in the last 1 run(s)]
-[23:23:37]   split         1 × runaway function cause: braces don't balance (+1)   [also in the last 1 run(s)]
-[23:23:37]   split         1 × runaway function cause: parentheses don't balance (-1)   [also in the last 1 run(s)]
+[23:41:09] decomp_pipeline 2026-10-18.1: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
+[23:41:09]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[23:41:09] ━━━━ Stage 1/8 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
+[23:41:09]   using the existing ghidra_export.json (Ghidra not needed)
+[23:41:16]   callgraph.json: 22076 functions with internal calls
+[23:41:16]   export: 30489/30489 functions have pseudocode
+[23:41:16] ━━━━ Stage 2/8 · rewrite ━━━━ the model rewrites each function as readable C++, gives placeholder names real ones, and strips identifying strings
+[23:41:16]   12705 function(s) are still marked to be rewritten again from an earlier --redo-suspect / --redo rewrite; they keep their current version. Turn that option on again to carry on, or use --cancel-redo to drop the marks.
+[23:41:16]   30489 already have a rewrite, 0 to go
+[23:41:47] ━━━━ Stage 3/8 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
+[23:41:50] ━━━━ Stage 4/8 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
+[23:43:58] 
+[23:43:58] ━━━━ what the script struggled with this run ━━━━
+[23:43:58] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[23:43:58] rates (this run last; earlier runs above it):
+[23:43:58]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %
+[23:43:58]   10-20 23:23                57.9                0.5              12662                194               15.5                369                  -
+[23:43:58]   10-20 23:43                57.9                0.5              12662                  -                  -                  -                  -
+[23:43:58] couldn't handle:
+[23:43:58]   fix       12662 × not compiling yet (not reached before the run ended)   e.g. FUN_00001a3c, updateParameter, processAndFilterInput   [also in the last 5 run(s)]
+[23:43:58]   fix          30 × quarantined: no matching function for call to 'X'   e.g. FUN_000034cc, FUN_0000408c, FUN_00004130   [also in the last 5 run(s)]
+[23:43:58]   fix          18 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. FUN_000c80a0, FUN_001e20d0, FUN_001e248c   [also in the last 5 run(s)]
+[23:43:58]   fix          10 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_00037ecc, FUN_000b5bdc, FUN_001f66f0   [also in the last 5 run(s)]
+[23:43:58]   fix           8 × quarantined: redefinition of 'X'   e.g. FUN_0000315c, FUN_001f9bc4, FUN_001f9e9c   [also in the last 5 run(s)]
+[23:43:58]   fix           8 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_000058ac, FUN_000442e8, FUN_001dc350   [also in the last 5 run(s)]
+[23:43:58]   fix           7 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_001e188c, FUN_001e27f0, FUN_001f9dec   [also in the last 2 run(s)]
+[23:43:58]   fix           7 × quarantined: no member named 'X' in 'X'   e.g. processValues, FUN_00006e48, FUN_0000877c   [also in the last 5 run(s)]
+[23:43:58]   fix           7 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_001ff028, FUN_002084e8, FUN_0020dfa4   [also in the last 5 run(s)]
+[23:43:58]   fix           6 × quarantined: use of undeclared identifier 'X'   e.g. FUN_001fac98, FUN_00208af0, FUN_0020b8b4   [also in the last 5 run(s)]
+[23:43:58]   fix           5 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, FUN_001dc410, FUN_001e2b24   [also in the last 5 run(s)]
+[23:43:58]   fix           5 × quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed   e.g. FUN_0011f0c0, FUN_001e1c28, FUN_001e1ed8   [also in the last 3 run(s)]
+[23:43:58]   fix           4 × quarantined: subscripted value is not an array, pointer, or vector   e.g. processBuffer4, FUN_0011f17c, FUN_00206ac0   [also in the last 5 run(s)]
+[23:43:58]   fix           4 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00008858, FUN_001da95c, FUN_001e2cac   [also in the last 5 run(s)]
+[23:43:58]   fix           3 × quarantined: unknown type name 'X'   e.g. FUN_00208bd4, FUN_00208d74, FUN_00215c10   [also in the last 5 run(s)]
+[23:43:58]   fix           3 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. FUN_001f896c, FUN_00200cb8, FUN_00208364   [also in the last 5 run(s)]
+[23:43:58]   fix           3 × quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')   e.g. FUN_00005000, FUN_001e28b4, FUN_0021b230   [also in the last 3 run(s)]
+[23:43:58]   fix           2 × quarantined: variable has incomplete type 'X'   e.g. openFile, _mach_timebase_info   [also in the last 5 run(s)]
+[23:43:58]   fix           2 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_0021a1f4, FUN_00224594   [also in the last 3 run(s)]
+[23:43:58]   fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_001e1280, FUN_001f9f64   [also in the last 5 run(s)]
+[23:43:58]   fix           2 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_00004ce8, FUN_00037de8   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: type 'X' does not provide a subscript operator   e.g. FUN_00004424   [also in the last 3 run(s)]
+[23:43:58]   fix           1 × quarantined: subscript of pointer to incomplete type 'X'   e.g. FUN_000f80f4   [also in the last 3 run(s)]
+[23:43:58]   fix           1 × quarantined: static_cast from 'X' to 'X' is not allowed   e.g. FUN_0011eee8   [also in the last 3 run(s)]
+[23:43:58]   fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_002075bc   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'   e.g. FUN_00202428   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_0021f318   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: no matching conversion for C-style cast from 'X' to 'X'   e.g. FUN_0020df60   [also in the last 2 run(s)]
+[23:43:58]   fix           1 × quarantined: no matching conversion for C-style cast from 'X' (aka 'X') to 'X'   e.g. FUN_0020a438   [also in the last 1 run(s)]
+[23:43:58]   fix           1 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_001fadc4   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00220624   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_002246d4   [also in the last 1 run(s)]
+[23:43:58]   fix           1 × quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))   e.g. FUN_00208990   [also in the last 3 run(s)]
+[23:43:58]   fix           1 × quarantined: indirection requires pointer operand ('X' invalid)   e.g. FUN_0021adb4   [also in the last 2 run(s)]
+[23:43:58]   fix           1 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_0020af54   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')   e.g. _memmove   [also in the last 2 run(s)]
+[23:43:58]   fix           1 × quarantined: function definition is not allowed here   e.g. FUN_002008cc   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: expected variable name or 'X' in lambda capture list   e.g. FUN_002145e4   [also in the last 2 run(s)]
+[23:43:58]   fix           1 × quarantined: expected unqualified-id   e.g. string   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: expected expression   e.g. FUN_001dab18   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. checkDataValue   [also in the last 3 run(s)]
+[23:43:58]   fix           1 × quarantined: cannot initialize a parameter of type 'X' with an rvalue of type 'X' (aka 'X')   e.g. FUN_00225de8   [also in the last 1 run(s)]
+[23:43:58]   fix           1 × quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X' (aka 'X')   e.g. _vsnprintf   [also in the last 2 run(s)]
+[23:43:58]   fix           1 × quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. FUN_00208274   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: cannot convert 'X' to 'X' (aka 'X') without a conversion operator   e.g. FUN_00003fd4   [also in the last 1 run(s)]
+[23:43:58]   fix           1 × quarantined: cannot assign to return value because function 'X' returns a const value   e.g. FUN_00223db4   [also in the last 2 run(s)]
+[23:43:58]   fix           1 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_001dbea4   [also in the last 5 run(s)]
+[23:43:58]   fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00208454   [also in the last 5 run(s)]
+[23:43:58] worked around (cost time, nothing lost):
+[23:43:58]   rewrite    4710 × drafts whose function had a different name than the one its callers use (renamed)   e.g. FUN_000b50b8, getFloatValue, main   [also in the last 3 run(s)]
+[23:43:58]   rewrite    2978 × drafts whose parameters were changed to Ghidra's signature (so callers and callee agree)   e.g. FUN_0000315c, processAndFilterInput, checkDataValue   [also in the last 1 run(s)]
+[23:43:58]   rewrite     901 × drafts calling functions by made-up names (the real names put back)   e.g. FUN_0000315c: setZeroes->setZeroes2, FUN_00003340: printInt->FUN_0021a1f4, applyFilter->FUN_0021aec0, FUN_000033bc: updateFilter->FUN_00004424   [also in the last 2 run(s)]
 ```
 
 ## Build status
@@ -67253,201 +67231,25 @@ _parse_monolith.cpp:454431: unknown type name 'uInt'
 ## build/header_repair_report.txt
 
 ```
-disabled proto FUN_003261d0   <- unknown type name 'string'
-disabled proto FUN_003261bc   <- unknown type name 'string'
-disabled proto FUN_003261a4   <- unknown type name 'string'
-disabled proto FUN_003260c4   <- unknown type name 'string'
-disabled proto FUN_00326040   <- unknown type name 'string'
-disabled proto FUN_00325e78   <- unknown type name 'string'
-disabled proto FUN_00325e64   <- unknown type name 'string'
-disabled proto FUN_00325e50   <- unknown type name 'string'
-disabled proto FUN_00324b80   <- unknown type name 'ostream'
-disabled proto FUN_00324b00   <- unknown type name 'ostream'
-disabled proto FUN_00324ab0   <- unknown type name 'ostream'
-disabled proto FUN_003201c8   <- unknown type name 'logic_error'
-disabled proto FUN_003201b4   <- unknown type name 'logic_error'
-disabled proto FUN_002a1624   <- unknown type name 'string'
-disabled proto FUN_002a15fc   <- unknown type name 'string'
-disabled proto FUN_002a06ec   <- unknown type name 'string'
-disabled proto FUN_002a06d8   <- unknown type name 'string'
-disabled proto FUN_002a06c4   <- unknown type name 'string'
-disabled proto FUN_002a0698   <- unknown type name 'string'
-disabled proto FUN_002a0590   <- unknown type name 'string'
-disabled proto FUN_002a0568   <- unknown type name 'string'
-disabled proto FUN_002a0338   <- unknown type name 'string'
-disabled proto FUN_002a0168   <- unknown type name 'string'
-disabled proto FUN_0029fd6c   <- unknown type name 'string'
-disabled proto FUN_0029f7a8   <- unknown type name 'string'
-disabled proto FUN_00291010   <- unknown type name 'logic_error'
-disabled proto FUN_00290ffc   <- unknown type name 'logic_error'
-disabled proto FUN_0028db0c   <- unknown type name 'logic_error'
-disabled proto FUN_0028daf8   <- unknown type name 'logic_error'
-disabled proto FUN_00281dc4   <- unknown type name 'string'
-disabled proto FUN_00281db0   <- unknown type name 'string'
-disabled proto FUN_00281b80   <- unknown type name 'string'
-disabled proto FUN_002819b4   <- unknown type name 'string'
-disabled proto FUN_00281538   <- unknown type name 'string'
-disabled proto FUN_00281198   <- unknown type name 'string'
-disabled proto FUN_00281184   <- unknown type name 'string'
-disabled proto FUN_00281170   <- unknown type name 'string'
-disabled proto FUN_00281118   <- unknown type name 'string'
-disabled proto FUN_0027f91c   <- unknown type name 'string'
-disabled proto FUN_00223394   <- unknown type name 'exception'
-disabled proto FUN_00223370   <- unknown type name 'exception'
-disabled proto FUN_00223288   <- unknown type name 'exception'
-disabled proto FUN_00223230   <- unknown type name 'exception'
-disabled proto FUN_0021ae4c   <- unknown type name 'exception'
-disabled proto FUN_0021a254   <- unknown type name 'exception'
-disabled proto FUN_00210354   <- unknown type name 'string'
-disabled proto FUN_0020f61c   <- unknown type name 'logic_error'
-disabled proto FUN_0020f5fc   <- unknown type name 'logic_error'
-disabled proto FUN_001f8794   <- unknown type name 'exception'
-disabled proto FUN_001f8770   <- unknown type name 'exception'
-disabled proto FUN_001f8720   <- unknown type name 'exception'
-disabled proto FUN_001542ac   <- unknown type name 'string'
-disabled proto FUN_00154230   <- unknown type name 'string'
-disabled proto FUN_0015416c   <- unknown type name 'runtime_error'
-disabled proto FUN_0015414c   <- unknown type name 'runtime_error'
-disabled proto FUN_0015412c   <- unknown type name 'runtime_error'
-disabled proto FUN_0015410c   <- unknown type name 'runtime_error'
-disabled proto FUN_00154088   <- unknown type name 'runtime_error'
-disabled proto FUN_00153fe4   <- unknown type name 'runtime_error'
-disabled proto FUN_00153fc0   <- unknown type name 'runtime_error'
-disabled proto FUN_00153f78   <- unknown type name 'runtime_error'
-disabled proto FUN_00153dec   <- unknown type name 'runtime_error'
-disabled proto FUN_00153d5c   <- unknown type name 'runtime_error'
-disabled proto FUN_00153cb8   <- unknown type name 'runtime_error'
-disabled proto FUN_00153c14   <- unknown type name 'runtime_error'
-disabled proto FUN_00153bac   <- unknown type name 'runtime_error'
-disabled proto FUN_00153b84   <- unknown type name 'runtime_error'
-disabled proto FUN_00153b64   <- unknown type name 'runtime_error'
-disabled proto FUN_00153b3c   <- unknown type name 'runtime_error'
-disabled proto FUN_00153a64   <- unknown type name 'runtime_error'
-disabled proto FUN_00153a44   <- unknown type name 'runtime_error'
-disabled proto FUN_00153a20   <- unknown type name 'runtime_error'
-disabled proto FUN_00153974   <- unknown type name 'runtime_error'
-disabled proto FUN_001537ac   <- unknown type name 'string'
-disabled proto FUN_00152fa4   <- unknown type name 'string'
-disabled proto FUN_00152f20   <- unknown type name 'string'
-disabled proto FUN_00152ddc   <- unknown type name 'string'
-disabled proto FUN_00152c6c   <- unknown type name 'string'
-disabled proto FUN_00152b0c   <- unknown type name 'string'
-disabled proto FUN_00152aa8   <- unknown type name 'runtime_error'
-disabled proto FUN_00152a88   <- unknown type name 'runtime_error'
-disabled proto FUN_00152a68   <- unknown type name 'runtime_error'
-disabled proto FUN_00152a48   <- unknown type name 'runtime_error'
-disabled proto FUN_001529c4   <- unknown type name 'runtime_error'
-disabled proto FUN_00152920   <- unknown type name 'runtime_error'
-disabled proto FUN_00152850   <- unknown type name 'runtime_error'
-disabled proto FUN_001527a8   <- unknown type name 'runtime_error'
-disabled proto FUN_00152748   <- unknown type name 'runtime_error'
-disabled proto FUN_0015265c   <- unknown type name 'runtime_error'
-disabled proto FUN_001525cc   <- unknown type name 'runtime_error'
-disabled proto FUN_00152594   <- unknown type name 'runtime_error'
-disabled proto FUN_00152528   <- unknown type name 'runtime_error'
-disabled proto FUN_00152484   <- unknown type name 'runtime_error'
-disabled proto FUN_00152444   <- unknown type name 'runtime_error'
-disabled proto FUN_0015241c   <- unknown type name 'runtime_error'
-disabled proto FUN_001523f4   <- unknown type name 'runtime_error'
-disabled proto FUN_001523d4   <- unknown type name 'runtime_error'
-disabled proto FUN_001523ac   <- unknown type name 'runtime_error'
-disabled proto FUN_001522d4   <- unknown type name 'runtime_error'
-disabled proto FUN_001520c0   <- unknown type name 'string'
-disabled proto FUN_001520a0   <- unknown type name 'string'
-disabled proto FUN_00151e10   <- unknown type name 'runtime_error'
-disabled proto FUN_00151dec   <- unknown type name 'runtime_error'
-disabled proto FUN_00151cc4   <- unknown type name 'string'
-disabled proto FUN_001518d8   <- unknown type name 'string'
-disabled proto FUN_00151414   <- unknown type name 'string'
-disabled proto FUN_001513f4   <- unknown type name 'string'
-disabled proto FUN_0014e3fc   <- unknown type name 'string'
-disabled proto FUN_0014e308   <- unknown type name 'string'
-disabled proto FUN_0014d974   <- unknown type name 'string'
-disabled proto FUN_0014d954   <- unknown type name 'string'
-disabled proto FUN_0014d23c   <- unknown type name 'string'
-disabled proto FUN_0014d108   <- unknown type name 'string'
-disabled proto FUN_0014cf68   <- unknown type name 'string'
-disabled proto FUN_0014cf04   <- unknown type name 'string'
-disabled proto FUN_0014ce58   <- unknown type name 'string'
-disabled proto FUN_0014ccc0   <- unknown type name 'string'
-disabled proto FUN_0014cc04   <- unknown type name 'string'
-disabled proto FUN_0014cb94   <- unknown type name 'string'
-disabled proto FUN_0014cb48   <- unknown type name 'string'
-disabled proto FUN_0014707c   <- unknown type name 'exception'
-disabled proto FUN_00144bf8   <- unknown type name 'exception'
-disabled proto FUN_00144490   <- unknown type name 'iostream'
-disabled proto FUN_00143b08   <- unknown type name 'ostream'
-disabled proto FUN_00143958   <- unknown type name 'streambuf'
-disabled proto FUN_00143324   <- unknown type name 'streambuf'
-disabled proto FUN_00143304   <- unknown type name 'streambuf'
-disabled proto FUN_001432b0   <- unknown type name 'streambuf'
-disabled proto FUN_00143214   <- unknown type name 'iostream'
-disabled proto FUN_001431f0   <- unknown type name 'streambuf'
-disabled proto FUN_0014314c   <- unknown type name 'iostream'
-disabled proto FUN_001430dc   <- unknown type name 'ostream'
-disabled proto FUN_001430b0   <- unknown type name 'ostream'
-disabled proto FUN_0014306c   <- unknown type name 'ostream'
-disabled proto FUN_00142f78   <- unknown type name 'runtime_error'
-disabled proto FUN_00142dc4   <- unknown type name 'runtime_error'
-disabled proto FUN_00142d90   <- unknown type name 'runtime_error'
-disabled proto FUN_00142c2c   <- unknown type name 'runtime_error'
-disabled proto FUN_00142c0c   <- unknown type name 'runtime_error'
-disabled proto FUN_00142bec   <- unknown type name 'runtime_error'
-disabled proto FUN_00142bcc   <- unknown type name 'runtime_error'
-disabled proto FUN_00142b2c   <- unknown type name 'runtime_error'
-disabled proto FUN_00142a88   <- unknown type name 'runtime_error'
-disabled proto FUN_00142820   <- unknown type name 'runtime_error'
-disabled proto FUN_001427fc   <- unknown type name 'runtime_error'
-disabled proto FUN_001427dc   <- unknown type name 'runtime_error'
-disabled proto FUN_001427b8   <- unknown type name 'runtime_error'
-disabled proto FUN_00142798   <- unknown type name 'runtime_error'
-disabled proto FUN_00142778   <- unknown type name 'runtime_error'
-disabled proto FUN_0014274c   <- unknown type name 'runtime_error'
-disabled proto FUN_00142728   <- unknown type name 'runtime_error'
-disabled proto FUN_00142690   <- unknown type name 'runtime_error'; did you mean 'std::runtime_error'?
-disabled proto FUN_00142648   <- unknown type name 'runtime_error'
-disabled proto FUN_00142628   <- unknown type name 'runtime_error'
-disabled proto FUN_001425a4   <- unknown type name 'runtime_error'
-disabled proto FUN_001424a4   <- unknown type name 'runtime_error'
-disabled proto FUN_00142438   <- unknown type name 'runtime_error'; did you mean 'std::runtime_error'?
-disabled proto FUN_00142414   <- unknown type name 'runtime_error'
-disabled proto FUN_001423cc   <- unknown type name 'runtime_error'
-disabled proto FUN_001422a0   <- unknown type name 'runtime_error'
-disabled proto FUN_001421dc   <- unknown type name 'runtime_error'
-disabled proto FUN_00142174   <- unknown type name 'runtime_error'
-disabled proto FUN_0014214c   <- unknown type name 'runtime_error'
-disabled proto FUN_0014211c   <- unknown type name 'runtime_error'
-disabled proto FUN_00142090   <- unknown type name 'runtime_error'
-disabled proto FUN_001401dc   <- unknown type name 'runtime_error'
-disabled proto FUN_001401b4   <- unknown type name 'runtime_error'
-disabled proto FUN_001400f8   <- unknown type name 'runtime_error'
-disabled proto FUN_0013fcf8   <- unknown type name 'string'; did you mean 'String'?
-disabled proto FUN_0013fca0   <- unknown type name 'string'
-disabled proto FUN_0013fc70   <- unknown type name 'string'
-disabled proto FUN_0013ed94   <- unknown type name 'locale'
-disabled proto FUN_0013ec40   <- unknown type name 'streambuf'
-disabled proto FUN_0013eb04   <- unknown type name 'streambuf'
-disabled proto FUN_0013d0c4   <- unknown type name 'streambuf'
-disabled proto FUN_0013cf80   <- unknown type name 'streambuf'
-disabled proto FUN_0013cf60   <- unknown type name 'streambuf'
-disabled proto FUN_0013cf20   <- unknown type name 'istream'
-disabled proto FUN_0013ceb4   <- unknown type name 'istream'
-disabled proto FUN_0013ce54   <- unknown type name 'string'
-disabled proto FUN_0013b834   <- unknown type name 'string'
-disabled proto FUN_0013b778   <- unknown type name 'string'
-disabled proto FUN_0013b728   <- unknown type name 'string'
-disabled proto FUN_0013b674   <- unknown type name 'string'; did you mean 'String'?
-disabled proto FUN_0013b654   <- unknown type name 'string'
-disabled proto FUN_00126434   <- unknown type name 'string'; did you mean 'String'?
-disabled proto FUN_00126414   <- unknown type name 'string'; did you mean 'String'?
-disabled proto FUN_000776ac   <- unknown type name 'logic_error'
-disabled proto FUN_0007768c   <- unknown type name 'logic_error'
+disabled global code   <- redefinition of 'code' as different kind of symbol
 ```
 
 ## build/globals_repair_report.txt
 
 ```
 disabled global lVar10   <- a type specifier is required for all declarations
+```
+
+## build/header_errors.txt
+
+```
+/Users/admin/glitchdecomp/fastpass 3/build/globals.cpp:1830:10: error: redefinition of 'code' as different kind of symbol
+ 1830 | uint64_t code = 0;
+      |          ^
+/Users/admin/glitchdecomp/fastpass 3/build/ghidra_intrins.h:12:19: note: previous definition is here
+   12 | typedef uint64_t  code(...);   // Ghidra's "code *": a pointer to some function
+      |                   ^
+1 error generated.
 ```
 
 ## build/fix_lessons.json
@@ -86865,400 +86667,19 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ## Build log of this run (build/worklist.log)
 
 ```
-[22:41:29] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/rewritten.cpp
-[22:41:29] Resume check (30464 functions in manifest):
-[22:41:29]   the rewrite changed since the last build — updating the split (functions whose code changed get the new code; the others keep their fixes)
-[22:41:30]   [redo] split + header: input changed — rebuilding shared.h/globals.cpp and merging with the work already done
-[22:41:30]   ignored 3 #include line(s) for files that don't exist (e.g. math.h, stddef.h, vector) — they'd stop libclang from reporting any later errors
-[22:41:31]   libclang reported 2341 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
-[22:41:31]     _parse_monolith.cpp:68: redefinition of 'Data'
-[22:41:31]     _parse_monolith.cpp:76: redefinition of 'FilterData'
-[22:41:31]     _parse_monolith.cpp:84: redefinition of 'FilterState'
-[22:41:31]     _parse_monolith.cpp:87: redefinition of 'Data'
-[22:41:31]     _parse_monolith.cpp:107: redefinition of 'FilterState'
-[22:42:00]   24125 function(s) libclang didn't list were cut out by their marker instead (23890 swallowed by the function before it, 233 not understood by libclang, 1 inside another function, 1 var decl); the fixer will make them compile
-[22:42:00]   !! libclang ran past the end of 5 function(s) and swallowed 23890 after them; cut them apart at the markers (details in split_report.txt)
-[22:42:02]   split -> 30464 function TUs, 150 types (+146 forward decls), 27620 prototypes, 64 globals
-[22:42:02]   2 struct field(s) with unknown types left as comments; skipped 174 globals, 577 prototypes, 6 typedefs — details in split_report.txt
-[22:42:02]   renamed 42 duplicate function definition(s) to unique names (e.g. theFunctionName__dup1) — listed in split_report.txt
-[22:42:12]     functions: 2203 changed in the rewrite (new code taken), 21699 already fixed by the model (kept), 5471 untouched (refreshed with the new split), 314 previously quarantined (restored for another try), 777 not in the old run
-[22:42:12]     (the replaced versions are in /Users/admin/glitchdecomp/fastpass 3/snapshots/20261020-224204-build-update)
-[22:42:12]   moved 777 function file(s) no longer in the split to /Users/admin/glitchdecomp/fastpass 3/snapshots/20261020-224204-build-update/build/funcs_unused
-[22:42:12]   [redo] header check
-[22:42:12]   » validate/repair shared headers
-[22:42:14]   shared.h: repaired — disabled 189 declaration(s), dropped 0 struct field(s) (list in header_repair_report.txt)
-[22:42:15]   globals.cpp: repaired — disabled 1 declaration(s), dropped 0 struct field(s) (list in globals_repair_report.txt)
-[22:42:15]   [redo] compile status
-[22:42:15]   » preflight diagnose (surface any systemic cause before spending model time on 30464 functions)
-[22:42:18]   preflight: 11/20 sampled TUs fail — looks per-function, proceeding to full sweep + fixer
-[22:42:18]   » isolated compile sweep
-[22:42:19]   compiling with 11 parallel worker(s)
-[22:52:02]   isolated compile: 17608/30464 TUs pass, 12856 need repair (585s)
-[22:52:02]   status: 17608 compile, 12856 still to fix, 0 quarantined
-[22:52:03]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[22:52:03]   » dependency order + fixer loop
-[22:52:03]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
-[22:52:03]   callgraph: 12 callee name(s) not in our TU set (external/library calls) — ignored for ordering
-[22:52:03]   callgraph: exact deps for 21995/30464 functions
-[22:52:03]   fixer loop over 12856 failing TU(s), dependency-ordered
-[22:52:04]     [3/12856] FUN_0021aa70 -> fixed (0s)
-[22:52:06]   QUARANTINE FUN_0021ea38: C-style cast from 'void' to 'int' is not allowed
-[22:52:06]     [4/12856] FUN_0021ea38 -> quarantined (3s)
-[22:52:23]     [7/12856] FUN_0021b068 -> fixed (20s)
-[22:52:27]     [12/12856] FUN_0021c89c -> fixed (23s)
-[22:52:31]   QUARANTINE FUN_0021af40: cannot cast from type 'void' to pointer type 'long *'
-[22:52:31]     [6/12856] FUN_0021af40 -> quarantined (27s)
-[22:54:03]   QUARANTINE FUN_0021b828: cannot cast from type 'void' to pointer type 'long *'
-[22:54:03]     [10/12856] FUN_0021b828 -> quarantined (1m)
-[22:54:04]   QUARANTINE FUN_0021da60: C-style cast from 'void' to 'long long' is not allowed
-[22:54:04]     [18/12856] FUN_0021da60 -> quarantined (1s)
-[22:54:05]   QUARANTINE FUN_0021af98: cannot cast from type 'void' to pointer type 'long *'
-[22:54:05]     [5/12856] FUN_0021af98 -> quarantined (2m)
-[22:54:32]   QUARANTINE FUN_0021b618: assigning to 'long' from incompatible type 'void'
-[22:54:32]     [16/12856] FUN_0021b618 -> quarantined (2m)
-[22:54:37]   QUARANTINE FUN_0021c718: no matching function for call to 'FUN_000043fc'
-[22:54:37]     [13/12856] FUN_0021c718 -> quarantined (2m)
-[22:54:40]   QUARANTINE _memmove: incompatible integer to pointer conversion assigning to 'void *' from 'uint64_t' (aka 'unsigned long long')
-[22:54:40]     [14/12856] _memmove -> quarantined (2m)
-[22:54:54]   QUARANTINE FUN_0021b59c: cannot cast from type 'Data' to pointer type 'short *'
-[22:54:54]     [8/12856] FUN_0021b59c -> quarantined (2m)
-[22:54:58]   QUARANTINE FUN_0021adb4: indirection requires pointer operand ('long' invalid)
-[22:54:58]     [2/12856] FUN_0021adb4 -> quarantined (2m)
-[22:55:06]   QUARANTINE FUN_0000315c: redefinition of 'length'
-[22:55:06]     [1/12856] FUN_0000315c -> quarantined (3m)
-[22:55:13]   QUARANTINE checkDataValue: cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'void'
-[22:55:13]     [9/12856] checkDataValue -> quarantined (3m)
-[22:55:15]   QUARANTINE FUN_00037de8: redefinition of 'lVar1' with a different type: 'float' vs 'long'
-[22:55:15]     [11/12856] FUN_00037de8 -> quarantined (3m)
-[22:55:24]     [23/12856] FUN_00004218 -> fixed (44s)
-[22:55:28]   QUARANTINE FUN_00223444: redefinition of 'uVar1'
-[22:55:28]     [15/12856] FUN_00223444 -> quarantined (3m)
-[22:55:34]   QUARANTINE FUN_0021df24: no member named 'param3' in 'LowPassFilterParams'
-[22:55:34]     [17/12856] FUN_0021df24 -> quarantined (3m)
-[22:55:35]     [19/12856] FUN_0021de88 -> fixed (1m)
-[22:55:38]   QUARANTINE FUN_00037ecc: C-style cast from 'void' to 'long long' is not allowed
-[22:55:38]     [32/12856] FUN_00037ecc -> quarantined (2s)
-[22:55:40]   QUARANTINE FUN_00223e50: C-style cast from 'void' to 'int' is not allowed
-[22:55:40]     [33/12856] FUN_00223e50 -> quarantined (2s)
-[22:56:14]     [30/12856] getIntegerFromStruct -> fixed (46s)
-[22:56:41]   QUARANTINE FUN_00223db4: cannot assign to return value because function 'operator[]' returns a const value
-[22:56:41]     [21/12856] FUN_00223db4 -> quarantined (2m)
-[22:57:23]   QUARANTINE FUN_0021dfec: no matching function for call to 'FUN_0021e0a0'
-[22:57:23]     [20/12856] FUN_0021dfec -> quarantined (3m)
-[22:57:25]   QUARANTINE FUN_00206ac0: subscripted value is not an array, pointer, or vector
-[22:57:25]     [37/12856] FUN_00206ac0 -> quarantined (2s)
-[22:58:02]   QUARANTINE FUN_0021af00: no matching function for call to 'FUN_00223db4'
-[22:58:02]     [22/12856] FUN_0021af00 -> quarantined (3m)
-[22:58:28]   QUARANTINE FUN_00004130: no matching function for call to 'FUN_0021608c'
-[22:58:28]     [24/12856] FUN_00004130 -> quarantined (3m)
-[22:58:29]   QUARANTINE FUN_000041a8: no matching function for call to 'processArrays'
-[22:58:29]     [25/12856] FUN_000041a8 -> quarantined (3m)
-[22:58:31]   QUARANTINE processValue2: cannot initialize a variable of type 'int' with an rvalue of type 'void *'
-[22:58:31]     [41/12856] processValue2 -> quarantined (2s)
-[22:58:36]   QUARANTINE processBuffer4: subscripted value is not an array, pointer, or vector
-[22:58:36]     [26/12856] processBuffer4 -> quarantined (3m)
-[22:58:41]   QUARANTINE FUN_0021be18: no matching function for call to 'FUN_000ac698'
-[22:58:41]     [34/12856] FUN_0021be18 -> quarantined (3m)
-[22:58:43]   QUARANTINE FUN_0021e73c: no matching function for call to 'FUN_000031f4'
-[22:58:43]     [35/12856] FUN_0021e73c -> quarantined (2m)
-[22:58:46]   QUARANTINE processAndFree: no matching function for call to 'FUN_000042f4'
-[22:58:46]     [27/12856] processAndFree -> quarantined (3m)
-[22:58:49]   QUARANTINE FUN_0000408c: no matching function for call to 'FUN_0000408c'
-[22:58:49]     [28/12856] FUN_0000408c -> quarantined (3m)
-[22:58:58]   QUARANTINE FUN_00003fd4: cannot convert 'LowpassFilterData' to 'ulong' (aka 'unsigned long') without a conversion operator
-[22:58:58]     [29/12856] FUN_00003fd4 -> quarantined (3m)
-[22:59:04]   QUARANTINE FUN_00008858: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
-[22:59:04]     [40/12856] FUN_00008858 -> quarantined (35s)
-[22:59:08]   QUARANTINE FUN_00037650: no matching function for call to 'FUN_00037678'
-[22:59:08]     [31/12856] FUN_00037650 -> quarantined (3m)
-[22:59:21]     [47/12856] FUN_000072dc -> fixed (32s)
-[22:59:31]     [48/12856] FUN_00007308 -> fixed (33s)
-[22:59:51]   QUARANTINE FUN_001fa8c8: redefinition of 'puVar2' with a different type: 'uint64_t' (aka 'unsigned long long') vs 'undefined1 *' (aka 'unsigned char *')
-[22:59:51]     [44/12856] FUN_001fa8c8 -> quarantined (1m)
-[23:00:07]     [52/12856] FUN_00224540 -> fixed (36s)
-[23:00:16]   QUARANTINE FUN_00200480: no matching function for call to 'FUN_000b50b8'
-[23:00:16]     [36/12856] FUN_00200480 -> quarantined (3m)
-[23:00:58]     [39/12856] FUN_00008830 -> fixed (2m)
-[23:01:10]   QUARANTINE FUN_00006e48: no member named 'a' in 'FilterState'
-[23:01:10]     [38/12856] FUN_00006e48 -> quarantined (3m)
-[23:01:31]   QUARANTINE FUN_00212fd0: cannot cast from type 'void' to pointer type 'long *'
-[23:01:31]     [50/12856] FUN_00212fd0 -> quarantined (2m)
-[23:01:34]   QUARANTINE FUN_00213964: use of undeclared identifier 'CFStringCreateWithCharactersNoCopy'
-[23:01:34]     [43/12856] FUN_00213964 -> quarantined (2m)
-[23:01:55]   QUARANTINE FUN_00007240: 'vector' does not name a template but is followed by template arguments; did you mean 'std::vector'?
-[23:01:55]     [46/12856] FUN_00007240 -> quarantined (3m)
-[23:01:58]   QUARANTINE FUN_0021f318: no viable conversion from 'float' to 'std::vector<float>'
-[23:01:58]     [49/12856] FUN_0021f318 -> quarantined (2m)
-[23:01:59]   QUARANTINE FUN_0000877c: no member named 'state2' in 'FilterState'
-[23:01:59]     [42/12856] FUN_0000877c -> quarantined (3m)
-[23:02:01]   QUARANTINE FUN_0021f404: cannot cast from type 'void' to pointer type 'void *'
-[23:02:01]     [61/12856] FUN_0021f404 -> quarantined (2s)
-[23:02:10]   QUARANTINE FUN_0021a234: redefinition of 'in_x0' with a different type: 'uint64_t *' (aka 'unsigned long long *') vs 'uint64_t' (aka 'unsigned long long')
-[23:02:10]     [45/12856] FUN_0021a234 -> quarantined (3m)
-[23:02:41]   QUARANTINE FUN_00208364: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'void *'
-[23:02:41]     [58/12856] FUN_00208364 -> quarantined (1m)
-[23:02:47]   QUARANTINE FUN_00224594: use of undeclared identifier '___cxa_allocate_exception'; did you mean '__cxxabiv1::__cxa_allocate_exception'?
-[23:02:47]     [53/12856] FUN_00224594 -> quarantined (2m)
-[23:02:51]   QUARANTINE FUN_002246d4: invalid operands to binary expression ('float' and 'struct LowpassFilter')
-[23:02:51]     [51/12856] FUN_002246d4 -> quarantined (3m)
-[23:03:12]   QUARANTINE FUN_002207dc: no matching function for call to 'FUN_0021f318'
-[23:03:12]     [55/12856] FUN_002207dc -> quarantined (2m)
-[23:03:16]   QUARANTINE FUN_00200cb8: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'void *'
-[23:03:16]     [56/12856] FUN_00200cb8 -> quarantined (2m)
-[23:03:26]   QUARANTINE _fwrite: redefinition of 'sVar1'
-[23:03:26]     [57/12856] _fwrite -> quarantined (2m)
-[23:03:31]   QUARANTINE FUN_00220624: member reference base type 'long *' is not a structure or union
-[23:03:31]     [54/12856] FUN_00220624 -> quarantined (3m)
-[23:03:46]   QUARANTINE FUN_00215ca4: use of undeclared identifier 'mach_absolute_time'
-[23:03:46]     [59/12856] FUN_00215ca4 -> quarantined (2m)
-[23:03:46]     [72/12856] FUN_0021dd98 -> fixed (0s)
-[23:04:11]   QUARANTINE FUN_00215d14: use of undeclared identifier 'mach_absolute_time'
-[23:04:11]     [60/12856] FUN_00215d14 -> quarantined (2m)
-[23:04:18]   QUARANTINE _localtime_r: redefinition of 'ptVar1'
-[23:04:18]     [63/12856] _localtime_r -> quarantined (2m)
-[23:05:06]   QUARANTINE FUN_001f9bc4: redefinition of 'auVar2'
-[23:05:06]     [64/12856] FUN_001f9bc4 -> quarantined (2m)
-[23:05:14]   QUARANTINE FUN_001f9dec: redefinition of 'local_48' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[23:05:14]     [67/12856] FUN_001f9dec -> quarantined (2m)
-[23:05:32]   QUARANTINE FUN_00206b88: no matching function for call to 'FUN_0021a214'
-[23:05:32]     [62/12856] FUN_00206b88 -> quarantined (3m)
-[23:05:42]     [65/12856] FUN_001f9ca8 -> fixed (3m)
-[23:06:02]   QUARANTINE FUN_001fa63c: redefinition of 'local_30'
-[23:06:02]     [71/12856] FUN_001fa63c -> quarantined (2m)
-[23:06:04]   QUARANTINE FUN_00225cc4: assignment to cast is illegal, lvalue casts are not supported
-[23:06:04]     [80/12856] FUN_00225cc4 -> quarantined (2s)
-[23:06:06]   QUARANTINE FUN_00225dc0: assignment to cast is illegal, lvalue casts are not supported
-[23:06:06]     [81/12856] FUN_00225dc0 -> quarantined (2s)
-[23:06:17]   QUARANTINE FUN_001f9e9c: redefinition of 'tVar1'
-[23:06:17]     [68/12856] FUN_001f9e9c -> quarantined (3m)
-[23:06:22]   QUARANTINE FUN_001f9f64: redefinition of 'filter' with a different type: 'LowPassFilter' vs 'uint64_t' (aka 'unsigned long long')
-[23:06:22]     [69/12856] FUN_001f9f64 -> quarantined (3m)
-[23:06:27]   QUARANTINE FUN_001f9dc4: no matching function for call to 'FUN_001f9f44'
-[23:06:27]     [66/12856] FUN_001f9dc4 -> quarantined (3m)
-[23:06:34]   QUARANTINE FUN_001fa0f4: no matching function for call to 'FUN_001f9f64'
-[23:06:34]     [70/12856] FUN_001fa0f4 -> quarantined (3m)
-[23:07:35]   QUARANTINE FUN_001fae14: no matching function for call to 'FUN_000b50b8'
-[23:07:35]     [73/12856] FUN_001fae14 -> quarantined (3m)
-[23:07:37]   QUARANTINE FUN_0020dfa4: assignment to cast is illegal, lvalue casts are not supported
-[23:07:37]     [87/12856] FUN_0020dfa4 -> quarantined (2s)
-[23:07:39]   QUARANTINE FUN_0020e450: cannot cast from type 'void' to pointer type 'long *'
-[23:07:39]     [88/12856] FUN_0020e450 -> quarantined (2s)
-[23:07:43]     [85/12856] FUN_00225b00 -> fixed (1m)
-[23:08:00]   QUARANTINE FUN_001fadc4: must use 'struct' tag to refer to type 'LowpassFilter' in this scope
-[23:08:00]     [74/12856] FUN_001fadc4 -> quarantined (3m)
-[23:08:06]   QUARANTINE FUN_001fac98: use of undeclared identifier 'FUN_001fadc4'
-[23:08:06]     [75/12856] FUN_001fac98 -> quarantined (3m)
-[23:08:10]   QUARANTINE FUN_0020af54: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); dereference with *
-[23:08:10]     [79/12856] FUN_0020af54 -> quarantined (2m)
-[23:08:36]   QUARANTINE FUN_0020a438: no matching conversion for C-style cast from 'undefined8[2]' (aka 'unsigned long long[2]') to 'const std::vector<int>'
-[23:08:36]     [78/12856] FUN_0020a438 -> quarantined (3m)
-[23:08:38]   QUARANTINE openFile: variable has incomplete type 'struct stat'
-[23:08:38]     [94/12856] openFile -> quarantined (2s)
-[23:08:42]   QUARANTINE _pthread_getspecific: cannot cast from type 'void' to pointer type 'void *'
-[23:08:42]     [83/12856] _pthread_getspecific -> quarantined (2m)
-[23:08:46]   QUARANTINE FUN_001fc5e8: no matching function for call to 'FUN_000031f4'
-[23:08:46]     [76/12856] FUN_001fc5e8 -> quarantined (3m)
-[23:08:53]   QUARANTINE FUN_0020a4e0: no matching function for call to 'FUN_0021e0a0'
-[23:08:53]     [77/12856] FUN_0020a4e0 -> quarantined (3m)
-[23:08:55]   QUARANTINE FUN_00208d74: unknown type name 'stat'
-[23:08:55]     [98/12856] FUN_00208d74 -> quarantined (2s)
-[23:08:57]   QUARANTINE FUN_00208bd4: unknown type name 'stat'
-[23:08:57]     [99/12856] FUN_00208bd4 -> quarantined (2s)
-[23:08:59]   QUARANTINE FUN_00208b9c: C-style cast from 'void' to 'int' is not allowed
-[23:08:59]     [100/12856] FUN_00208b9c -> quarantined (2s)
-[23:09:19]   QUARANTINE FUN_00202428: no viable conversion from returned value of type 'tuple<__unwrap_ref_decay_t<unsigned long long &>, __unwrap_ref_decay_t<unsigned long long &>>' (aka 'tuple<uns
-[23:09:19]     [84/12856] FUN_00202428 -> quarantined (2m)
-[23:09:39]   QUARANTINE FUN_00225de8: cannot initialize a parameter of type 'const tm *' with an rvalue of type 'uint64_t *' (aka 'unsigned long long *')
-[23:09:39]     [82/12856] FUN_00225de8 -> quarantined (3m)
-[23:09:47]   QUARANTINE _fopen: subscripted value is not an array, pointer, or vector
-[23:09:47]     [92/12856] _fopen -> quarantined (1m)
-[23:09:47]     [104/12856] FUN_002288d0 -> fixed (0s)
-[23:09:59]     [89/12856] FUN_0020e40c -> fixed (2m)
-[23:10:01]   QUARANTINE FUN_0022afa8: C-style cast from 'void' to 'int' is not allowed
-[23:10:01]     [106/12856] FUN_0022afa8 -> quarantined (2s)
-[23:10:07]   QUARANTINE FUN_002008cc: function definition is not allowed here
-[23:10:07]     [86/12856] FUN_002008cc -> quarantined (3m)
-[23:10:09]   QUARANTINE FUN_00229274: cannot cast from type 'void' to pointer type 'long *'
-[23:10:09]     [108/12856] FUN_00229274 -> quarantined (2s)
-[23:10:10]     [109/12856] FUN_0004466c -> fixed (0s)
-[23:10:23]     [95/12856] _fseeko -> fixed (1m)
-[23:10:34]   QUARANTINE FUN_00208274: cannot initialize a parameter of type 'size_t' (aka 'unsigned long') with an rvalue of type 'void *'
-[23:10:34]     [97/12856] FUN_00208274 -> quarantined (1m)
-[23:10:39]   QUARANTINE FUN_0022ae38: C-style cast from 'void' to 'pthread_key_t' (aka 'unsigned long') is not allowed
-[23:10:39]     [107/12856] FUN_0022ae38 -> quarantined (37s)
-[23:10:52]   QUARANTINE FUN_0020a924: assigning to 'long *' from incompatible type 'void'
-[23:10:52]     [103/12856] FUN_0020a924 -> quarantined (1m)
-[23:11:13]   QUARANTINE FUN_0020e3d8: no matching function for call to 'FUN_0020e40c'
-[23:11:13]     [90/12856] FUN_0020e3d8 -> quarantined (3m)
-[23:11:19]     [101/12856] FUN_0021d890 -> fixed (2m)
-[23:11:30]   QUARANTINE FUN_0021bb10: no matching function for call to 'FUN_00223530'
-[23:11:30]     [91/12856] FUN_0021bb10 -> quarantined (3m)
-[23:11:37]   QUARANTINE FUN_0022b04c: cannot cast from type 'void' to pointer type 'void *'
-[23:11:37]     [105/12856] FUN_0022b04c -> quarantined (1m)
-[23:11:42]   QUARANTINE string: expected unqualified-id
-[23:11:42]     [93/12856] string -> quarantined (3m)
-[23:11:42]     [119/12856] processInput19 -> fixed (0s)
-[23:11:44]   QUARANTINE FUN_002084e8: assignment to cast is illegal, lvalue casts are not supported
-[23:11:44]     [120/12856] FUN_002084e8 -> quarantined (2s)
-[23:12:15]   QUARANTINE FUN_002075bc: redefinition of 'local_f0' with a different type: 'ulong[2]' (aka 'unsigned long[2]') vs 'long[2]'
-[23:12:15]     [118/12856] FUN_002075bc -> quarantined (38s)
-[23:12:17]   QUARANTINE FUN_00200b9c: assigning to 'FILE *' (aka '__sFILE *') from incompatible type 'void'
-[23:12:17]     [96/12856] FUN_00200b9c -> quarantined (3m)
-[23:12:18]   QUARANTINE FUN_0021e200: no matching function for call to 'getData'
-[23:12:18]     [102/12856] FUN_0021e200 -> quarantined (2m)
-[23:12:21]   QUARANTINE FUN_00215c10: unknown type name 'kern_return_t'
-[23:12:21]     [124/12856] FUN_00215c10 -> quarantined (2s)
-[23:12:27]   QUARANTINE FUN_00213f0c: redefinition of 'puStack_28'
-[23:12:27]     [113/12856] FUN_00213f0c -> quarantined (1m)
-[23:13:29]   QUARANTINE _vsnprintf: cannot initialize a parameter of type 'const char *' with an lvalue of type 'uint64_t' (aka 'unsigned long long')
-[23:13:29]     [121/12856] _vsnprintf -> quarantined (1m)
-[23:13:31]   QUARANTINE FUN_0020dfcc: assignment to cast is illegal, lvalue casts are not supported
-[23:13:31]     [127/12856] FUN_0020dfcc -> quarantined (2s)
-[23:13:33]   QUARANTINE FUN_0020dff0: assignment to cast is illegal, lvalue casts are not supported
-[23:13:33]     [128/12856] FUN_0020dff0 -> quarantined (2s)
-[23:13:35]   QUARANTINE FUN_0021b230: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-[23:13:35]     [115/12856] FUN_0021b230 -> quarantined (2m)
-[23:13:36]   QUARANTINE FUN_0020df60: no matching conversion for C-style cast from 'int' to 'Parameters'
-[23:13:36]     [129/12856] FUN_0020df60 -> quarantined (2s)
-[23:13:37]     [126/12856] FUN_00206820 -> fixed (1m)
-[23:13:37]     [132/12856] FUN_00219cd4 -> fixed (0s)
-[23:13:40]   QUARANTINE FUN_00044554: no matching function for call to 'FUN_000445f4'
-[23:13:40]     [110/12856] FUN_00044554 -> quarantined (3m)
-[23:13:42]   QUARANTINE FUN_001ff028: assignment to cast is illegal, lvalue casts are not supported
-[23:13:42]     [134/12856] FUN_001ff028 -> quarantined (2s)
-[23:13:44]   QUARANTINE FUN_0022333c: cannot initialize a variable of type 'long *' with an rvalue of type 'void'
-[23:13:44]     [135/12856] FUN_0022333c -> quarantined (2s)
-[23:13:47]   QUARANTINE FUN_002145e4: expected variable name or 'this' in lambda capture list
-[23:13:47]     [114/12856] FUN_002145e4 -> quarantined (2m)
-[23:13:50]   QUARANTINE FUN_001f7848: C-style cast from 'void' to 'int' is not allowed
-[23:13:50]     [137/12856] FUN_001f7848 -> quarantined (2s)
-[23:13:54]   QUARANTINE FUN_00044518: no member named 'state1' in 'FilterState'
-[23:13:54]     [111/12856] FUN_00044518 -> quarantined (3m)
-[23:13:56]   QUARANTINE FUN_002292c8: cannot cast from type 'void' to pointer type 'long *'
-[23:13:56]     [139/12856] FUN_002292c8 -> quarantined (2s)
-[23:13:58]   QUARANTINE FUN_00229374: cannot cast from type 'void' to pointer type 'long *'
-[23:13:58]     [140/12856] FUN_00229374 -> quarantined (2s)
-[23:14:01]   QUARANTINE FUN_000442e8: assigning to 'long' from incompatible type 'FilterState'
-[23:14:01]     [112/12856] FUN_000442e8 -> quarantined (3m)
-[23:14:13]   QUARANTINE FUN_0021b1d8: no member named 'alpha' in 'LowPassFilter'
-[23:14:13]     [116/12856] FUN_0021b1d8 -> quarantined (2m)
-[23:14:15]   QUARANTINE FUN_001f896c: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
-[23:14:15]     [143/12856] FUN_001f896c -> quarantined (1s)
-[23:14:42]   QUARANTINE FUN_002068e0: redefinition of 'local_48' with a different type: 'undefined1[35]' (aka 'unsigned char[35]') vs 'undefined8 *' (aka 'unsigned long long *')
-[23:14:42]     [125/12856] FUN_002068e0 -> quarantined (2m)
-[23:14:42]     [145/12856] FUN_0021ad3c -> fixed (0s)
-[23:15:02]   QUARANTINE FUN_0021b3a4: no matching function for call to 'FUN_0021b1d8'
-[23:15:02]     [117/12856] FUN_0021b3a4 -> quarantined (3m)
-[23:15:10]   QUARANTINE FUN_00208454: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[23:15:10]     [122/12856] FUN_00208454 -> quarantined (2m)
-[23:15:14]   QUARANTINE _mach_timebase_info: variable has incomplete type 'struct mach_timebase_info'
-[23:15:14]     [123/12856] _mach_timebase_info -> quarantined (2m)
-[23:15:27]   QUARANTINE FUN_002085e8: redefinition of 'local_30' with a different type: 'undefined8 *' (aka 'unsigned long long *') vs 'uint64_t' (aka 'unsigned long long')
-[23:15:27]     [133/12856] FUN_002085e8 -> quarantined (1m)
-[23:15:27]     [150/12856] FUN_000033e0 -> fixed (0s)
-[23:15:31]   QUARANTINE FUN_00216154: assigning to 'long' from incompatible type 'void'
-[23:15:31]     [144/12856] FUN_00216154 -> quarantined (1m)
-[23:15:31]     [152/12856] FUN_00003438 -> fixed (0s)
-[23:15:36]   QUARANTINE FUN_001f78c8: assigning to 'void *' from incompatible type 'void'
-[23:15:36]     [136/12856] FUN_001f78c8 -> quarantined (1m)
-[23:16:00]   QUARANTINE FUN_0020b8b4: use of undeclared identifier '___cxa_atexit'
-[23:16:00]     [130/12856] FUN_0020b8b4 -> quarantined (2m)
-[23:16:33]   QUARANTINE FUN_001da95c: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[23:16:33]     [155/12856] FUN_001da95c -> quarantined (33s)
-[23:16:34]   QUARANTINE FUN_0020c82c: no matching function for call to 'FUN_001fb730'
-[23:16:34]     [131/12856] FUN_0020c82c -> quarantined (2m)
-[23:16:51]     [151/12856] FUN_00201514 -> fixed (1m)
-[23:16:54]   QUARANTINE FUN_001f72c0: cannot initialize a variable of type 'long *' with an rvalue of type 'void'
-[23:16:54]     [141/12856] FUN_001f72c0 -> quarantined (2m)
-[23:16:58]   QUARANTINE FUN_00216d48: no matching function for call to 'FUN_0000bf14'
-[23:16:58]     [142/12856] FUN_00216d48 -> quarantined (2m)
-[23:17:20]   QUARANTINE FUN_001f66f0: C-style cast from 'void' to 'long' is not allowed
-[23:17:20]     [138/12856] FUN_001f66f0 -> quarantined (3m)
-[23:17:44]   QUARANTINE FUN_00208af0: use of undeclared identifier '__chk_fail'
-[23:17:44]     [153/12856] FUN_00208af0 -> quarantined (2m)
-[23:18:03]   QUARANTINE FUN_0021abf4: no member named 'size' in 'LowPassFilter'
-[23:18:03]     [146/12856] FUN_0021abf4 -> quarantined (3m)
-[23:18:23]   QUARANTINE FUN_0021a1f4: use of undeclared identifier 'FUN_0021rbf4'; did you mean 'FUN_0021abf4'?
-[23:18:23]     [147/12856] FUN_0021a1f4 -> quarantined (3m)
-[23:18:30]   QUARANTINE FUN_000f80f4: subscript of pointer to incomplete type 'void'
-[23:18:30]     [148/12856] FUN_000f80f4 -> quarantined (3m)
-[23:18:32]   QUARANTINE FUN_00004424: type 'FilterData' does not provide a subscript operator
-[23:18:32]     [149/12856] FUN_00004424 -> quarantined (3m)
-[23:18:54]   QUARANTINE FUN_00208990: invalid operands to binary expression ('basic_ostream<char, std::char_traits<char>>' and 'pthread_mutex_t' (aka '_opaque_pthread_mutex_t'))
-[23:18:54]     [154/12856] FUN_00208990 -> quarantined (3m)
-[23:19:13]   QUARANTINE FUN_000050fc: no matching function for call to 'FUN_001e34c0'
-[23:19:13]     [156/12856] FUN_000050fc -> quarantined (2m)
-[23:19:15]   QUARANTINE FUN_00005000: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-[23:19:15]     [157/12856] FUN_00005000 -> quarantined (2m)
-[23:19:21]   QUARANTINE FUN_000c80a0: cannot cast from type 'void' to pointer type 'long *'
-[23:19:21]     [162/12856] FUN_000c80a0 -> quarantined (1m)
-[23:19:26]     [167/12856] FUN_00005358 -> fixed (31s)
-[23:19:34]   QUARANTINE FUN_0011f17c: subscripted value is not an array, pointer, or vector
-[23:19:34]     [159/12856] FUN_0011f17c -> quarantined (2m)
-[23:19:38]   QUARANTINE FUN_0011f0c0: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-[23:19:38]     [160/12856] FUN_0011f0c0 -> quarantined (2m)
-[23:20:03]   QUARANTINE FUN_0011eee8: static_cast from 'int *' to 'long' is not allowed
-[23:20:03]     [158/12856] FUN_0011eee8 -> quarantined (3m)
-[23:20:05]   QUARANTINE FUN_001e1ed8: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-[23:20:05]     [174/12856] FUN_001e1ed8 -> quarantined (2s)
-[23:20:30]   QUARANTINE FUN_0011f078: no matching function for call to 'FUN_0011c180'
-[23:20:30]     [161/12856] FUN_0011f078 -> quarantined (3m)
-[23:20:32]   QUARANTINE FUN_001e20d0: cannot cast from type 'void' to pointer type 'long *'
-[23:20:32]     [176/12856] FUN_001e20d0 -> quarantined (2s)
-[23:20:34]   QUARANTINE FUN_001e248c: cannot cast from type 'void' to pointer type 'long *'
-[23:20:34]     [177/12856] FUN_001e248c -> quarantined (2s)
-[23:20:37]   QUARANTINE FUN_000058ac: assigning to 'float *' from incompatible type 'void'
-[23:20:37]     [166/12856] FUN_000058ac -> quarantined (2m)
-[23:20:40]   QUARANTINE FUN_001e2054: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-[23:20:40]     [179/12856] FUN_001e2054 -> quarantined (2s)
-[23:20:41]   QUARANTINE FUN_001dc350: assigning to 'void *' from incompatible type 'void'
-[23:20:41]     [173/12856] FUN_001dc350 -> quarantined (1m)
-[23:20:42]   QUARANTINE FUN_001e1800: assigning to 'void *' from incompatible type 'void'
-[23:20:42]     [180/12856] FUN_001e1800 -> quarantined (2s)
-[23:20:43]   QUARANTINE FUN_001e1c28: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-[23:20:43]     [181/12856] FUN_001e1c28 -> quarantined (2s)
-[23:20:44]   QUARANTINE FUN_001e28b4: cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *')
-[23:20:44]     [182/12856] FUN_001e28b4 -> quarantined (2s)
-[23:20:53]   QUARANTINE FUN_001dbea4: called object type 'uint64_t' (aka 'unsigned long long') is not a function or function pointer
-[23:20:53]     [170/12856] FUN_001dbea4 -> quarantined (1m)
-[23:21:27]   QUARANTINE processValues: no member named 'value1' in 'Data'
-[23:21:27]     [163/12856] processValues -> quarantined (3m)
-[23:21:29]   QUARANTINE FUN_00004ce8: redefinition of 'filter' with a different type: 'FilterData *' vs 'FilterData'
-[23:21:29]     [164/12856] FUN_00004ce8 -> quarantined (3m)
-[23:21:29]   QUARANTINE FUN_001e2c68: cannot cast from type 'void' to pointer type 'long *'
-[23:21:29]     [186/12856] FUN_001e2c68 -> quarantined (2s)
-[23:21:52]   QUARANTINE FUN_001dab18: expected expression
-[23:21:52]     [169/12856] FUN_001dab18 -> quarantined (2m)
-[23:21:53]   QUARANTINE FUN_000034cc: no matching function for call to 'FUN_00004ce8'
-[23:21:53]     [165/12856] FUN_000034cc -> quarantined (3m)
-[23:21:54]   QUARANTINE FUN_001e2b00: cannot cast from type 'void' to pointer type 'long *'
-[23:21:54]     [189/12856] FUN_001e2b00 -> quarantined (2s)
-[23:21:55]   QUARANTINE FUN_001e2b24: cannot initialize a variable of type 'float *' with an rvalue of type 'void'
-[23:21:55]     [190/12856] FUN_001e2b24 -> quarantined (2s)
-[23:21:56]     [192/12856] FUN_001e2fb4 -> fixed (0s)
-[23:21:56]     [193/12856] FUN_001e2b88 -> fixed (0s)
-[23:21:56]   QUARANTINE FUN_001e2ef4: cannot cast from type 'void' to pointer type 'long *'
-[23:21:56]     [191/12856] FUN_001e2ef4 -> quarantined (2s)
-[23:22:04]   QUARANTINE FUN_001fec1c: C-style cast from 'void' to 'long long' is not allowed
-[23:22:04]     [187/12856] FUN_001fec1c -> quarantined (34s)
-[23:22:13]   QUARANTINE FUN_001e1280: redefinition of 'filter' with a different type: 'LowPassFilter' vs 'uint64_t' (aka 'unsigned long long')
-[23:22:13]     [175/12856] FUN_001e1280 -> quarantined (2m)
-[23:22:13]     [197/12856] FUN_001e1dd4 -> fixed (0s)
-[23:22:14]     [198/12856] FUN_001e1db0 -> fixed (0s)
-[23:22:26]   QUARANTINE FUN_001e2cac: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void'
-[23:22:26]     [183/12856] FUN_001e2cac -> quarantined (1m)
-[23:22:27]   QUARANTINE FUN_000059a8: no matching function for call to 'processInput10'
-[23:22:27]     [168/12856] FUN_000059a8 -> quarantined (3m)
-[23:22:37]   QUARANTINE FUN_001dbe84: no matching function for call to 'FUN_001dbea4'
-[23:22:37]     [171/12856] FUN_001dbe84 -> quarantined (3m)
-[23:22:55]   QUARANTINE FUN_001dc410: cannot initialize a variable of type 'long' with an rvalue of type 'void'
-[23:22:55]     [172/12856] FUN_001dc410 -> quarantined (3m)
-[23:23:08]   QUARANTINE FUN_001e27f0: redefinition of 'local_58' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'undefined8 *' (aka 'unsigned long long *')
-[23:23:08]     [194/12856] FUN_001e27f0 -> quarantined (1m)
-[23:23:10]   QUARANTINE FUN_000b5bdc: C-style cast from 'void' to 'int' is not allowed
-[23:23:10]     [204/12856] FUN_000b5bdc -> quarantined (2s)
-[23:23:16]   QUARANTINE FUN_001e188c: redefinition of 'local_30' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'ulong *' (aka 'unsigned long *')
-[23:23:16]     [196/12856] FUN_001e188c -> quarantined (1m)
+[23:41:47] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/rewritten.cpp
+[23:41:47] Resume check (30464 functions in manifest):
+[23:41:47]   [ok]   split + header are current
+[23:41:48]   [redo] header check
+[23:41:48]   » validate/repair shared headers
+[23:41:49]   shared.h: repaired — disabled 1 declaration(s), dropped 0 struct field(s) (list in header_repair_report.txt)
+[23:41:50]   header globals.cpp: could not be made to compile.
+[23:41:50]     | /Users/admin/glitchdecomp/fastpass 3/build/globals.cpp:1830:10: error: redefinition of 'code' as different kind of symbol
+[23:41:50]     | 1 error generated.
+[23:41:50]   (full compiler output saved to header_errors.txt)
+[23:41:50]   (globals.cpp still has errors — the link step will report them)
+[23:41:50]   [ok]   compile sweep done
+[23:41:50]   status: 17638 compile, 12662 still to fix, 164 quarantined
 ```
 
 ## pipeline_state.json
@@ -87268,15 +86689,15 @@ disabled global lVar10   <- a type specifier is required for all declarations
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-20 22:40:51",
-      "at": "2026-10-20 22:40:59",
-      "seconds": 7,
+      "started": "2026-10-20 23:41:09",
+      "at": "2026-10-20 23:41:16",
+      "seconds": 8,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-20 22:40:59",
-      "at": "2026-10-20 22:41:29",
+      "started": "2026-10-20 23:41:16",
+      "at": "2026-10-20 23:41:47",
       "seconds": 31,
       "model": "",
       "note": "30489/30489 rewritten",
@@ -87284,15 +86705,15 @@ disabled global lVar10   <- a type specifier is required for all declarations
     },
     "split": {
       "done": true,
-      "started": "2026-10-20 22:41:29",
-      "at": "2026-10-20 22:52:02",
-      "seconds": 633,
-      "note": "17608/30464 compile after the sweep"
+      "started": "2026-10-20 23:41:47",
+      "at": "2026-10-20 23:41:50",
+      "seconds": 3,
+      "note": "17638/30464 compile after the sweep"
     },
     "fix": {
       "done": false,
-      "started": "2026-10-20 22:52:02",
-      "at": "2026-10-20 22:52:02",
+      "started": "2026-10-20 23:41:50",
+      "at": "2026-10-20 23:41:50",
       "seconds": 86,
       "model": "qwen2.5-coder-0.5b-instruct-mlx"
     },
@@ -87308,56 +86729,6 @@ disabled global lVar10   <- a type specifier is required for all declarations
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-20 18:44:28",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: no matching function for call to 'X'": 58,
-        "fix|quarantined: use of undeclared identifier 'X'": 14,
-        "fix|quarantined: cannot cast from type 'X' to pointer type 'X'": 10,
-        "fix|quarantined: redefinition of 'X'": 9,
-        "fix|quarantined: no member named 'X' in 'X'": 6,
-        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 5,
-        "fix|quarantined: C-style cast from 'X' to 'X' is not allowed": 5,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *": 3,
-        "fix|quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'": 3,
-        "fix|quarantined: void function 'X' should not return a value [-Wreturn-mismatch]": 2,
-        "fix|quarantined: variable has incomplete type 'X'": 2,
-        "fix|quarantined: unknown type name 'X'": 2,
-        "fix|quarantined: too many arguments to function call, expected N, have N": 2,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 2,
-        "fix|quarantined: must use 'X' tag to refer to type 'X' in this scope": 2,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'": 2,
-        "fix|quarantined: expected unqualified-id": 2,
-        "fix|quarantined: expected expression": 2,
-        "fix|quarantined: assignment to cast is illegal, lvalue casts are not supported": 2,
-        "fix|quarantined: use of undeclared label 'X'": 1,
-        "fix|quarantined: unknown type name 'X'; did you mean 'X'?": 1,
-        "fix|quarantined: subscripted value is not an array, pointer, or vector": 1,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X'": 1,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 1,
-        "fix|quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'": 1,
-        "fix|quarantined: no viable conversion from 'X' to 'X'": 1,
-        "fix|quarantined: no matching constructor for initialization of 'X'": 1,
-        "fix|quarantined: member reference base type 'X' is not a structure or union": 1,
-        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 1,
-        "fix|quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')": 1,
-        "fix|quarantined: function definition is not allowed here": 1,
-        "fix|quarantined: expression is not assignable": 1,
-        "fix|quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X'": 1,
-        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'": 1,
-        "fix|quarantined: cannot cast from type 'X' (aka 'X') to pointer type 'X' (aka 'X')": 1,
-        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 1,
-        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 1,
-        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 1,
-        "fix|quarantined: arithmetic on a pointer to void": 1,
-        "fix|quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]": 1,
-        "fix|quarantined: 'X' does not name a template but is followed by template arguments; did you mean 'X'?": 1,
-        "fix|not compiling yet (not reached before the run ended)": 12980,
-        "rewrite|drafts whose function had a different name than the one its callers use (renamed)": 4710,
-        "fix|the model repeated an edit that had already failed (skipped)": 307
-      }
-    },
     {
       "at": "2026-10-20 19:21:52",
       "keys": {
@@ -87615,6 +86986,65 @@ disabled global lVar10   <- a type specifier is required for all declarations
         "split|functions sharing a name with another (renamed __dupN)": 42,
         "fix|the model repeated an edit that had already failed (skipped)": 259
       }
+    },
+    {
+      "at": "2026-10-20 23:43:58",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "fix|quarantined: no matching function for call to 'X'": 30,
+        "fix|quarantined: cannot cast from type 'X' to pointer type 'X'": 18,
+        "fix|quarantined: C-style cast from 'X' to 'X' is not allowed": 10,
+        "fix|quarantined: redefinition of 'X'": 8,
+        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 8,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 7,
+        "fix|quarantined: no member named 'X' in 'X'": 7,
+        "fix|quarantined: assignment to cast is illegal, lvalue casts are not supported": 7,
+        "fix|quarantined: use of undeclared identifier 'X'": 6,
+        "fix|quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'": 5,
+        "fix|quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed": 5,
+        "fix|quarantined: subscripted value is not an array, pointer, or vector": 4,
+        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 4,
+        "fix|quarantined: unknown type name 'X'": 3,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'": 3,
+        "fix|quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')": 3,
+        "fix|quarantined: variable has incomplete type 'X'": 2,
+        "fix|quarantined: use of undeclared identifier 'X'; did you mean 'X'?": 2,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 2,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X'": 2,
+        "fix|quarantined: type 'X' does not provide a subscript operator": 1,
+        "fix|quarantined: subscript of pointer to incomplete type 'X'": 1,
+        "fix|quarantined: static_cast from 'X' to 'X' is not allowed": 1,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 1,
+        "fix|quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'": 1,
+        "fix|quarantined: no viable conversion from 'X' to 'X'": 1,
+        "fix|quarantined: no matching conversion for C-style cast from 'X' to 'X'": 1,
+        "fix|quarantined: no matching conversion for C-style cast from 'X' (aka 'X') to 'X'": 1,
+        "fix|quarantined: must use 'X' tag to refer to type 'X' in this scope": 1,
+        "fix|quarantined: member reference base type 'X' is not a structure or union": 1,
+        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 1,
+        "fix|quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))": 1,
+        "fix|quarantined: indirection requires pointer operand ('X' invalid)": 1,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *": 1,
+        "fix|quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')": 1,
+        "fix|quarantined: function definition is not allowed here": 1,
+        "fix|quarantined: expected variable name or 'X' in lambda capture list": 1,
+        "fix|quarantined: expected unqualified-id": 1,
+        "fix|quarantined: expected expression": 1,
+        "fix|quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'": 1,
+        "fix|quarantined: cannot initialize a parameter of type 'X' with an rvalue of type 'X' (aka 'X')": 1,
+        "fix|quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X' (aka 'X')": 1,
+        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'": 1,
+        "fix|quarantined: cannot convert 'X' to 'X' (aka 'X') without a conversion operator": 1,
+        "fix|quarantined: cannot assign to return value because function 'X' returns a const value": 1,
+        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 1,
+        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 1,
+        "fix|quarantined: 'X' does not name a template but is followed by template arguments; did you mean 'X'?": 1,
+        "fix|not compiling yet (not reached before the run ended)": 12662,
+        "split|declarations in shared.h that didn't compile (switched off)": 1,
+        "rewrite|drafts whose function had a different name than the one its callers use (renamed)": 4710,
+        "rewrite|drafts whose parameters were changed to Ghidra's signature (so callers and callee agree)": 2978,
+        "rewrite|drafts calling functions by made-up names (the real names put back)": 901
+      }
     }
   ],
   "rates": [
@@ -87627,6 +87057,13 @@ disabled global lVar10   <- a type specifier is required for all declarations
       "fix_tried": 194,
       "fix_success_pct": 15.5,
       "fix_per_hour": 369
+    },
+    {
+      "at": "10-20 23:43",
+      "functions": 30464,
+      "compile_pct": 57.9,
+      "quarantined_pct": 0.5,
+      "to_fix": 12662
     }
   ]
 }
@@ -87636,7 +87073,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 
 ```json
 {
-  "generated": "2026-10-20 21:53:47",
+  "generated": "2026-10-20 23:23:38",
   "pipeline_version": "2026-10-18.1",
   "workdir": "/Users/admin/glitchdecomp/fastpass 3",
   "export": {
@@ -87671,9 +87108,9 @@ disabled global lVar10   <- a type specifier is required for all declarations
   },
   "build": {
     "functions": 30464,
-    "compile": 17449,
-    "quarantined": 355,
-    "fixed_by_model": 188,
+    "compile": 17638,
+    "quarantined": 164,
+    "fixed_by_model": 175,
     "rederived": 0,
     "rederived_by": {}
   },
@@ -87691,31 +87128,31 @@ disabled global lVar10   <- a type specifier is required for all declarations
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-20 20:17:31",
-      "at": "2026-10-20 20:17:38",
-      "seconds": 8,
+      "started": "2026-10-20 22:40:51",
+      "at": "2026-10-20 22:40:59",
+      "seconds": 7,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-20 20:17:38",
-      "at": "2026-10-20 20:18:05",
-      "seconds": 26,
+      "started": "2026-10-20 22:40:59",
+      "at": "2026-10-20 22:41:29",
+      "seconds": 31,
       "model": "",
       "note": "30489/30489 rewritten",
       "model_busy": 12
     },
     "split": {
       "done": true,
-      "started": "2026-10-20 20:18:05",
-      "at": "2026-10-20 20:28:43",
-      "seconds": 638,
-      "note": "17350/30464 compile after the sweep"
+      "started": "2026-10-20 22:41:29",
+      "at": "2026-10-20 22:52:02",
+      "seconds": 633,
+      "note": "17608/30464 compile after the sweep"
     },
     "fix": {
       "done": false,
-      "started": "2026-10-20 20:28:43",
-      "at": "2026-10-20 20:28:43",
+      "started": "2026-10-20 22:52:02",
+      "at": "2026-10-20 22:52:02",
       "seconds": 86,
       "model": "qwen2.5-coder-0.5b-instruct-mlx"
     },
