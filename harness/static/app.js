@@ -237,6 +237,7 @@ function paintStatus(v) {  // draws one script's state into the shared header, b
   b.textContent = v.status; b.className = 'badge ' + v.status;
   $('#run-btn').classList.toggle('hidden', running); $('#stop-btn').classList.toggle('hidden', !running);
   $('#report-btn').classList.toggle('hidden', running || !v.run);
+  $('#send-report-btn').classList.toggle('hidden', running || !v.run || !(v.run && v.run.diagnostics));
   $('#run-timer').textContent = v.timer; $('#live').textContent = v.live; $('#live').classList.toggle('hidden', !v.live);
   showDiagnosis(v.hints, $('#diagnosis')); showFiles(v.run && v.run.id, v.files, $('#files'), v.total);
   if (!running) $('#run-mem').textContent = '';
@@ -476,7 +477,7 @@ function watchRun(v, id) {
   es.addEventListener('live', e => { v.live = JSON.parse(e.data).x; if (isVisible(v)) { $('#live').textContent = v.live; $('#live').classList.toggle('hidden', !v.live); } });
   es.addEventListener('done', async e => {
     es.close(); const s = JSON.parse(e.data); v.live = ''; v.status = s.status; v.timer = '⏱ ' + fmtTime(Math.round(s.duration)) + ' total';
-    const d = await api('/runs/' + id); v.hints = d.hints; v.files = d.files; v.total = d.files_total;
+    const d = await api('/runs/' + id); v.hints = d.hints; v.files = d.files; v.total = d.files_total; if (v.run) v.run.diagnostics = d.diagnostics;
     paintStatus(v); if (isVisible(v)) $('#term-input').focus();
   });
   es.onerror = () => es.close();
@@ -493,6 +494,14 @@ function showDiagnosis(hints, box) {
     box.append(row);
   });
 }
+$('#send-report-btn').onclick = async () => {
+  const b = $('#send-report-btn'); b.disabled = true; b.textContent = 'Sending…';
+  try {
+    const r = await api(`/runs/${curView().run.id}/send-report`, { method: 'POST' });
+    b.textContent = r.ok ? 'Sent ✓' : 'Not sent'; if (!r.ok) alert(r.error);
+  } catch (e) { b.textContent = 'Not sent'; alert(e.message || e); }
+  setTimeout(() => { b.disabled = false; b.textContent = '📤 Send report to Claude'; }, 3000);
+};
 $('#report-btn').onclick = async () => {
   const md = await api(`/runs/${curView().run.id}/report`);
   try { await navigator.clipboard.writeText(md); $('#report-btn').textContent = 'Copied ✓'; } catch { prompt('Copy report:', md); }
@@ -548,6 +557,12 @@ async function showReport(id) {
     el('div', {}, copy, ' ', rerun));
   const dg = el('div', { className: 'panel' }); showDiagnosis(d.hints, dg); if (d.hints?.length) v.append(dg);
   if (d.files && d.files.length) { const fb = el('div', { className: 'panel' }); showFiles(id, d.files, fb, d.files_total); fb.classList.remove('hidden'); v.append(fb); }
+  if (d.diagnostics) {
+    const b = el('button', { className: 'ghost', textContent: '📤 Send report to Claude' });
+    const sent = d.report_sent && d.report_sent.ok ? el('a', { href: d.report_sent.url, target: '_blank', textContent: ' sent ✓' }) : '';
+    b.onclick = async () => { b.disabled = true; b.textContent = 'Sending…'; const r = await api(`/runs/${id}/send-report`, { method: 'POST' }).catch(e => ({ ok: false, error: e.message || e })); b.textContent = r.ok ? 'Sent ✓' : 'Not sent'; if (!r.ok) alert(r.error); b.disabled = false; };
+    v.append(el('p', {}, el('b', { textContent: 'Diagnostics report: ' }), d.diagnostics + ' ', b, sent));
+  }
   if (d.traceback) v.append(el('h3', { textContent: `Traceback — ${d.traceback.file}:${d.traceback.line}` }), el('pre', { className: 'report', textContent: d.traceback.text }));
   v.append(el('h3', { textContent: 'Output' }), el('pre', { className: 'report', textContent: d.output || '(no output)' }));
   if (d.mem && d.mem.length) { const cv = el('canvas', { height: 120 }); v.append(el('h3', { textContent: 'Script memory over time (MB)' }), cv); drawRunMem(cv, d.mem); }

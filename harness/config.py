@@ -23,6 +23,8 @@ DEFAULTS = {
     "keep_awake": True,  # macOS: stop the Mac sleeping while a script runs (caffeinate)
     "python": "",  # interpreter for scripts; empty = harness venv
     "auto_update": True,
+    "auto_send_reports": True,  # send a script's diagnostics report (DIAGNOSTICS: line) when it ends
+    "github_token": "",  # for sending reports, if git on this Mac can't push to GitHub
 }
 
 
@@ -59,11 +61,58 @@ def script_python():
     return settings.get("python").strip() or sys.executable
 
 
+def _sha(text):
+    import hashlib
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
 def ensure_dirs():
-    """Create the data dirs and seed example scripts on first run."""
+    """Create the data dirs and keep the example scripts current."""
     SCRIPTS_DIR.mkdir(parents=True, exist_ok=True)
     RUNS_DIR.mkdir(parents=True, exist_ok=True)
+    sync_examples()
+
+
+def sync_examples():
+    """Copy the example scripts into the scripts folder, and bring the copies up to
+    date when an update changes an example. Your own edits stay until the example
+    itself changes; then the edited copy is backed up to backups/ before it's
+    replaced, so an update never loses anything. Returns the names updated."""
+    import time
     examples = ROOT / "scripts" / "examples"
-    if examples.is_dir() and not any(SCRIPTS_DIR.glob("*.py")):
-        for f in examples.glob("*.py"):
-            (SCRIPTS_DIR / f.name).write_text(f.read_text())
+    if not examples.is_dir():
+        return []
+    state_file = DATA_DIR / ".examples.json"
+    try:
+        state = json.loads(state_file.read_text())
+    except (OSError, ValueError):
+        state = {}
+    first_run = not any(SCRIPTS_DIR.glob("*.py"))
+    updated = []
+    for f in sorted(examples.glob("*.py")):
+        new = f.read_text()
+        dest = SCRIPTS_DIR / f.name
+        seen = state.get(f.name) if isinstance(state.get(f.name), dict) else None
+        if not dest.exists():
+            if first_run or seen:
+                dest.write_text(new)          # a first run, or one we installed before
+                state[f.name] = {"example": _sha(new), "copy": _sha(new)}
+            continue
+        cur = dest.read_text(errors="replace")
+        if cur == new:
+            state[f.name] = {"example": _sha(new), "copy": _sha(new)}
+            continue
+        if seen and seen.get("example") == _sha(new):
+            continue                          # the example hasn't changed: keep your edits
+        if not seen or seen.get("copy") != _sha(cur):     # edited here: keep a copy
+            backup = DATA_DIR / "backups"
+            backup.mkdir(parents=True, exist_ok=True)
+            (backup / f"{dest.stem}-{time.strftime('%Y%m%d-%H%M%S')}.py").write_text(cur)
+        dest.write_text(new)
+        state[f.name] = {"example": _sha(new), "copy": _sha(new)}
+        updated.append(f.name)
+    try:
+        state_file.write_text(json.dumps(state, indent=1))
+    except OSError:
+        pass
+    return updated

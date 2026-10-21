@@ -59,6 +59,7 @@
             <span class="title">Console</span><span id="run-state" class="badge"></span><span id="run-timer" class="timer"></span>
             <span id="run-mem" class="muted"></span>
             <span class="spacer"></span>
+            <button id="send-report-btn" class="ghost hidden" title="Send this run's diagnostics report to the repo's decomp-reports branch, where Claude can read it">📤 Send report to Claude</button>
             <button id="report-btn" class="ghost hidden">Copy failure report</button>
           </div>
           <div id="diagnosis"></div>
@@ -142,6 +143,12 @@
           <button id="check-update" class="ghost">Check for updates</button>
           <button id="apply-update" class="primary hidden">Update &amp; restart</button>
           <label class="check"><input type="checkbox" data-setting="auto_update"> Check for updates on launch (and pull them when you open the app)</label>
+        </div>
+        <div class="panel">
+          <h3>Reports</h3>
+          <label class="check"><input type="checkbox" data-setting="auto_send_reports"> Send a script's diagnostics report when it ends (scripts that print <code>DIAGNOSTICS: file.md</code>, like decomp_pipeline.py)</label>
+          <label>GitHub token (only if git on this Mac can't push) <input type="password" data-setting="github_token" placeholder="github_pat_…"></label>
+          <p class="muted">Reports go to the <b>decomp-reports</b> branch of this app's GitHub repo, so Claude can read them. That repo is public: anyone can read what's sent. The branch is never merged, so updates don't download reports.</p>
         </div>
         <div class="panel">
           <h3>LM Studio</h3>

@@ -6092,6 +6092,134 @@ def struggle_report(P: "Paths", records: Optional[dict] = None, cfg: Optional[Co
         write_atomic(P.state, json.dumps(st, indent=2))
     except OSError:
         pass
+    try:
+        write_diagnostics(P, records, cfg, out)
+    except Exception as e:                   # never let the report stop the run ending
+        plog(P, f"  (couldn't write the diagnostics report: {type(e).__name__}: {e})", show=True)
+
+
+def _read(path: Path, start: int = 0) -> str:
+    try:
+        with open(path, "rb") as f:
+            f.seek(start)
+            return f.read().decode("utf-8", "replace")
+    except OSError:
+        return ""
+
+
+def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config],
+                      struggles: list[str]) -> Optional[Path]:
+    """Everything that helps find what's going wrong, in ONE file:
+    diagnostics/report-<time>.md (also diagnostics/latest.md). AI Harness sends it
+    on (see its Reports page) so it can be read without copying and pasting.
+    The path is printed as "DIAGNOSTICS: <path>" for the app to find."""
+    d = P.root / "diagnostics"
+    d.mkdir(parents=True, exist_ok=True)
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    out: list[str] = [f"# Diagnostics — {P.root.name} — {time.strftime('%Y-%m-%d %H:%M:%S')}", ""]
+
+    def section(title, text, lang=""):
+        out.extend(["", f"## {title}", "", f"```{lang}", text.rstrip("\n"), "```"])
+
+    # ---- the run
+    env = [f"script: decomp_pipeline {PIPELINE_VERSION} (build {SCRIPT_VERSION})",
+           f"command: {' '.join(RUN_CTX.get('argv') or sys.argv)}",
+           f"python: {sys.version.split()[0]} on {sys.platform}",
+           f"compiler: {COMPILER.get('cmd')} ({'clang' if COMPILER.get('clang') else 'gcc/other'})",
+           f"compile flags: {' '.join(PIC_FLAGS)}",
+           f"--ctx {RUN_CTX.get('ctx')}, chars per token {CHARS_PER_TOKEN}",
+           f"model: {getattr(cfg, 'fix_model_used', None) or RUN_CTX.get('model') or '?'}",
+           f"model requests turned down this run: {MODEL_ACTIVITY.get('errors', 0)}, "
+           f"thinking-only answers: {MODEL_ACTIVITY.get('thinking_only', 0)}",
+           f"fix stage model edits: {MODEL_STATS}"]
+    if COMPILER.get("cmd"):
+        try:
+            env.append("compiler version: " + subprocess.run(
+                [COMPILER["cmd"], "--version"], capture_output=True, text=True,
+                timeout=10).stdout.splitlines()[0])
+        except Exception:
+            pass
+    section("Run", "\n".join(env))
+    section("What the script struggled with", "\n".join(struggles))
+    section("Log of this run (pipeline.log)", _read(P.log, RUN_CTX.get("log_start", 0)))
+
+    # ---- functions that don't compile, grouped by their first error
+    if records is None and P.manifest.exists():
+        try:
+            cfg = cfg or Config(input_file=P.rewritten, workdir=P.build)
+            records = load_manifest(cfg)
+        except Exception:
+            records = None
+    if records:
+        cfg = cfg or Config(input_file=P.rewritten, workdir=P.build)
+        st = {"functions": len(records),
+              "compile": sum(1 for r in records.values() if r.compiles),
+              "quarantined": sum(1 for r in records.values() if r.quarantined)}
+        st["to fix"] = st["functions"] - st["compile"] - st["quarantined"]
+        section("Build status", json.dumps(st, indent=1))
+        for title, pick, code_dir in (
+                ("Quarantined", lambda r: r.quarantined, cfg.quarantine_dir),
+                ("Not compiling yet", lambda r: not r.compiles and not r.quarantined, None)):
+            groups: dict[str, list] = {}
+            for r in records.values():
+                if pick(r):
+                    groups.setdefault(error_kind(_first_error(r.last_error or "", r.file)[1])
+                                      if r.last_error else "(no error saved)", []).append(r)
+            if not groups:
+                continue
+            rows = sorted(groups.items(), key=lambda kv: -len(kv[1]))
+            out.extend(["", f"## {title}: {sum(len(v) for v in groups.values())} function(s), "
+                            f"by first error", ""])
+            out += [f"- {len(v):6d} × {k}" for k, v in rows]
+            for k, v in rows:
+                out.extend(["", f"### {title} — {len(v)} × {k}", ""])
+                out.append("All: " + ", ".join(f"{r.name} ({r.ghidra_addr or '?'})" for r in v))
+                for r in v[:8]:                       # the full story for a few of each
+                    src = code_dir / Path(r.file).name if code_dir else cfg.workdir / r.file
+                    _, notes = read_notes(cfg, r.file, last=12)
+                    out.extend(["", f"#### {r.name} — {r.file}, Ghidra {r.ghidra_addr or '?'}, "
+                                    f"{r.attempts} model attempt(s)", "",
+                                "Compiler output:", "```", (r.last_error or "").strip(), "```",
+                                "Code:", "```cpp", _read(src).strip(), "```"])
+                    if notes:
+                        out += ["Notes:"] + [f"- {n}" for n in notes]
+
+    # ---- the rewrite's failures, with what the model actually answered
+    try:
+        fns = load_progress(P).get("functions", {})
+    except Exception:
+        fns = {}
+    bad = {k: e for k, e in fns.items() if e.get("status") in ("skipped", "redo", "too big")
+           or e.get("redo_failed") or e.get("cut_off_at_smallest")}
+    if bad:
+        out.extend(["", f"## Rewrite: {len(bad)} function(s) without a usable rewrite", ""])
+        for k, e in list(bad.items())[:200]:
+            out.append(f"- {k} {e.get('ghidra')}: " + json.dumps(
+                {x: e[x] for x in e if x not in ("ghidra",)})[:400])
+        nc = P.rewrite / "no_code"
+        for f in sorted(nc.glob("*"))[:30] if nc.exists() else []:
+            section(f"Rewrite: the model's answer for {f.stem}", _read(f)[:20000])
+
+    # ---- files the stages write about themselves, in full
+    for name in ("split_report.txt", "libclang_parse_errors.txt", "header_repair_report.txt",
+                 "globals_repair_report.txt", "fix_report.txt", "first_error.txt",
+                 "header_errors.txt", "link_report.txt", "link_errors.txt",
+                 "improve_report.txt", "fix_lessons.json"):
+        f = P.build / name
+        if f.exists():
+            section(f"build/{name}", _read(f))
+    section("Build log of this run (build/worklist.log)",
+            _read(P.build / "worklist.log", RUN_CTX.get("worklist_start", 0)))
+    for f in (P.state, P.root / "report.json", P.build / "build_state.json"):
+        if f.exists():
+            section(f.name, _read(f), "json")
+
+    path = d / f"report-{stamp}.md"
+    text = "\n".join(out) + "\n"
+    path.write_text(text)
+    write_atomic(d / "latest.md", text)
+    print(f"DIAGNOSTICS: {path}", flush=True)
+    return path
 
 
 def write_fix_report(cfg: Config, records: dict) -> None:
@@ -10005,7 +10133,10 @@ def run_pipeline(args) -> int:
     learned = load_pstate(P).get("chars_per_token") or {}
     if learned.get("ctx") == args.ctx and learned.get("value"):
         CHARS_PER_TOKEN = learned["value"]
-    RUN_CTX.update(ctx=args.ctx, P=P)
+    RUN_CTX.update(ctx=args.ctx, P=P, argv=[sys.argv[0], *getattr(args, "argv", [])])
+    RUN_CTX["log_start"] = P.log.stat().st_size if P.log.exists() else 0
+    wl = P.build / "worklist.log"
+    RUN_CTX["worklist_start"] = wl.stat().st_size if wl.exists() else 0
     acquire_lock(P, args.force)
 
     redo = set(args.redo or [])
@@ -10305,6 +10436,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
+    args.argv = list(sys.argv[1:] if argv is None else argv)
     args.parallel = max(1, args.parallel)
     args.compile_retries = max(0, args.compile_retries)
     if args.auto_parallel:

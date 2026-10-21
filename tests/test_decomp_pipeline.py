@@ -1043,3 +1043,16 @@ def test_narrowing_and_pointer_casts_dont_need_the_model(tmp_path, model):
     r = by_name(tmp_path)["pairSum"]
     assert r["compiles"]
     assert "(int)(uintptr_t)p" in (tmp_path / "build" / r["file"]).read_text()
+
+
+def test_diagnostics_report_has_everything(tmp_path, model, capsys):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "recover") == 0
+    out = capsys.readouterr().out
+    m = re.search(r"DIAGNOSTICS: (.+\.md)", out)
+    assert m
+    rep = Path(m.group(1)).read_text()
+    for part in ("## Run", "## What the script struggled with", "## Build status",
+                 "build/split_report.txt", "Log of this run", "command:"):
+        assert part in rep, part
+    assert (tmp_path / "diagnostics" / "latest.md").read_text() == rep

@@ -94,6 +94,12 @@ python3 decomp_pipeline.py --workdir ~/decomp/MyApp --from improve  # another ro
 - **`--redo` never deletes.** Results are replaced in place; the current files are copied to `snapshots/` first.
 - **Privacy:** put product/company names in `privacy_blocklist.txt`. `final/` isn't written while the privacy check still finds something.
 - `REPORT.md` / `report.json` sum up every stage, including the improve score (lower is better).
+- **The log** shows stage headers, one result line per stage, each function the fix and recover stages finish, warnings, and at the end *what the script struggled with* (things it couldn't handle or had to work around, marked when they keep coming back). Everything else goes to `pipeline.log` and `build/worklist.log`; `--verbose` prints it all.
+- **Diagnostics report:** every run (also when stopped) writes `diagnostics/report-<time>.md`: the struggle report, the run's log, every function that doesn't compile grouped by error (with compiler output, code and notes for examples of each), the rewrite's failures and the stages' own reports. AI Harness sends it to the `decomp-reports` branch of this repo when the run ends, so Claude can read it (Settings → Reports; **this repo is public**, so anyone can read what's sent).
+
+### Updates to the script
+
+The app's example scripts are kept current: when an update changes an example, your copy in `~/AIHarness/scripts` is replaced (an edited copy is backed up to `~/AIHarness/backups` first). So a new `decomp_pipeline.py` arrives with a normal app update.
 
 ## Dev
 

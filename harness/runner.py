@@ -102,6 +102,10 @@ class Run:
         d["output"] = self.output()
         d["traceback"] = diagnose.extract_traceback(d["output"])
         d["hints"] = diagnose.diagnose(d)
+        from . import reports
+        rep = reports.find_report(d["output"])
+        d["diagnostics"] = str(rep) if rep else None
+        d["report_sent"] = getattr(self, "report_sent", None)
         d["files_total"] = len(self.files)
         d["files"] = self.files[:200]
         return d
@@ -317,6 +321,23 @@ class RunManager:
             run.add("sys", f"[{len(run.files)} file(s) created or changed - see the list below]")
         run.status = final  # last, so anything seeing a finished run also sees its files and output
         self._finalize(run)
+        self._send_report(run)
+
+    def _send_report(self, run, force=False):
+        """A script that printed `DIAGNOSTICS: <file>` gets that report sent to the
+        repo's decomp-reports branch (Settings > Reports)."""
+        from . import reports
+        from .config import settings
+        path = reports.find_report(run.output())
+        if not path or not (force or settings.get("auto_send_reports")):
+            return None
+        run.add("sys", f"[sending the diagnostics report {path.name} …]")
+        res = reports.send(path)
+        run.add("sys", f"[report sent: {res['url']}]" if res["ok"]
+                else f"[report NOT sent: {res['error']}]")
+        run.report_sent = res
+        self._finalize(run)
+        return res
 
     def stop(self, run_id, reason="stopped by user"):
         run = self.runs.get(run_id)

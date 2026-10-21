@@ -272,6 +272,24 @@ def stop_run(run_id: str):
     return {"ok": runs.stop(run_id)}
 
 
+@app.post("/api/runs/{run_id}/send-report")
+def send_report(run_id: str):
+    run = runs.runs.get(run_id)
+    if run is None:
+        d = runs.load(run_id)
+        if not d:
+            raise HTTPException(404, "no such run")
+        from . import reports
+        path = reports.find_report(d.get("output", ""))
+        if not path:
+            raise HTTPException(404, "this run didn't write a diagnostics report")
+        return reports.send(path)
+    res = runs._send_report(run, force=True)
+    if res is None:
+        raise HTTPException(404, "this run didn't write a diagnostics report")
+    return res
+
+
 @app.get("/api/runs/{run_id}/report", response_class=PlainTextResponse)
 def run_report(run_id: str):
     d = runs.load(run_id)

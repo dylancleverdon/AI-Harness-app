@@ -533,3 +533,53 @@ def test_model_param_detection_for_dropdowns():
     assert ps["models"]["nargs"] == "*" and ps["models"]["positional"]
     assert params.build_argv(list(ps.values()), {"models": 'qwen/qwen3-4b-2507 "my model"', "ctx": 32768}) == [
         "qwen/qwen3-4b-2507", "my model", "--ctx", "32768"]
+
+
+def test_reports_are_sent_to_their_own_branch(tmp_path, monkeypatch):
+    import subprocess
+    from harness import reports
+    origin = tmp_path / "origin.git"
+    subprocess.run(["git", "init", "-q", "--bare", str(origin)], check=True)
+    monkeypatch.setattr(reports, "_remote", lambda: (str(origin), "someone/repo"))
+    monkeypatch.setattr(reports, "CLONE", tmp_path / "clone")
+    work = tmp_path / "fastpass 3" / "diagnostics"
+    work.mkdir(parents=True)
+    rep = work / "report-20261021-010203.md"
+    rep.write_text("# Diagnostics\nsomething broke\n")
+    assert reports.find_report(f"x\nDIAGNOSTICS: {rep}\ny") == rep
+    assert reports.find_report("DIAGNOSTICS: /no/such/file.md") is None
+    r = reports.send(rep)
+    assert r["ok"], r
+    assert r["url"].endswith("/blob/decomp-reports/reports/fastpass-3/report-20261021-010203.md")
+    rep2 = work / "report-20261021-020000.md"
+    rep2.write_text("# Diagnostics\nsecond\n")
+    assert reports.send(rep2)["ok"]
+    show = lambda p: subprocess.run(["git", "--git-dir", str(origin), "show", f"decomp-reports:{p}"],
+                                    capture_output=True, text=True).stdout
+    assert "second" in show("reports/LATEST.md")
+    assert "something broke" in show("reports/fastpass-3/report-20261021-010203.md")
+    assert show("reports/LATEST.txt").strip() == "reports/fastpass-3/report-20261021-020000.md"
+
+
+def test_example_scripts_follow_updates_without_losing_edits(tmp_path, monkeypatch):
+    from harness import config
+    root, data = tmp_path / "app", tmp_path / "data"
+    (root / "scripts" / "examples").mkdir(parents=True)
+    ex = root / "scripts" / "examples" / "pipe.py"
+    monkeypatch.setattr(config, "ROOT", root)
+    monkeypatch.setattr(config, "DATA_DIR", data)
+    monkeypatch.setattr(config, "SCRIPTS_DIR", data / "scripts")
+    (data / "scripts").mkdir(parents=True)
+    mine = data / "scripts" / "pipe.py"
+    mine.write_text("old version I dragged in\n")        # never installed by the app
+    ex.write_text("v1\n")
+    assert config.sync_examples() == ["pipe.py"]
+    assert mine.read_text() == "v1\n"
+    assert list((data / "backups").glob("pipe-*.py"))   # the old copy was kept
+    mine.write_text("v1 + my edit\n")
+    assert config.sync_examples() == [] and mine.read_text() == "v1 + my edit\n"   # edits stay
+    ex.write_text("v2\n")
+    assert config.sync_examples() == ["pipe.py"] and mine.read_text() == "v2\n"     # update wins
+    assert len(list((data / "backups").glob("pipe-*.py"))) >= 1
+    ex.write_text("v3\n")
+    assert config.sync_examples() == ["pipe.py"] and mine.read_text() == "v3\n"
