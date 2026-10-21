@@ -151,6 +151,14 @@ class Paths:
         self.manifest = self.build / "manifest.json"
         self.no_snapshot = False
 
+    def use_c(self):
+        """--lang c: the source is Ghidra's pseudocode as C, built in build_c/ (the
+        C++ build in build/ is left as it is)."""
+        self.build = self.root / "build_c"
+        self.rewritten = self.rewrite / "pseudocode.c"
+        self.index = self.rewrite / "function_index_c.json"
+        self.manifest = self.build / "manifest.json"
+
     def make(self):
         for d in (self.root, self.ghidra, self.pseudocode, self.rewrite,
                   self.rewritten_dir, self.build):
@@ -1531,6 +1539,199 @@ def run_headless_export(P: Paths, args, refresh=False):
     if not export_path.exists():
         sys.exit("Ghidra headless export produced no %s (exit %d). Check the project/"
                  "program names and --ghidra-home, and the output above." % (export_path, code))
+    return True
+
+
+GHIDRA_DATA_SCRIPT = r"""
+// GhidraDataExport.java - written by decomp_pipeline.py. Exports the program's
+// DATA (no decompiling, so it's quick): the bytes of every non-code memory block,
+// every labelled data location with its type, every pointer stored in data and
+// what it points at, and each function's callees. Output: ghidra_data.json.
+import ghidra.app.script.GhidraScript;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressIterator;
+import ghidra.program.model.address.AddressSet;
+import ghidra.program.model.listing.Data;
+import ghidra.program.model.listing.Function;
+import ghidra.program.model.listing.FunctionIterator;
+import ghidra.program.model.listing.Listing;
+import ghidra.program.model.mem.Memory;
+import ghidra.program.model.mem.MemoryBlock;
+import ghidra.program.model.symbol.Reference;
+import ghidra.program.model.symbol.ReferenceManager;
+import ghidra.program.model.symbol.Symbol;
+import ghidra.program.model.symbol.SymbolIterator;
+import ghidra.program.model.symbol.SymbolTable;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Set;
+
+public class GhidraDataExport extends GhidraScript {
+    private static String esc(String s) {
+        if (s == null) return "";
+        StringBuilder b = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (c == '"' || c == '\\') b.append('\\').append(c);
+            else if (c < 0x20) b.append(String.format("\\u%04x", (int) c));
+            else b.append(c);
+        }
+        return b.toString();
+    }
+    private static String hex(Address a) { return Long.toHexString(a.getOffset()); }
+
+    @Override
+    public void run() throws Exception {
+        String[] args = getScriptArgs();
+        File dir = new File(args.length > 0 ? args[0] : ".");
+        File out = new File(dir, "ghidra_data.json");
+        File tmp = new File(dir, "ghidra_data.json.tmp");
+        Memory mem = currentProgram.getMemory();
+        Listing listing = currentProgram.getListing();
+        ReferenceManager refs = currentProgram.getReferenceManager();
+        SymbolTable st = currentProgram.getSymbolTable();
+        Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8));
+        w.write("{\"version\":1,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
+        AddressSet dataSet = new AddressSet();
+        boolean first = true;
+        for (MemoryBlock b : mem.getBlocks()) {
+            if (b.isExecute() || b.isExternalBlock() || b.isOverlay()) continue;
+            long size = b.getSize();
+            if (size <= 0 || size > Integer.MAX_VALUE) continue;
+            dataSet.addRange(b.getStart(), b.getEnd());
+            if (!first) w.write(",");
+            first = false;
+            w.write("{\"name\":\"" + esc(b.getName()) + "\",\"start\":\"" + hex(b.getStart())
+                    + "\",\"size\":" + size + ",\"write\":" + b.isWrite());
+            if (b.isInitialized()) {
+                byte[] bytes = new byte[(int) size];
+                b.getBytes(b.getStart(), bytes);
+                w.write(",\"bytes\":\"" + Base64.getEncoder().encodeToString(bytes) + "\"");
+            }
+            w.write("}");
+            println("  block " + b.getName() + " (" + size + " bytes)");
+        }
+        w.write("],\"symbols\":[");
+        first = true;
+        SymbolIterator syms = st.getAllSymbols(true);
+        int nsym = 0;
+        while (syms.hasNext() && !monitor.isCancelled()) {
+            Symbol s = syms.next();
+            Address a = s.getAddress();
+            if (a == null || !a.isMemoryAddress() || !dataSet.contains(a)) continue;
+            Data d = listing.getDataAt(a);
+            if (!first) w.write(",");
+            first = false;
+            w.write("{\"addr\":\"" + hex(a) + "\",\"name\":\"" + esc(s.getName()) + "\"");
+            if (d != null) {
+                w.write(",\"type\":\"" + esc(d.getDataType().getDisplayName()) + "\",\"size\":" + d.getLength()
+                        + ",\"pointer\":" + d.isPointer());
+            }
+            w.write("}");
+            nsym++;
+        }
+        println("  " + nsym + " labelled data locations");
+        w.write("],\"refs\":[");
+        first = true;
+        int nref = 0;
+        AddressIterator from = refs.getReferenceSourceIterator(dataSet, true);
+        while (from.hasNext() && !monitor.isCancelled()) {
+            Address f = from.next();
+            for (Reference r : refs.getReferencesFrom(f)) {
+                Address to = r.getToAddress();
+                String kind;
+                String name = "";
+                if (to.isExternalAddress()) {
+                    kind = "external";
+                    Symbol s = st.getPrimarySymbol(to);
+                    name = s != null ? s.getName() : "";
+                } else if (!to.isMemoryAddress()) {
+                    continue;
+                } else if (currentProgram.getFunctionManager().getFunctionAt(to) != null) {
+                    kind = "function";
+                    name = currentProgram.getFunctionManager().getFunctionAt(to).getName();
+                } else {
+                    kind = "data";
+                }
+                if (!first) w.write(",");
+                first = false;
+                w.write("{\"from\":\"" + hex(f) + "\",\"to\":\"" + hex(to) + "\",\"kind\":\"" + kind
+                        + "\",\"name\":\"" + esc(name) + "\"}");
+                nref++;
+            }
+        }
+        println("  " + nref + " pointers stored in data");
+        w.write("],\"callees\":{");
+        first = true;
+        FunctionIterator fit = currentProgram.getFunctionManager().getFunctions(true);
+        while (fit.hasNext() && !monitor.isCancelled()) {
+            Function fn = fit.next();
+            Set<Function> called = fn.getCalledFunctions(monitor);
+            if (called.isEmpty()) continue;
+            if (!first) w.write(",");
+            first = false;
+            w.write("\"" + hex(fn.getEntryPoint()) + "\":[");
+            boolean f2 = true;
+            for (Function c : called) {
+                if (!f2) w.write(",");
+                f2 = false;
+                w.write("\"" + hex(c.getEntryPoint()) + "\"");
+            }
+            w.write("]");
+        }
+        w.write("}}");
+        w.close();
+        if (out.exists()) out.delete();
+        if (!tmp.renameTo(out)) throw new Exception("couldn't write " + out);
+        println("Done. Data export: " + out.getPath());
+    }
+}
+"""
+
+
+def run_data_export(P: Paths, args) -> bool:
+    """Ghidra's data (memory blocks, labelled data, pointers in data, callees) into
+    ghidra/ghidra_data.json, with analyzeHeadless. Quick: nothing is decompiled.
+    Prints what it did and, if it fails, exactly why."""
+    ah = find_analyze_headless(args.ghidra_home)
+    if not ah or not args.project:
+        plog(P, show=True, msg="  !! the program's data needs a Ghidra data export: run with "
+                               "--headless-export --ghidra-home <ghidra> --project <project.gpr>. "
+                               "Without it, the program's globals are empty placeholders: it can "
+                               "compile and link, but it won't run correctly.")
+        return False
+    proj_dir, proj_name = _project_dir_name(args.project)
+    script_dir = P.ghidra / ".script"
+    script_dir.mkdir(parents=True, exist_ok=True)
+    (script_dir / "GhidraDataExport.java").write_text(GHIDRA_DATA_SCRIPT)
+    cmd = [ah, proj_dir, proj_name, "-process", *([args.program] if args.program else []),
+           "-noanalysis", "-readOnly", "-scriptPath", str(script_dir),
+           "-postScript", "GhidraDataExport.java", str(P.ghidra)]
+    plog(P, show=True, msg="  exporting the program's data with Ghidra headless (no decompiling)")
+    tail: list = []
+    try:
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        for line in proc.stdout:
+            line = line.rstrip()
+            if line:
+                tail = (tail + [line])[-40:]
+                if "GhidraDataExport" in line or line.lstrip().startswith(("block", "Done")) \
+                        or "ERROR" in line or "Exception" in line:
+                    print("  " + line, flush=True)
+        code = proc.wait()
+    except Exception as e:
+        plog(P, show=True, msg=f"  !! couldn't launch Ghidra for the data export: {e}")
+        return False
+    if not (P.ghidra / "ghidra_data.json").exists():
+        plog(P, show=True, msg=f"  !! the Ghidra data export failed (exit {code}). Its last output:")
+        for l in tail[-15:]:
+            plog(P, show=True, msg="     | " + l[:200])
+        struggle("export", "the Ghidra data export failed", hint="its output is in the log")
+        return False
     return True
 
 
@@ -2920,6 +3121,333 @@ def open_ghidra(P: Paths, args, live_ok=True) -> GhidraCache:
 
 
 # ============================================================================
+# C mode: Ghidra's pseudocode is the source
+# ============================================================================
+# --lang c replaces the model's rewrite with Ghidra's own (swept) pseudocode,
+# which already does what the binary does. Every function gets a unique, valid C
+# name; Ghidra's data types become C types with Ghidra's exact layout; the
+# definitions give the one signature every caller uses. The split, fix, recover
+# and link stages then work on that (in build_c/).
+
+C_BASE_TYPES = set("""void char short int long float double signed unsigned bool _Bool
+int8_t int16_t int32_t int64_t uint8_t uint16_t uint32_t uint64_t size_t ssize_t
+uintptr_t intptr_t ptrdiff_t wchar_t undefined undefined1 undefined2 undefined4 undefined8
+byte word dword qword uint ushort uchar ulong longlong ulonglong sbyte code""".split())
+
+
+def _c_ident(name: str) -> str:
+    n = re.sub(r"\W+", "_", name or "").strip("_")
+    return ("f_" + n) if not n or n[0].isdigit() else n
+
+
+def _ghidra_type_to_c(t: str, known: set) -> tuple[str, str]:
+    """(type, array suffix) for a Ghidra field type, or ("", "") if it can't be
+    expressed (then the bytes are kept as a uint8_t array of the same size)."""
+    t = (t or "").strip()
+    arr = ""
+    m = re.match(r"^(.*?)\s*((?:\[\d+\])+)$", t)
+    if m:
+        t, arr = m.group(1).strip(), m.group(2)
+    stars = t.count("*")
+    base = t.replace("*", "").replace("const ", "").strip()
+    base = re.sub(r"^(struct|union|enum)\s+", "", base)
+    if stars:
+        b = base if (base in C_BASE_TYPES or _c_ident(base) in known) else "void"
+        return (_c_ident(b) if b not in C_BASE_TYPES else b) + " " + "*" * stars, arr
+    if base in C_BASE_TYPES:
+        return base, arr
+    if _c_ident(base) in known:
+        return _c_ident(base), arr
+    return "", ""
+
+
+def datatypes_to_c(types: list, wanted: set) -> str:
+    """C definitions for Ghidra's data types that the code uses (and the ones they
+    contain), with Ghidra's exact layout: packed, every field at its offset, gaps
+    kept as bytes, and a size check, so a type that comes out wrong fails to
+    compile (and is switched off) instead of being silently wrong."""
+    by_name = {}
+    for t in types or []:
+        if isinstance(t, dict) and t.get("name") and t.get("kind") in ("struct", "union", "enum", "typedef"):
+            by_name.setdefault(_c_ident(t["name"]), t)
+    # everything reachable from what the code uses
+    need, todo = set(), [n for n in wanted if n in by_name]
+    while todo:
+        n = todo.pop()
+        if n in need:
+            continue
+        need.add(n)
+        t = by_name[n]
+        refs = [f.get("type", "") for f in t.get("fields") or []] + [t.get("type", "")]
+        for r in refs:
+            for w in re.findall(r"[A-Za-z_]\w*", r or ""):
+                if _c_ident(w) in by_name and _c_ident(w) not in need:
+                    todo.append(_c_ident(w))
+    known = set(need)
+    out = ["// ---- Ghidra's data types (exact layout) ----"]
+    for n in sorted(need):
+        t = by_name[n]
+        if t["kind"] in ("struct", "union"):
+            out.append(f"typedef {t['kind']} {n} {n};")
+    deps: dict = {}
+    for n in need:
+        t = by_name[n]
+        deps[n] = {_c_ident(w) for f in t.get("fields") or []
+                   for w in re.findall(r"[A-Za-z_]\w*", f.get("type", ""))
+                   if "*" not in f.get("type", "") and _c_ident(w) in need and _c_ident(w) != n}
+        if t["kind"] == "typedef":
+            deps[n] |= {_c_ident(w) for w in re.findall(r"[A-Za-z_]\w*", t.get("type", ""))
+                        if _c_ident(w) in need and _c_ident(w) != n and "*" not in t.get("type", "")}
+    done, order = set(), []
+
+    def visit(n, path=()):
+        if n in done or n in path:
+            return
+        for d in sorted(deps.get(n, ())):
+            visit(d, path + (n,))
+        done.add(n)
+        order.append(n)
+    for n in sorted(need):
+        visit(n)
+    for n in order:
+        t = by_name[n]
+        if t["kind"] == "enum":
+            vals = ", ".join(f"{_c_ident(k)} = {v}" for k, v in (t.get("values") or {}).items())
+            out.append(f"typedef enum {{ {vals} }} {n};" if vals else f"typedef int {n};")
+        elif t["kind"] == "typedef":
+            c, arr = _ghidra_type_to_c(t.get("type", ""), known - {n})
+            if c and not arr and c != n:
+                out.append(f"typedef {c} {n};")
+        else:
+            size = int(t.get("size") or 0)
+            lines, pos, used = [], 0, set()
+            for f in sorted(t.get("fields") or [], key=lambda f: f.get("off", 0)):
+                off, fs = int(f.get("off", 0)), int(f.get("size", 0) or 0)
+                if off < pos or fs <= 0 or (t["kind"] == "union" and off != 0):
+                    continue
+                if t["kind"] == "struct" and off > pos:
+                    lines.append(f"    uint8_t _gap_{pos:x}[{off - pos}];")
+                fname = _c_ident(f.get("name") or f"field_{off:x}")
+                while fname in used:
+                    fname += "_"
+                used.add(fname)
+                c, arr = _ghidra_type_to_c(f.get("type", ""), known)
+                lines.append(f"    {c} {fname}{arr};" if c else f"    uint8_t {fname}[{fs}];")
+                if t["kind"] == "struct":
+                    pos = off + fs
+            if t["kind"] == "struct" and size > pos:
+                lines.append(f"    uint8_t _gap_{pos:x}[{size - pos}];")
+            if not lines:
+                lines = [f"    uint8_t _bytes[{max(size, 1)}];"]
+            out.append(f"#pragma pack(push, 1)\n{t['kind']} {n} {{\n" + "\n".join(lines)
+                       + f"\n}};\n#pragma pack(pop)")
+            if size:
+                out.append(f"_Static_assert(sizeof({n}) == {size}, \"Ghidra's size of {n}\");")
+    return "\n".join(out) + "\n"
+
+
+GD_NAME = re.compile(r"^(?:DAT|PTR|UNK|s|u|_DAT|BYTE|WORD|DWORD|QWORD|PTR_DAT|PTR_FUN)_\w+$")
+
+
+def data_sources(P: Paths, data: dict, cname: dict, used_names: set) -> tuple[str, str, dict, int]:
+    """(ghidra_data.h, ghidra_data.c, {Ghidra data name: GD_ macro}) from Ghidra's
+    data export: every data block embedded byte for byte, each labelled location
+    the code uses as a typed macro at its exact spot (GD_<name>, so it can't clash
+    with anything), and the pointers stored in data fixed up when the plugin
+    loads: to the rebuilt function, the right spot in the data, or the system
+    library function."""
+    import base64
+    blocks = [b for b in data.get("blocks") or [] if b.get("size")]
+    ddir = P.rewrite / "data"
+    ddir.mkdir(parents=True, exist_ok=True)
+    spans = []                                  # (start, end, index)
+    h = ["#pragma once", "// The program's data, from Ghidra (generated: don't edit)", "#include <stdint.h>"]
+    c = ["// The program's data, from Ghidra (generated: don't edit)", "#include <stdint.h>",
+         "#include <string.h>", "#include <dlfcn.h>"]
+    for i, b in enumerate(blocks):
+        start, size = int(b["start"], 16), int(b["size"])
+        spans.append((start, start + size, i))
+        h.append(f"extern uint8_t g_block_{i}[];   // {b.get('name', '')} at {start:#x}, {size} bytes")
+        if b.get("bytes"):
+            f = ddir / f"block_{i}.bin"
+            f.write_bytes(base64.b64decode(b["bytes"]))
+            sym = f"g_block_{i}"
+            c.append(f'__asm__(\n#ifdef __APPLE__\n    ".section __DATA,__gdata\\n.p2align 4\\n.globl _{sym}\\n_{sym}:\\n"\n'
+                     f'#else\n    ".section .data\\n.p2align 4\\n.globl {sym}\\n{sym}:\\n"\n#endif\n'
+                     f'    ".incbin \\"{f}\\"\\n.previous\\n");')
+        else:
+            c.append(f"__attribute__((aligned(16))) uint8_t g_block_{i}[{size}];")
+
+    def where(addr):
+        for st, en, i in spans:
+            if st <= addr < en:
+                return i, addr - st
+        return None
+    types_known: set = set()
+    macros: dict = {}
+    for sym in data.get("symbols") or []:
+        name = sym.get("name") or ""
+        if name not in used_names or not re.fullmatch(r"[A-Za-z_]\w*", name):
+            continue
+        loc = where(int(sym["addr"], 16))
+        if not loc:
+            continue
+        i, off = loc
+        size = int(sym.get("size") or 0)
+        t, arr = _ghidra_type_to_c(sym.get("type", ""), types_known)
+        if sym.get("pointer") and not t:
+            t = "void *"
+        if not t or arr:
+            t = {1: "uint8_t", 2: "uint16_t", 4: "uint32_t", 8: "uint64_t"}.get(size, "")
+            arr = "" if t else f"[{max(size, 1)}]"
+            t = t or "uint8_t"
+        m = "GD_" + name
+        macros[name] = m
+        h.append(f"#define {m} (*({t} (*){arr})(g_block_{i} + {off:#x}))" if arr
+                 else f"#define {m} (*({t} *)(g_block_{i} + {off:#x}))")
+    # pointers stored in data
+    targets, tindex, relocs, externals, ext_relocs, fn_decls = [], {}, [], [], [], set()
+    by_addr = dict(cname)
+    for r in data.get("refs") or []:
+        loc = where(int(r["from"], 16))
+        if not loc:
+            continue
+        kind, to = r.get("kind"), int(r["to"], 16)
+        if kind == "external" or (kind == "function" and f"{to:x}" not in by_addr):
+            n = (r.get("name") or "").lstrip("_") if kind == "function" else (r.get("name") or "")
+            if not n:
+                continue
+            if n not in externals:
+                externals.append(n)
+            ext_relocs.append((*loc, externals.index(n)))
+            continue
+        if kind == "function":
+            expr = f"(void *){by_addr[f'{to:x}']}"
+            fn_decls.add(by_addr[f"{to:x}"])
+        else:
+            tl = where(to)
+            if not tl:
+                continue
+            expr = f"(void *)(g_block_{tl[0]} + {tl[1]:#x})"
+        if expr not in tindex:
+            tindex[expr] = len(targets)
+            targets.append(expr)
+        relocs.append((*loc, tindex[expr]))
+    c += [f"extern char {n}[];" for n in sorted(fn_decls)]
+    c += [f"extern uint8_t g_block_{i}[];" for i in range(len(blocks))]
+    c.append("static void *const gd_targets[] = {" + ", ".join(targets or ["0"]) + "};")
+    c.append("static const struct { uint32_t block, off, target; } gd_relocs[] = {"
+             + ", ".join(f"{{{b}, {o:#x}, {t}}}" for b, o, t in relocs or [(0, 0, 0)]) + "};")
+    c.append("static const char *const gd_externals[] = {"
+             + ", ".join(json.dumps(n) for n in externals or [""]) + "};")
+    c.append("static const struct { uint32_t block, off, ext; } gd_ext_relocs[] = {"
+             + ", ".join(f"{{{b}, {o:#x}, {e}}}" for b, o, e in ext_relocs or [(0, 0, 0)]) + "};")
+    c.append(f"""
+// Pointers stored in the data pointed into the ORIGINAL program; point them at
+// the rebuilt functions, the right spot in the data, or the system library.
+__attribute__((constructor)) static void gd_relocate(void) {{
+    uint8_t *const blocks[] = {{{", ".join(f"g_block_{i}" for i in range(len(blocks))) or "0"}}};
+    for (unsigned i = 0; i < {len(relocs)}u; i++)
+        memcpy(blocks[gd_relocs[i].block] + gd_relocs[i].off, &gd_targets[gd_relocs[i].target], sizeof(void *));
+    for (unsigned i = 0; i < {len(ext_relocs)}u; i++) {{
+        void *p = dlsym(RTLD_DEFAULT, gd_externals[gd_ext_relocs[i].ext]);
+        memcpy(blocks[gd_ext_relocs[i].block] + gd_ext_relocs[i].off, &p, sizeof(void *));
+    }}
+}}""")
+    return "\n".join(h) + "\n", "\n".join(c) + "\n", macros, len(relocs) + len(ext_relocs)
+
+
+def _is_thunk(name: str, body: str) -> bool:
+    """A stub that only jumps to a library function (Ghidra names it _malloc...)."""
+    b = strip_comments(body)
+    i = b.find("{")
+    inner = b[i + 1:b.rfind("}")] if i >= 0 else ""
+    return name.startswith("_") and "PTR_" in inner and inner.count(";") <= 3
+
+
+def run_pseudo_source(P: Paths, args) -> dict:
+    """The C source of the whole program from Ghidra's (swept) pseudocode."""
+    data = json.loads(P.export.read_text())
+    pseudo = data.get("pseudocode") or {}
+    funcs = [f for f in data.get("functions") or [] if isinstance(f, dict) and f.get("addr")]
+    from collections import Counter
+    names = Counter(f.get("name") for f in funcs)
+    reserved = set(CPP_KEYWORDS) | LIB_CALLS | set(re.findall(r"[A-Za-z_]\w*", GHIDRA_INTRINS_H))
+    cname, used, thunks = {}, set(), {}
+    for f in funcs:
+        a, n = f["addr"], f.get("name") or f"FUN_{f['addr']}"
+        body = pseudo.get(a)
+        if not body:
+            continue
+        if _is_thunk(n, body):
+            thunks[n] = n[1:]                  # call the library function itself
+            continue
+        c = _c_ident(n)
+        if c in used or c in reserved or names[n] > 1:
+            c = f"{c}_{a}"
+        used.add(c)
+        cname[a] = c
+    by_ghidra = {f.get("name"): cname[f["addr"]] for f in funcs
+                 if f["addr"] in cname and names[f.get("name")] == 1}
+    gdata_path = P.ghidra / "ghidra_data.json"
+    try:
+        gdata = json.loads(gdata_path.read_text()) if gdata_path.exists() else {}
+    except Exception:
+        gdata = {}
+    callees = gdata.get("callees") or {}
+    name_of = {f["addr"]: f.get("name") for f in funcs}
+    call_map = {**thunks, **{k: v for k, v in by_ghidra.items() if k != v}}
+    call_rx = re.compile(r"(?<![\w.>])(?:[A-Za-z_]\w*::)*(" + "|".join(
+        re.escape(k) for k in sorted(call_map, key=len, reverse=True)) + r")(?=\s*\()") if call_map else None
+    defined = set(cname.values())
+    codes, index = [], {}
+    for f in funcs:
+        a = f["addr"]
+        if a not in cname:
+            continue
+        text = strip_comments(pseudo[a]).strip()
+        text = _rename_defined_func(text, cname[a])
+        i = text.find("{")
+        head, body = text[:i], text[i:]
+        if call_rx:
+            body = call_rx.sub(lambda m: call_map[m.group(1)], body)
+        # a call to a name several functions share: Ghidra's callee list says which
+        for ca in callees.get(a, []):
+            n = name_of.get(ca)
+            if n and names[n] > 1 and ca in cname:
+                body = re.sub(rf"(?<![\w.>])(?:[A-Za-z_]\w*::)*{re.escape(n)}(?=\s*\()", cname[ca], body)
+        # library calls Ghidra writes with Mach-O's leading underscore (_memcpy)
+        body = re.sub(r"(?<![\w.>])_([A-Za-z_]\w*)(?=\s*\()",
+                      lambda m: m.group(0) if m.group(0) in defined else m.group(1), body)
+        codes.append(f"//@ghidra {a} {f.get('name')}\n{head.strip()}\n{body}")
+        index[cname[a]] = {"ghidra": f.get("name"), "addr": a, "status": "done"}
+    wanted = set(re.findall(r"[A-Za-z_]\w*", "\n".join(codes)))
+    types = datatypes_to_c(data.get("datatypes") or [], {_c_ident(w) for w in wanted})
+    data_note = ""
+    if gdata.get("blocks"):
+        dh, dc, macros, n_fix = data_sources(P, gdata, cname, wanted)
+        if macros:
+            rx = re.compile(r"(?<![\w.>])(" + "|".join(re.escape(k) for k in
+                                                     sorted(macros, key=len, reverse=True)) + r")\b")
+            codes = [rx.sub(lambda m: macros[m.group(1)], code) for code in codes]
+        write_atomic(P.rewrite / "ghidra_data.h", dh)
+        write_atomic(P.rewrite / "ghidra_data.c", dc)
+        data_note = (f", the program's data ({len(gdata['blocks'])} block(s), {len(macros)} "
+                     f"labelled location(s) used, {n_fix} pointer fix-up(s))")
+    else:
+        for f in ("ghidra_data.h", "ghidra_data.c"):
+            (P.rewrite / f).unlink(missing_ok=True)
+        data_note = " — no data export: globals are empty placeholders, so it won't run correctly"
+    write_atomic(P.rewritten, types + "\n" + "\n\n".join(codes) + "\n")
+    write_atomic(P.index, json.dumps(index, indent=0))
+    plog(P, show=True, msg=f"  C source from Ghidra's pseudocode: {len(codes)} function(s), "
+                           f"{len(thunks)} library stub(s) called directly, "
+                           f"{types.count('_Static_assert')} data type(s) with Ghidra's layout"
+                           f"{data_note} -> {P.rewritten.name}")
+    return {"done": len(codes), "functions": len(funcs), "stop": False, "model": ""}
+
+
+# ============================================================================
 # Stage: privacy
 # ============================================================================
 # Runs on Ghidra's export, so every later stage only ever sees cleaned code. The
@@ -3034,6 +3562,41 @@ def run_privacy(P: Paths, args) -> dict:
         return v
 
     cleaned = walk(data)
+    # the program's data (C mode): names cleaned the same way, and every string in
+    # the raw bytes too, keeping its length so nothing in the data moves
+    gd, gdo = P.ghidra / "ghidra_data.json", P.ghidra / "ghidra_data.original.json"
+    if gd.exists() or gdo.exists():
+        import base64
+        try:
+            cur_d = json.loads(gd.read_text()) if gd.exists() else {}
+        except Exception:
+            cur_d = {}
+        if cur_d and "privacy" not in cur_d:
+            shutil.copyfile(gd, gdo)
+        try:
+            dd = json.loads(gdo.read_text())
+        except Exception:
+            dd = {}
+        if dd:
+            for sym in dd.get("symbols") or []:
+                sym["name"] = clean(sym.get("name") or "")
+            for r in dd.get("refs") or []:
+                r["name"] = clean(r.get("name") or "")
+            run_rx = re.compile(rb"[\x20-\x7e]{4,}")
+
+            def sweep(m):
+                t = m.group(0).decode("ascii")
+                ct = clean(t)
+                if ct == t:
+                    return m.group(0)
+                counts["data string"] = counts.get("data string", 0) + 1
+                return ct.encode("ascii", "replace")[:len(t)].ljust(len(t), b"\0")
+            for b in dd.get("blocks") or []:
+                if b.get("bytes"):
+                    raw = base64.b64decode(b["bytes"])
+                    b["bytes"] = base64.b64encode(run_rx.sub(sweep, raw)).decode()
+            dd["privacy"] = {"version": PRIVACY_VERSION}
+            write_atomic(gd, json.dumps(dd))
     # check 1: two different functions must not end up with the same name
     seen_names: dict[str, str] = {}
     clashes = 0
@@ -3098,6 +3661,13 @@ def export_is_private(P: Paths) -> bool:
 
 def run_export(P: Paths, args, redo: set) -> dict:
     refresh = "export" in redo
+    if args.lang == "c":
+        gd, gdo = P.ghidra / "ghidra_data.json", P.ghidra / "ghidra_data.original.json"
+        if refresh or not (gd.exists() or gdo.exists()):
+            if gdo.exists():
+                snapshot(P, "redo-data-export", [gdo])
+                gdo.unlink()
+            run_data_export(P, args)
     original = P.ghidra / "ghidra_export.original.json"
     if original.exists() and export_is_private(P):
         shutil.copyfile(original, P.export)    # the privacy stage cleans it again next
@@ -4027,6 +4597,7 @@ class Config:
     input_file: Path
     workdir: Path
     cxx: str = "clang++"
+    lang: str = "c++"                 # "c": build Ghidra's pseudocode as C (--lang c)
     std: str = "c++17"
     # the shared model client, the model asked for (None: the loaded one), and the
     # one actually used once model_check() has run
@@ -4102,9 +4673,10 @@ def log(cfg: Config, msg: str, show: bool = False) -> None:
 # ----------------------------------------------------------------------------
 
 GHIDRA_INTRINS_H = r"""#pragma once
-// ghidra_intrins.h — typedefs + helpers to make Ghidra pseudocode-ish C++ compile.
-#include <cstdint>
-#include <cstring>
+// ghidra_intrins.h — typedefs + helpers to make Ghidra pseudocode compile (C or C++).
+#include <stdint.h>
+#include <string.h>
+#include <stdbool.h>
 
 // --- Ghidra "undefined" width typedefs ---
 typedef uint8_t   undefined;
@@ -4112,7 +4684,11 @@ typedef uint8_t   undefined1;
 typedef uint16_t  undefined2;
 typedef uint32_t  undefined4;
 typedef uint64_t  undefined8;
+#ifdef __cplusplus
 typedef uint64_t  code(...);   // Ghidra's "code *": a pointer to some function
+#else
+typedef uint64_t  code();      // (unprototyped: any arguments)
+#endif
 typedef uint8_t   byte;
 typedef uint16_t  word;
 typedef uint32_t  dword;
@@ -4127,21 +4703,27 @@ typedef signed char        sbyte;
 
 // --- CONCAT / SUB / ZEXT / SEXT family (common Ghidra pseudo-intrinsics) ---
 // CONCATxy: concatenate an x-byte high part and a y-byte low part.
-static inline uint16_t CONCAT11(uint8_t  h, uint8_t  l){ return (uint16_t(h)<<8)  | l; }
-static inline uint32_t CONCAT22(uint16_t h, uint16_t l){ return (uint32_t(h)<<16) | l; }
-static inline uint32_t CONCAT13(uint8_t  h, uint32_t l){ return (uint32_t(h)<<24) | (l & 0x00FFFFFFu); }
-static inline uint32_t CONCAT31(uint32_t h, uint8_t  l){ return (uint32_t(h)<<8)  | l; }
-static inline uint64_t CONCAT44(uint32_t h, uint32_t l){ return (uint64_t(h)<<32) | l; }
-static inline uint64_t CONCAT17(uint8_t  h, uint64_t l){ return (uint64_t(h)<<56) | (l & 0x00FFFFFFFFFFFFFFull); }
-static inline uint64_t CONCAT71(uint64_t h, uint8_t  l){ return (uint64_t(h)<<8)  | l; }
+static inline uint16_t CONCAT11(uint8_t  h, uint8_t  l){ return (((uint16_t)(h))<<8)  | l; }
+static inline uint32_t CONCAT22(uint16_t h, uint16_t l){ return (((uint32_t)(h))<<16) | l; }
+static inline uint32_t CONCAT13(uint8_t  h, uint32_t l){ return (((uint32_t)(h))<<24) | (l & 0x00FFFFFFu); }
+static inline uint32_t CONCAT31(uint32_t h, uint8_t  l){ return (((uint32_t)(h))<<8)  | l; }
+static inline uint64_t CONCAT44(uint32_t h, uint32_t l){ return (((uint64_t)(h))<<32) | l; }
+static inline uint64_t CONCAT17(uint8_t  h, uint64_t l){ return (((uint64_t)(h))<<56) | (l & 0x00FFFFFFFFFFFFFFull); }
+static inline uint64_t CONCAT71(uint64_t h, uint8_t  l){ return (((uint64_t)(h))<<8)  | l; }
 
 // SUBxy(value, byteOffset-ish): extract y low bytes after shifting. Ghidra's SUB
 // means "take y bytes of an x-byte value". We approximate with masking helpers;
 // the de-ghidra text pass rewrites the common SUBxy(v,0) forms to plain casts,
 // so these are a safety net for the rarer offsets.
+#ifdef __cplusplus
 template<typename T> static inline uint8_t  SUB_u8 (T v){ return  (uint8_t)v;  }
 template<typename T> static inline uint16_t SUB_u16(T v){ return (uint16_t)v; }
 template<typename T> static inline uint32_t SUB_u32(T v){ return (uint32_t)v; }
+#else
+#define SUB_u8(v)  ((uint8_t)(v))
+#define SUB_u16(v) ((uint16_t)(v))
+#define SUB_u32(v) ((uint32_t)(v))
+#endif
 
 static inline uint32_t ZEXT14(uint8_t  v){ return v; }
 static inline uint32_t ZEXT24(uint16_t v){ return v; }
@@ -4172,8 +4754,8 @@ def _ghidra_helper_funcs(have: str) -> str:
     def add(name, code):
         if not re.search(rf"\b{name}\s*\(", have):
             out.append(code)
-    for x in range(1, 17):
-        for y in range(1, 17 - x):
+    for x in range(1, 9):           # one digit each: CONCAT111 would be ambiguous (1+11 or 11+1)
+        for y in range(1, 9):
             r = ut(x + y)
             add(f"CONCAT{x}{y}", f"static inline {r} CONCAT{x}{y}({ut(x)} h, {ut(y)} l)"
                 f"{{ return ((({r})h & {mask(r, x)}) << {8 * y}) | (({r})l & {mask(r, y)}); }}")
@@ -4195,8 +4777,8 @@ def _ghidra_helper_funcs(have: str) -> str:
             f"{{ {st(n)} r; return __builtin_add_overflow(a, b, &r); }}")
         add(f"SBORROW{n}", f"static inline bool SBORROW{n}({st(n)} a, {st(n)} b)"
             f"{{ {st(n)} r; return __builtin_sub_overflow(a, b, &r); }}")
-    out += ["template<typename T> static inline int POPCOUNT(T v){ return __builtin_popcountll((unsigned long long)v); }",
-            "template<typename T> static inline int LZCOUNT(T v){ return v ? __builtin_clzll((unsigned long long)v) - (64 - 8 * (int)sizeof(T)) : 8 * (int)sizeof(T); }"]
+    out += ["#define POPCOUNT(v) __builtin_popcountll((unsigned long long)(v))",
+            "#define LZCOUNT(v) ((v) ? __builtin_clzll((unsigned long long)(v)) - (64 - 8 * (int)sizeof(v)) : 8 * (int)sizeof(v))"]
     return "\n".join(out) + "\n"
 
 
@@ -4206,6 +4788,42 @@ GHIDRA_INTRINS_H += _ghidra_helper_funcs(GHIDRA_INTRINS_H)
 # Standard headers the decompiled C++ leans on (std::string, ostream, exceptions,
 # pthread types...). Included both when libclang parses the monolith and at the
 # top of shared.h, so these types resolve instead of being dropped as unknown.
+# C mode (--lang c): Ghidra's output is C, and C accepts what decompiled code does
+# all the time (int <-> pointer, mismatched pointer types, old-style calls) as
+# warnings. On macOS the system headers give library calls their real types.
+STD_INCLUDES_C = ["<stdint.h>", "<stddef.h>", "<stdbool.h>", "<string.h>", "<stdlib.h>",
+                  "<stdio.h>", "<math.h>", "<pthread.h>"]
+DARWIN_INCLUDES_C = ["<CoreFoundation/CoreFoundation.h>", "<AudioToolbox/AudioToolbox.h>",
+                     "<CoreAudio/CoreAudio.h>", "<mach/mach_time.h>", "<dispatch/dispatch.h>",
+                     "<objc/runtime.h>", "<objc/message.h>"]
+C_LENIENT = ["-Wno-error=implicit-function-declaration", "-Wno-error=int-conversion",
+             "-Wno-error=incompatible-pointer-types", "-Wno-error=implicit-int",
+             "-Wno-error=return-type", "-Wno-error=incompatible-function-pointer-types",
+             "-Wno-error=int-to-pointer-cast", "-fno-strict-aliasing", "-fwrapv"]
+
+
+def std_includes(cfg) -> list[str]:
+    if getattr(cfg, "lang", "c++") == "c":
+        return STD_INCLUDES_C + (DARWIN_INCLUDES_C if sys.platform == "darwin" else [])
+    return STD_INCLUDES
+
+
+def c_link_flags(cfg) -> list[str]:
+    """What a C build of an audio plugin links against on macOS."""
+    if getattr(cfg, "lang", "c++") != "c" or sys.platform != "darwin":
+        return []
+    fw = ["CoreFoundation", "Foundation", "AudioToolbox", "CoreAudio", "AudioUnit",
+          "Accelerate", "AppKit", "CoreGraphics", "CoreServices", "IOKit", "Security"]
+    return [x for f in fw for x in ("-framework", f)] + ["-lobjc", "-lc++"]
+
+
+def lang_args(cfg, header: bool = False) -> list[str]:
+    """-x / -std for a compile, so a file is C or C++ whatever its extension."""
+    c = getattr(cfg, "lang", "c++") == "c"
+    x = ("c" if c else "c++") + ("-header" if header else "")
+    return ["-x", x, f"-std={cfg.std}", *(C_LENIENT if c else [])]
+
+
 STD_INCLUDES = [
     "<cstdint>", "<cstddef>", "<cstring>", "<cstdlib>", "<cstdio>", "<cmath>",
     "<string>", "<vector>", "<map>", "<set>", "<list>", "<deque>", "<memory>",
@@ -4288,7 +4906,7 @@ def _libclang_args(cfg: Config) -> list[str]:
     """Args for libclang. Same std/include/extra flags as the real compile, and
     on macOS the SDK sysroot — without it libclang often can't find <cstdint>
     and silently turns every uint32_t etc. into `int`."""
-    args = [f"-std={cfg.std}", f"-I{cfg.workdir}", "-x", "c++", *cfg.extra_flags]
+    args = [*lang_args(cfg), f"-I{cfg.workdir}", *cfg.extra_flags]
     if sys.platform == "darwin" and not any(a.startswith("-isysroot") for a in args):
         try:
             sdk = subprocess.run(["xcrun", "--show-sdk-path"], capture_output=True,
@@ -4663,8 +5281,9 @@ def _strip_leading_static(body: str, name: str) -> str:
 
 def write_shared_header(cfg: Config, fwd: list[_Unit], types: list[_Unit],
                         globs: list[_Unit], protos: list[_Unit]) -> None:
-    out = ['#pragma once'] + [f"#include {h}" for h in STD_INCLUDES] + \
-          ['#include "ghidra_intrins.h"', '']
+    out = ['#pragma once'] + [f"#include {h}" for h in std_includes(cfg)] + \
+          ['#include "ghidra_intrins.h"'] + \
+          (['#include "ghidra_data.h"'] if (cfg.workdir / "ghidra_data.h").exists() else []) + ['']
     uid = 0
 
     def emit(section: str, units: list[_Unit]):
@@ -4732,8 +5351,9 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
     # prepend the intrinsics include so libclang resolves the ghidra types
     # (we parse a version that includes the header, but slice from the ORIGINAL
     #  raw bytes — so offsets must account for the prefix).
-    prefix = ("".join(f"#include {h}\n" for h in STD_INCLUDES)
-              + '#include "ghidra_intrins.h"\n').encode()
+    prefix = ("".join(f"#include {h}\n" for h in std_includes(cfg))
+              + '#include "ghidra_intrins.h"\n'
+              + ('#include "ghidra_data.h"\n' if (cfg.workdir / "ghidra_data.h").exists() else "")).encode()
 
     # A missing #include "x.h" is a FATAL error, and after a fatal error clang
     # stops reporting every later error — so unknown types further down would
@@ -5351,8 +5971,8 @@ def _pch_path(cfg: Config) -> Path:
 def build_pch(cfg: Config) -> bool:
     """Precompile shared.h once. With the standard-library includes, parsing the
     header is ~85% of each function's compile time; the PCH skips that."""
-    cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}", "-w", *PIC_FLAGS,
-           "-x", "c++-header", *cfg.extra_flags, str(cfg.shared_h),
+    cmd = [cfg.cxx, *lang_args(cfg, header=True), f"-I{cfg.workdir}", "-w", *PIC_FLAGS,
+           *cfg.extra_flags, str(cfg.shared_h),
            "-o", str(_pch_path(cfg))]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
@@ -5446,7 +6066,7 @@ def compile_tu(cfg: Config, rel_path: str) -> tuple[bool, str, list[dict]]:
         raise StopRun
     _pch_flags(cfg)                       # brings the PCH up to date first, if needed
     with HEADER_LOCK.read():
-        cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}",
+        cmd = [cfg.cxx, *lang_args(cfg), f"-I{cfg.workdir}",
                "-fsyntax-only", "-w", "-ferror-limit=20", *PIC_FLAGS,
                *_pch_flags(cfg, rebuild=False), *cfg.extra_flags, str(src)]
         proc = subprocess.run(cmd, capture_output=True, text=True)
@@ -5459,8 +6079,9 @@ def _compile_header_human(cfg: Config, header_rel: str) -> tuple[bool, str]:
     """Compile a header alone with human-format diagnostics (regex-parseable)."""
     src = cfg.workdir / header_rel
     # -ferror-limit=0: report every error in one pass. -w: errors only.
-    lang = ["-x", "c++-header"] if header_rel.endswith(".h") else [*_pch_flags(cfg)]
-    cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}",
+    lang = lang_args(cfg, header=True) if header_rel.endswith(".h") else \
+        [*lang_args(cfg), *_pch_flags(cfg)]
+    cmd = [cfg.cxx, f"-I{cfg.workdir}",
            "-fsyntax-only", "-ferror-limit=0", "-w", *PIC_FLAGS, *lang,
            *cfg.extra_flags, str(src)]
     proc = subprocess.run(cmd, capture_output=True, text=True)
@@ -5662,7 +6283,7 @@ def preflight_diagnose(cfg: Config, records: dict[str, FuncRecord]) -> bool:
     for rec in sample:
         src = cfg.workdir / rec.file
         # -w so the sample shows ERRORS, not the wall of harmless warnings
-        cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}",
+        cmd = [cfg.cxx, *lang_args(cfg), f"-I{cfg.workdir}",
                "-fsyntax-only", "-w", "-ferror-limit=5", *PIC_FLAGS, *_pch_flags(cfg),
                *cfg.extra_flags, str(src)]
         proc = subprocess.run(cmd, capture_output=True, text=True)
@@ -5698,7 +6319,7 @@ def _sweep_key(cfg: Config) -> str:
     for name in ("shared.h", "ghidra_intrins.h"):
         f = cfg.workdir / name
         h.update(f.read_bytes() if f.exists() else b"-")
-    h.update(" ".join([cfg.cxx or "", cfg.std, *cfg.extra_flags, *PIC_FLAGS]).encode())
+    h.update(" ".join([cfg.cxx or "", *lang_args(cfg), *cfg.extra_flags, *PIC_FLAGS]).encode())
     return h.hexdigest()
 
 
@@ -7555,9 +8176,10 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
         if o.exists() and o.stat().st_mtime >= max(src.stat().st_mtime,
                                                    cfg.shared_h.stat().st_mtime):
             return src, o, ""
-        pch = _pch_flags(cfg)
-        cmd = [cfg.cxx, f"-std={cfg.std}", f"-I{cfg.workdir}", "-w", "-c",
-               *PIC_FLAGS, *pch, *cfg.extra_flags, str(src), "-o", str(o)]
+        own = src.name == "ghidra_data.c"      # stands alone: no shared.h
+        pch = [] if own else _pch_flags(cfg)
+        cmd = [cfg.cxx, *(["-x", "c", "-std=gnu11"] if own else lang_args(cfg)), f"-I{cfg.workdir}",
+               "-w", "-c", *PIC_FLAGS, *pch, *cfg.extra_flags, str(src), "-o", str(o)]
         pr = subprocess.run(cmd, capture_output=True, text=True)
         if pr.returncode != 0 and pch:   # PCH/flag mismatch -> retry without
             pr = subprocess.run([x for x in cmd if x not in pch],
@@ -7573,6 +8195,8 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
         sources = [cfg.workdir / r.file for r in records.values()] + [cfg.globals_cpp]
         if stubs_cpp.exists():
             sources.append(stubs_cpp)
+        if (cfg.workdir / "ghidra_data.c").exists():
+            sources.append(cfg.workdir / "ghidra_data.c")
         prog = Progress(len(sources), 0, title=f"round {round_no}: compiling objects")
         try:
             with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -7614,7 +8238,8 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
 
         objs = [str(o) for _, o, _ in built]
         log(cfg, f"  link round {round_no}: linking {len(objs)} objects ...")
-        cmd = [cfg.cxx, *lib_flags, *PIC_FLAGS, *cfg.extra_flags, *objs, "-o", str(out)]
+        cmd = [cfg.cxx, *lib_flags, *PIC_FLAGS, *cfg.extra_flags, *objs, *c_link_flags(cfg),
+               "-o", str(out)]
         proc = subprocess.run(cmd, capture_output=True, text=True)
         if proc.returncode == 0:
             if stubs:
@@ -10587,6 +11212,13 @@ def build_split(cfg: Config, redo_split: bool) -> dict[str, FuncRecord]:
     cfg.workdir.mkdir(parents=True, exist_ok=True)
     log(cfg, f"build {SCRIPT_VERSION} on {cfg.input_file}")
     write_intrinsics(cfg)
+    for f in ("ghidra_data.h", "ghidra_data.c"):     # the program's data (C mode)
+        src, dst = cfg.input_file.parent / f, cfg.workdir / f
+        if src.exists() and cfg.lang == "c":
+            if not dst.exists() or dst.read_bytes() != src.read_bytes():
+                shutil.copyfile(src, dst)
+        elif dst.exists():
+            dst.unlink()
 
     if cfg.manifest_path.exists() and not redo_split:
         # ---------------- resume: check what's done, redo what's stale -------
@@ -10729,7 +11361,8 @@ def declare_missing(cfg: Config, records: dict[str, FuncRecord]) -> int:
         texts = [text_of.get(r.file, "") for r in by_name[n][:20]]
         uid += 1
         if any(re.search(rf"\b{re.escape(n)}\s*\(", t) for t in texts):
-            head += [f"//@unit {uid} proto {n}", f'extern "C" uint64_t {n}(...);']
+            head += [f"//@unit {uid} proto {n}",
+                     f"extern uint64_t {n}();" if cfg.lang == "c" else f'extern "C" uint64_t {n}(...);']
         elif any(re.search(rf"\b{re.escape(n)}\s*\[", t) for t in texts):
             head += [f"//@unit {uid} global {n}", f"extern uint64_t {n}[];"]
             if n not in defined:
@@ -11112,7 +11745,8 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
         return snap["dir"]
 
     cfg = Config(
-        input_file=P.rewritten, workdir=P.build, cxx=cxx, std=args.std,
+        input_file=P.rewritten, workdir=P.build, cxx=cxx, lang=args.lang,
+        std=args.std or ("gnu11" if args.lang == "c" else "c++17"),
         libclang_path=args.libclang, max_model_attempts=args.fix_attempts,
         extra_flags=args.extra_flags,
         callgraph_path=args.callgraph or (P.callgraph if P.callgraph.exists() else None),
@@ -11133,6 +11767,8 @@ def run_pipeline(args) -> int:
     if threading.current_thread() is threading.main_thread():
         signal.signal(signal.SIGTERM, _on_sigterm)
     P = Paths(args.workdir.expanduser().resolve())
+    if args.lang == "c":
+        P.use_c()
     P.no_snapshot = args.no_snapshot
     P.make()
     # what earlier runs learned about how densely this program's code tokenizes
@@ -11218,7 +11854,8 @@ def run_pipeline(args) -> int:
                 info = {"note": f"{pi.get('replaced', 0)} replacement(s)"}
             elif stage == "rewrite":
                 try:
-                    s = run_rewrite(P, args, redo, client)
+                    s = (run_pseudo_source(P, args) if args.lang == "c"
+                         else run_rewrite(P, args, redo, client))
                 except ModelError as e:
                     plog(P, f"STOPPED: {e}")
                     return 2
@@ -11240,6 +11877,13 @@ def run_pipeline(args) -> int:
                 records = build_split(cfg, redo_split)
                 info = {"note": f"{sum(1 for r in records.values() if r.compiles)}/"
                                 f"{len(records)} compile after the sweep"}
+            elif stage in ("improve", "organize") and args.lang == "c":
+                plog(P, show=True, msg=f"  {stage}: not in C mode yet (its behaviour checks are "
+                                       f"built for the C++ build). In C mode, what comes after "
+                                       f"link is the run test against the original plugin.")
+                mark_stage(P, stage, done=False, note="not in C mode yet")
+                ran_something = True
+                continue
             elif stage in ("fix", "recover", "link", "improve", "organize"):
                 if records is None:
                     records = load_manifest(cfg)
@@ -11415,7 +12059,10 @@ def build_parser() -> argparse.ArgumentParser:
     g = ap.add_argument_group("build (split / fix / recover / link)")
     g.add_argument("--cxx", default="auto", help="C++ compiler: auto (clang++, else g++), "
                                                  "a name or a path")
-    g.add_argument("--std", default="c++17")
+    g.add_argument("--lang", choices=["c", "c++"], default="c++",
+                   help="c: build Ghidra's pseudocode as C, no model rewrite (in build_c/); "
+                        "c++: the model's rewrites (in build/)")
+    g.add_argument("--std", default=None, help="language standard (default gnu11 for C, c++17)")
     g.add_argument("--libclang", default=None, help="path to libclang .dylib/.so")
     g.add_argument("--callgraph", type=Path, default=None,
                    help="call graph for dependency order (default ghidra/callgraph.json)")

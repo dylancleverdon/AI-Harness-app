@@ -1245,3 +1245,63 @@ def test_privacy_stage_sweeps_the_export_and_keeps_the_details_private(tmp_path,
     shutil.copyfile(tmp_path / "ghidra" / "ghidra_export.original.json", exp)
     assert run(tmp_path, model, "--from", "rewrite", "--to", "rewrite") == 0
     assert "AcmeAudio" not in exp.read_text()
+
+
+C_PSEUDO = {
+    **PSEUDO,
+    # a thunk to a library function, and a function using Ghidra's notation, a data
+    # type, a library call through the thunk and an int <-> pointer mix (fine in C)
+    "1070": ("_strlen", "size_t _strlen(char *param_1)\n\n{\n  size_t sVar1;\n"
+                        "  sVar1 = (*(code *)PTR__strlen_00004000)(param_1);\n  return sVar1;\n}\n"),
+    "1080": ("FUN_00001080", "long FUN_00001080(Pair *param_1,long param_2)\n\n{\n  long lVar1;\n"
+                             "  undefined8 uVar2;\n  uVar2 = CONCAT44(param_1->first,param_1->second);\n"
+                             "  lVar1 = _strlen((char *)param_2);\n  *(long *)(param_2 + 8) = (long)param_1;\n"
+                             "  return lVar1 + (long)uVar2;\n}\n"),
+}
+
+
+def test_c_mode_builds_ghidras_pseudocode_without_the_model(tmp_path, model):
+    write_export(tmp_path, C_PSEUDO)
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    src = (tmp_path / "rewrite" / "pseudocode.c").read_text()
+    assert "_Static_assert(sizeof(Pair) == 8" in src
+    assert "strlen((char *)param_2)" in src and "_strlen(" not in src    # the thunk is skipped
+    m = json.loads((tmp_path / "build_c" / "manifest.json").read_text())
+    names = {r["name"]: r for r in m.values()}
+    assert "FUN_00001080" in names and names["FUN_00001080"]["compiles"]
+    assert model.calls["rewrite"] == 0                                   # no model rewrite
+    assert (tmp_path / "build" / "manifest.json").exists() is False     # the C++ build untouched
+    log = (tmp_path / "pipeline.log").read_text()
+    assert "C source from Ghidra's pseudocode" in log
+
+
+def test_c_mode_embeds_the_programs_data_and_fixes_up_its_pointers(tmp_path, model):
+    import base64
+    import ctypes
+    import struct
+    pseudo = {**C_PSEUDO,
+              "10a0": ("FUN_000010a0", "long FUN_000010a0(void)\n\n{\n  long lVar1;\n"
+                                       "  lVar1 = (*(code *)PTR_FUN_00002008)(DAT_00002000,1);\n"
+                                       "  return lVar1;\n}\n"),
+              "10b0": ("FUN_000010b0", "char * FUN_000010b0(void)\n\n{\n  return s_AcmeAudio_00002010;\n}\n")}
+    write_export(tmp_path, pseudo)
+    (tmp_path / "privacy_blocklist.txt").write_text("AcmeAudio\n")
+    blob = struct.pack("<qq", 41, 0x1000) + b"AcmeAudio Ltd\0\0\0"
+    (tmp_path / "ghidra" / "ghidra_data.json").write_text(json.dumps({
+        "version": 1, "image_base": "0",
+        "blocks": [{"name": "__data", "start": "2000", "size": len(blob), "write": True,
+                    "bytes": base64.b64encode(blob).decode()}],
+        "symbols": [{"addr": "2000", "name": "DAT_00002000", "type": "long", "size": 8},
+                    {"addr": "2008", "name": "PTR_FUN_00002008", "type": "pointer", "size": 8, "pointer": True},
+                    {"addr": "2010", "name": "s_AcmeAudio_00002010", "type": "char[16]", "size": 16}],
+        "refs": [{"from": "2008", "to": "1000", "kind": "function", "name": "FUN_00001000"}],
+        "callees": {}}))
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    lib = next((tmp_path / "build_c").glob("program.*"))
+    so = ctypes.CDLL(str(lib))
+    so.FUN_000010a0.restype = ctypes.c_long
+    assert so.FUN_000010a0() == 42          # data read, and the pointer fixed up to addNumbers
+    so.FUN_000010b0.restype = ctypes.c_char_p
+    s = so.FUN_000010b0()
+    assert b"AcmeAudio" not in s and s.startswith(b"Name1")     # swept, same length
+    assert "AcmeAudio" not in (tmp_path / "ghidra" / "ghidra_data.json").read_text()
