@@ -339,3 +339,197 @@ def test_origin_alternative_and_static_not_cached():
         assert r.status_code == 403 and "Reload the page" in r.text
     assert bare.post("/api/terminal", json={"command": "cd ."}).status_code == 403  # no header, no origin
     assert bare.get("/static/app.js").headers["cache-control"] == "no-cache"
+
+
+def test_scripts_get_a_terminal_so_live_progress_works():
+    from harness import config
+    from harness.server import app, runs
+    c = TestClient(app, headers={"x-harness": "1"})
+    (SCRIPTS_DIR / "tty.py").write_text(
+        "import sys, threading, time, shutil\n"
+        "print('isatty', sys.stdout.isatty(), sys.stdin.isatty(), sys.stderr.isatty(), shutil.get_terminal_size().columns, flush=True)\n"
+        "live = sys.stdout.isatty()\n"
+        "stop = threading.Event()\n"
+        "def spin():\n"
+        "    i = 0\n"
+        "    while not stop.wait(0.1):\n"
+        "        i += 1; sys.stdout.write(f'\\r\\x1b[K spinner {i} | now: work'); sys.stdout.flush()\n"
+        "if live: threading.Thread(target=spin, daemon=True).start()\n"
+        "time.sleep(1.0)\n"
+        "stop.set(); print('\\r\\x1b[Kdone', flush=True)\n")
+    rid = c.post("/api/runs", json={"script": "tty.py"}).json()["id"]
+    seen = ""
+    for _ in range(30):  # while it runs, the pinned live line must be moving (a quiet script shows nothing)
+        run = runs.runs[rid]
+        seen = run.live.get("out") or seen
+        if "spinner" in seen:
+            break
+        time.sleep(0.05)
+    assert "spinner" in seen
+    d = _wait_done(c, rid)
+    assert d["status"] == "ok"
+    first = [l["x"] for l in d["lines"] if l["s"] != "sys"][0]
+    assert first == "isatty True True True 400"
+    texts = [l["x"] for l in d["lines"] if l["s"] != "sys"]
+    assert texts[-1] == "done" and not any("spinner" in t for t in texts)  # redraws never pile up as lines
+
+    # switching it off restores plain pipes: the script then sees no terminal (and stays quiet)
+    config.settings.update({"use_pty": False})
+    try:
+        rid = c.post("/api/runs", json={"script": "tty.py"}).json()["id"]
+        d = _wait_done(c, rid)
+        assert [l["x"] for l in d["lines"] if l["s"] != "sys"][0].startswith("isatty False False False")
+    finally:
+        config.settings.update({"use_pty": True})
+
+
+def test_sensor_parsers():
+    from harness import sensors as s
+    assert [s.parse_thermal_state(x) for x in ("0\n", "1", "2", "3", "", "weird")] == [
+        "nominal", "fair", "serious", "critical", "unknown", "unknown"]
+    assert s.parse_pmset("CPU_Scheduler_Limit = 100\nCPU_Available_CPUs = 8\nCPU_Speed_Limit = 75\n") == 75
+    assert s.parse_pmset("Note: No thermal warning level has been recorded\n") is None
+    modern = ('{"timestamp":"2026-10-18T10:00:00Z","temp":{"cpu_temp_avg":51.26,"gpu_temp_avg":44.0},'
+              '"fans":[{"name":"Fan 1","rpm":2310,"max_rpm":6000}],"cpu_active_ratio":0.4,'
+              '"gpu_freq_mhz":444.0,"gpu_scaled_ratio":0.2,"gpu_active_ratio":0.37,"all_power":12.34,"sys_power":20.1}\n')
+    assert s.parse_macmon(modern) == {
+        "temp_c": 51.3, "gpu_temp_c": 44.0, "gpu_pct": 37, "gpu_mhz": 444, "power_w": 12.3, "sys_power_w": 20.1,
+        "fans": [{"name": "Fan 1", "rpm": 2310, "max_rpm": 6000}]}
+    legacy = '{"temp":{"cpu_temp_avg":51.26,"gpu_temp_avg":44.0},"gpu_usage":[444,0.37],"all_power":12.34}\n'
+    assert s.parse_macmon(legacy)["gpu_pct"] == 37 and s.parse_macmon(legacy)["temp_c"] == 51.3
+    # sensors with no valid reading are null (and a VM reports zeros / no fans): never invent values
+    vm = '{"temp":{"cpu_temp_avg":null,"gpu_temp_avg":null},"fans":[],"gpu_freq_mhz":0,"gpu_active_ratio":0.0}'
+    assert s.parse_macmon(vm) == {"gpu_pct": 0}
+    assert s.parse_macmon("not json") == {} and s.parse_macmon('{"temp":{}}') == {}
+    assert s.parse_osx_cpu_temp("61.2°C") == {"temp_c": 61.2} and s.parse_osx_cpu_temp("0.0°C") == {}
+    r = s.read_once({})  # never raises, whatever the platform
+    assert r["thermal"] in ("unknown", "nominal", "fair", "serious", "critical")
+
+
+def test_snapshot_has_cpu_and_runs_report_cpu():
+    from harness import memory
+    from harness.server import app, runs
+    snap = memory.Monitor().sample()
+    assert 0 <= snap["cpu_pct"] <= 100 and snap["cores"] and snap["cpu_count"] >= 1 and "thermal" in snap
+    c = TestClient(app, headers={"x-harness": "1"})
+    (SCRIPTS_DIR / "burn.py").write_text("import time\nt=time.time()\nwhile time.time()-t<3: pass\n")
+    rid = c.post("/api/runs", json={"script": "burn.py"}).json()["id"]
+    for _ in range(4):  # on_tick is normally driven by the monitor thread; drive it here
+        time.sleep(0.6)
+        runs.on_tick({**snap, "level": "green"})
+    d = _wait_done(c, rid, 100)
+    assert d["peak_cpu_pct"] >= 50 and d["mem"][-1]["cpu_pct"] >= 0
+    assert "peak CPU" in c.get(f"/api/runs/{rid}/report").text
+
+
+def test_thermal_guard_stops_runs_only_when_enabled():
+    from harness import config
+    from harness.server import app, runs
+    c = TestClient(app, headers={"x-harness": "1"})
+    (SCRIPTS_DIR / "t_sleep.py").write_text("import time; time.sleep(60)")
+    hot = {"level": "green", "available_pct": 80, "available_gb": 10, "swap_used_gb": 0,
+           "thermal": "serious", "temp_c": 96.0, "speed_limit": 70}
+
+    rid = c.post("/api/runs", json={"script": "t_sleep.py"}).json()["id"]
+    for _ in range(8):
+        runs.on_tick(hot)  # guard is off by default: just monitoring
+    assert c.get(f"/api/runs/{rid}").json()["status"] == "running"
+
+    config.settings.update({"thermal_guard": "critical"})
+    for _ in range(8):
+        runs.on_tick(hot)  # serious < critical: still fine
+    assert c.get(f"/api/runs/{rid}").json()["status"] == "running"
+
+    config.settings.update({"thermal_guard": "serious"})
+    try:
+        for _ in range(5):
+            runs.on_tick(hot)
+        d = _wait_done(c, rid)
+        assert d["status"] == "killed" and d["kill_reason"].startswith("thermal guard")
+        assert "96.0 C" in d["kill_reason"] and any("Thermal state SERIOUS" in e["msg"] for e in runs.events)
+        assert any("thermal guard" in h["title"].lower() for h in d["hints"])
+    finally:
+        config.settings.update({"thermal_guard": "off"})
+
+
+def test_helper_tool_installed_while_running_is_noticed(monkeypatch):
+    from harness import sensors as s
+    monkeypatch.setattr(s.sys, "platform", "darwin")
+    monkeypatch.setattr(s, "_run", lambda cmd, timeout=4: (
+        '{"temp":{"cpu_temp_avg":61.0}}' if cmd[:2] == ["/opt/homebrew/bin/macmon", "pipe"] else ""))
+    installed = {"macmon": None}
+    monkeypatch.setattr(s, "find_tool", lambda n: installed.get(n))
+    state = {}
+    assert s.read_once(state).get("temp_c") is None  # not installed yet
+    installed["macmon"] = "/opt/homebrew/bin/macmon"  # the user runs `brew install macmon`
+    assert s.read_once(state).get("temp_c") is None  # within 20s: still not rechecked
+    state["looked"] -= 21
+    out = s.read_once(state)
+    assert out["temp_c"] == 61.0 and out["temp_source"] == "macmon"
+
+
+def test_display_sleep_button(monkeypatch):
+    from harness import server
+    c = TestClient(server.app, headers={"x-harness": "1"})
+    assert c.post("/api/display-sleep").status_code == 501  # this test machine isn't a Mac
+    calls = []
+
+    class R:
+        returncode, stdout, stderr = 0, "", ""
+
+    monkeypatch.setattr(server.sys, "platform", "darwin")
+    monkeypatch.setattr(server.subprocess, "run", lambda cmd, **k: calls.append(cmd) or R())
+    assert c.post("/api/display-sleep").json() == {"ok": True} and calls == [["pmset", "displaysleepnow"]]
+    R.returncode, R.stderr = 1, "denied"
+    r = c.post("/api/display-sleep")
+    assert r.status_code == 500 and "denied" in r.text
+    assert TestClient(server.app).post("/api/display-sleep").status_code == 403  # needs the app's header
+
+
+def test_downloaded_models_from_lms(monkeypatch, tmp_path):
+    from harness import lmstudio
+    js = ('[{"type":"llm","modelKey":"qwen/qwen3-4b-2507","displayName":"Qwen3 4B 2507","paramsString":"4B",'
+          '"architecture":"qwen3","format":"gguf","quantization":{"name":"Q4_K_M","bits":4},"sizeBytes":2500000000,'
+          '"maxContextLength":262144},{"type":"embedding","modelKey":"nomic-embed","sizeBytes":84000000},'
+          '{"type":"llm","modelKey":"google/gemma-3-12b"}]')
+    got = lmstudio.parse_lms_ls(js)
+    assert [m["id"] for m in got] == ["qwen/qwen3-4b-2507", "nomic-embed", "google/gemma-3-12b"]
+    assert got[0]["quant"] == "Q4_K_M" and got[0]["size_gb"] == 2.5 and got[0]["ctx"] == 262144
+    assert lmstudio.parse_lms_ls('{"models":[{"modelKey":"a/b"}]}')[0]["id"] == "a/b"
+    table = ("You have 2 models, taking up 7 GB of disk space.\n\nLLM                 PARAMS   ARCH     SIZE\n"
+             "qwen/qwen3-4b-2507  4B       qwen3    2.50 GB\ngoogle/gemma-3-12b  12B      gemma3   7.30 GB\n\n"
+             "EMBEDDING           PARAMS   ARCH     SIZE\nnomic-embed         137M     nomic    0.08 GB\n")
+    t = lmstudio.parse_lms_ls(table)
+    assert [(m["id"], m["type"]) for m in t] == [("qwen/qwen3-4b-2507", "llm"), ("google/gemma-3-12b", "llm"),
+                                                  ("nomic-embed", "embeddings")]
+
+    fake = tmp_path / "lms"
+    fake.write_text(f"#!/bin/sh\n[ \"$1 $2\" = \"ls --json\" ] && cat <<'EOF'\n{js}\nEOF\n")
+    fake.chmod(0o755)
+    monkeypatch.setattr(lmstudio, "find_lms", lambda: str(fake))
+    monkeypatch.setattr(lmstudio, "status", lambda: {"ok": True, "error": None, "models": [
+        {"id": "google/gemma-3-12b", "loaded": True, "type": "llm", "arch": "", "quant": "", "ctx": 4096}]})
+    r = lmstudio.downloaded_models()
+    assert r["source"] == "lms" and not r["error"]
+    assert [m["id"] for m in r["models"]] == ["google/gemma-3-12b", "qwen/qwen3-4b-2507", "nomic-embed"]  # loaded first, llms before embeddings
+    assert r["models"][0]["loaded"] and not r["models"][1]["loaded"]
+
+    # no lms: fall back to what the running server reports; nothing at all: a helpful message
+    monkeypatch.setattr(lmstudio, "find_lms", lambda: None)
+    assert lmstudio.downloaded_models()["source"] == "server"
+    monkeypatch.setattr(lmstudio, "status", lambda: {"ok": False, "error": "down", "models": []})
+    r = lmstudio.downloaded_models()
+    assert r["models"] == [] and "lms" in r["error"]
+    c = TestClient(__import__("harness.server", fromlist=["app"]).app)
+    assert c.get("/api/models/downloaded").json()["models"] == []
+
+
+def test_model_param_detection_for_dropdowns():
+    from harness import params
+    src = ("import argparse\nap = argparse.ArgumentParser()\nap.add_argument('models', nargs='*')\n"
+           "ap.add_argument('--ctx', type=int)\nap.add_argument('--lmstudio-model', default='local-model')\n"
+           "ap.add_argument('--model', default='qwen3:8b')\nap.add_argument('--model-temperature', type=float, default=0.1)\n")
+    ps = {p["dest"]: p for p in params.parse_params(src)}
+    assert ps["models"]["nargs"] == "*" and ps["models"]["positional"]
+    assert params.build_argv(list(ps.values()), {"models": 'qwen/qwen3-4b-2507 "my model"', "ctx": 32768}) == [
+        "qwen/qwen3-4b-2507", "my model", "--ctx", "32768"]

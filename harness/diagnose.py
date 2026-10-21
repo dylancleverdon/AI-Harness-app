@@ -34,6 +34,10 @@ def diagnose(run):
             "System memory hit the trip level, so the run was stopped to protect your Mac. "
             "Try a smaller/more quantized model, a shorter context, fewer parallel agents, "
             "or lower the guard level in Settings.")
+    elif run.get("kill_reason", "").startswith("thermal guard"):
+        add("Stopped by the thermal guard",
+            "The Mac reported a high thermal state, so the run was stopped before it throttled or shut down. "
+            "Let it cool, improve airflow, run fewer things in parallel, or loosen the guard in Settings.")
     elif run.get("kill_reason"):
         add("Stopped", run["kill_reason"])
     elif run.get("exit_code") in (-9, 137):

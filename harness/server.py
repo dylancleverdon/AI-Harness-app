@@ -55,7 +55,8 @@ def ping():
 def status():
     return {"version": VERSION, "lmstudio": lmstudio.status(), "memory": monitor.latest,
             "settings": settings.get(), "scripts_dir": str(SCRIPTS_DIR), "update": _update,
-            "python": script_python(), "term_cwd": str(runs.term_cwd)}
+            "python": script_python(), "term_cwd": str(runs.term_cwd),
+            "sensor_tools": monitor.sensors.tools()}
 
 
 @app.get("/api/settings")
@@ -197,6 +198,18 @@ def pick_path(body: dict = Body(...)):
     return {"path": r.stdout.strip().rstrip("/") if r.returncode == 0 and kind == "folder" else r.stdout.strip()}
 
 
+@app.post("/api/display-sleep")
+def display_sleep():
+    """Turn the screen off right now (`pmset displaysleepnow`, no admin rights needed). The Mac itself keeps
+    running; if Keep awake is on it stays awake. Moving the mouse or pressing a key wakes the screen."""
+    if sys.platform != "darwin":
+        raise HTTPException(501, "Turning the screen off only works on macOS.")
+    r = subprocess.run(["pmset", "displaysleepnow"], capture_output=True, text=True, timeout=10)
+    if r.returncode != 0:
+        raise HTTPException(500, (r.stderr or r.stdout or "pmset failed").strip())
+    return {"ok": True}
+
+
 @app.post("/api/reveal")
 def reveal(body: dict = Body(...)):
     """Show a file a run produced in Finder (macOS) - only files listed on a run are allowed."""
@@ -304,7 +317,8 @@ async def telemetry():
                        "awake": runs.awake(),
                        "active": [{"id": r.id, "script": r.script, "started": r.started,
                                    "elapsed": round(time.time() - r.started),
-                                   "rss_mb": r.mem[-1]["rss_mb"] if r.mem else 0,
+                                   "rss_mb": r.mem[-1]["rss_mb"] if r.mem else 0, "cpu_pct": r.cpu_now,
+                                   "peak_cpu": r.peak_cpu_pct,
                                    "peak_mb": r.peak_rss_mb} for r in runs.active()]}
             yield f"data: {json.dumps(payload)}\n\n"
             await asyncio.sleep(1)
@@ -322,6 +336,12 @@ def events():
 
 
 # ---- models / chat --------------------------------------------------------
+@app.get("/api/models/downloaded")
+def models_downloaded():
+    """Downloaded LM Studio models (for the model dropdowns in Run settings)."""
+    return lmstudio.downloaded_models()
+
+
 @app.post("/api/models/unload")
 def unload():
     ok, out = lmstudio.unload_all()

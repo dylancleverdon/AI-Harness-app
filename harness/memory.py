@@ -7,6 +7,7 @@ from collections import deque
 
 import psutil
 
+from . import sensors
 from .config import settings
 
 LEVELS = ["green", "yellow", "orange", "red"]
@@ -58,6 +59,27 @@ def tree_rss(pid):
     return total
 
 
+def tree_cpu(cache, pid):
+    """CPU use of a process and its children, in % of one core (so 250 = 2.5 cores busy). `cache` keeps the
+    psutil Process objects between calls, because cpu_percent measures the change since its previous call."""
+    try:
+        root = cache.get(pid) or cache.setdefault(pid, psutil.Process(pid))
+        procs = [root] + root.children(recursive=True)
+    except psutil.Error:
+        return 0.0
+    total, alive = 0.0, set()
+    for q in procs:
+        alive.add(q.pid)
+        q = cache.setdefault(q.pid, q)
+        try:
+            total += q.cpu_percent(None)
+        except psutil.Error:
+            pass
+    for dead in set(cache) - alive:
+        cache.pop(dead, None)
+    return total
+
+
 def lmstudio_rss():
     total = 0
     for p in psutil.process_iter(["name", "memory_info"]):
@@ -81,6 +103,8 @@ class Monitor(threading.Thread):
         self.latest = None
         self._n = 0
         self._lms = 0
+        self.sensors = sensors.Sensors()
+        psutil.cpu_percent(percpu=True)  # prime the counters; the first reading is meaningless
 
     def sample(self):
         cfg = settings.get()
@@ -91,7 +115,17 @@ class Monitor(threading.Thread):
             self._lms = lmstudio_rss()
         self._n += 1
         pressure = _mac_pressure()
+        cores = psutil.cpu_percent(percpu=True)
+        try:
+            load = [round(x, 2) for x in psutil.getloadavg()]
+        except (AttributeError, OSError):
+            load = []
         return {
+            **{k: v for k, v in self.sensors.latest.items() if v is not None},
+            "cpu_pct": round(sum(cores) / len(cores), 1) if cores else 0,
+            "cores": [round(c) for c in cores],
+            "load": load,
+            "cpu_count": psutil.cpu_count() or len(cores),
             "t": time.time(),
             "total_gb": round(vm.total / GB, 2),
             "used_gb": round((vm.total - vm.available) / GB, 2),
@@ -105,6 +139,7 @@ class Monitor(threading.Thread):
         }
 
     def run(self):
+        self.sensors.start()
         while True:
             try:
                 snap = self.sample()

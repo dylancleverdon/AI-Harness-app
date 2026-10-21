@@ -19,7 +19,7 @@ $$('#rail button').forEach(b => b.onclick = () => {
   $$('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + b.dataset.page));
   if (b.dataset.page === 'models') loadModels();
   if (b.dataset.page === 'reports') loadRuns();
-  if (b.dataset.page === 'memory') drawChart();
+  if (b.dataset.page === 'memory') { drawChart(); drawCpuChart(); }
 });
 
 // ---- status / telemetry --------------------------------------------------
@@ -47,12 +47,19 @@ function showUpdate(u) {
     $('#s-update-msg').textContent = (u.changes || []).join(' · ');
   } else { b.classList.add('hidden'); a.classList.add('hidden'); $('#s-update-msg').textContent = u && u.error ? u.error : 'Up to date.'; }
 }
+$('#screen-off').onclick = async () => {
+  const b = $('#screen-off');
+  try { await api('/display-sleep', { method: 'POST' }); b.textContent = '🌙 Screen off ✓'; }
+  catch (e) { alert(e.message.includes('macOS') ? 'Turning the screen off only works on a Mac.' : 'Could not turn the screen off: ' + e.message); }
+  setTimeout(() => b.textContent = '🌙 Screen off', 2500);
+};
 $('#update-btn').onclick = () => $('#rail button[data-page=settings]').click();
 
 let lastSnap = null, history = [];
 function onTelemetry(d) {
   const m = d.memory; if (!m) return;
   lastSnap = m; history.push(m); if (history.length > 600) history.shift();
+  updateSystem(m, d);
   const pill = $('#mem-pill');
   pill.className = 'pill lvl-' + m.level;
   $('#mem-text').textContent = `${m.level} · ${m.available_gb} GB free (${m.available_pct}%)`;
@@ -71,14 +78,14 @@ function onTelemetry(d) {
   $('#m-pressure').textContent = m.pressure ? 'macOS pressure: ' + ({ 1: 'normal', 2: 'warn', 4: 'critical' }[m.pressure] || m.pressure) : '';
   const act = $('#active-runs'); act.replaceChildren();
   if (!d.active.length) act.textContent = 'Nothing running.';
-  d.active.forEach(r => act.append(el('div', { textContent: `${r.script} — running ${fmtTime(r.elapsed)} · ${r.rss_mb} MB now, peak ${r.peak_mb} MB` })));
+  d.active.forEach(r => act.append(el('div', { textContent: `${r.script} — running ${fmtTime(r.elapsed)} · ${r.rss_mb} MB now, peak ${r.peak_mb} MB · CPU ${r.cpu_pct}% (≈${(r.cpu_pct / 100).toFixed(1)} cores)` })));
   updateTimers(d);
   $('#guard-state').textContent = state.settings.guard_enabled ? `Armed: stops scripts at ${state.settings.guard_trip_level}.` : 'Guard is disabled.';
   const ev = $('#guard-events'); ev.replaceChildren();
   d.events.slice().reverse().forEach(e => ev.append(el('li', { textContent: new Date(e.t * 1000).toLocaleTimeString() + ' — ' + e.msg })));
-  const cur = d.active.find(r => state.run && r.id === state.run.id);
-  $('#run-mem').textContent = cur ? `script: ${cur.rss_mb} MB (peak ${cur.peak_mb}) · system: ${m.available_pct}% free` : '';
-  if ($('#page-memory').classList.contains('active')) drawChart();
+  const cur = d.active.find(r => curView() && curView().run && r.id === curView().run.id);
+  $('#run-mem').textContent = cur ? `script: ${cur.rss_mb} MB (peak ${cur.peak_mb}) · CPU ${cur.cpu_pct}% · system: ${m.available_pct}% free${m.thermal && m.thermal !== 'unknown' ? ' · ' + m.thermal : ''}` : '';
+  if ($('#page-memory').classList.contains('active')) { drawChart(); drawCpuChart(); }
 }
 function updateTimers(d) {
   const by = Object.fromEntries(d.active.map(r => [r.script, r]));
@@ -86,10 +93,55 @@ function updateTimers(d) {
     const r = by[li.dataset.name]; li.classList.toggle('running', !!r);
     $('.timer', li).textContent = r ? '⏱ ' + fmtTime(r.elapsed) : '';
   });
-  const cur = state.run && d.active.find(r => r.id === state.run.id);
-  $('#run-timer').textContent = cur ? '⏱ ' + fmtTime(cur.elapsed) : $('#run-timer').textContent;
+  d.active.forEach(r => {
+    if (r.script.startsWith('$')) return;  // console shell commands live in the console they were typed in
+    const v = viewFor(r.script);
+    if (!v.run || v.run.id !== r.id) {  // a run this page doesn't know yet (page reloaded, or started elsewhere): re-attach, replaying its output
+      v.box.replaceChildren(); v.run = { id: r.id, script: r.script }; v.status = 'running'; v.hints = []; v.files = []; watchRun(v, r.id);
+    }
+    v.timer = '⏱ ' + fmtTime(r.elapsed); if (isVisible(v)) { $('#run-timer').textContent = v.timer; if (!$('#stop-btn').offsetParent) paintStatus(v); }
+  });
   $('#awake-switch').classList.toggle('live', !!d.awake);
   $('#awake-switch').title = (d.awake ? 'Mac is being kept awake right now. ' : '') + 'Keep your Mac awake while a script is running (uses macOS caffeinate). Closing the lid on battery power will still sleep it.';
+}
+const THERM_COLOR = { nominal: '#3ecf8e', fair: '#f2c94c', serious: '#f2994a', critical: '#eb5757' };
+function updateSystem(m, d) {
+  if (m.cpu_pct === undefined) return;
+  $('#cpu-text').textContent = `${Math.round(m.cpu_pct)}%`;
+  $('#c-cpu').textContent = Math.round(m.cpu_pct) + '%'; $('#c-cpu-sub').textContent = `${m.cpu_count} logical cores`;
+  $('#c-load').textContent = (m.load || []).join(' / ') || '–';
+  const th = m.thermal && m.thermal !== 'unknown' ? m.thermal : null;
+  $('#therm-pill').classList.toggle('hidden', !th);
+  if (th) { $('#therm-pill').className = 'pill lvl-' + th; $('#therm-text').textContent = th + (m.temp_c ? ` · ${m.temp_c}°C` : '') + (m.speed_limit && m.speed_limit < 100 ? ` · ${m.speed_limit}% speed` : ''); $('#therm-pill').title = m.speed_limit && m.speed_limit < 100 ? `macOS is limiting the CPU to ${m.speed_limit}% to shed heat` : 'macOS thermal state'; }
+  const tv = $('#c-therm'); tv.textContent = th || 'unknown'; tv.style.color = th ? THERM_COLOR[th] : '';
+  $('#c-therm-sub').textContent = !th ? 'not available on this system' : m.speed_limit && m.speed_limit < 100 ? `CPU throttled to ${m.speed_limit}%` : th === 'nominal' ? 'not throttled' : 'macOS is managing heat';
+  $('#c-temp').textContent = m.temp_c ? m.temp_c + ' °C' : '–';
+  $('#c-temp-sub').textContent = m.temp_c ? 'CPU average · via ' + m.temp_source + (m.gpu_temp_c ? ` · GPU ${m.gpu_temp_c} °C` : '') + (m.power_w ? ` · ${m.power_w} W` : '') : 'needs a free helper tool (see below)';
+  $('#gpu-card').classList.toggle('hidden', m.gpu_pct === undefined);
+  if (m.gpu_pct !== undefined) { $('#c-gpu').textContent = m.gpu_pct + '%'; $('#c-gpu-sub').textContent = [m.gpu_mhz ? m.gpu_mhz + ' MHz' : '', m.gpu_temp_c ? m.gpu_temp_c + ' °C' : ''].filter(Boolean).join(' · '); }
+  $('#fan-card').classList.toggle('hidden', !(m.fans && m.fans.length));
+  if (m.fans && m.fans.length) { $('#c-fan').textContent = m.fans.map(f => f.rpm).join(' / ') + ' rpm'; $('#c-fan-sub').textContent = m.fans.map(f => f.max_rpm ? Math.round(f.rpm / f.max_rpm * 100) + '% of max' : f.name).join(' · '); }
+  const cores = $('#cores');
+  if (cores.children.length !== m.cores.length) { cores.replaceChildren(...m.cores.map(() => el('div', {}, el('i')))); }
+  m.cores.forEach((c, i) => { const b = cores.children[i]; $('i', b).style.height = c + '%'; b.classList.toggle('hot', c >= 90); b.title = `core ${i}: ${c}%`; });
+  const tools = state.status && state.status.sensor_tools;
+  $('#temp-hint').textContent = m.temp_c ? '' : (tools && tools.darwin)
+    ? (tools.macmon || tools.osx_cpu_temp ? 'A temperature tool was found but returned nothing yet. Give it a few seconds.' : 'macOS only shares its thermal state with apps. For exact chip temperatures, GPU load and power, run  brew install macmon  (Apple Silicon)  or  brew install osx-cpu-temp  (Intel). AI Harness picks it up automatically.')
+    : '';
+}
+function drawCpuChart() {
+  const c = $('#cpu-chart'), dpr = devicePixelRatio || 1, w = c.clientWidth, h = 160;
+  c.width = w * dpr; c.height = h * dpr; const g = c.getContext('2d'); g.scale(dpr, dpr);
+  const y = p => h - 16 - (p / 100) * (h - 26), step = w / 599, off = 600 - history.length;
+  g.strokeStyle = '#2d2d34'; g.fillStyle = '#8b8b96'; g.font = '10px sans-serif'; g.lineWidth = 1;
+  [0, 50, 100].forEach(p => { g.beginPath(); g.moveTo(0, y(p)); g.lineTo(w, y(p)); g.stroke(); g.fillText(p + '%', 4, y(p) - 2); });
+  const hasT = history.some(s => s.temp_c);
+  history.forEach((s, i) => { if (s.thermal === 'serious' || s.thermal === 'critical' || (s.speed_limit && s.speed_limit < 100)) { g.fillStyle = '#eb575733'; g.fillRect((off + i) * step, 0, Math.max(step, 1), h - 16); } });
+  if (history.length < 2) return;
+  const line = (val, color, scale) => { g.strokeStyle = color; g.lineWidth = 2; g.beginPath(); let started = false;
+    history.forEach((s, i) => { const v = val(s); if (v === undefined || v === null) return; const px = (off + i) * step, py = y(scale(v)); started ? g.lineTo(px, py) : g.moveTo(px, py); started = true; }); g.stroke(); };
+  line(s => s.cpu_pct, '#6ea8fe', v => v);
+  if (hasT) { line(s => s.temp_c, '#f2994a', v => Math.min(100, v)); $('#cpu-chart-note').textContent = '(temperature drawn on the same 0–100 scale, in °C)'; }
 }
 function drawChart() {
   const c = $('#chart'), dpr = devicePixelRatio || 1, w = c.clientWidth, h = 220;
@@ -128,7 +180,7 @@ async function loadScripts(select) {
 }
 async function openScript(n) {
   state.script = n; $('#script-name').textContent = n;
-  $('#editor').value = (await api('/scripts/' + n)).content; loadRunSettings(n);
+  showView(); $('#editor').value = (await api('/scripts/' + n)).content; loadRunSettings(n);
   $$('#script-list li').forEach(li => li.classList.toggle('sel', li.firstChild.textContent === n));
 }
 async function saveScript() { if (state.script) { await api('/scripts/' + state.script, { method: 'PUT', body: { content: $('#editor').value } }); loadRunSettings(state.script); } }
@@ -170,10 +222,31 @@ async function importFiles(files) {
   if (last) { await loadScripts(last); $('#rail button[data-page=run]').click(); }
 }
 
+// ---- one console per script, so several scripts can run at once ---------------
+const views = {};  // script name -> { name, box, run, es, status, timer, live, hints, files, total }
+const viewFor = name => views[name] || (views[name] = { name, box: el('div'), run: null, es: null, status: '', timer: '', live: '', hints: [], files: [], total: 0 });
+const curView = () => state.script ? viewFor(state.script) : null;
+const isVisible = v => v.name === state.script;
+function showView() {
+  const v = curView(), c = $('#console'); if (!v) return;
+  c.replaceChildren(v.box); c.scrollTop = c.scrollHeight; paintStatus(v);
+}
+function paintStatus(v) {  // draws one script's state into the shared header, buttons and panels (if it's the one on screen)
+  if (!isVisible(v)) return;
+  const b = $('#run-state'), running = v.status === 'running';
+  b.textContent = v.status; b.className = 'badge ' + v.status;
+  $('#run-btn').classList.toggle('hidden', running); $('#stop-btn').classList.toggle('hidden', !running);
+  $('#report-btn').classList.toggle('hidden', running || !v.run);
+  $('#run-timer').textContent = v.timer; $('#live').textContent = v.live; $('#live').classList.toggle('hidden', !v.live);
+  showDiagnosis(v.hints, $('#diagnosis')); showFiles(v.run && v.run.id, v.files, $('#files'), v.total);
+  if (!running) $('#run-mem').textContent = '';
+  setTimeout(updateTermUI, 0);
+}
+
 // ---- console input: type into a running script, or run a shell command --------
 const term = { hist: [], i: 0 };
 try { term.hist = JSON.parse(localStorage.getItem('termHist') || '[]'); } catch { }
-const isRunning = () => $('#run-state').classList.contains('running');
+const isRunning = () => { const v = curView(); return !!v && v.status === 'running'; };
 function updateTermUI() {
   $('#eof-btn').classList.toggle('hidden', !isRunning());
   $('#term-input').placeholder = isRunning() ? 'Type here to answer the running script (Enter to send)…' : 'Type a shell command (cd, ls, python, pip…)';
@@ -184,13 +257,14 @@ $('#term-form').onsubmit = async e => {
   $('#term-input').value = '';
   if (t.trim()) { term.hist = [...term.hist.filter(x => x !== t), t].slice(-100); term.i = term.hist.length; try { localStorage.setItem('termHist', JSON.stringify(term.hist)); } catch { } }
   try {
-    if (isRunning()) { await api(`/runs/${state.run.id}/input`, { method: 'POST', body: { text: t } }); return; }
+    const v = curView(); if (!v) return;
+    if (isRunning()) { await api(`/runs/${v.run.id}/input`, { method: 'POST', body: { text: t } }); return; }
     const r = await api('/terminal', { method: 'POST', body: { command: t } });
     if (r.run) {
-      state.run = r.run; $('#files').classList.add('hidden'); $('#diagnosis').replaceChildren();
-      appendLine({ s: 'sys', x: '' }); setRunState('running'); watchRun(r.run.id); $('#run-timer').textContent = '⏱ 0:00';
+      v.run = r.run; v.hints = []; v.files = []; v.total = 0; v.timer = '⏱ 0:00'; v.live = '';
+      appendLine({ s: 'sys', x: '' }, v); v.status = 'running'; paintStatus(v); watchRun(v, r.run.id);
     } else {
-      appendLine({ s: r.cd ? 'sys' : 'err', x: r.cd ? '$ ' + t + '\n' + r.message : r.message }); if (state.status) state.status.term_cwd = r.cwd; updateTermUI();
+      appendLine({ s: r.cd ? 'sys' : 'err', x: r.cd ? '$ ' + t + '\n' + r.message : r.message }, v); if (state.status) state.status.term_cwd = r.cwd; updateTermUI();
     }
   } catch (err) { appendLine({ s: 'err', x: err.message }); }
 };
@@ -199,7 +273,56 @@ $('#term-input').onkeydown = e => {
   if (e.key === 'ArrowDown') { e.preventDefault(); term.i = Math.min(term.i + 1, term.hist.length); $('#term-input').value = term.hist[term.i] || ''; }
   if (e.key === 'd' && e.ctrlKey && isRunning() && !$('#term-input').value) { e.preventDefault(); $('#eof-btn').click(); }
 };
-$('#eof-btn').onclick = () => state.run && api(`/runs/${state.run.id}/input`, { method: 'POST', body: { eof: true } });
+$('#eof-btn').onclick = () => { const v = curView(); v && v.run && api(`/runs/${v.run.id}/input`, { method: 'POST', body: { eof: true } }); };
+
+// ---- model dropdowns for options that ask for an LM Studio model ----------------
+const isModelParam = p => p.kind === 'str' && !p.choices && !p.path && /(^|_)models?(_name|_id|_key)?$/.test(p.dest);
+const isMulti = p => p.nargs && p.nargs !== 1;
+let modelsPromise = null;
+const getModels = refresh => (refresh || !modelsPromise) ? (modelsPromise = api('/models/downloaded').catch(e => ({ models: [], error: e.message }))) : modelsPromise;
+const modelLabel = m => (m.loaded ? '● ' : '') + m.id + [m.params, m.quant, m.size_gb ? m.size_gb + ' GB' : ''].filter(Boolean).map(x => ' · ' + x).join('');
+const tokens = s => [...String(s || '').matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g)].map(m => m[1] ?? m[2] ?? m[3]);
+const quoteTok = t => /\s/.test(t) ? JSON.stringify(t) : t;
+function modelPicker(p, cur, save) {
+  const wrap = el('div', { className: 'modelpick' }), hint = el('small', { className: 'muted' });
+  const refresh = el('button', { type: 'button', className: 'ghost', textContent: '↻', title: 'Reload the list of models from LM Studio' });
+  const other = el('input', { placeholder: 'type a model name', className: 'hidden' });
+  let models = [];
+  const ctxHint = m => $$('#rs-form [data-dest]').forEach(i => { if (/^(ctx|context|context_length|ctx_size|num_ctx|max_ctx)$/.test(i.dataset.dest)) i.placeholder = m && m.ctx ? `max ${m.ctx.toLocaleString()} for this model` : ''; });
+  const note = m => { hint.textContent = m ? `${m.type === 'llm' ? '' : m.type + ' · '}${[m.format, m.arch, m.ctx ? 'max context ' + m.ctx.toLocaleString() : ''].filter(Boolean).join(' · ')}${m.loaded ? ' · loaded now' : ''}` : ''; ctxHint(m); };
+  if (isMulti(p)) {
+    const list = el('div', { className: 'multi' }), picked = new Set(tokens(cur));
+    const emit = () => save([...picked].map(quoteTok).join(' '));
+    other.classList.remove('hidden');
+    other.oninput = () => { const known = new Set(models.map(m => m.id)); const extra = tokens(other.value); [...picked].forEach(t => { if (!known.has(t)) picked.delete(t); }); extra.forEach(t => picked.add(t)); emit(); };
+    const render = r => {
+      models = r.models; list.replaceChildren(); const known = new Set(models.map(m => m.id));
+      models.forEach(m => { const cb = el('input', { type: 'checkbox', checked: picked.has(m.id) });
+        cb.onchange = () => { cb.checked ? picked.add(m.id) : picked.delete(m.id); emit(); note(cb.checked ? m : models.find(x => picked.has(x.id))); };
+        list.append(el('label', { className: 'check' }, cb, modelLabel(m))); });
+      other.value = [...picked].filter(t => !known.has(t)).map(quoteTok).join(' ');
+      if (!models.length) list.append(el('div', { className: 'muted', textContent: r.error || 'No models found.' }));
+      note(models.find(m => picked.has(m.id)));
+    };
+    refresh.onclick = async () => render(await getModels(true));
+    wrap.append(list, el('div', { className: 'pathrow' }, other, refresh), hint); getModels().then(render); return wrap;
+  }
+  const sel = el('select');
+  const render = r => {
+    models = r.models; sel.replaceChildren(el('option', { value: '', textContent: p.default ? `(script default: ${p.default})` : '— choose a model —' }));
+    const group = (label, ms) => { if (ms.length) sel.append(el('optgroup', { label }, ...ms.map(m => el('option', { value: m.id, textContent: modelLabel(m) })))); };
+    group('Loaded now', models.filter(m => m.loaded)); group('Downloaded', models.filter(m => !m.loaded));
+    sel.append(el('option', { value: '__other__', textContent: 'Other (type a name)…' }));
+    const known = models.some(m => m.id === cur);
+    sel.value = known ? cur : cur ? '__other__' : '';
+    other.classList.toggle('hidden', sel.value !== '__other__'); if (sel.value === '__other__') other.value = cur || '';
+    if (!models.length) { sel.value = '__other__'; other.classList.remove('hidden'); hint.textContent = r.error || ''; } else note(models.find(m => m.id === sel.value));
+  };
+  sel.onchange = () => { other.classList.toggle('hidden', sel.value !== '__other__'); if (sel.value === '__other__') { other.focus(); save(other.value); } else { save(sel.value); note(models.find(m => m.id === sel.value)); } };
+  other.oninput = () => save(other.value);
+  refresh.onclick = async () => { const keep = sel.value === '__other__' ? other.value : sel.value; cur = keep; render(await getModels(true)); };
+  wrap.append(el('div', { className: 'pathrow' }, sel, refresh), other, hint); getModels().then(render); return wrap;
+}
 
 // ---- run settings (discovered options, remembered between runs) -----------
 let rs = { params: [], values: {} }, rsTimer;
@@ -213,12 +336,18 @@ async function loadRunSettings(name) {
   d.params.forEach(p => {
     const cur = p.dest in rs.values ? rs.values[p.dest] : p.default;
     const label = el('label', { className: p.kind === 'bool' ? 'check' : '' });
+    if (isModelParam(p)) {  // dropdown of the models you have in LM Studio instead of a text box
+      label.append(p.dest.replace(/_/g, ' ') + (p.required ? ' *' : ''), modelPicker(p, cur, v => { rs.values[p.dest] = v; persistRunSettings(); }));
+      if (p.help) label.append(el('small', { textContent: p.help }));
+      form.append(label); return;
+    }
     let input;
     if (p.kind === 'bool') { input = el('input', { type: 'checkbox', checked: !!cur }); label.append(input, p.dest.replace(/_/g, ' ')); }
     else {
       if (p.kind === 'append') input = el('textarea', { rows: 2, value: Array.isArray(cur) ? cur.join('\n') : (cur ?? ''), placeholder: 'one value per line' });
       else if (p.choices) input = el('select', {}, ...p.choices.map(c => el('option', { value: c, textContent: c, selected: String(c) === String(cur) })));
       else input = el('input', { type: p.kind === 'int' || p.kind === 'float' || p.kind === 'count' ? 'number' : 'text', value: cur ?? '', placeholder: p.default == null ? (p.required ? 'required' : '') : '', step: p.kind === 'float' ? 'any' : undefined });
+      input.dataset.dest = p.dest;
       label.append(p.dest.replace(/_/g, ' ') + (p.required ? ' *' : ''), input);
     }
     if (p.path && p.kind === 'str' && !p.choices) {  // Browse… buttons for file/folder options
@@ -321,35 +450,34 @@ $('#ai-apply').onclick = async () => {
   if (aiResult == null) return;
   const r = await api('/ai-edit/apply', { method: 'POST', body: { name: state.script, content: aiResult } });
   $('#editor').value = aiResult; aim.classList.add('hidden');
-  const c = $('#console'); c.replaceChildren(el('div', { className: 'sys', textContent: 'AI edit applied.' + (r.backup ? ' Previous version backed up to ' + r.backup : '') }));
+  const v = curView(); v.box.replaceChildren(el('div', { className: 'sys', textContent: 'AI edit applied.' + (r.backup ? ' Previous version backed up to ' + r.backup : '') }));
 };
 
-function appendLine(l) {
-  const c = $('#console'), stick = c.scrollTop + c.clientHeight > c.scrollHeight - 40;
-  c.append(el('div', { className: l.s, textContent: l.x })); if (stick) c.scrollTop = c.scrollHeight;
-}
-function setRunState(s) {
-  const b = $('#run-state'); b.textContent = s; b.className = 'badge ' + s;
-  const running = s === 'running';
-  $('#run-btn').classList.toggle('hidden', running); $('#stop-btn').classList.toggle('hidden', !running);
-  $('#report-btn').classList.toggle('hidden', running || !state.run);
-  setTimeout(() => { updateTermUI(); if (running === false) $('#term-input').focus(); }, 0);
+function appendLine(l, v = curView()) {
+  if (!v) return;
+  const c = $('#console'), vis = isVisible(v), stick = !vis || c.scrollTop + c.clientHeight > c.scrollHeight - 40;
+  v.box.append(el('div', { className: l.s, textContent: l.x }));
+  if (v.box.childElementCount > 20000) {  // keep the page fast on multi-day runs; the full log stays in Reports
+    for (let i = 0; i < 2000; i++) v.box.firstChild.remove();
+    v.box.prepend(el('div', { className: 'sys', textContent: '… older lines trimmed from this view (the full log is in Reports) …' }));
+  }
+  if (vis && stick) c.scrollTop = c.scrollHeight;
 }
 $('#run-btn').onclick = async () => {
-  if (!state.script) return; await saveScript();
-  $('#console').replaceChildren(); $('#live').classList.add('hidden'); $('#diagnosis').replaceChildren(); $('#files').classList.add('hidden');
-  state.run = await api('/runs', { method: 'POST', body: runBody() }); $('#run-timer').textContent = '⏱ 0:00';
-  setRunState('running'); watchRun(state.run.id);
+  const v = curView(); if (!v || v.status === 'running') return; await saveScript();
+  v.box.replaceChildren(); v.live = ''; v.hints = []; v.files = []; v.total = 0; v.timer = '⏱ 0:00';
+  v.run = await api('/runs', { method: 'POST', body: runBody() }); v.status = 'running'; paintStatus(v); watchRun(v, v.run.id);
 };
-$('#stop-btn').onclick = () => state.run && api(`/runs/${state.run.id}/stop`, { method: 'POST' });
-function watchRun(id) {
-  state.es && state.es.close();
-  const es = state.es = new EventSource(`/api/runs/${id}/stream`);
-  es.onmessage = e => appendLine(JSON.parse(e.data));
-  es.addEventListener('live', e => { const x = JSON.parse(e.data).x; $('#live').textContent = x; $('#live').classList.toggle('hidden', !x); });
+$('#stop-btn').onclick = () => { const v = curView(); v && v.run && api(`/runs/${v.run.id}/stop`, { method: 'POST' }); };
+function watchRun(v, id) {
+  v.es && v.es.close();
+  const es = v.es = new EventSource(`/api/runs/${id}/stream`);
+  es.onmessage = e => appendLine(JSON.parse(e.data), v);
+  es.addEventListener('live', e => { v.live = JSON.parse(e.data).x; if (isVisible(v)) { $('#live').textContent = v.live; $('#live').classList.toggle('hidden', !v.live); } });
   es.addEventListener('done', async e => {
-    es.close(); $('#live').classList.add('hidden'); const s = JSON.parse(e.data); setRunState(s.status); $('#run-timer').textContent = '⏱ ' + fmtTime(Math.round(s.duration)) + ' total';
-    const d = await api('/runs/' + id); showDiagnosis(d.hints, $('#diagnosis')); showFiles(id, d.files, $('#files'), d.files_total);
+    es.close(); const s = JSON.parse(e.data); v.live = ''; v.status = s.status; v.timer = '⏱ ' + fmtTime(Math.round(s.duration)) + ' total';
+    const d = await api('/runs/' + id); v.hints = d.hints; v.files = d.files; v.total = d.files_total;
+    paintStatus(v); if (isVisible(v)) $('#term-input').focus();
   });
   es.onerror = () => es.close();
 }
@@ -366,7 +494,7 @@ function showDiagnosis(hints, box) {
   });
 }
 $('#report-btn').onclick = async () => {
-  const md = await api(`/runs/${state.run.id}/report`);
+  const md = await api(`/runs/${curView().run.id}/report`);
   try { await navigator.clipboard.writeText(md); $('#report-btn').textContent = 'Copied ✓'; } catch { prompt('Copy report:', md); }
   setTimeout(() => $('#report-btn').textContent = 'Copy failure report', 2000);
 };
@@ -416,7 +544,7 @@ async function showReport(id) {
   const rerun = el('button', { className: 'ghost', textContent: 'Open script' });
   rerun.onclick = () => { $('#rail button[data-page=run]').click(); openScript(d.script); };
   v.append(el('h2', { textContent: `${d.script} — ${d.status}` }),
-    el('div', { className: 'muted', textContent: `${new Date(d.started * 1000).toLocaleString()} · ${d.duration}s · exit ${d.exit_code} · peak ${d.peak_rss_mb} MB${d.kill_reason ? ' · ' + d.kill_reason : ''}` }),
+    el('div', { className: 'muted', textContent: `${new Date(d.started * 1000).toLocaleString()} · ${d.duration}s · exit ${d.exit_code} · peak ${d.peak_rss_mb} MB · peak CPU ${d.peak_cpu_pct || 0}%${d.kill_reason ? ' · ' + d.kill_reason : ''}` }),
     el('div', {}, copy, ' ', rerun));
   const dg = el('div', { className: 'panel' }); showDiagnosis(d.hints, dg); if (d.hints?.length) v.append(dg);
   if (d.files && d.files.length) { const fb = el('div', { className: 'panel' }); showFiles(id, d.files, fb, d.files_total); fb.classList.remove('hidden'); v.append(fb); }

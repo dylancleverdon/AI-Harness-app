@@ -86,7 +86,7 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 #ai-diff { overflow: auto; background: #101013; border-radius: 8px; padding: 10px; margin: 10px 0 0; font: 12px/1.5 ui-monospace, Menlo, monospace; white-space: pre; min-height: 120px; }
 #ai-diff .add { color: var(--green); background: #3ecf8e14; display: block; } #ai-diff .del { color: var(--red); background: #eb575714; display: block; } #ai-diff .hunk { color: var(--accent); display: block; }
 
-#run-settings { border-bottom: 1px solid var(--border); background: var(--panel); max-height: 45%; overflow: auto; }
+#run-settings { border-bottom: 1px solid var(--border); background: var(--panel); max-height: 60%; overflow: auto; resize: vertical; }
 #run-settings summary { padding: 7px 12px; cursor: pointer; color: var(--muted); } #run-settings[open] summary { color: var(--text); }
 #rs-body { padding: 4px 12px 12px; } #rs-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 14px; }
 #rs-body label { display: block; font-size: 12px; } #rs-body label input:not([type=checkbox]), #rs-body label select, #rs-body label textarea { display: block; width: 100%; margin-top: 2px; }
@@ -98,7 +98,7 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 
 .pathrow { display: flex; gap: 4px; margin-top: 2px; } .pathrow input { margin-top: 0 !important; flex: 1; } .pathrow button { padding: 0 8px; }
 
-#live { padding: 6px 12px; background: #17171c; border-top: 1px solid var(--border); font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; white-space: pre; overflow: hidden; text-overflow: ellipsis; color: #cfd0ff; }
+#live { padding: 6px 12px; background: #17171c; border-top: 1px solid var(--border); font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; white-space: pre-wrap; word-break: break-word; max-height: 35%; overflow-y: auto; color: #cfd0ff; }
 
 .modal-foot { display: flex; gap: 8px; align-items: center; } .modal-foot .spacer { flex: 1; }
 .switch { display: flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 3px 12px 3px 6px; }
@@ -117,3 +117,19 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 #term-prompt { color: var(--accent); font: 12px ui-monospace, Menlo, monospace; white-space: nowrap; max-width: 40%; overflow: hidden; text-overflow: ellipsis; }
 #term-input { flex: 1; font: 12.5px ui-monospace, "SF Mono", Menlo, monospace; background: transparent; border: 0; outline: 0 !important; padding: 4px 0; }
 #console .in { color: #8fd3ff; } #console .in::before { content: "› "; }
+
+#cores { display: flex; gap: 4px; align-items: flex-end; height: 70px; margin-top: 6px; }
+#cores div { flex: 1; min-width: 8px; background: #26262c; border-radius: 3px; position: relative; height: 100%; overflow: hidden; }
+#cores div i { position: absolute; left: 0; right: 0; bottom: 0; background: #6ea8fe; border-radius: 3px; transition: height .4s; }
+#cores div.hot i { background: var(--orange); }
+.lvl-nominal .dot { background: var(--green); } .lvl-fair .dot { background: var(--yellow); } .lvl-serious .dot { background: var(--orange); } .lvl-critical .dot { background: var(--red); }
+
+.pill, .brand { white-space: nowrap; } .pills { flex-wrap: wrap; justify-content: flex-end; gap: 6px; } #topbar { gap: 10px; }
+#c-load { font-size: 17px; margin: 9px 0; } #cores div { max-width: 40px; }
+@media (max-width: 1100px) { .pill b { display: none; } }
+
+#screen-off { border-radius: 999px; padding: 3px 12px; white-space: nowrap; background: var(--panel); }
+
+.modelpick .multi { max-height: 150px; overflow: auto; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; background: #17171b; margin-top: 3px; }
+#rs-body .modelpick label.check { margin: 3px 0; align-items: flex-start; } #rs-body .modelpick label.check input { margin-top: 3px; }
+.modelpick .pathrow select { flex: 1; width: auto; } .modelpick > input { margin-top: 4px !important; }
