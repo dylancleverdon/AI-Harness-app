@@ -1087,3 +1087,32 @@ def test_made_up_callee_names_are_matched_to_the_original(tmp_path, model):
     assert by_name(tmp_path)["sumThree"]["compiles"]
     prog = json.loads((tmp_path / "rewrite" / "progress.json").read_text())["functions"]
     assert not any("calls functions" in w for w in prog["1010"].get("suspect", []))
+
+
+def test_definitions_take_ghidra_parameter_types(tmp_path, model):
+    # the draft takes "Pair *" where Ghidra says "int *": the definition takes
+    # Ghidra's type and converts it on its first line, so every caller agrees
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "split") == 0
+    cpp = (tmp_path / "rewrite" / "rewritten.cpp").read_text()
+    assert "int pairSum(int * p_in)" in cpp and "Pair * p = (Pair *)p_in;" in cpp
+    assert by_name(tmp_path)["pairSum"]["compiles"]
+    assert dp.ghidra_param_types("undefined8 FUN_1(undefined8 param_1,float f,Foo *p)\n{") == \
+        ["uint64_t", "float", "void *"]
+
+
+def test_mismatched_argument_is_cast_without_the_model(tmp_path):
+    import shutil as sh
+    cxx = sh.which("clang++") or sh.which("g++")
+    cfg = dp.Config(input_file=tmp_path / "x.cpp", workdir=tmp_path, cxx=cxx)
+    (tmp_path / "funcs").mkdir()
+    (tmp_path / "shared.h").write_text("#include <cstdint>\nvoid takeAddress(uint64_t addr);\n")
+    rel = "funcs/caller.cpp"
+    src = '#include "shared.h"\n\nvoid caller(int *buf) {\n    takeAddress(buf);\n}\n'
+    (tmp_path / rel).write_text(src)
+    ok, err, _ = dp.compile_tu(cfg, rel)
+    assert not ok
+    rec = dp.FuncRecord(name="caller", mangled="caller", file=rel, start=0, end=0)
+    assert dp._cast_args_fix(cfg, rec, rel, src, err)
+    assert rec.compiles
+    assert "takeAddress((uint64_t)(buf));" in (tmp_path / rel).read_text()

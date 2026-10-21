@@ -2540,6 +2540,121 @@ def name_definition(code: str, expected: str) -> str:
     return code
 
 
+# ---------------------------------------------------------------- one signature per function
+# Each draft was written on its own and guessed its callees' parameters, so a
+# function's own draft and its callers disagreed (one takes uint64_t*, a caller
+# passes a float). Ghidra's signatures come from one analysis of the whole
+# program, so they agree with each other: every definition takes Ghidra's
+# parameter types; where the draft's body expects other types, its first lines
+# convert them.
+
+SIG_BASE_TYPES = set("""void bool char short int long float double unsigned signed size_t
+uint8_t uint16_t uint32_t uint64_t int8_t int16_t int32_t int64_t uintptr_t intptr_t
+wchar_t""".split())
+
+
+def _split_params(text: str) -> Optional[list[str]]:
+    """Top-level comma split of a parameter list; None if it's not a simple one."""
+    out, depth, cur = [], 0, ""
+    for ch in text:
+        if ch in "(<[":
+            depth += 1
+        elif ch in ")>]":
+            depth -= 1
+        if ch == "," and depth == 0:
+            out.append(cur.strip())
+            cur = ""
+        else:
+            cur += ch
+    if cur.strip():
+        out.append(cur.strip())
+    if any("(" in p or "..." in p for p in out):
+        return None                          # function pointers, varargs: left alone
+    return [] if out in ([], ["void"]) else out
+
+
+def _param(decl: str) -> tuple[str, str]:
+    """'const float *buf' -> ('const float *', 'buf'); 'int v[4]' -> ('int *', 'v')."""
+    decl = decl.split("=")[0].strip()
+    arr = decl.endswith("]")
+    if arr:
+        decl = re.sub(r"\s*\[[^\]]*\]\s*$", "", decl)
+    m = re.match(r"^(.*?)([A-Za-z_]\w*)$", decl)
+    if not m or not m.group(1).strip():
+        return decl + (" *" if arr else ""), ""
+    return m.group(1).strip() + (" *" if arr else ""), m.group(2)
+
+
+def _norm_type(t: str) -> str:
+    return re.sub(r"\s+", " ", re.sub(r"\s*\*", " *", t)).replace("struct ", "").strip()
+
+
+def ghidra_param_types(pseudo: str) -> Optional[list[str]]:
+    """Parameter types from the signature line Ghidra's pseudocode starts with,
+    tidied to standard C++ (undefined8 -> uint64_t; pointers to types the build
+    may not have -> void *)."""
+    head = strip_comments(pseudo.split("{", 1)[0])
+    m = re.search(r"\(([^()]*)\)\s*$", head.strip())
+    if not m:
+        return None
+    parts = _split_params(m.group(1))
+    if parts is None:
+        return None
+    out = []
+    for p in parts:
+        t, _ = _param(tidy_types(p))
+        t = _norm_type(t)
+        words = [w for w in re.findall(r"[A-Za-z_]\w*", t) if w not in ("const", "volatile")]
+        if not words or not all(w in SIG_BASE_TYPES for w in words):
+            t = "void *" if "*" in t else "uint64_t"
+        out.append(t)
+    return out
+
+
+def adopt_signature(code: str, name: str, gtypes: Optional[list[str]]) -> tuple[str, bool]:
+    """Give the draft's function Ghidra's parameter types (keeping its names and
+    return type). Parameters whose type changes are converted back to the type
+    the body expects on the first lines, so the body itself is untouched."""
+    if gtypes is None:
+        return code, False
+    items = split_items(code)
+    for i, it in enumerate(items):
+        if not (it.rstrip().endswith("}") and _func_name(it) == name):
+            continue
+        head, brace, body = it.partition("{")
+        m = re.search(rf"\b{re.escape(name)}\s*\((.*)\)(\s*(?:const\s*)?)$", head.rstrip(), re.S)
+        if not m:
+            return code, False
+        parts = _split_params(m.group(1))
+        if parts is None:
+            return code, False
+        mine = [_param(p) for p in parts]
+        if len(mine) == len(gtypes) and all(_norm_type(t) == g for (t, _), g in zip(mine, gtypes)):
+            return code, False                        # already Ghidra's
+        params, prelude = [], []
+        for k, g in enumerate(gtypes):
+            if k < len(mine) and mine[k][1]:
+                t, n = mine[k]
+                if _norm_type(t) == g:
+                    params.append(f"{g} {n}")
+                    continue
+                words = re.findall(r"[A-Za-z_]\w*", t)
+                if "*" not in t and not all(w in SIG_BASE_TYPES or w == "const" for w in words):
+                    return code, False                # a struct by value: can't convert
+                params.append(f"{g} {n}_in")
+                prelude.append(f"    {t} {n} = ({t}){n}_in;   // Ghidra passes {g}")
+            else:
+                params.append(f"{g} param_{k + 1}")
+        for t, n in mine[len(gtypes):]:
+            if n:
+                prelude.append(f"    {t} {n}{{}};   // not passed (Ghidra's signature has "
+                               f"{len(gtypes)} parameter(s))")
+        new_head = head[:m.start(1)] + ", ".join(params) + head[m.end(1):]
+        items[i] = new_head + brace + ("\n" + "\n".join(prelude) if prelude else "") + body
+        return "\n\n".join(items), True
+    return code, False
+
+
 _EXPORT_CACHE: dict = {}
 
 
@@ -2584,6 +2699,10 @@ def write_outputs(P: Paths, progress, order, keep_comments):
                 code = apply_names(code, names)
                 pseudo = pseudos.get(key)
                 if pseudo:
+                    code, adopted = adopt_signature(code, own_name, ghidra_param_types(pseudo))
+                    if adopted:
+                        struggle("rewrite", "drafts whose parameters were changed to Ghidra's "
+                                 "signature (so callers and callee agree)", own_name, handled=True)
                     code, fixed = align_calls(code, apply_names(pseudo, names),
                                               {own_name, e["ghidra"]})
                     if fixed:
@@ -4834,22 +4953,33 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
                  f"(details in split_report.txt)")
         text = raw.decode("utf-8", "replace")
         causes: dict[str, int] = {}
-        details = []
+        details, shown_n = [], 0
+        plines = prefix.count(b"\n")
         for name0, s0, cut, inner in sorted(swallowers, key=lambda t: -t[3]):
             own = raw[s0:cut].decode("utf-8", "replace")
             why = suspect_syntax(own)
             for w in why:
                 causes[w] = causes.get(w, 0) + 1
-            if len(details) < 40:
-                details += ["", f"-- {name0} (line {text.count(chr(10), 0, s0) + 1}) swallowed "
-                                f"{inner} function(s); suspicious: {', '.join(why) or 'nothing found'}",
-                            *own.rstrip().split("\n")[-25:]]
+            if shown_n < 40:
+                shown_n += 1
+                l0 = text.count(chr(10), 0, s0) + 1
+                l1 = l0 + own.count(chr(10))
+                # what libclang itself said inside this function (the cause is usually
+                # its first error)
+                errs = [f"   line {d.location.line - plines}: {d.spelling}"
+                        for d in tu2.diagnostics if d.severity >= 3 and d.location.file
+                        and d.location.file.name == parse_path
+                        and l0 <= d.location.line - plines <= l1 + 1][:15]
+                details += ["", f"-- {name0} (lines {l0}-{l1}) swallowed {inner} function(s); "
+                                f"suspicious: {', '.join(why) or 'nothing found'}",
+                            "libclang's errors in it:", *(errs or ["   none"]),
+                            "its code:", *own.rstrip().split("\n")]
         lost_note = ["", f"== {len(swallowers)} function(s) libclang ran past the end of "
                          f"(it swallowed {total} after them). Likely causes: " +
                          (", ".join(f"{n} × {w}" for w, n in sorted(causes.items(),
                                                                      key=lambda t: -t[1]))
                           or "none recognised"),
-                     "   (the last lines of each, biggest first)", *details]
+                     "   (each in full, with libclang's errors in it; biggest first)", *details]
         for w, n in causes.items():
             struggle("split", f"runaway function cause: {w}", n=n, handled=True)
 
@@ -6011,6 +6141,90 @@ def _all_errors(err: str, rel: str) -> list[tuple[int, str]]:
     return out
 
 
+ORDINAL = {"1st": 1, "2nd": 2, "3rd": 3}
+
+
+def _arg_spans(text: str, open_paren: int) -> list[tuple[int, int]]:
+    """(start, end) of each argument of the call whose '(' is at open_paren."""
+    spans, depth, start, i = [], 0, open_paren + 1, open_paren
+    while i < len(text):
+        ch = text[i]
+        if ch in "\"'":
+            j = i + 1
+            while j < len(text) and text[j] != ch:
+                j += 2 if text[j] == "\\" else 1
+            i = j + 1
+            continue
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            depth -= 1
+            if depth == 0:
+                if text[start:i].strip():
+                    spans.append((start, i))
+                return spans
+        elif ch == "," and depth == 1:
+            spans.append((start, i))
+            start = i + 1
+        i += 1
+    return []
+
+
+def _cast_args_fix(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str) -> bool:
+    """A call whose argument doesn't convert to the declared parameter type (the
+    compiler names the argument and the type) gets an explicit cast to that type.
+    Kept only if the error goes away without new ones."""
+    name = Path(rel).name
+    lines = src.split("\n")
+    first, todo = None, []
+    for l in err.splitlines():
+        m = DIAG_RE.match(l.strip())
+        if not m:
+            continue
+        if "error" in m.group("sev"):
+            if first is not None:
+                break
+            if Path(m.group("file")).name != name or \
+                    "no matching function for call to" not in m.group("msg"):
+                return False
+            first = (int(m.group("line")), int(m.group("col")))
+        elif first and m.group("sev") == "note":
+            n = re.search(r"no known conversion from '([^']+)'.* to '([^']+)'.* for "
+                          r"(\d+)(?:st|nd|rd|th) argument", m.group("msg"))
+            if n:
+                todo.append((int(n.group(3)), n.group(2)))
+    if not first or len(todo) != 1:        # one candidate, one argument: no guessing
+        return False
+    ln, col = first
+    if not 1 <= ln <= len(lines):
+        return False
+    text = lines[ln - 1]
+    open_paren = text.find("(", col - 1)
+    if open_paren < 0:
+        return False
+    spans = _arg_spans(text, open_paren)
+    k, typ = todo[0]
+    if k > len(spans):
+        return False
+    a, b = spans[k - 1]
+    arg = text[a:b].strip()
+    lead = text[a:b][:len(text[a:b]) - len(text[a:b].lstrip())]
+    lines[ln - 1] = text[:a] + f"{lead}({typ})({arg})" + text[b:]
+    new = "\n".join(lines)
+    phase("casting an argument to the declared type")
+    (cfg.workdir / rel).write_text(new)
+    ok, err2, _ = compile_tu(cfg, rel)
+    if ok or (n_errors(err2) < n_errors(err)):
+        write_note(cfg, rel, f"[compile] cast argument {k} of the call on line {ln} to {typ}"
+                             + (" — compiles now." if ok else "."))
+        rec.compiles = ok
+        if not ok:
+            rec.last_error = keep_error(err2)
+        return True
+    (cfg.workdir / rel).write_text(src)
+    return False
+
+
 def _rule_fix(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str, line: int,
               kind: str, lessons: FixLessons) -> bool:
     """Try the fixes learned for this kind of error on the flagged line. True if
@@ -6081,6 +6295,12 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             if ok2:
                 rec.compiles = True
                 return True
+
+        # 2a) an argument that doesn't match the declared parameter: cast it
+        if _cast_args_fix(cfg, rec, rel, src, err):
+            if rec.compiles:
+                return True
+            continue
 
         # 2b) fixes learned from other functions (no model needed)
         lessons = fix_lessons(cfg)
@@ -6223,6 +6443,7 @@ def struggle_report(P: "Paths", records: Optional[dict] = None, cfg: Optional[Co
             if hint:
                 res.append(f"  {'':8} {'':6}   → {hint}")
         return res
+    out += rates_lines(P, records, st)
     if stuck:
         out.append("couldn't handle:")
         out += lines(stuck)
@@ -6244,6 +6465,40 @@ def struggle_report(P: "Paths", records: Optional[dict] = None, cfg: Optional[Co
         write_diagnostics(P, records, cfg, out)
     except Exception as e:                   # never let the report stop the run ending
         plog(P, f"  (couldn't write the diagnostics report: {type(e).__name__}: {e})", show=True)
+
+
+def rates_lines(P: "Paths", records: Optional[dict], st: dict) -> list[str]:
+    """How well the build is going, this run and the last ones: how many functions
+    compile, how many the fix stage fixed vs quarantined, and how fast. Saved in
+    pipeline_state.json so runs can be compared."""
+    now: dict = {"at": time.strftime("%m-%d %H:%M")}
+    if records:
+        n = len(records)
+        c = sum(1 for r in records.values() if r.compiles and not r.quarantined)
+        q = sum(1 for r in records.values() if r.quarantined)
+        now.update(functions=n, compile_pct=round(100 * c / n, 1) if n else 0,
+                   quarantined_pct=round(100 * q / n, 1) if n else 0, to_fix=n - c - q)
+    fs = RUN_CTX.get("fix_run")
+    if fs and fs["fixed"] + fs["quarantined"]:
+        done = fs["fixed"] + fs["quarantined"]
+        now.update(fix_tried=done, fix_success_pct=round(100 * fs["fixed"] / done, 1),
+                   fix_per_hour=round(done / max(time.time() - fs["start"], 60) * 3600))
+    rr = RUN_CTX.get("recover_run")
+    if rr and sum(rr.values()):
+        now["recover_success_pct"] = round(100 * rr["re-derived"] / sum(rr.values()), 1)
+    hist = [h for h in st.get("rates", []) if isinstance(h, dict)][-5:]
+    st["rates"] = (hist + [now])[-10:]
+    cols = [("compile_pct", "compile %"), ("quarantined_pct", "quarantined %"),
+            ("to_fix", "to fix"), ("fix_tried", "fixer tried"),
+            ("fix_success_pct", "fixer success %"), ("fix_per_hour", "fixer per hour"),
+            ("recover_success_pct", "recover success %")]
+    rows = hist[-4:] + [now]
+    out = ["rates (this run last; earlier runs above it):",
+           "  " + f"{'run':12}" + "".join(f"{h:>19}" for _, h in cols)]
+    for h in rows:
+        out.append("  " + f"{h.get('at', '?'):12}" + "".join(
+            f"{('-' if h.get(k) is None else h.get(k)):>19}" for k, _ in cols))
+    return out
 
 
 def _read(path: Path, start: int = 0) -> str:
@@ -6273,7 +6528,8 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
     env = [f"script: decomp_pipeline {PIPELINE_VERSION} (build {SCRIPT_VERSION})",
            f"command: {' '.join(RUN_CTX.get('argv') or sys.argv)}",
            f"python: {sys.version.split()[0]} on {sys.platform}",
-           f"compiler: {COMPILER.get('cmd')} ({'clang' if COMPILER.get('clang') else 'gcc/other'})",
+           f"compiler: {COMPILER.get('cmd') or COMPILER.get('found')} "
+           f"({'clang' if COMPILER.get('clang') else 'gcc/other'})",
            f"compile flags: {' '.join(PIC_FLAGS)}",
            f"--ctx {RUN_CTX.get('ctx')}, chars per token {CHARS_PER_TOKEN}",
            f"model: {getattr(cfg, 'fix_model_used', None) or RUN_CTX.get('model') or '?'}",
@@ -6404,6 +6660,10 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
             prog.end(m)
         if ok:
             fixed[0] += 1
+        with _STRUGGLE_LOCK:
+            fs = RUN_CTX.setdefault("fix_run", {"fixed": 0, "quarantined": 0,
+                                                "start": time.time()})
+            fs["fixed" if ok else "quarantined"] += 1
         log(cfg, show=True, msg=f"    [{i}/{total}] {rec.name} -> "
                  f"{'fixed' if ok else 'quarantined'} ({fmt_duration(time.time() - t1)})")
 
@@ -6801,6 +7061,7 @@ def pseudocode_recovery(cfg: Config, records: dict[str, FuncRecord]) -> None:
     finally:
         prog.close()
     fixed_n, faithful_n = counts["fixed"], counts["faithful"]
+    RUN_CTX["recover_run"] = {"re-derived": fixed_n, "still quarantined": len(targets) - fixed_n}
     save_manifest(cfg, records)
     log(cfg, show=True, msg=f"  pseudocode recovery: {fixed_n} re-derived "
              f"({faithful_n} as faithful pseudocode — review these), "
@@ -10320,6 +10581,7 @@ def run_pipeline(args) -> int:
         sys.exit(f"No C++ compiler found ({args.cxx}). On a Mac: xcode-select --install; "
                  f"or pass --cxx /path/to/clang++")
     if not args.rewrite_compile_check:
+        COMPILER["found"] = COMPILER["cmd"]
         COMPILER["cmd"] = None
 
     run_stages = STAGES[STAGES.index(first):STAGES.index(last) + 1]
@@ -10600,6 +10862,8 @@ def main(argv=None) -> int:
     MODEL_STATS.update(calls=0, no_answer=0, rejected=0)
     MODEL_ACTIVITY.update(errors=0, thinking_only=0)
     STRUGGLES.clear()
+    RUN_CTX.pop("fix_run", None)
+    RUN_CTX.pop("recover_run", None)
     SHOW_ALL["on"] = bool(getattr(args, "verbose", False))
     REPORTED["done"] = False
     _PSEUDO_CACHE.clear()
