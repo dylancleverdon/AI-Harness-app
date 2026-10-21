@@ -10294,14 +10294,15 @@ def declare_missing(cfg: Config, records: dict[str, FuncRecord]) -> int:
                 by_name.setdefault(n, []).append(r)
     program = {r.name for r in records.values()}
     # the errors come from the last compile: a name the headers declare by now
-    # (Ghidra's "code" type, say) must not be declared again
+    # (Ghidra's "code" type, say) must not be declared again. Start both files
+    # from scratch, so nothing an earlier run declared is left behind.
     _replace_section(cfg.shared_h, [])
+    _replace_section(cfg.globals_cpp, [])
     have = set(re.findall(r"[A-Za-z_]\w*", strip_comments(  # switched-off lines don't count
         cfg.shared_h.read_text() + "\n" +
         (cfg.intrins_h.read_text() if cfg.intrins_h.exists() else ""))))
     names = {n for n in by_name if n not in program and n not in CPP_KEYWORDS and n not in have}
     if not names:
-        _replace_section(cfg.shared_h, [])
         return 0
     export, _ = _load_pseudocode(cfg)
     want = names | {"_" + n for n in names}
