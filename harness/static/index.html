@@ -144,6 +144,14 @@
           <button id="apply-update" class="primary hidden">Update &amp; restart</button>
           <label class="check"><input type="checkbox" data-setting="auto_update"> Check for updates on launch (and pull them when you open the app)</label>
         </div>
+        <div class="panel" id="remote-panel">
+          <h3>Remote access (phone)</h3>
+          <p class="muted">Control AI Harness from your phone over <b>Tailscale</b>, a private network between your own devices (nothing is opened to the internet). Install Tailscale on this Mac and on your phone and sign in to the same account on both; then set a password here and turn this on.</p>
+          <p id="remote-status" class="muted"></p>
+          <div class="row-inline"><input id="remote-pw" type="password" autocomplete="new-password" placeholder="New password (8+ characters)"><button id="remote-pw-set" class="ghost">Set password</button></div>
+          <label class="check"><input type="checkbox" id="remote-enable"> Allow my Tailscale devices to sign in (takes effect after a restart)</label>
+          <p><button id="remote-restart" class="primary hidden">Restart AI Harness now</button> <button id="remote-signout" class="ghost">Sign out all devices</button></p>
+        </div>
         <div class="panel">
           <h3>Reports</h3>
           <label class="check"><input type="checkbox" data-setting="auto_send_reports"> Send a script's diagnostics report when it ends (scripts that print <code>DIAGNOSTICS: file.md</code>, like decomp_pipeline.py)</label>

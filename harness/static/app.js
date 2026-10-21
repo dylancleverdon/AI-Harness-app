@@ -590,7 +590,37 @@ $('#apply-update').onclick = async () => {
   const t = setInterval(async () => { try { await api('/ping'); clearInterval(t); location.reload(); } catch { } }, 800);
 };
 
+// ---- remote access (phone) ------------------------------------------------
+async function loadRemote() {
+  let r;
+  try { r = await api('/remote'); } catch { $('#remote-panel').classList.add('hidden'); return; }  // on the phone itself
+  const ts = r.tailscale || {}, st = $('#remote-status');
+  $('#remote-enable').checked = r.enabled;
+  $('#remote-restart').classList.toggle('hidden', !(r.enabled && r.has_password) === !r.listening);
+  if (!ts.installed) st.textContent = 'Tailscale isn\'t installed on this Mac yet (tailscale.com/download).';
+  else if (!ts.running) st.textContent = 'Tailscale is installed but not connected: open it and sign in.';
+  else if (!r.has_password) st.textContent = 'Set a password, then turn remote access on.';
+  else if (r.enabled && r.listening) st.innerHTML = `On your phone (with Tailscale on), open <b>${r.url}</b>`;
+  else if (r.enabled) st.textContent = 'Restart AI Harness to turn remote access on.';
+  else st.textContent = 'Remote access is off.';
+}
+$('#remote-pw-set').onclick = async () => {
+  try { await api('/remote', { method: 'POST', body: { password: $('#remote-pw').value } }); $('#remote-pw').value = ''; alert('Password set. Devices that were signed in need to sign in again.'); }
+  catch (e) { alert(e.message); }
+  loadRemote();
+};
+$('#remote-enable').onchange = async () => {
+  try { await api('/remote', { method: 'POST', body: { enabled: $('#remote-enable').checked } }); }
+  catch (e) { alert(e.message); }
+  loadRemote();
+};
+$('#remote-signout').onclick = async () => { await api('/remote', { method: 'POST', body: { sign_out_all: true } }); alert('All devices signed out.'); };
+$('#remote-restart').onclick = async () => {
+  try { await api('/restart', { method: 'POST' }); } catch (e) { if (!confirm('Scripts are running. Restart anyway? (They will be stopped.)')) return; await api('/restart?force=true', { method: 'POST' }); }
+  const t = setInterval(async () => { try { await api('/ping'); clearInterval(t); location.reload(); } catch { } }, 800);
+};
+
 // ---- boot ----------------------------------------------------------------
 (async () => {
-  await refreshStatus(); history = await api('/memory/history'); loadScripts(); connectTelemetry(); setInterval(refreshStatus, 10000);
+  await refreshStatus(); history = await api('/memory/history'); loadScripts(); connectTelemetry(); setInterval(refreshStatus, 10000); loadRemote();
 })();

@@ -16,7 +16,15 @@ def main():
     updater.ensure_deps()
     if args.open:
         webbrowser.open(f"http://127.0.0.1:{args.port}")
-    uvicorn.run("harness.server:app", host="127.0.0.1", port=args.port, log_level="warning")
+    from .config import settings
+    from . import remote
+    # remote access (Settings > Remote access): listen on the network too; the
+    # server itself still only answers this Mac and signed-in Tailscale devices
+    host = "0.0.0.0" if settings.get("remote_access") and remote.has_password() else "127.0.0.1"
+    if host != "127.0.0.1":
+        import os
+        os.environ["AIHARNESS_REMOTE"] = "1"
+    uvicorn.run("harness.server:app", host=host, port=args.port, log_level="warning")
 
 
 if __name__ == "__main__":

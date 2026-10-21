@@ -41,6 +41,16 @@ The install is a git checkout, so updating is just a pull:
 - **Python packages:** scripts run in AI Harness's own private virtual environment, so you never need to create a venv or fight Homebrew's pip protection. `openai`, `requests` and `libclang` come preinstalled; anything else is one click on the *pip install* button after a failed run, or the *Install a Python package* box in Run settings (Settings → Python shows the interpreter in use and the equivalent manual command). Repeatable options (`action="append"`) get a one-value-per-line box.
 - Options set through constants at the top of a script (rather than argparse) can't be detected; use AI Edit or env vars for those.
 
+## Remote access (phone)
+
+Control AI Harness from your phone: start and stop scripts, watch the live console, memory and reports. It works over **Tailscale**, a private network between your own devices, so nothing is opened to the internet.
+
+1. Install Tailscale on the Mac and on your phone, and sign in to the same account on both.
+2. In AI Harness on the Mac: Settings → **Remote access** → set a password, tick *Allow my Tailscale devices to sign in*, then **Restart AI Harness now**.
+3. On the phone (Tailscale on), open the address the panel shows (`http://<your-mac>:8765`) and sign in.
+
+Only this Mac and signed-in Tailscale devices are answered; other devices on your Wi-Fi are refused. Turning remote access on or off, changing the password and the shell prompt only work on the Mac itself. *Sign out all devices* (or a new password) signs every phone out.
+
 ## Memory guard
 
 Memory is classified green / yellow / orange / red from % available (defaults: yellow < 30%, orange < 15%, red < 8%) and macOS memory pressure. If the level stays at or above your trip level (default **orange**) for 2 consecutive seconds, running scripts get SIGTERM (SIGKILL after 4s), a macOS notification fires, and the run is marked `killed` with the memory numbers. Optionally it also unloads LM Studio models via the `lms` CLI. Try it with `memory_stress.py`.

@@ -583,3 +583,32 @@ def test_example_scripts_follow_updates_without_losing_edits(tmp_path, monkeypat
     assert len(list((data / "backups").glob("pipe-*.py"))) >= 1
     ex.write_text("v3\n")
     assert config.sync_examples() == ["pipe.py"] and mine.read_text() == "v3\n"
+
+
+def test_remote_access_only_for_signed_in_tailscale_devices(monkeypatch):
+    from harness import remote
+    from harness.server import app
+    from starlette.testclient import TestClient as TC
+    phone = TC(app, client=("100.101.102.103", 50000), headers={"x-harness": "1"})
+    lan = TC(app, client=("192.168.1.20", 50000), headers={"x-harness": "1"})
+    mac = TestClient(app, headers={"x-harness": "1"})
+    assert phone.get("/api/status").status_code == 403            # remote access is off
+    assert mac.post("/api/remote", json={"enabled": True}).status_code == 400   # no password yet
+    assert mac.post("/api/remote", json={"password": "short"}).status_code == 400
+    assert mac.post("/api/remote", json={"password": "correct horse", "enabled": True}).json()["enabled"]
+    assert "remote_password" not in mac.put("/api/settings", json={"remote_password": "x$y"}).json() \
+        or mac.get("/api/settings").json()["remote_password"] == "set"
+    assert remote.check_password("correct horse")                 # the PUT didn't overwrite it
+    assert lan.get("/api/status").status_code == 403              # not on Tailscale
+    assert phone.get("/api/status").status_code == 401            # not signed in
+    assert phone.get("/", follow_redirects=False).status_code in (302, 307)
+    assert phone.get("/login").status_code == 200
+    assert phone.post("/api/login", json={"password": "wrong"}).status_code == 401
+    assert phone.post("/api/login", json={"password": "correct horse"}).status_code == 200
+    assert phone.get("/api/status").status_code == 200            # signed in (cookie)
+    assert phone.post("/api/remote", json={"enabled": False}).status_code == 403   # Mac only
+    assert phone.post("/api/terminal", json={"command": "ls"}).status_code == 403
+    assert phone.post("/api/runs/x/stop").status_code != 401
+    mac.post("/api/remote", json={"sign_out_all": True})
+    assert phone.get("/api/status").status_code == 401
+    mac.post("/api/remote", json={"enabled": False})

@@ -25,6 +25,8 @@ DEFAULTS = {
     "auto_update": True,
     "auto_send_reports": True,  # send a script's diagnostics report (DIAGNOSTICS: line) when it ends
     "github_token": "",  # for sending reports, if git on this Mac can't push to GitHub
+    "remote_access": False,  # also answer devices on your Tailscale network (needs a restart)
+    "remote_password": "",  # salt$hash, set with the Remote access panel (never the password)
 }
 
 

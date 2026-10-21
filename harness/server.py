@@ -9,10 +9,12 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import Body, FastAPI, HTTPException
-from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
+from fastapi import Request, Response
+from fastapi.responses import (FileResponse, HTMLResponse, PlainTextResponse, RedirectResponse,
+                               StreamingResponse)
 from fastapi.staticfiles import StaticFiles
 
-from . import ai_edit, lmstudio, memory, params, updater
+from . import ai_edit, lmstudio, memory, params, remote, updater
 from .config import DATA_DIR, SCRIPTS_DIR, script_python, settings
 from .runner import RunManager, report_markdown
 
@@ -59,14 +61,22 @@ def status():
             "sensor_tools": monitor.sensors.tools()}
 
 
+def _public_settings(d):
+    d = dict(d)
+    d["remote_password"] = "set" if d.get("remote_password") else ""   # never the hash
+    return d
+
+
 @app.get("/api/settings")
 def get_settings():
-    return settings.get()
+    return _public_settings(settings.get())
 
 
 @app.put("/api/settings")
 def put_settings(patch: dict = Body(...)):
-    return settings.update(patch)
+    # remote access and its password only change through /api/remote (this Mac only)
+    patch = {k: v for k, v in patch.items() if not k.startswith("remote_")}
+    return _public_settings(settings.update(patch))
 
 
 # ---- scripts --------------------------------------------------------------
@@ -371,6 +381,52 @@ async def chat(body: dict = Body(...)):
     return StreamingResponse(lmstudio.chat_stream(body), media_type="text/event-stream")
 
 
+# ---- remote access (phone) -------------------------------------------------
+@app.get("/login", response_class=HTMLResponse)
+def login_page():
+    return (STATIC / "login.html").read_text()
+
+
+@app.post("/api/login")
+def login(request: Request, response: Response, body: dict = Body(...)):
+    token = remote.login(request.client.host if request.client else "", str(body.get("password", "")))
+    if not token:
+        raise HTTPException(401, "Wrong password (too many tries locks this device out for 15 minutes).")
+    response.set_cookie(remote.COOKIE, token, max_age=remote.SESSION_DAYS * 86400, httponly=True,
+                        samesite="strict")
+    return {"ok": True}
+
+
+@app.get("/api/remote")
+def remote_status():
+    info = remote.tailscale_info()
+    port = int(__import__("os").environ.get("AIHARNESS_PORT", "8765"))
+    host = info.get("name") or info.get("ip")
+    return {"enabled": settings.get("remote_access"), "has_password": remote.has_password(),
+            "tailscale": info, "url": f"http://{host}:{port}" if host else None,
+            "listening": _listening_remote()}
+
+
+def _listening_remote():
+    return bool(__import__("os").environ.get("AIHARNESS_REMOTE"))
+
+
+@app.post("/api/remote")
+def remote_update(body: dict = Body(...)):
+    if "password" in body:
+        pw = str(body["password"])
+        if len(pw) < 8:
+            raise HTTPException(400, "Use at least 8 characters.")
+        remote.set_password(pw)
+    if "enabled" in body:
+        if body["enabled"] and not remote.has_password():
+            raise HTTPException(400, "Set a password first.")
+        settings.update({"remote_access": bool(body["enabled"])})
+    if body.get("sign_out_all"):
+        remote.logout_all()
+    return remote_status()
+
+
 # ---- updates --------------------------------------------------------------
 @app.get("/api/update/check")
 def update_check():
@@ -396,10 +452,34 @@ def restart(force: bool = False):
     return {"ok": True}
 
 
+LOGIN_FREE = ("/login", "/api/login", "/static/app.css", "/static/login.js")
+LOCAL_ONLY = ("/api/remote", "/api/terminal")      # turning remote access on, the shell prompt
+
+
 @app.middleware("http")
 async def local_only(request, call_next):
     """The server can run code, so refuse anything that isn't this app talking to itself: a Host check
-    (blocks DNS rebinding) and a custom header on writes (a web page on another site can't set it)."""
+    (blocks DNS rebinding) and a custom header on writes (a web page on another site can't set it).
+    With remote access on, devices on your Tailscale network are let in too, once signed in."""
+    client = request.client.host if request.client else ""
+    if not remote.is_local(client):
+        if not (settings.get("remote_access") and remote.has_password() and remote.is_tailnet(client)):
+            return PlainTextResponse("forbidden", status_code=403)
+        path = request.url.path
+        if path.startswith(LOCAL_ONLY):
+            return PlainTextResponse("This can only be done on the Mac itself.", status_code=403)
+        if not path.startswith(LOGIN_FREE) and not remote.valid_session(request.cookies.get(remote.COOKIE)):
+            if path.startswith("/api/"):
+                return PlainTextResponse("sign in first", status_code=401)
+            return RedirectResponse("/login")
+        if request.method in ("POST", "PUT", "DELETE") and request.headers.get("x-harness") != "1" \
+                and not path.startswith("/api/login"):
+            return PlainTextResponse("Blocked: this request didn't come from the AI Harness page.",
+                                     status_code=403)
+        response = await call_next(request)
+        if request.url.path.startswith("/static/"):
+            response.headers["Cache-Control"] = "no-cache"
+        return response
     host = (request.headers.get("host") or "").split(":")[0]
     if host not in ("127.0.0.1", "localhost", "testserver"):
         return PlainTextResponse("forbidden host", status_code=403)

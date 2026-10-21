@@ -133,3 +133,31 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 .modelpick .multi { max-height: 150px; overflow: auto; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; background: #17171b; margin-top: 3px; }
 #rs-body .modelpick label.check { margin: 3px 0; align-items: flex-start; } #rs-body .modelpick label.check input { margin-top: 3px; }
 .modelpick .pathrow select { flex: 1; width: auto; } .modelpick > input { margin-top: 4px !important; }
+
+/* sign-in page and phone layout (remote access) */
+.login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 16px; box-sizing: border-box; }
+.login-box { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; }
+.login-box input { font-size: 16px; padding: 10px; }
+.row-inline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row-inline input { flex: 1; min-width: 180px; }
+@media (max-width: 700px) {
+  #app { flex-direction: column; }
+  #rail { flex-direction: row; width: 100%; height: auto; justify-content: space-around; order: 2; position: sticky; bottom: 0; z-index: 5; }
+  #rail button { flex: 1; padding: 10px 0; }
+  main { order: 1; min-width: 0; }
+  #topbar { flex-wrap: wrap; gap: 6px; padding: 8px; }
+  .pills { flex-wrap: wrap; gap: 4px; }
+  #screen-off, .pill b { display: none; }
+  .page.active { flex-direction: column; }
+  .side { width: 100%; max-height: 32vh; border-right: 0; border-bottom: 1px solid var(--border); }
+  .content.split { flex-direction: column; }
+  #editor { display: none; }                 /* editing code on a phone isn't the point: run and watch */
+  .editor-pane { flex: none; }
+  .console-pane { min-height: 60vh; }
+  .toolbar { flex-wrap: wrap; gap: 6px; }
+  .toolbar button, button { min-height: 36px; }
+  #console { font-size: 11px; }
+  .row3, .rs-extra { grid-template-columns: 1fr; }
+  #rs-form { grid-template-columns: 1fr; }
+  input, select, textarea { font-size: 16px; }   /* stops iPhone zooming in on every tap */
+}
