@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Console — AI Harness</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="popout">
+<header class="popout-bar">
+  <b id="pc-title">Console</b> <span id="pc-status" class="badge"></span> <span id="pc-timer" class="muted"></span>
+  <span class="spacer"></span>
+  <label class="check"><input type="checkbox" id="pc-follow" checked> Follow</label>
+  <button id="pc-refresh" class="ghost" title="Reload the output (if it got out of sync)">⟳ Refresh</button>
+  <button id="pc-stop" class="danger hidden">■ Stop</button>
+</header>
+<pre id="pc-out" class="popout-out"></pre>
+<div id="pc-live" class="hidden"></div>
+<script src="/static/console.js"></script>
+</body>
+</html>

@@ -48,12 +48,17 @@ function showUpdate(u) {
   } else { b.classList.add('hidden'); a.classList.add('hidden'); $('#s-update-msg').textContent = u && u.error ? u.error : 'Up to date.'; }
 }
 $('#screen-off').onclick = async () => {
-  const b = $('#screen-off');
-  try { await api('/display-sleep', { method: 'POST' }); b.textContent = '🌙 Screen off ✓'; }
+  const b = $('#screen-off'), here = ['127.0.0.1', 'localhost'].includes(location.hostname);
+  // on the Mac itself: 2 seconds to let go of the mouse (moving it wakes the screen right back up)
+  if (here) b.textContent = '🌙 Off in 2 s — hands off the mouse';
+  try { await api('/display-sleep?delay=' + (here ? 2 : 0), { method: 'POST' }); b.textContent = '🌙 Screen off ✓'; }
   catch (e) { alert(e.message.includes('macOS') ? 'Turning the screen off only works on a Mac.' : 'Could not turn the screen off: ' + e.message); }
   setTimeout(() => b.textContent = '🌙 Screen off', 2500);
 };
 $('#update-btn').onclick = () => $('#rail button[data-page=settings]').click();
+$('#more-btn').onclick = () => $('#topbar').classList.toggle('show-more');
+$('#scripts-toggle').onclick = () => $('#page-run .side').classList.toggle('collapsed');
+const isPhone = () => matchMedia('(max-width: 700px)').matches;
 
 let lastSnap = null, history = [];
 function onTelemetry(d) {
@@ -182,8 +187,10 @@ async function openScript(n) {
   state.script = n; $('#script-name').textContent = n;
   showView(); $('#editor').value = (await api('/scripts/' + n)).content; loadRunSettings(n);
   $$('#script-list li').forEach(li => li.classList.toggle('sel', li.firstChild.textContent === n));
+  $('#side-current').textContent = n;
+  if (isPhone()) $('#page-run .side').classList.add('collapsed');   // the console gets the room
 }
-async function saveScript() { if (state.script) { await api('/scripts/' + state.script, { method: 'PUT', body: { content: $('#editor').value } }); loadRunSettings(state.script); } }
+async function saveScript(reloadSettings = true) { if (state.script) { await api('/scripts/' + state.script, { method: 'PUT', body: { content: $('#editor').value } }); if (reloadSettings) loadRunSettings(state.script); } }
 $('#save-btn').onclick = saveScript;
 $('#editor').addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); saveScript(); }
@@ -334,13 +341,33 @@ async function loadRunSettings(name) {
   rs = { params: d.params, values: { ...d.values } };
   $('#rs-extra').value = d.extra || ''; $('#rs-env').value = d.env || '';
   const form = $('#rs-form'); form.replaceChildren();
+  // one collapsible section per argparse group (the first one open), so long forms stay short
+  const grouped = d.params.some(p => p.group), sections = {};
+  const isDefault = p => { const v = rs.values[p.dest]; return v === undefined || String(v ?? '') === String(p.default ?? ''); };
+  const sectionFor = p => {
+    if (!grouped) return form;
+    const g = p.group || 'other';
+    if (!sections[g]) {
+      const box = el('details', { className: 'rs-group', open: Object.keys(sections).length === 0 });
+      const sum = el('summary', { textContent: g });
+      const grid = el('div', { className: 'rs-grid' });
+      box.append(sum, grid); form.append(box); sections[g] = { box, sum, grid, params: [] };
+    }
+    sections[g].params.push(p);
+    return sections[g].grid;
+  };
+  const countChanged = () => Object.entries(sections).forEach(([g, sct]) => {
+    const n = sct.params.filter(p => !isDefault(p)).length;
+    sct.sum.textContent = g + (n ? ` · ${n} changed` : '');
+  });
   d.params.forEach(p => {
+    const target = sectionFor(p);
     const cur = p.dest in rs.values ? rs.values[p.dest] : p.default;
     const label = el('label', { className: p.kind === 'bool' ? 'check' : '' });
     if (isModelParam(p)) {  // dropdown of the models you have in LM Studio instead of a text box
-      label.append(p.dest.replace(/_/g, ' ') + (p.required ? ' *' : ''), modelPicker(p, cur, v => { rs.values[p.dest] = v; persistRunSettings(); }));
+      label.append(p.dest.replace(/_/g, ' ') + (p.required ? ' *' : ''), modelPicker(p, cur, v => { rs.values[p.dest] = v; persistRunSettings(); countChanged(); }));
       if (p.help) label.append(el('small', { textContent: p.help }));
-      form.append(label); return;
+      target.append(label); return;
     }
     let input;
     if (p.kind === 'bool') { input = el('input', { type: 'checkbox', checked: !!cur }); label.append(input, p.dest.replace(/_/g, ' ')); }
@@ -363,14 +390,21 @@ async function loadRunSettings(name) {
       }); label.append(row);
     }
     if (p.help) label.append(el('small', { textContent: p.help }));
-    input.onchange = () => { rs.values[p.dest] = p.kind === 'bool' ? input.checked : (p.kind === 'int' || p.kind === 'count') && input.value !== '' ? parseInt(input.value) : p.kind === 'float' && input.value !== '' ? parseFloat(input.value) : input.value; persistRunSettings(); };
-    form.append(label);
+    // saved as you type (not only when the box loses focus), so Run always uses what's on screen
+    input.oninput = input.onchange = () => { rs.values[p.dest] = p.kind === 'bool' ? input.checked : (p.kind === 'int' || p.kind === 'count') && input.value !== '' ? parseInt(input.value) : p.kind === 'float' && input.value !== '' ? parseFloat(input.value) : input.value; persistRunSettings(); countChanged(); };
+    target.append(label);
   });
-  box.classList.remove('hidden'); box.open = box.open || d.params.length > 0 && !box.dataset.touched;
+  countChanged();
+  // open by itself on the Mac; on a phone it's a full-screen sheet, so only when tapped
+  box.classList.remove('hidden'); box.open = box.open || d.params.length > 0 && !box.dataset.touched && !isPhone();
   $('#rs-summary').textContent = d.params.length ? `· ${d.params.length} option(s) found, last values remembered` : '· no options detected in this script';
 }
 $('#run-settings').addEventListener('toggle', e => e.target.dataset.touched = 1);
-function persistRunSettings() { clearTimeout(rsTimer); rsTimer = setTimeout(() => state.script && api('/script-settings/' + state.script, { method: 'PUT', body: { values: rs.values, extra: $('#rs-extra').value, env: $('#rs-env').value } }), 300); }
+function persistRunSettings() { clearTimeout(rsTimer); rsTimer = setTimeout(flushRunSettings, 300); }
+async function flushRunSettings() {   // save now (Run waits for this, so nothing on screen is lost)
+  clearTimeout(rsTimer);
+  if (state.script && rs) await api('/script-settings/' + state.script, { method: 'PUT', body: { values: rs.values, extra: $('#rs-extra').value, env: $('#rs-env').value } });
+}
 $('#pkg-btn').onclick = async () => {
   const pkg = $('#pkg-input').value.trim(), log = $('#pkg-log'); if (!pkg) return;
   $('#pkg-btn').disabled = true; $('#pkg-btn').textContent = 'Installing…'; log.classList.remove('hidden'); log.textContent = 'pip install ' + pkg + ' …';
@@ -465,7 +499,8 @@ function appendLine(l, v = curView()) {
   if (vis && stick) c.scrollTop = c.scrollHeight;
 }
 $('#run-btn').onclick = async () => {
-  const v = curView(); if (!v || v.status === 'running') return; await saveScript();
+  const v = curView(); if (!v || v.status === 'running') return;
+  await flushRunSettings(); await saveScript(false);   // reloading the settings here brought back old values
   v.box.replaceChildren(); v.live = ''; v.hints = []; v.files = []; v.total = 0; v.timer = '⏱ 0:00';
   v.run = await api('/runs', { method: 'POST', body: runBody() }); v.status = 'running'; paintStatus(v); watchRun(v, v.run.id);
 };
@@ -480,8 +515,28 @@ function watchRun(v, id) {
     const d = await api('/runs/' + id); v.hints = d.hints; v.files = d.files; v.total = d.files_total; if (v.run) v.run.diagnostics = d.diagnostics;
     paintStatus(v); if (isVisible(v)) $('#term-input').focus();
   });
-  es.onerror = () => es.close();
+  es.onerror = () => {   // a phone going to sleep drops the stream: reconnect while the run lasts
+    es.close();
+    if (v.status === 'running') setTimeout(() => { if (v.es === es) resyncConsole(v); }, 3000);
+  };
 }
+async function resyncConsole(v = curView()) {
+  if (!v || !v.run) return;
+  v.es && v.es.close(); v.box.replaceChildren(); v.live = '';
+  if (isVisible(v)) { $('#live').textContent = ''; $('#live').classList.add('hidden'); }
+  let d = null; try { d = await api('/runs/' + v.run.id); } catch { }
+  if (d && d.status === 'running') { v.status = 'running'; watchRun(v, v.run.id); return; }   // replays everything
+  if (d) { (d.output || '').split('\n').forEach(x => appendLine({ s: 'out', x }, v)); v.status = d.status; paintStatus(v); }
+}
+$('#refresh-console').onclick = () => resyncConsole();
+$('#popout-console').onclick = () => {
+  const v = curView(); if (!v) return;
+  const q = new URLSearchParams({ script: state.script || '' }); if (v.run) q.set('run', v.run.id);
+  window.open('/static/console.html?' + q, 'aiharness-console-' + (state.script || ''), 'popup,width=1000,height=720');
+};
+document.addEventListener('visibilitychange', () => {   // back from the background: catch up
+  const v = curView(); if (!document.hidden && v && v.status === 'running') resyncConsole(v);
+});
 function showDiagnosis(hints, box) {
   box.replaceChildren();
   (hints || []).forEach(h => {

@@ -209,11 +209,14 @@ def pick_path(body: dict = Body(...)):
 
 
 @app.post("/api/display-sleep")
-def display_sleep():
+def display_sleep(delay: float = 0):
     """Turn the screen off right now (`pmset displaysleepnow`, no admin rights needed). The Mac itself keeps
     running; if Keep awake is on it stays awake. Moving the mouse or pressing a key wakes the screen."""
     if sys.platform != "darwin":
         raise HTTPException(501, "Turning the screen off only works on macOS.")
+    # clicking the button moves the mouse, and any mouse movement wakes the screen
+    # straight back up: from the Mac itself, wait a moment so the hand is off it
+    time.sleep(max(0.0, min(delay, 5.0)))
     r = subprocess.run(["pmset", "displaysleepnow"], capture_output=True, text=True, timeout=10)
     if r.returncode != 0:
         raise HTTPException(500, (r.stderr or r.stdout or "pmset failed").strip())

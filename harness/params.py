@@ -34,6 +34,22 @@ def parse_params(source):
         return []
     calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
              and n.func.attr == "add_argument"]
+    # argparse groups (g = ap.add_argument_group("model")): the form shows each as its own section
+    groups = sorted((a.lineno, a.targets[0].id, _lit(a.value.args[0], ""))
+                    for a in ast.walk(tree) if isinstance(a, ast.Assign) and len(a.targets) == 1
+                    and isinstance(a.targets[0], ast.Name) and isinstance(a.value, ast.Call)
+                    and isinstance(a.value.func, ast.Attribute)
+                    and a.value.func.attr == "add_argument_group" and a.value.args)
+
+    def group_of(n):
+        v = n.func.value
+        if not isinstance(v, ast.Name):
+            return ""
+        title = ""
+        for line, name, t in groups:
+            if line <= n.lineno and name == v.id:
+                title = t
+        return title or ""
     out = []
     for n in sorted(calls, key=lambda n: (n.lineno, n.col_offset)):
         flags = [a.value for a in n.args if isinstance(a, ast.Constant) and isinstance(a.value, str)]
@@ -57,6 +73,7 @@ def parse_params(source):
                     "choices": _lit(kw["choices"]) if "choices" in kw else None,
                     "required": bool(_lit(kw["required"], False)) if "required" in kw else positional,
                     "nargs": _lit(kw["nargs"]) if "nargs" in kw else None,
+                    "group": group_of(n),
                     "path": typ == "Path" or kind == "str" and bool(
                         PATHY.search(dest) or re.search(r"\bpath\b|\bfolder\b|\bdirectory\b", str(_lit(kw.get("help"), "")), re.I))})
     return out

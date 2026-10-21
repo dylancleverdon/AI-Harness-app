@@ -612,3 +612,17 @@ def test_remote_access_only_for_signed_in_tailscale_devices(monkeypatch):
     mac.post("/api/remote", json={"sign_out_all": True})
     assert phone.get("/api/status").status_code == 401
     mac.post("/api/remote", json={"enabled": False})
+
+
+def test_option_groups_and_popout_console(tmp_path):
+    from harness import params
+    from harness.server import app
+    src = ("import argparse\nap = argparse.ArgumentParser()\nap.add_argument('--top')\n"
+           "g = ap.add_argument_group('model')\ng.add_argument('--ctx', type=int)\n"
+           "g = ap.add_argument_group('build')\ng.add_argument('--fix-attempts', type=int)\n")
+    ps = {p["dest"]: p["group"] for p in params.parse_params(src)}
+    assert ps == {"top": "", "ctx": "model", "fix_attempts": "build"}
+    c = TestClient(app, headers={"x-harness": "1"})
+    page = c.get("/static/console.html")
+    assert page.status_code == 200 and "console.js" in page.text
+    assert c.get("/static/console.js").status_code == 200

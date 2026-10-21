@@ -134,6 +134,8 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
 #rs-body .modelpick label.check { margin: 3px 0; align-items: flex-start; } #rs-body .modelpick label.check input { margin-top: 3px; }
 .modelpick .pathrow select { flex: 1; width: auto; } .modelpick > input { margin-top: 4px !important; }
 
+#more-btn, #scripts-toggle { display: none; }
+#side-current { display: none; font-weight: 500; }
 /* sign-in page and phone layout (remote access) */
 .login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 16px; box-sizing: border-box; }
 .login-box { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; }
@@ -147,11 +149,25 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
   main { order: 1; min-width: 0; }
   #topbar { flex-wrap: wrap; gap: 6px; padding: 8px; }
   .pills { flex-wrap: wrap; gap: 4px; }
-  #screen-off, .pill b { display: none; }
+  .pill b { display: none; }
+  /* extra top-bar controls behind ⋯ */
+  #more-btn { display: inline-block; }
+  #topbar:not(.show-more) #awake-switch, #topbar:not(.show-more) #screen-off,
+  #topbar:not(.show-more) #therm-pill, #topbar:not(.show-more) #lm-pill { display: none; }
+  /* the script list folds away once a script is open */
+  #scripts-toggle { display: inline-block; }
+  .side.collapsed { max-height: none; }
+  .side.collapsed #script-list, .side.collapsed .side-head > span:last-child { display: none; }
+  #side-current { display: inline; margin-left: 6px; text-transform: none; color: var(--text, #ddd); }
+  /* Run settings open as a full-screen sheet */
+  #run-settings[open] { position: fixed; inset: 0; z-index: 50; background: var(--bg, #111); overflow: auto; margin: 0; max-height: none; height: 100%; resize: none; }
+  #run-settings[open] > summary { position: sticky; top: 0; z-index: 1; background: var(--panel, #1b1b1f); padding: 14px 12px; border-bottom: 1px solid var(--border); }
+  #run-settings[open] > summary::after { content: "  ✕ Done"; float: right; color: var(--accent, #7aa2ff); }
+  .rs-group > summary { padding: 12px 4px; font-size: 15px; }
   .page.active { flex-direction: column; }
   .side { width: 100%; max-height: 32vh; border-right: 0; border-bottom: 1px solid var(--border); }
   .content.split { flex-direction: column; }
-  #editor { display: none; }                 /* editing code on a phone isn't the point: run and watch */
+  #editor, #ai-btn, #save-btn { display: none; }                 /* editing code on a phone isn't the point: run and watch */
   .editor-pane { flex: none; }
   .console-pane { min-height: 60vh; }
   .toolbar { flex-wrap: wrap; gap: 6px; }
@@ -161,3 +177,14 @@ pre.report { background: #101013; padding: 12px; border-radius: 8px; overflow: a
   #rs-form { grid-template-columns: 1fr; }
   input, select, textarea { font-size: 16px; }   /* stops iPhone zooming in on every tap */
 }
+
+/* Run settings sections (one per argparse group) */
+.rs-group { grid-column: 1 / -1; border-top: 1px solid var(--border); }
+.rs-group > summary { cursor: pointer; padding: 8px 2px; color: var(--muted); text-transform: capitalize; }
+.rs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 14px; padding-bottom: 8px; }
+/* pop-out console window */
+.popout { margin: 0; background: var(--bg, #111); height: auto; min-height: 100vh; }
+.popout-bar { position: sticky; top: 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 8px 12px; background: var(--panel, #1b1b1f); border-bottom: 1px solid var(--border); z-index: 2; }
+.popout-bar .spacer { flex: 1; }
+.popout-out { margin: 0; padding: 10px 12px 60px; white-space: pre-wrap; word-break: break-word; font: 12px/1.45 ui-monospace, Menlo, monospace; }
+.popout #pc-live { position: fixed; bottom: 0; left: 0; right: 0; padding: 8px 12px; background: var(--panel, #1b1b1f); border-top: 1px solid var(--border); font: 12px ui-monospace, Menlo, monospace; white-space: pre-wrap; }

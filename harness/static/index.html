@@ -26,13 +26,14 @@
         <label class="switch" id="awake-switch" title="Keep your Mac awake while a script is running (uses macOS caffeinate). Closing the lid on battery power will still sleep it."><input type="checkbox" id="keep-awake" data-setting="keep_awake"><i></i><span>☕ Keep awake</span></label>
         <button id="screen-off" title="Turn the screen off now (the Mac keeps running). Move the mouse to wake it.">🌙 Screen off</button>
         <button id="update-btn" class="hidden"></button>
+        <button id="more-btn" class="ghost" title="More">⋯</button>
       </div>
     </header>
     <div id="alert" class="hidden"></div>
 
     <section id="page-run" class="page active">
       <aside class="side">
-        <div class="side-head"><span>Scripts</span><span><button id="import-script" class="ghost" title="Import script">⇪ Import</button> <button id="new-script" class="ghost" title="New script">＋</button></span></div>
+        <div class="side-head"><span><button id="scripts-toggle" class="ghost" title="Show or hide the script list">▾</button> Scripts <b id="side-current"></b></span><span><button id="import-script" class="ghost" title="Import script">⇪ Import</button> <button id="new-script" class="ghost" title="New script">＋</button></span></div>
         <ul id="script-list" class="list"></ul>
       </aside>
       <div class="content split">
@@ -59,6 +60,8 @@
             <span class="title">Console</span><span id="run-state" class="badge"></span><span id="run-timer" class="timer"></span>
             <span id="run-mem" class="muted"></span>
             <span class="spacer"></span>
+            <button id="refresh-console" class="ghost" title="Reload this run's output (if the console got out of sync)">⟳</button>
+            <button id="popout-console" class="ghost" title="Open the console in its own window (e.g. on a second monitor)">⧉ Pop out</button>
             <button id="send-report-btn" class="ghost hidden" title="Send this run's diagnostics report to the repo's decomp-reports branch, where Claude can read it">📤 Send report to Claude</button>
             <button id="report-btn" class="ghost hidden">Copy failure report</button>
           </div>
