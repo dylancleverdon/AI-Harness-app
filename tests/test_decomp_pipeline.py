@@ -765,7 +765,7 @@ def test_context_sizes_follow_ctx(tmp_path, model):
 
 def test_fix_stage_sees_whole_types_and_undoes_bad_edits(tmp_path, model):
     write_export(tmp_path)
-    assert run(tmp_path, model, "--to", "fix") == 0
+    assert run(tmp_path, model, "--to", "fix", "--recover-later") == 0   # keep the quarantine to look at
     b = tmp_path / "build"
     cfg = dp.Config(input_file=tmp_path / "rewrite" / "rewritten.cpp", workdir=b)
     decls = dp.gather_declarations(cfg, ["first", "Pair", "NoSuchType"])
@@ -1175,3 +1175,21 @@ def test_error_count_ignores_the_summary_line():
     assert dp.n_errors("/p/fastpass 3/a.cpp:1:2: error: x\n/p/b.h:3:4: error: y\n"
                        "2 errors generated.") == 2
     assert dp.n_errors("") == 0
+
+
+def test_quick_fixes_are_remembered_and_quarantined_functions_rebuilt_right_away(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "fix") == 0
+    log = (tmp_path / "build" / "worklist.log").read_text()
+    # squareIt can't be fixed: it's rebuilt from pseudocode as soon as the fixer gives up
+    assert re.search(r"squareIt -> quarantined, then re-derived", log)
+    assert by_name(tmp_path)["squareIt"]["compiles"]
+    st = tmp_path / "build" / "build_state.json"
+    data = json.loads(st.read_text())
+    data["sweep_done"] = False
+    st.write_text(json.dumps(data))
+    m = json.loads((tmp_path / "build" / "manifest.json").read_text())
+    for r in m.values():                      # pretend some still fail (unchanged since)
+        if r["quick_key"]:
+            r["compiles"] = False
+    (tmp_path / "build" / "manifest.json").write_text(json.dumps(m))

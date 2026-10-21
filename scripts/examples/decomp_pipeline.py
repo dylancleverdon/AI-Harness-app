@@ -3875,6 +3875,7 @@ class Config:
     model_ctx_chars: int = 24000
     retry_quarantined: bool = False   # revive manifest quarantines for another pass
     no_pseudo: bool = False           # skip the pseudocode recovery stage
+    recover_later: bool = False       # don't rebuild a function from pseudocode as soon as the fixer gives up
     # where files about to be replaced are copied first (None: don't)
     snapshot_dir: object = field(default_factory=lambda: (lambda: None))
     workers: int = 1                  # functions worked on at once (CPU side)
@@ -4075,6 +4076,7 @@ class FuncRecord:
                             # tells a resume whether the rewrite changed this function
     recovery_model: str = ""  # the model the last recovery attempt used
     duplicate_of: str = ""  # merged into this identical function by the improve stage
+    quick_key: str = ""     # the code + headers + quick-fix version the no-model fixes last ran on
 
 
 def _load_libclang(cfg: Config):
@@ -6711,8 +6713,20 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
                and not records[m].quarantined]
     # every failing function gets the fixes that need no model first (seconds
     # each, all in parallel), so the model only sees what those can't fix
-    quick_done = RUN_CTX.setdefault("quick_done", set())
-    todo = [m for m in failing if m not in quick_done]
+    # a function whose code and headers haven't changed since its last quick fixes
+    # (and no new quick fix was added since) is skipped: they'd do the same again
+    hk = _sweep_key(cfg)
+
+    def qkey(rec):
+        try:
+            text = (cfg.workdir / rec.file).read_text()
+        except OSError:
+            text = ""
+        return hashlib.sha1(f"{QUICK_FIX_VERSION}|{hk}|{text}".encode()).hexdigest()[:16]
+    todo = [m for m in failing if records[m].quick_key != qkey(records[m])]
+    if len(todo) < len(failing):
+        log(cfg, show=True, msg=f"  quick fixes: {len(failing) - len(todo)} function(s) already had "
+                                f"them and haven't changed since — skipped")
     if todo:
         qp = Progress(len(todo), 0, title="quick fixes for every failing function (no model)")
         qn = [0]
@@ -6725,9 +6739,9 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
                 if quick_fix(cfg, rec, cache):
                     qn[0] += 1
                     log(cfg, f"    {rec.name} -> fixed without the model")
+                rec.quick_key = qkey(rec)
             finally:
                 qp.end(m)
-                quick_done.add(m)
         try:
             work_pool(max(cfg.workers, (os.cpu_count() or 2) - 1), todo, quick, 200,
                       lambda: save_manifest(cfg, records))
@@ -6751,6 +6765,16 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
         prog.begin(m, rec.name)
         try:
             ok = repair_tu(cfg, rec, cache)
+            how = ""
+            if not ok and not cfg.no_pseudo and not cfg.recover_later and export \
+                    and _pseudo_for(rec, export, index):
+                # rebuild it from Ghidra's pseudocode now, not after hours of fixing
+                prog.set_phase(m, "rebuilding from pseudocode")
+                if recover_one(cfg, rec, export, index):
+                    how = f"re-derived ({rec.recovery})"
+                with _STRUGGLE_LOCK:
+                    rr = RUN_CTX.setdefault("recover_run", {"re-derived": 0, "still quarantined": 0})
+                    rr["re-derived" if how else "still quarantined"] += 1
         finally:
             prog.end(m)
         if ok:
@@ -6760,9 +6784,11 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
                                                 "start": time.time()})
             fs["fixed" if ok else "quarantined"] += 1
         log(cfg, show=True, msg=f"    [{i}/{total}] {rec.name} -> "
-                 f"{'fixed' if ok else 'quarantined'} ({fmt_duration(time.time() - t1)})")
+                 f"{'fixed' if ok else 'quarantined, then ' + how if how else 'quarantined'} "
+                 f"({fmt_duration(time.time() - t1)})")
 
     lessons = fix_lessons(cfg)
+    export, index = ({}, {}) if cfg.no_pseudo or cfg.recover_later else _load_pseudocode(cfg)
 
     def checkpoint():
         # this loop can run for hours; save so a rerun picks up from here
@@ -10437,6 +10463,9 @@ def declare_missing(cfg: Config, records: dict[str, FuncRecord]) -> int:
     return len(kept)
 
 
+QUICK_FIX_VERSION = 2   # raised when a new no-model fix is added: every function gets them again
+
+
 def quick_fix(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
     """The fixes that need no model, until none applies: declare leftover Ghidra
     locals, edits learned before, casts to declared parameter types, learned
@@ -10767,7 +10796,7 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
         extra_flags=args.extra_flags,
         callgraph_path=args.callgraph or (P.callgraph if P.callgraph.exists() else None),
         force=args.force, stub_all=args.stub_all, export_path=P.export,
-        index_path=P.index, no_pseudo=args.no_pseudo,
+        index_path=P.index, no_pseudo=args.no_pseudo, recover_later=args.recover_later,
         retry_quarantined=args.retry_quarantined,
         model_ctx_chars=args.model_ctx_chars or recovery_chars(args.ctx),
         workers=args.workers, model_timeout_s=1800, ctx=args.ctx)
@@ -11069,6 +11098,9 @@ def build_parser() -> argparse.ArgumentParser:
                    help="at link time, stub EVERY undefined symbol that has a prototype")
     g.add_argument("--no-pseudo", action="store_true",
                    help="skip rebuilding quarantined functions from pseudocode")
+    g.add_argument("--recover-later", action="store_true",
+                   help="don't rebuild a function from pseudocode the moment the fixer gives up "
+                        "on it; leave that to the recover stage")
     g.add_argument("--retry-quarantined", action="store_true",
                    help="retry recovery on functions already tried (same as --redo recover)")
     g.add_argument("--model-ctx-chars", type=int, default=None,
