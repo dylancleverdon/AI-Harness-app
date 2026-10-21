@@ -1,11 +1,11 @@
-# Diagnostics — fastpass 3 — 2026-10-21 11:40:06
+# Diagnostics — fastpass 3 — 2026-10-21 12:03:40
 
 
 ## Run
 
 ```
 script: decomp_pipeline 2026-10-18.1 (build 2026-10-18.1)
-command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from recover --to recover --headless-export --ghidra-home /Users/admin/Downloads/ghidra_12.1.4_PUBLIC --project /Users/admin/glitchpt2.gpr --ctx 8192 --parallel 50 --workers 12
+command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from export --to organize --headless-export --ghidra-home /Users/admin/Downloads/ghidra_12.1.4_PUBLIC --project /Users/admin/glitchpt2.gpr --ctx 8192 --parallel 50 --workers 12
 python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
 compile flags: -Wno-c++11-narrowing
@@ -23,13 +23,13 @@ fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %
-  10-21 00:30                63.9                1.0              10702                149                6.0                318                  -
   10-21 09:45                65.8                8.9               7700               2980               19.2                341                  -
   10-21 09:57                65.8                8.9               7700                  -                  -                  -                  -
   10-21 10:55                66.4               10.1               7156                389                9.3                754                  -
   10-21 11:40                66.6                9.9               7156                  -                  -                  -                  -
+  10-21 12:03                66.7                9.9               7130                  -                  -                  -                  -
 couldn't handle:
-  fix        7156 × not compiling yet (not reached before the run ended)   e.g. FUN_000a22fc, FUN_000a2a9c, FUN_000a2bd8   [also in the last 5 run(s)]
+  fix        7130 × not compiling yet (not reached before the run ended)   e.g. FUN_000a22fc, FUN_000a2a9c, FUN_000a2bd8   [also in the last 5 run(s)]
   fix         679 × quarantined: no matching function for call to 'X'   e.g. processAndFilterInput, processValue, processAndWriteData   [also in the last 5 run(s)]
   fix         233 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. checkDataValue, FUN_00005398, processAndExecuteData   [also in the last 5 run(s)]
   fix         213 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_00001a3c, FUN_00003d30, processValues   [also in the last 5 run(s)]
@@ -43,13 +43,13 @@ couldn't handle:
   fix          72 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_0000a2b4, FUN_0001e3d4, FUN_0004a428   [also in the last 5 run(s)]
   fix          68 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00004424, FUN_00005230, FUN_00005fc0   [also in the last 5 run(s)]
   fix          64 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00005eb0, processValues12, FUN_00006ac8   [also in the last 5 run(s)]
-  fix          52 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_00012d94, FUN_00012de4, FUN_0001304c   [also in the last 3 run(s)]
+  fix          52 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_00012d94, FUN_00012de4, FUN_0001304c   [also in the last 4 run(s)]
   fix          47 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. processFilterData2, FUN_00014a48, FUN_000228bc   [also in the last 5 run(s)]
   fix          47 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, processInput23, FUN_00009ec0   [also in the last 5 run(s)]
-  fix          34 × quarantined: expected 'X' after top level declarator   e.g. _host_info, backingScaleFactor, bundlePath   [also in the last 4 run(s)]
+  fix          34 × quarantined: expected 'X' after top level declarator   e.g. _host_info, backingScaleFactor, bundlePath   [also in the last 5 run(s)]
   fix          28 × quarantined: indirection requires pointer operand ('X' invalid)   e.g. FUN_000130fc, FUN_0001600c, FUN_00019b10   [also in the last 5 run(s)]
   fix          28 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. initializeAndApplyFilters, FUN_0000461c, FUN_00028388   [also in the last 5 run(s)]
-  fix          27 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. processInputAndApplyFilter, FUN_0003913c, FUN_00052cdc   [also in the last 4 run(s)]
+  fix          27 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. processInputAndApplyFilter, FUN_0003913c, FUN_00052cdc   [also in the last 5 run(s)]
   fix          26 × quarantined: unknown type name 'X'   e.g. FUN_0013cf80, FUN_0013ec40, FUN_0013ed94   [also in the last 5 run(s)]
   fix          25 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00008040, FUN_00012e5c, FUN_00029120   [also in the last 5 run(s)]
   fix          23 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_000cf7bc, FUN_000cf7e0, FUN_0010a674   [also in the last 5 run(s)]
@@ -58,92 +58,110 @@ couldn't handle:
   fix          17 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0000a04c, isObjectValid, FUN_0000e0ac   [also in the last 5 run(s)]
   fix          17 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_00016a74, FUN_0004fdc8, FUN_0004fe68   [also in the last 5 run(s)]
   fix          17 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. processValues8, FUN_001dbea4, FUN_001e33a8   [also in the last 5 run(s)]
-  fix          16 × quarantined: reinterpret_cast from 'X' to 'X' is not allowed   e.g. FUN_00038214, FUN_0003d804, FUN_0003f928   [also in the last 3 run(s)]
-  fix          15 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the name   e.g. FUN_000037b8, FUN_0009d4cc, FUN_00127194   [also in the last 4 run(s)]
+  fix          16 × quarantined: reinterpret_cast from 'X' to 'X' is not allowed   e.g. FUN_00038214, FUN_0003d804, FUN_0003f928   [also in the last 4 run(s)]
+  fix          15 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the name   e.g. FUN_000037b8, FUN_0009d4cc, FUN_00127194   [also in the last 5 run(s)]
   fix          14 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_000173a0, FUN_00018f48, FUN_0002a1cc   [also in the last 5 run(s)]
-  fix          14 × quarantined: no matching constructor for initialization of 'X'   e.g. FUN_00285624, FUN_000d9a48, FUN_000f907c   [also in the last 3 run(s)]
+  fix          14 × quarantined: no matching constructor for initialization of 'X'   e.g. FUN_00285624, FUN_000d9a48, FUN_000f907c   [also in the last 4 run(s)]
   fix          13 × quarantined: member reference base type 'X' is not a structure or union   e.g. setAndCalculateDotProduct7, FUN_0002a7a4, FUN_00031fc8   [also in the last 5 run(s)]
   fix          13 × quarantined: expected expression   e.g. FUN_00020308, FUN_00077634, FUN_0008ad44   [also in the last 5 run(s)]
-  fix          13 × quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]   e.g. FUN_0000bfd0, FUN_0000c178, FUN_00016f6c   [also in the last 3 run(s)]
-  fix          12 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_000118a0, FUN_00011948, FUN_00012be0   [also in the last 3 run(s)]
+  fix          13 × quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]   e.g. FUN_0000bfd0, FUN_0000c178, FUN_00016f6c   [also in the last 4 run(s)]
+  fix          12 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_000118a0, FUN_00011948, FUN_00012be0   [also in the last 4 run(s)]
   fix          11 × quarantined: function definition is not allowed here   e.g. FUN_000521a8, FUN_000a2150, FUN_000613c4   [also in the last 5 run(s)]
   fix          11 × quarantined: expected unqualified-id   e.g. FUN_0015229c, FUN_00216788, FUN_002541b8   [also in the last 5 run(s)]
-  fix          10 × quarantined: excess elements in struct initializer   e.g. FUN_00023338, FUN_0002af58, FUN_00030b0c   [also in the last 3 run(s)]
+  fix          10 × quarantined: excess elements in struct initializer   e.g. FUN_00023338, FUN_0002af58, FUN_00030b0c   [also in the last 4 run(s)]
   fix           9 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. processInput53, FUN_0012c230, FUN_00142d90   [also in the last 5 run(s)]
-  fix           9 × quarantined: redeclaration of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00017ab4, FUN_000b9730, FUN_000680e8   [also in the last 3 run(s)]
-  fix           9 × quarantined: extern declaration of 'X' follows non-extern declaration   e.g. FUN_00023e68, FUN_0005f164, FUN_000c4d4c   [also in the last 3 run(s)]
+  fix           9 × quarantined: redeclaration of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00017ab4, FUN_000b9730, FUN_000680e8   [also in the last 4 run(s)]
+  fix           9 × quarantined: extern declaration of 'X' follows non-extern declaration   e.g. FUN_00023e68, FUN_0005f164, FUN_000c4d4c   [also in the last 4 run(s)]
   fix           8 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_00009dfc, processInput27, setAndProcessData3   [also in the last 5 run(s)]
   fix           8 × quarantined: no matching conversion for C-style cast from 'X' to 'X'   e.g. FUN_000497c8, FUN_000499bc, FUN_00049c40   [also in the last 5 run(s)]
-  fix           8 × quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_000c2b84, FUN_00084694, FUN_0013d008   [also in the last 3 run(s)]
-  fix           8 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_00018e80, FUN_00028d8c, FUN_0003d1e0   [also in the last 3 run(s)]
-  fix           7 × quarantined: void function 'X' should not return a value [-Wreturn-mismatch]   e.g. FUN_000410d4, FUN_0023c868, FUN_0023e598   [also in the last 3 run(s)]
+  fix           8 × quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_000c2b84, FUN_00084694, FUN_0013d008   [also in the last 4 run(s)]
+  fix           8 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_00018e80, FUN_00028d8c, FUN_0003d1e0   [also in the last 4 run(s)]
+  fix           7 × quarantined: void function 'X' should not return a value [-Wreturn-mismatch]   e.g. FUN_000410d4, FUN_0023c868, FUN_0023e598   [also in the last 4 run(s)]
+worked around (cost time, nothing lost):
+  fix           2 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. objc_msgSend
+  rewrite    4710 × drafts whose function had a different name than the one its callers use (renamed)   e.g. FUN_000b50b8, getFloatValue, main
+  rewrite    2978 × drafts whose parameters were changed to Ghidra's signature (so callers and callee agree)   e.g. FUN_0000315c, processAndFilterInput, checkDataValue
+  rewrite     901 × drafts calling functions by made-up names (the real names put back)   e.g. FUN_0000315c: setZeroes->setZeroes2, FUN_00003340: printInt->FUN_0021a1f4, applyFilter->FUN_0021aec0, FUN_000033bc: updateFilter->FUN_00004424
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[11:19:31] decomp_pipeline 2026-10-18.1: /Users/admin/glitchdecomp/fastpass 3 — stages recover → recover
-[11:19:31]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[11:19:31] ━━━━ Stage 5/8 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
-[11:40:06] 
-[11:40:06] ━━━━ what the script struggled with this run ━━━━
-[11:40:06] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[11:40:06] rates (this run last; earlier runs above it):
-[11:40:06]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %
-[11:40:06]   10-21 00:30                63.9                1.0              10702                149                6.0                318                  -
-[11:40:06]   10-21 09:45                65.8                8.9               7700               2980               19.2                341                  -
-[11:40:06]   10-21 09:57                65.8                8.9               7700                  -                  -                  -                  -
-[11:40:06]   10-21 10:55                66.4               10.1               7156                389                9.3                754                  -
-[11:40:06]   10-21 11:40                66.6                9.9               7156                  -                  -                  -                  -
-[11:40:06] couldn't handle:
-[11:40:06]   fix        7156 × not compiling yet (not reached before the run ended)   e.g. FUN_000a22fc, FUN_000a2a9c, FUN_000a2bd8   [also in the last 5 run(s)]
-[11:40:06]   fix         679 × quarantined: no matching function for call to 'X'   e.g. processAndFilterInput, processValue, processAndWriteData   [also in the last 5 run(s)]
-[11:40:06]   fix         233 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. checkDataValue, FUN_00005398, processAndExecuteData   [also in the last 5 run(s)]
-[11:40:06]   fix         213 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_00001a3c, FUN_00003d30, processValues   [also in the last 5 run(s)]
-[11:40:06]   fix         162 × quarantined: use of undeclared identifier 'X'   e.g. updateVector, processAndWriteData7, FUN_0000a45c   [also in the last 5 run(s)]
-[11:40:06]   fix         150 × quarantined: no member named 'X' in 'X'   e.g. FUN_0000877c, FUN_00008e30, FUN_0000a244   [also in the last 5 run(s)]
-[11:40:06]   fix         117 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_0000340c, processAndPrintData, FUN_00003594   [also in the last 5 run(s)]
-[11:40:06]   fix         107 × quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed   e.g. FUN_000084e0, processValues2, FUN_0000cdcc   [also in the last 5 run(s)]
-[11:40:06]   fix         104 × quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')   e.g. FUN_00005000, FUN_000050fc, handleSwitch   [also in the last 5 run(s)]
-[11:40:06]   fix         103 × quarantined: redefinition of 'X'   e.g. initializeAPI, processValues5, FUN_0000fa54   [also in the last 5 run(s)]
-[11:40:06]   fix         100 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_000096bc, FUN_0000b830, FUN_0000ca40   [also in the last 5 run(s)]
-[11:40:06]   fix          72 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_0000a2b4, FUN_0001e3d4, FUN_0004a428   [also in the last 5 run(s)]
-[11:40:06]   fix          68 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00004424, FUN_00005230, FUN_00005fc0   [also in the last 5 run(s)]
-[11:40:06]   fix          64 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00005eb0, processValues12, FUN_00006ac8   [also in the last 5 run(s)]
-[11:40:06]   fix          52 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_00012d94, FUN_00012de4, FUN_0001304c   [also in the last 3 run(s)]
-[11:40:06]   fix          47 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. processFilterData2, FUN_00014a48, FUN_000228bc   [also in the last 5 run(s)]
-[11:40:06]   fix          47 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, processInput23, FUN_00009ec0   [also in the last 5 run(s)]
-[11:40:06]   fix          34 × quarantined: expected 'X' after top level declarator   e.g. _host_info, backingScaleFactor, bundlePath   [also in the last 4 run(s)]
-[11:40:06]   fix          28 × quarantined: indirection requires pointer operand ('X' invalid)   e.g. FUN_000130fc, FUN_0001600c, FUN_00019b10   [also in the last 5 run(s)]
-[11:40:06]   fix          28 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. initializeAndApplyFilters, FUN_0000461c, FUN_00028388   [also in the last 5 run(s)]
-[11:40:06]   fix          27 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. processInputAndApplyFilter, FUN_0003913c, FUN_00052cdc   [also in the last 4 run(s)]
-[11:40:06]   fix          26 × quarantined: unknown type name 'X'   e.g. FUN_0013cf80, FUN_0013ec40, FUN_0013ed94   [also in the last 5 run(s)]
-[11:40:06]   fix          25 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00008040, FUN_00012e5c, FUN_00029120   [also in the last 5 run(s)]
-[11:40:06]   fix          23 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_000cf7bc, FUN_000cf7e0, FUN_0010a674   [also in the last 5 run(s)]
-[11:40:06]   fix          18 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. processVectors2, FUN_000437bc, FUN_000c1af8   [also in the last 5 run(s)]
-[11:40:06]   fix          18 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. processAndCopyData, processAndWriteData8, FUN_00016ac8   [also in the last 5 run(s)]
-[11:40:06]   fix          17 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0000a04c, isObjectValid, FUN_0000e0ac   [also in the last 5 run(s)]
-[11:40:06]   fix          17 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_00016a74, FUN_0004fdc8, FUN_0004fe68   [also in the last 5 run(s)]
-[11:40:06]   fix          17 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. processValues8, FUN_001dbea4, FUN_001e33a8   [also in the last 5 run(s)]
-[11:40:06]   fix          16 × quarantined: reinterpret_cast from 'X' to 'X' is not allowed   e.g. FUN_00038214, FUN_0003d804, FUN_0003f928   [also in the last 3 run(s)]
-[11:40:06]   fix          15 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the name   e.g. FUN_000037b8, FUN_0009d4cc, FUN_00127194   [also in the last 4 run(s)]
-[11:40:06]   fix          14 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_000173a0, FUN_00018f48, FUN_0002a1cc   [also in the last 5 run(s)]
-[11:40:06]   fix          14 × quarantined: no matching constructor for initialization of 'X'   e.g. FUN_00285624, FUN_000d9a48, FUN_000f907c   [also in the last 3 run(s)]
-[11:40:06]   fix          13 × quarantined: member reference base type 'X' is not a structure or union   e.g. setAndCalculateDotProduct7, FUN_0002a7a4, FUN_00031fc8   [also in the last 5 run(s)]
-[11:40:06]   fix          13 × quarantined: expected expression   e.g. FUN_00020308, FUN_00077634, FUN_0008ad44   [also in the last 5 run(s)]
-[11:40:06]   fix          13 × quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]   e.g. FUN_0000bfd0, FUN_0000c178, FUN_00016f6c   [also in the last 3 run(s)]
-[11:40:06]   fix          12 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_000118a0, FUN_00011948, FUN_00012be0   [also in the last 3 run(s)]
-[11:40:06]   fix          11 × quarantined: function definition is not allowed here   e.g. FUN_000521a8, FUN_000a2150, FUN_000613c4   [also in the last 5 run(s)]
-[11:40:06]   fix          11 × quarantined: expected unqualified-id   e.g. FUN_0015229c, FUN_00216788, FUN_002541b8   [also in the last 5 run(s)]
-[11:40:06]   fix          10 × quarantined: excess elements in struct initializer   e.g. FUN_00023338, FUN_0002af58, FUN_00030b0c   [also in the last 3 run(s)]
-[11:40:06]   fix           9 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. processInput53, FUN_0012c230, FUN_00142d90   [also in the last 5 run(s)]
-[11:40:06]   fix           9 × quarantined: redeclaration of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00017ab4, FUN_000b9730, FUN_000680e8   [also in the last 3 run(s)]
-[11:40:06]   fix           9 × quarantined: extern declaration of 'X' follows non-extern declaration   e.g. FUN_00023e68, FUN_0005f164, FUN_000c4d4c   [also in the last 3 run(s)]
-[11:40:06]   fix           8 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_00009dfc, processInput27, setAndProcessData3   [also in the last 5 run(s)]
-[11:40:06]   fix           8 × quarantined: no matching conversion for C-style cast from 'X' to 'X'   e.g. FUN_000497c8, FUN_000499bc, FUN_00049c40   [also in the last 5 run(s)]
-[11:40:06]   fix           8 × quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_000c2b84, FUN_00084694, FUN_0013d008   [also in the last 3 run(s)]
-[11:40:06]   fix           8 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_00018e80, FUN_00028d8c, FUN_0003d1e0   [also in the last 3 run(s)]
-[11:40:06]   fix           7 × quarantined: void function 'X' should not return a value [-Wreturn-mismatch]   e.g. FUN_000410d4, FUN_0023c868, FUN_0023e598   [also in the last 3 run(s)]
+[11:55:29] decomp_pipeline 2026-10-18.1: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
+[11:55:29]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[11:55:29] ━━━━ Stage 1/8 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
+[11:55:29]   using the existing ghidra_export.json (Ghidra not needed)
+[11:55:36]   callgraph.json: 22076 functions with internal calls
+[11:55:37]   export: 30489/30489 functions have pseudocode
+[11:55:37] ━━━━ Stage 2/8 · rewrite ━━━━ the model rewrites each function as readable C++, gives placeholder names real ones, and strips identifying strings
+[11:55:37]   12705 function(s) are still marked to be rewritten again from an earlier --redo-suspect / --redo rewrite; they keep their current version. Turn that option on again to carry on, or use --cancel-redo to drop the marks.
+[11:55:37]   30489 already have a rewrite, 0 to go
+[11:56:07] ━━━━ Stage 3/8 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
+[11:56:08] ━━━━ Stage 4/8 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
+[12:03:40] 
+[12:03:40] ━━━━ what the script struggled with this run ━━━━
+[12:03:40] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[12:03:40] rates (this run last; earlier runs above it):
+[12:03:40]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %
+[12:03:40]   10-21 09:45                65.8                8.9               7700               2980               19.2                341                  -
+[12:03:40]   10-21 09:57                65.8                8.9               7700                  -                  -                  -                  -
+[12:03:40]   10-21 10:55                66.4               10.1               7156                389                9.3                754                  -
+[12:03:40]   10-21 11:40                66.6                9.9               7156                  -                  -                  -                  -
+[12:03:40]   10-21 12:03                66.7                9.9               7130                  -                  -                  -                  -
+[12:03:40] couldn't handle:
+[12:03:40]   fix        7130 × not compiling yet (not reached before the run ended)   e.g. FUN_000a22fc, FUN_000a2a9c, FUN_000a2bd8   [also in the last 5 run(s)]
+[12:03:40]   fix         679 × quarantined: no matching function for call to 'X'   e.g. processAndFilterInput, processValue, processAndWriteData   [also in the last 5 run(s)]
+[12:03:40]   fix         233 × quarantined: cannot cast from type 'X' to pointer type 'X'   e.g. checkDataValue, FUN_00005398, processAndExecuteData   [also in the last 5 run(s)]
+[12:03:40]   fix         213 × quarantined: C-style cast from 'X' to 'X' is not allowed   e.g. FUN_00001a3c, FUN_00003d30, processValues   [also in the last 5 run(s)]
+[12:03:40]   fix         162 × quarantined: use of undeclared identifier 'X'   e.g. updateVector, processAndWriteData7, FUN_0000a45c   [also in the last 5 run(s)]
+[12:03:40]   fix         150 × quarantined: no member named 'X' in 'X'   e.g. FUN_0000877c, FUN_00008e30, FUN_0000a244   [also in the last 5 run(s)]
+[12:03:40]   fix         117 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_0000340c, processAndPrintData, FUN_00003594   [also in the last 5 run(s)]
+[12:03:40]   fix         107 × quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed   e.g. FUN_000084e0, processValues2, FUN_0000cdcc   [also in the last 5 run(s)]
+[12:03:40]   fix         104 × quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')   e.g. FUN_00005000, FUN_000050fc, handleSwitch   [also in the last 5 run(s)]
+[12:03:40]   fix         103 × quarantined: redefinition of 'X'   e.g. initializeAPI, processValues5, FUN_0000fa54   [also in the last 5 run(s)]
+[12:03:40]   fix         100 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_000096bc, FUN_0000b830, FUN_0000ca40   [also in the last 5 run(s)]
+[12:03:40]   fix          72 × quarantined: assignment to cast is illegal, lvalue casts are not supported   e.g. FUN_0000a2b4, FUN_0001e3d4, FUN_0004a428   [also in the last 5 run(s)]
+[12:03:40]   fix          68 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00004424, FUN_00005230, FUN_00005fc0   [also in the last 5 run(s)]
+[12:03:40]   fix          64 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00005eb0, processValues12, FUN_00006ac8   [also in the last 5 run(s)]
+[12:03:40]   fix          52 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_00012d94, FUN_00012de4, FUN_0001304c   [also in the last 4 run(s)]
+[12:03:40]   fix          47 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. processFilterData2, FUN_00014a48, FUN_000228bc   [also in the last 5 run(s)]
+[12:03:40]   fix          47 × quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'   e.g. processValue2, processInput23, FUN_00009ec0   [also in the last 5 run(s)]
+[12:03:40]   fix          34 × quarantined: expected 'X' after top level declarator   e.g. _host_info, backingScaleFactor, bundlePath   [also in the last 5 run(s)]
+[12:03:40]   fix          28 × quarantined: indirection requires pointer operand ('X' invalid)   e.g. FUN_000130fc, FUN_0001600c, FUN_00019b10   [also in the last 5 run(s)]
+[12:03:40]   fix          28 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'   e.g. initializeAndApplyFilters, FUN_0000461c, FUN_00028388   [also in the last 5 run(s)]
+[12:03:40]   fix          27 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. processInputAndApplyFilter, FUN_0003913c, FUN_00052cdc   [also in the last 5 run(s)]
+[12:03:40]   fix          26 × quarantined: unknown type name 'X'   e.g. FUN_0013cf80, FUN_0013ec40, FUN_0013ed94   [also in the last 5 run(s)]
+[12:03:40]   fix          25 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00008040, FUN_00012e5c, FUN_00029120   [also in the last 5 run(s)]
+[12:03:40]   fix          23 × quarantined: must use 'X' tag to refer to type 'X' in this scope   e.g. FUN_000cf7bc, FUN_000cf7e0, FUN_0010a674   [also in the last 5 run(s)]
+[12:03:40]   fix          18 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. processVectors2, FUN_000437bc, FUN_000c1af8   [also in the last 5 run(s)]
+[12:03:40]   fix          18 × quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'   e.g. processAndCopyData, processAndWriteData8, FUN_00016ac8   [also in the last 5 run(s)]
+[12:03:40]   fix          17 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0000a04c, isObjectValid, FUN_0000e0ac   [also in the last 5 run(s)]
+[12:03:40]   fix          17 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *   e.g. FUN_00016a74, FUN_0004fdc8, FUN_0004fe68   [also in the last 5 run(s)]
+[12:03:40]   fix          17 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. processValues8, FUN_001dbea4, FUN_001e33a8   [also in the last 5 run(s)]
+[12:03:40]   fix          16 × quarantined: reinterpret_cast from 'X' to 'X' is not allowed   e.g. FUN_00038214, FUN_0003d804, FUN_0003f928   [also in the last 4 run(s)]
+[12:03:40]   fix          15 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the name   e.g. FUN_000037b8, FUN_0009d4cc, FUN_00127194   [also in the last 5 run(s)]
+[12:03:40]   fix          14 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_000173a0, FUN_00018f48, FUN_0002a1cc   [also in the last 5 run(s)]
+[12:03:40]   fix          14 × quarantined: no matching constructor for initialization of 'X'   e.g. FUN_00285624, FUN_000d9a48, FUN_000f907c   [also in the last 4 run(s)]
+[12:03:40]   fix          13 × quarantined: member reference base type 'X' is not a structure or union   e.g. setAndCalculateDotProduct7, FUN_0002a7a4, FUN_00031fc8   [also in the last 5 run(s)]
+[12:03:40]   fix          13 × quarantined: expected expression   e.g. FUN_00020308, FUN_00077634, FUN_0008ad44   [also in the last 5 run(s)]
+[12:03:40]   fix          13 × quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]   e.g. FUN_0000bfd0, FUN_0000c178, FUN_00016f6c   [also in the last 4 run(s)]
+[12:03:40]   fix          12 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_000118a0, FUN_00011948, FUN_00012be0   [also in the last 4 run(s)]
+[12:03:40]   fix          11 × quarantined: function definition is not allowed here   e.g. FUN_000521a8, FUN_000a2150, FUN_000613c4   [also in the last 5 run(s)]
+[12:03:40]   fix          11 × quarantined: expected unqualified-id   e.g. FUN_0015229c, FUN_00216788, FUN_002541b8   [also in the last 5 run(s)]
+[12:03:40]   fix          10 × quarantined: excess elements in struct initializer   e.g. FUN_00023338, FUN_0002af58, FUN_00030b0c   [also in the last 4 run(s)]
+[12:03:40]   fix           9 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. processInput53, FUN_0012c230, FUN_00142d90   [also in the last 5 run(s)]
+[12:03:40]   fix           9 × quarantined: redeclaration of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00017ab4, FUN_000b9730, FUN_000680e8   [also in the last 4 run(s)]
+[12:03:40]   fix           9 × quarantined: extern declaration of 'X' follows non-extern declaration   e.g. FUN_00023e68, FUN_0005f164, FUN_000c4d4c   [also in the last 4 run(s)]
+[12:03:40]   fix           8 × quarantined: no viable conversion from 'X' to 'X'   e.g. FUN_00009dfc, processInput27, setAndProcessData3   [also in the last 5 run(s)]
+[12:03:40]   fix           8 × quarantined: no matching conversion for C-style cast from 'X' to 'X'   e.g. FUN_000497c8, FUN_000499bc, FUN_00049c40   [also in the last 5 run(s)]
+[12:03:40]   fix           8 × quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_000c2b84, FUN_00084694, FUN_0013d008   [also in the last 4 run(s)]
+[12:03:40]   fix           8 × quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')   e.g. FUN_00018e80, FUN_00028d8c, FUN_0003d1e0   [also in the last 4 run(s)]
+[12:03:40]   fix           7 × quarantined: void function 'X' should not return a value [-Wreturn-mismatch]   e.g. FUN_000410d4, FUN_0023c868, FUN_0023e598   [also in the last 4 run(s)]
+[12:03:40] worked around (cost time, nothing lost):
+[12:03:40]   fix           2 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. objc_msgSend
+[12:03:40]   rewrite    4710 × drafts whose function had a different name than the one its callers use (renamed)   e.g. FUN_000b50b8, getFloatValue, main
+[12:03:40]   rewrite    2978 × drafts whose parameters were changed to Ghidra's signature (so callers and callee agree)   e.g. FUN_0000315c, processAndFilterInput, checkDataValue
+[12:03:40]   rewrite     901 × drafts calling functions by made-up names (the real names put back)   e.g. FUN_0000315c: setZeroes->setZeroes2, FUN_00003340: printInt->FUN_0021a1f4, applyFilter->FUN_0021aec0, FUN_000033bc: updateFilter->FUN_00004424
 ```
 
 ## Build status
@@ -151,9 +169,9 @@ couldn't handle:
 ```
 {
  "functions": 30464,
- "compile": 20284,
+ "compile": 20310,
  "quarantined": 3024,
- "to fix": 7156
+ "to fix": 7130
 }
 ```
 
@@ -61698,23 +61716,23 @@ void FUN_0026b904(undefined8 *param_1,undefined8 *param_2)
 }
 ```
 
-## Not compiling yet: 7156 function(s), by first error
+## Not compiling yet: 7130 function(s), by first error
 
--   1266 × no matching function for call to 'X'
--    687 × use of undeclared identifier 'X'
+-   1265 × no matching function for call to 'X'
+-    673 × use of undeclared identifier 'X'
 -    536 × no member named 'X' in 'X'
--    334 × cannot cast from type 'X' to pointer type 'X'
--    298 × assigning to 'X' from incompatible type 'X'
+-    332 × cannot cast from type 'X' to pointer type 'X'
 -    298 × assigning to 'X' (aka 'X') from incompatible type 'X'
--    280 × ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]
+-    297 × assigning to 'X' from incompatible type 'X'
+-    272 × ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]
 -    264 × expected 'X' after top level declarator
 -    253 × use of undeclared identifier 'X'; did you mean 'X'?
--    192 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
+-    193 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
 -    180 × redefinition of 'X'
 -    174 × C-style cast from 'X' to 'X' is not allowed
 -    135 × must use 'X' tag to refer to type 'X' in this scope
 -    105 × 'X' is not a class, namespace, or enumeration
--    104 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
+-    103 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
 -     89 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *
 -     89 × void function 'X' should not return a value [-Wreturn-mismatch]
 -     76 × indirection requires pointer operand ('X' (aka 'X') invalid)
@@ -61727,8 +61745,8 @@ void FUN_0026b904(undefined8 *param_1,undefined8 *param_2)
 -     65 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
 -     62 × brackets are not allowed here; to declare an array, place the brackets after the name
 -     59 × variable has incomplete type 'X'
+-     57 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
 -     57 × non-const lvalue reference to type 'X' cannot bind to an initializer list temporary
--     56 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
 -     38 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'
 -     37 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')
 -     37 × function definition is not allowed here
@@ -61745,9 +61763,9 @@ void FUN_0026b904(undefined8 *param_1,undefined8 *param_2)
 -     23 × incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); remove &
 -     22 × unexpected type name 'X': expected expression
 -     22 × excess elements in struct initializer
--     22 × incompatible integer to pointer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')
+-     21 × C-style cast from 'X' to 'X' (aka 'X') is not allowed
 -     21 × no matching conversion for C-style cast from 'X' to 'X'
--     20 × C-style cast from 'X' to 'X' (aka 'X') is not allowed
+-     21 × incompatible integer to pointer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')
 -     19 × assigning to 'X' (aka 'X') from incompatible type 'X' (aka 'X'): different number of parameters (N vs N)
 -     18 × expected 'X' after expression
 -     17 × arithmetic on a pointer to void
@@ -61755,9 +61773,9 @@ void FUN_0026b904(undefined8 *param_1,undefined8 *param_2)
 -     16 × assigning to 'X' (aka 'X') from incompatible type 'X' (aka 'X')
 -     16 × redefinition of parameter 'X'
 -     16 × called object type 'X' is not a function or function pointer
--     16 × call to non-static member function without an object argument
--     16 × incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')
+-     15 × call to non-static member function without an object argument
 -     15 × invalid operands to binary expression ('X' (aka 'X') and 'X')
+-     15 × incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')
 -     14 × functions that differ only in their return type cannot be overloaded
 -     13 × member reference base type 'X' is not a structure or union
 -     12 × incompatible pointer types assigning to 'X' from 'X'
@@ -61859,13 +61877,14 @@ void FUN_0026b904(undefined8 *param_1,undefined8 *param_2)
 -      1 × assigning to 'X' from 'X' (aka 'X') converts between pointers to integer types where one is of the unique plain 'X' type
 -      1 × statement requires expression of integer type ('X' (aka 'X') invalid)
 -      1 × cannot delete expression of type 'X'
+-      1 × extern declaration of 'X' follows non-extern declaration
 -      1 × non-void function 'X' should return a value [-Wreturn-mismatch]
 -      1 × incompatible integer to pointer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); take the address with &
 -      1 × no type named 'X' in namespace 'X'
 
-### Not compiling yet — 1266 × no matching function for call to 'X'
+### Not compiling yet — 1265 × no matching function for call to 'X'
 
-All: FUN_000a22fc (a22fc), FUN_000a2a9c (a2a9c), FUN_000a34a8 (a34a8), FUN_000a5534 (a5534), FUN_000a5c88 (a5c88), FUN_000a7a14 (a7a14), FUN_000a7b50 (a7b50), FUN_000a7d10 (a7d10), FUN_000a7d88 (a7d88), FUN_000a7e00 (a7e00), FUN_000a7e64 (a7e64), FUN_000a864c (a864c), FUN_000a8868 (a8868), FUN_000a8898 (a8898), FUN_000a8c04 (a8c04), FUN_000a98c8 (a98c8), FUN_000a99c4 (a99c4), FUN_000aa088 (aa088), FUN_000aa558 (aa558), FUN_000aa6f0 (aa6f0), FUN_000aacd0 (aacd0), FUN_000aad5c (aad5c), FUN_000aafc4 (aafc4), FUN_000ab124 (ab124), FUN_000ab67c (ab67c), FUN_000abb5c (abb5c), FUN_000abc54 (abc54), FUN_000abcd8 (abcd8), FUN_000ac0b8 (ac0b8), FUN_000adbec (adbec), FUN_000af8e0 (af8e0), FUN_000b08d0 (b08d0), FUN_000b1520 (b1520), FUN_000b40a4 (b40a4), FUN_000b415c (b415c), FUN_000b4808 (b4808), FUN_000b4abc (b4abc), FUN_000b54c8 (b54c8), FUN_000b7024 (b7024), FUN_000b9448 (b9448), FUN_000b9fb4 (b9fb4), FUN_000ba9d4 (ba9d4), FUN_000bb38c (bb38c), FUN_000bc42c (bc42c), FUN_000bc5d8 (bc5d8), FUN_000bc794 (bc794), FUN_000bd964 (bd964), FUN_000bd988 (bd988), FUN_000be918 (be918), FUN_000bf494 (bf494), FUN_000bf520 (bf520), FUN_000c0384 (c0384), FUN_000c0aa0 (c0aa0), FUN_000c0c80 (c0c80), FUN_000c120c (c120c), FUN_000c1424 (c1424), FUN_000c1470 (c1470), FUN_000c24dc (c24dc), FUN_000c2530 (c2530), FUN_000c388c (c388c), FUN_000c47bc (c47bc), FUN_000c4a64 (c4a64), FUN_0027ead4 (27ead4), FUN_0027efb8 (27efb8), FUN_0027f2cc (27f2cc), FUN_0027f8a0 (27f8a0), FUN_0027fa54 (27fa54), FUN_0027ff4c (27ff4c), FUN_0028081c (28081c), FUN_0028104c (28104c), FUN_0028195c (28195c), FUN_002819a0 (2819a0), FUN_00281c30 (281c30), FUN_0028213c (28213c), FUN_00282150 (282150), FUN_00282930 (282930), FUN_00282c5c (282c5c), FUN_0028304c (28304c), FUN_002835d8 (2835d8), FUN_00283c24 (283c24), FUN_002856bc (2856bc), FUN_00286fb8 (286fb8), FUN_00288478 (288478), FUN_00288518 (288518), FUN_002892f0 (2892f0), FUN_00289a88 (289a88), FUN_0028d9fc (28d9fc), FUN_0028da6c (28da6c), FUN_0028dfa8 (28dfa8), FUN_0028e024 (28e024), FUN_0028e428 (28e428), FUN_0028eac0 (28eac0), FUN_00290d3c (290d3c), FUN_00292d3c (292d3c), FUN_00293328 (293328), FUN_00293900 (293900), FUN_002945bc (2945bc), FUN_00294628 (294628), FUN_00295200 (295200), FUN_00296314 (296314), FUN_00297010 (297010), FUN_00297c24 (297c24), FUN_00299d00 (299d00), FUN_00299edc (299edc), FUN_0029a020 (29a020), FUN_0029bf40 (29bf40), FUN_0029d170 (29d170), FUN_0029db84 (29db84), FUN_0029fadc (29fadc), FUN_002a0054 (2a0054), FUN_002a00dc (2a00dc), FUN_002a0154 (2a0154), FUN_002a0258 (2a0258), FUN_002a0994 (2a0994), FUN_002a0bf0 (2a0bf0), FUN_002a11d0 (2a11d0), FUN_002a1468 (2a1468), FUN_002a1c94 (2a1c94), FUN_002a3274 (2a3274), FUN_002a337c (2a337c), FUN_002a49b0 (2a49b0), FUN_002bb778 (2bb778), FUN_002bbf10 (2bbf10), FUN_002bc158 (2bc158), FUN_002bc728 (2bc728), FUN_002c0000 (2c0000), FUN_002c0c20 (2c0c20), FUN_002c1c18 (2c1c18), FUN_002c23f4 (2c23f4), FUN_002c3524 (2c3524), FUN_002c4230 (2c4230), FUN_002c4bc4 (2c4bc4), FUN_002c6388 (2c6388), FUN_002c7100 (2c7100), FUN_002c90b4 (2c90b4), FUN_002c91a4 (2c91a4), FUN_002c9370 (2c9370), FUN_002c93e4 (2c93e4), FUN_002c9430 (2c9430), FUN_002c95d0 (2c95d0), FUN_002c961c (2c961c), FUN_002c9668 (2c9668), FUN_002c96fc (2c96fc), FUN_002c9744 (2c9744), FUN_002c9824 (2c9824), FUN_0035aa60 (35aa60), FUN_0035ad2c (35ad2c), FUN_0035b090 (35b090), FUN_0035ddc4 (35ddc4), FUN_0035deec (35deec), FUN_0035e3ec (35e3ec), FUN_0035f640 (35f640), FUN_00360358 (360358), FUN_00360c60 (360c60), FUN_003611c8 (3611c8), FUN_0005cf24 (5cf24), FUN_0005d278 (5d278), FUN_0005dc00 (5dc00), FUN_0005f0e4 (5f0e4), FUN_0005f4a8 (5f4a8), FUN_0005f650 (5f650), FUN_0005f810 (5f810), FUN_0005f860 (5f860), FUN_0005fc54 (5fc54), FUN_000605a8 (605a8), updateShellWindowWantKeys (60808), FUN_0006222c (6222c), FUN_000622b0 (622b0), FUN_00062cec (62cec), FUN_00063724 (63724), FUN_00063818 (63818), FUN_000638cc (638cc), FUN_000638f0 (638f0), FUN_00063be8 (63be8), FUN_000648e8 (648e8), FUN_00064c40 (64c40), FUN_00065ac8 (65ac8), FUN_0006781c (6781c), FUN_00067c90 (67c90), FUN_00067cb4 (67cb4), FUN_00067e8c (67e8c), FUN_0006802c (6802c), FUN_0006806c (6806c), FUN_000696d0 (696d0), FUN_000698e0 (698e0), FUN_0006a4c0 (6a4c0), FUN_0006a4d4 (6a4d4), FUN_0006a754 (6a754), FUN_0006a80c (6a80c), FUN_0006a840 (6a840), FUN_0006a8bc (6a8bc), FUN_0006a910 (6a910), FUN_0006aaac (6aaac), FUN_0006ab28 (6ab28), FUN_0006ab90 (6ab90), FUN_0006abf0 (6abf0), FUN_0006acf4 (6acf4), FUN_0006b284 (6b284), FUN_0006b3d8 (6b3d8), FUN_0006b448 (6b448), FUN_0006b46c (6b46c), FUN_0006b558 (6b558), FUN_0006b610 (6b610), FUN_0006b64c (6b64c), FUN_0006b6d4 (6b6d4), FUN_0006bae4 (6bae4), FUN_0006baf4 (6baf4), FUN_0006bbdc (6bbdc), FUN_0006be94 (6be94), FUN_0006bec8 (6bec8), FUN_0006bef8 (6bef8), FUN_0006c128 (6c128), FUN_0006c168 (6c168), FUN_0006c298 (6c298), FUN_0006c440 (6c440), FUN_0006c464 (6c464), FUN_0006c4f4 (6c4f4), FUN_0006c5e0 (6c5e0), FUN_0006c94c (6c94c), FUN_0006c990 (6c990), FUN_0006c9f4 (6c9f4), FUN_0006cac4 (6cac4), FUN_0006cbdc (6cbdc), FUN_0006ccec (6ccec), FUN_0006cd80 (6cd80), FUN_0006ce64 (6ce64), FUN_0006cfc0 (6cfc0), FUN_0006d1a0 (6d1a0), FUN_0006d264 (6d264), FUN_0006d29c (6d29c), FUN_0006d4f0 (6d4f0), FUN_0006d580 (6d580), FUN_0006e258 (6e258), FUN_0006e52c (6e52c), FUN_0006e5a4 (6e5a4), FUN_0006e5cc (6e5cc), FUN_0006f318 (6f318), FUN_0006f398 (6f398), FUN_0006f784 (6f784), FUN_00070120 (70120), FUN_000701d4 (701d4), FUN_000702cc (702cc), FUN_00070ff4 (70ff4), FUN_000711a0 (711a0), FUN_00071860 (71860), FUN_00071ce4 (71ce4), FUN_00072390 (72390), FUN_0007273c (7273c), FUN_00072d64 (72d64), FUN_00072ecc (72ecc), FUN_00073004 (73004), FUN_00073074 (73074), FUN_0007329c (7329c), FUN_00073600 (73600), FUN_0007371c (7371c), FUN_00073a64 (73a64), FUN_00074384 (74384), FUN_00074498 (74498), FUN_000744b8 (744b8), FUN_0007498c (7498c), FUN_00074b38 (74b38), FUN_00074c2c (74c2c), FUN_00074d18 (74d18), FUN_00075274 (75274), FUN_00075298 (75298), FUN_00075334 (75334), FUN_0007588c (7588c), FUN_00075988 (75988), FUN_00075bd4 (75bd4), FUN_00075c10 (75c10), FUN_00075c4c (75c4c), FUN_00075c64 (75c64), closePluginEditor (75c7c), FUN_00075e54 (75e54), FUN_00075e68 (75e68), FUN_000762ec (762ec), FUN_00076460 (76460), FUN_00076478 (76478), FUN_00076548 (76548), FUN_000765d8 (765d8), FUN_000766e0 (766e0), FUN_000766f8 (766f8), FUN_0007682c (7682c), FUN_00076ac0 (76ac0), FUN_00076b0c (76b0c), FUN_00076bd0 (76bd0), FUN_00076c60 (76c60), FUN_00077020 (77020), FUN_000770c0 (770c0), FUN_00077124 (77124), FUN_00077190 (77190), FUN_00077208 (77208), FUN_00077af4 (77af4), FUN_00077ea8 (77ea8), FUN_00077f14 (77f14), FUN_00078038 (78038), FUN_00078540 (78540), FUN_000786fc (786fc), FUN_00078744 (78744), FUN_00078864 (78864), FUN_000789d8 (789d8), FUN_00078b38 (78b38), FUN_00078bf8 (78bf8), FUN_00078cd4 (78cd4), FUN_000791e4 (791e4), FUN_00079834 (79834), FUN_00079854 (79854), FUN_00079864 (79864), FUN_00079b7c (79b7c), FUN_00079bcc (79bcc), FUN_00079c5c (79c5c), FUN_00079ce8 (79ce8), FUN_00079ed0 (79ed0), FUN_00079f84 (79f84), FUN_0007a028 (7a028), FUN_0007a1a0 (7a1a0), FUN_0007a378 (7a378), FUN_0007a67c (7a67c), FUN_0007a918 (7a918), FUN_0007aa34 (7aa34), FUN_0007aa54 (7aa54), FUN_0007ab38 (7ab38), FUN_0007aef8 (7aef8), FUN_0007b2b8 (7b2b8), FUN_0007b524 (7b524), FUN_0007b584 (7b584), FUN_0007b5e8 (7b5e8), FUN_0007b778 (7b778), FUN_0007b8fc (7b8fc), FUN_0007bbe4 (7bbe4), FUN_0007be8c (7be8c), FUN_0007c31c (7c31c), FUN_0007c3f4 (7c3f4), FUN_0007c678 (7c678), FUN_0007c788 (7c788), FUN_0007c9ac (7c9ac), FUN_0007cc0c (7cc0c), FUN_0007ccac (7ccac), FUN_0007ccd8 (7ccd8), FUN_0007cd94 (7cd94), FUN_0007ce9c (7ce9c), FUN_0007cec8 (7cec8), FUN_0007cf4c (7cf4c), applyFilter7 (7cf7c), FUN_0007d044 (7d044), FUN_0007d2c8 (7d2c8), FUN_0007d714 (7d714), FUN_0007d7a0 (7d7a0), FUN_0007d850 (7d850), FUN_0007d990 (7d990), applyFilter9 (7da9c), FUN_0007de54 (7de54), FUN_0007de74 (7de74), FUN_0007e020 (7e020), FUN_0007e160 (7e160), FUN_0007e3c8 (7e3c8), FUN_0007e430 (7e430), FUN_0007e560 (7e560), FUN_0007e640 (7e640), FUN_0007ec40 (7ec40), FUN_0007ec64 (7ec64), FUN_0007eccc (7eccc), FUN_0007f298 (7f298), FUN_0007f53c (7f53c), FUN_000807a8 (807a8), FUN_00081050 (81050), FUN_0008160c (8160c), FUN_0008550c (8550c), FUN_000855fc (855fc), FUN_000858d0 (858d0), FUN_000859f4 (859f4), FUN_00085ab8 (85ab8), FUN_00085ecc (85ecc), FUN_00085f94 (85f94), FUN_000860e4 (860e4), FUN_000862a0 (862a0), FUN_0008656c (8656c), FUN_00086ef8 (86ef8), FUN_00087298 (87298), processInput49 (87308), FUN_00087784 (87784), processInput51 (88a18), FUN_000891b8 (891b8), FUN_00089538 (89538), FUN_0008a154 (8a154), setAndCalculateDotProduct8 (8a260), FUN_0008a8f4 (8a8f4), FUN_0008bd90 (8bd90), FUN_0008c470 (8c470), FUN_0008c4f4 (8c4f4), FUN_0008d7bc (8d7bc), FUN_0008d850 (8d850), FUN_0008df08 (8df08), FUN_0008df68 (8df68), FUN_0008ef30 (8ef30), FUN_0008fa9c (8fa9c), FUN_0008fb18 (8fb18), FUN_0008fe54 (8fe54), FUN_00091b6c (91b6c), FUN_00091c48 (91c48), FUN_00091c70 (91c70), FUN_00091d18 (91d18), FUN_00092e48 (92e48), FUN_000936e8 (936e8), FUN_00093790 (93790), FUN_00093808 (93808), FUN_00093920 (93920), FUN_00093960 (93960), FUN_000939c8 (939c8), FUN_00093b48 (93b48), FUN_00094bac (94bac), FUN_00094e64 (94e64), FUN_0009512c (9512c), FUN_00095390 (95390), FUN_00095be4 (95be4), FUN_00095c64 (95c64), processInput59 (95d10), FUN_0009607c (9607c), FUN_00096574 (96574), FUN_00096f10 (96f10), FUN_00096fb4 (96fb4), FUN_00097228 (97228), FUN_000974a8 (974a8), FUN_000985f4 (985f4), FUN_00098724 (98724), FUN_0009895c (9895c), FUN_0009938c (9938c), FUN_0009b124 (9b124), FUN_0009b1f4 (9b1f4), FUN_0009cd94 (9cd94), FUN_0009ce10 (9ce10), FUN_0009d250 (9d250), FUN_0009d2f8 (9d2f8), FUN_0009d45c (9d45c), FUN_0009f780 (9f780), FUN_000c4f24 (c4f24), FUN_000c5030 (c5030), FUN_000c51a8 (c51a8), FUN_000c5d3c (c5d3c), FUN_000c6544 (c6544), FUN_000c6a8c (c6a8c), FUN_000c73c0 (c73c0), FUN_000c8b40 (c8b40), FUN_000c9108 (c9108), FUN_000ca044 (ca044), FUN_000ca724 (ca724), FUN_000cb860 (cb860), FUN_000cd0d8 (cd0d8), FUN_000cf034 (cf034), FUN_000cf1d4 (cf1d4), FUN_000d06c4 (d06c4), FUN_000d1a68 (d1a68), FUN_000d2730 (d2730), FUN_000d4730 (d4730), FUN_000d5230 (d5230), FUN_000d6f70 (d6f70), FUN_000d7e58 (d7e58), FUN_000d8dd4 (d8dd4), FUN_000d8e90 (d8e90), FUN_000d8f88 (d8f88), FUN_000db014 (db014), FUN_000dc720 (dc720), FUN_000dca18 (dca18), FUN_000dca40 (dca40), FUN_000dcb10 (dcb10), FUN_000dd700 (dd700), FUN_000ddcac (ddcac), FUN_000de13c (de13c), FUN_000df094 (df094), FUN_000dfa20 (dfa20), FUN_000dfbfc (dfbfc), FUN_000e1468 (e1468), FUN_000e1d58 (e1d58), FUN_000e223c (e223c), FUN_000e31c8 (e31c8), FUN_000e3a88 (e3a88), FUN_000e3db4 (e3db4), FUN_000e49c0 (e49c0), FUN_000e4b14 (e4b14), FUN_000e50dc (e50dc), FUN_000e5708 (e5708), FUN_000e641c (e641c), FUN_000e7014 (e7014), FUN_000e792c (e792c), FUN_000e7b0c (e7b0c), FUN_000e7c54 (e7c54), FUN_000e7e84 (e7e84), FUN_000e8394 (e8394), FUN_000e878c (e878c), FUN_000e87f4 (e87f4), FUN_000e8968 (e8968), FUN_000e89f4 (e89f4), FUN_000e8f58 (e8f58), FUN_000e9070 (e9070), FUN_000e92ec (e92ec), FUN_000eb65c (eb65c), FUN_000ebe2c (ebe2c), FUN_000ec0f8 (ec0f8), FUN_000ec20c (ec20c), FUN_000ec674 (ec674), FUN_000edfb4 (edfb4), FUN_000eec38 (eec38), FUN_000f02dc (f02dc), FUN_000f0e80 (f0e80), FUN_000f128c (f128c), FUN_000f1338 (f1338), FUN_000f1d98 (f1d98), FUN_000f21fc (f21fc), FUN_000f2da0 (f2da0), FUN_000f3b9c (f3b9c), FUN_000f3df4 (f3df4), FUN_000f5844 (f5844), FUN_000f6ae8 (f6ae8), FUN_000f6e28 (f6e28), FUN_000f6f74 (f6f74), FUN_000f759c (f759c), FUN_000f79c4 (f79c4), FUN_000f7a18 (f7a18), FUN_000f8d4c (f8d4c), FUN_000f8d8c (f8d8c), FUN_000fdb24 (fdb24), FUN_000ff2a8 (ff2a8), FUN_000ffa08 (ffa08), FUN_00100548 (100548), FUN_00100dec (100dec), FUN_00101194 (101194), FUN_00101778 (101778), FUN_00101a84 (101a84), FUN_00101e60 (101e60), FUN_001030b0 (1030b0), FUN_001044a4 (1044a4), FUN_001047d0 (1047d0), FUN_00104ee8 (104ee8), FUN_00106144 (106144), FUN_00106ac4 (106ac4), FUN_00106e28 (106e28), FUN_001071d4 (1071d4), FUN_00107224 (107224), FUN_00108a48 (108a48), FUN_00108be0 (108be0), FUN_00109cc0 (109cc0), FUN_00109cf8 (109cf8), FUN_0010a360 (10a360), FUN_0010a5fc (10a5fc), FUN_0010ef3c (10ef3c), FUN_0010f14c (10f14c), FUN_0010fa24 (10fa24), FUN_0011288c (11288c), FUN_00113050 (113050), FUN_00113b0c (113b0c), FUN_00114414 (114414), FUN_00114b9c (114b9c), FUN_00114c10 (114c10), FUN_00114d38 (114d38), FUN_00114dac (114dac), FUN_00114fb8 (114fb8), FUN_0011551c (11551c), FUN_00115774 (115774), FUN_00115ae0 (115ae0), FUN_001161d0 (1161d0), FUN_001169a0 (1169a0), FUN_0011752c (11752c), FUN_00117ea4 (117ea4), FUN_00118130 (118130), FUN_00118cb8 (118cb8), FUN_00118f64 (118f64), FUN_00119494 (119494), FUN_0011a1f8 (11a1f8), FUN_0011b17c (11b17c), FUN_0011b230 (11b230), FUN_0011b3cc (11b3cc), FUN_0011dba8 (11dba8), FUN_0011dc30 (11dc30), FUN_0011f7ac (11f7ac), FUN_0011f9cc (11f9cc), FUN_00120c90 (120c90), FUN_00120e10 (120e10), FUN_0012180c (12180c), FUN_00121900 (121900), FUN_00123e8c (123e8c), FUN_001240b0 (1240b0), FUN_001248d0 (1248d0), FUN_001268a8 (1268a8), FUN_00127640 (127640), FUN_00127eac (127eac), FUN_001284d0 (1284d0), FUN_001289c4 (1289c4), FUN_00128ad8 (128ad8), FUN_00128d20 (128d20), FUN_0012928c (12928c), FUN_0012951c (12951c), FUN_0012a888 (12a888), FUN_0012b504 (12b504), FUN_0012b534 (12b534), FUN_0012b81c (12b81c), FUN_0012bba4 (12bba4), FUN_0012d49c (12d49c), FUN_0012dc30 (12dc30), FUN_0012dea8 (12dea8), FUN_0012e7c4 (12e7c4), FUN_0012ed14 (12ed14), FUN_0012ef48 (12ef48), FUN_0012f118 (12f118), FUN_0012f830 (12f830), FUN_001301a8 (1301a8), FUN_00130cf4 (130cf4), FUN_00130e18 (130e18), FUN_00130e90 (130e90), FUN_00130efc (130efc), FUN_00132074 (132074), FUN_00132148 (132148), FUN_001321b0 (1321b0), FUN_00133c80 (133c80), FUN_00136360 (136360), FUN_0013665c (13665c), FUN_0013675c (13675c), FUN_001370fc (1370fc), FUN_00137828 (137828), FUN_00137cb8 (137cb8), FUN_00137e04 (137e04), FUN_00137e9c (137e9c), FUN_00137f40 (137f40), FUN_0013815c (13815c), FUN_001381c0 (1381c0), FUN_001381e0 (1381e0), FUN_001389c4 (1389c4), FUN_00138b74 (138b74), FUN_00139944 (139944), FUN_00139f50 (139f50), FUN_0013a0f0 (13a0f0), FUN_0013a118 (13a118), FUN_0013a260 (13a260), FUN_0013a2ec (13a2ec), FUN_0013a548 (13a548), FUN_0013a580 (13a580), FUN_0013a644 (13a644), FUN_0013aa7c (13aa7c), FUN_0013abf0 (13abf0), FUN_0013ac68 (13ac68), FUN_0013ac7c (13ac7c), FUN_0013acd4 (13acd4), FUN_0013ada0 (13ada0), FUN_0013bcf0 (13bcf0), FUN_0013bd48 (13bd48), FUN_0013e43c (13e43c), FUN_001439c0 (1439c0), FUN_00147044 (147044), FUN_00153bd4 (153bd4), FUN_00153d80 (153d80), FUN_00154514 (154514), FUN_001558c4 (1558c4), FUN_00155924 (155924), FUN_001559d0 (1559d0), FUN_00155e28 (155e28), FUN_00156a70 (156a70), FUN_00156cec (156cec), FUN_0015750c (15750c), FUN_0015852c (15852c), FUN_00158bcc (158bcc), FUN_001592a8 (1592a8), FUN_00159bb0 (159bb0), FUN_00159d6c (159d6c), FUN_0015acd0 (15acd0), FUN_0015b1fc (15b1fc), FUN_0015b448 (15b448), FUN_00163454 (163454), FUN_001635f8 (1635f8), FUN_00164cf4 (164cf4), FUN_0016546c (16546c), FUN_00165730 (165730), FUN_001657e4 (1657e4), FUN_0016606c (16606c), FUN_0016615c (16615c), FUN_00166870 (166870), FUN_00166994 (166994), FUN_00166d6c (166d6c), waitUntilPendingCommandsCompleted (1689cc), FUN_00168bfc (168bfc), FUN_0016e7a0 (16e7a0), FUN_0016ee64 (16ee64), FUN_0016f000 (16f000), FUN_0016f308 (16f308), FUN_0016f460 (16f460), FUN_0016f85c (16f85c), FUN_0016f9a8 (16f9a8), FUN_001703c8 (1703c8), FUN_00170898 (170898), FUN_00170ad8 (170ad8), FUN_00170e70 (170e70), FUN_001723a0 (1723a0), FUN_00172a58 (172a58), FUN_00173f5c (173f5c), FUN_0017591c (17591c), FUN_00175fd0 (175fd0), FUN_00176298 (176298), FUN_00176668 (176668), FUN_00177c60 (177c60), FUN_001785fc (1785fc), FUN_0017861c (17861c), FUN_0017863c (17863c), FUN_001799f4 (1799f4), FUN_0017a1dc (17a1dc), FUN_0017a25c (17a25c), FUN_0017a314 (17a314), FUN_0017a674 (17a674), FUN_0017ac8c (17ac8c), FUN_0017b17c (17b17c), FUN_0017b79c (17b79c), FUN_0017d188 (17d188), FUN_0017e094 (17e094), FUN_0017e3c0 (17e3c0), FUN_0017f170 (17f170), FUN_0017f890 (17f890), FUN_0017f8b4 (17f8b4), FUN_0017fad4 (17fad4), FUN_0017fc7c (17fc7c), FUN_0017fd4c (17fd4c), FUN_0017fe74 (17fe74), FUN_00180420 (180420), FUN_00180d18 (180d18), FUN_00180e08 (180e08), FUN_00180e4c (180e4c), FUN_00180fb8 (180fb8), FUN_001810c8 (1810c8), FUN_00181334 (181334), FUN_0018198c (18198c), FUN_00181d14 (181d14), FUN_00181e88 (181e88), FUN_0018202c (18202c), FUN_001823c0 (1823c0), FUN_00182534 (182534), FUN_001829d4 (1829d4), FUN_00183594 (183594), FUN_001838e8 (1838e8), FUN_00183b40 (183b40), FUN_001843f0 (1843f0), FUN_0018466c (18466c), FUN_00184ca0 (184ca0), FUN_00184d08 (184d08), FUN_001853ec (1853ec), FUN_001856bc (1856bc), FUN_001857a4 (1857a4), FUN_001858b8 (1858b8), FUN_00185f94 (185f94), FUN_00186210 (186210), FUN_001865bc (1865bc), FUN_001865dc (1865dc), FUN_00186d40 (186d40), FUN_00186fbc (186fbc), FUN_00186fe4 (186fe4), FUN_0018738c (18738c), FUN_00187b0c (187b0c), FUN_00188038 (188038), FUN_00189214 (189214), FUN_0018a36c (18a36c), FUN_0018a474 (18a474), FUN_0018a53c (18a53c), FUN_0018a63c (18a63c), FUN_0018ac54 (18ac54), FUN_0018ad3c (18ad3c), FUN_0018adc8 (18adc8), FUN_0018af6c (18af6c), FUN_0018b1e8 (18b1e8), FUN_0018c4f4 (18c4f4), FUN_0018c5dc (18c5dc), FUN_0018c6f0 (18c6f0), FUN_0018cd44 (18cd44), FUN_0018d5f4 (18d5f4), FUN_0018d65c (18d65c), FUN_0018d8d8 (18d8d8), FUN_0018dfe0 (18dfe0), FUN_0018e820 (18e820), FUN_0018ed80 (18ed80), FUN_0018ee68 (18ee68), FUN_0018f490 (18f490), FUN_0018f5cc (18f5cc), FUN_0018f740 (18f740), FUN_0018f848 (18f848), FUN_0018fb30 (18fb30), FUN_0018fc18 (18fc18), FUN_00190398 (190398), FUN_001908a4 (1908a4), FUN_001908c4 (1908c4), FUN_00191e64 (191e64), FUN_00191f70 (191f70), FUN_001920c0 (1920c0), FUN_001921f8 (1921f8), FUN_00192aa0 (192aa0), FUN_00192ae8 (192ae8), FUN_00192b90 (192b90), FUN_00192bb0 (192bb0), FUN_00192c78 (192c78), FUN_00192c98 (192c98), FUN_00192d40 (192d40), FUN_00192e60 (192e60), FUN_00192f48 (192f48), FUN_001938d0 (1938d0), FUN_001939b8 (1939b8), FUN_00193c5c (193c5c), FUN_00193d44 (193d44), FUN_001945b8 (1945b8), FUN_001945e0 (1945e0), FUN_00194f1c (194f1c), FUN_00195030 (195030), FUN_00195690 (195690), FUN_0019590c (19590c), FUN_00195950 (195950), FUN_00196070 (196070), FUN_00196644 (196644), FUN_0019692c (19692c), FUN_00196a14 (196a14), FUN_00197168 (197168), FUN_001973e4 (1973e4), FUN_00197408 (197408), FUN_001976c8 (1976c8), FUN_001977b0 (1977b0), FUN_00197d4c (197d4c), FUN_00197f0c (197f0c), FUN_00197ff4 (197ff4), FUN_00198188 (198188), FUN_00198558 (198558), FUN_001987c8 (1987c8), FUN_00198cd4 (198cd4), FUN_001991e0 (1991e0), FUN_00199200 (199200), FUN_0019b48c (19b48c), FUN_0019b4d4 (19b4d4), FUN_0019b57c (19b57c), FUN_0019b59c (19b59c), FUN_0019b684 (19b684), FUN_0019b72c (19b72c), FUN_0019b74c (19b74c), FUN_0019b84c (19b84c), FUN_0019bfcc (19bfcc), FUN_0019c2e4 (19c2e4), FUN_0019c3cc (19c3cc), FUN_0019c66c (19c66c), FUN_0019d290 (19d290), FUN_0019d530 (19d530), FUN_0019d934 (19d934), FUN_0019d9dc (19d9dc), FUN_0019dba4 (19dba4), FUN_0019e09c (19e09c), FUN_0019e318 (19e318), FUN_0019ea7c (19ea7c), FUN_0019ead4 (19ead4), FUN_0019f050 (19f050), FUN_0019f338 (19f338), FUN_0019f420 (19f420), FUN_0019fb68 (19fb68), FUN_0019fe08 (19fe08), FUN_001a0420 (1a0420), FUN_001a0900 (1a0900), FUN_001a0b7c (1a0b7c), FUN_001a0ba4 (1a0ba4), FUN_001a0e64 (1a0e64), FUN_001a0f4c (1a0f4c), FUN_001a16b4 (1a16b4), FUN_001a179c (1a179c), FUN_001a680c (1a680c), FUN_001a6c10 (1a6c10), FUN_001a9718 (1a9718), FUN_001a9ac0 (1a9ac0), FUN_001a9d04 (1a9d04), FUN_001a9fa8 (1a9fa8), FUN_001aa410 (1aa410), FUN_001aa5dc (1aa5dc), FUN_001aaab0 (1aaab0), FUN_001aaef4 (1aaef4), FUN_001ac418 (1ac418), FUN_001acf90 (1acf90), FUN_001ae388 (1ae388), FUN_001ae3f0 (1ae3f0), FUN_001ae46c (1ae46c), FUN_001aec6c (1aec6c), FUN_001af234 (1af234), FUN_001af45c (1af45c), FUN_001af62c (1af62c), FUN_001b003c (1b003c), FUN_001b0ad0 (1b0ad0), FUN_001b2ae4 (1b2ae4), FUN_001b2dbc (1b2dbc), FUN_001b2e08 (1b2e08), FUN_001b2f14 (1b2f14), FUN_001b3180 (1b3180), FUN_001b337c (1b337c), FUN_001b3be0 (1b3be0), FUN_001b3d44 (1b3d44), FUN_001b4600 (1b4600), FUN_001b4af8 (1b4af8), FUN_001b4b2c (1b4b2c), FUN_001b4d44 (1b4d44), FUN_001b4d70 (1b4d70), FUN_001b5d5c (1b5d5c), FUN_001b6164 (1b6164), FUN_001b7bf0 (1b7bf0), FUN_001b8a34 (1b8a34), FUN_001b9648 (1b9648), FUN_001ba28c (1ba28c), FUN_001ba7a4 (1ba7a4), FUN_001ba80c (1ba80c), FUN_001ba980 (1ba980), FUN_001baa0c (1baa0c), FUN_001bc898 (1bc898), FUN_001bee10 (1bee10), FUN_001c14cc (1c14cc), FUN_001c1674 (1c1674), FUN_001c298c (1c298c), FUN_001c33ac (1c33ac), FUN_001c35b4 (1c35b4), FUN_001c5bfc (1c5bfc), FUN_001c6438 (1c6438), FUN_001c6b4c (1c6b4c), FUN_001c6e98 (1c6e98), FUN_001c70b4 (1c70b4), FUN_001c711c (1c711c), FUN_001ca768 (1ca768), FUN_001cbcf0 (1cbcf0), FUN_001ce830 (1ce830), FUN_001cf2f4 (1cf2f4), FUN_001cf354 (1cf354), FUN_001d1f50 (1d1f50), FUN_001d2414 (1d2414), FUN_001d2d8c (1d2d8c), FUN_001d3254 (1d3254), FUN_001d3bd0 (1d3bd0), FUN_001d46ac (1d46ac), FUN_001d4884 (1d4884), FUN_001d48e8 (1d48e8), FUN_001d4974 (1d4974), FUN_001d58a8 (1d58a8), FUN_001d5910 (1d5910), FUN_001d5a84 (1d5a84), FUN_001d5b10 (1d5b10), FUN_001d5b68 (1d5b68), FUN_001dc568 (1dc568), FUN_001dc82c (1dc82c), FUN_001dd148 (1dd148), FUN_001dd434 (1dd434), FUN_001df7e0 (1df7e0), FUN_001dfc68 (1dfc68), FUN_001e0d04 (1e0d04), FUN_001e4c7c (1e4c7c), FUN_001e4d58 (1e4d58), FUN_001e9558 (1e9558), FUN_001ec4c0 (1ec4c0), FUN_001ec974 (1ec974), FUN_001ed964 (1ed964), FUN_001f056c (1f056c), FUN_001f1444 (1f1444), FUN_001f5014 (1f5014), FUN_001f538c (1f538c), FUN_001f5dc0 (1f5dc0), FUN_001f5de8 (1f5de8), FUN_001f6468 (1f6468), FUN_001f7170 (1f7170), FUN_001f7414 (1f7414), FUN_001f74b8 (1f74b8), FUN_001f750c (1f750c), FUN_001f8158 (1f8158), FUN_001f81fc (1f81fc), FUN_001fb2b8 (1fb2b8), FUN_00203c18 (203c18), FUN_00203c40 (203c40), FUN_00204a3c (204a3c), FUN_00204a64 (204a64), FUN_00205d94 (205d94), FUN_00205dbc (205dbc), FUN_00205f70 (205f70), FUN_00206afc (206afc), FUN_00209c84 (209c84), FUN_00209e84 (209e84), FUN_00209ee4 (209ee4), FUN_0020df3c (20df3c), FUN_0020e118 (20e118), FUN_0020e6bc (20e6bc), FUN_0020e9d0 (20e9d0), FUN_0020ea2c (20ea2c), FUN_00212950 (212950), FUN_00212bac (212bac), FUN_00215e78 (215e78), FUN_00215ea0 (215ea0), FUN_00216db8 (216db8), FUN_00217130 (217130), FUN_00217540 (217540), FUN_00217574 (217574), FUN_002176bc (2176bc), FUN_0021789c (21789c), FUN_0021a31c (21a31c), FUN_0021eca8 (21eca8), FUN_0021f478 (21f478), FUN_00224d4c (224d4c), FUN_00225208 (225208), FUN_00225724 (225724), FUN_002269e8 (2269e8), FUN_00226af8 (226af8), FUN_002286b4 (2286b4), FUN_00228c28 (228c28), FUN_002293cc (2293cc), FUN_00232190 (232190), FUN_00253840 (253840), FUN_00253f7c (253f7c), FUN_00254bc8 (254bc8), FUN_002567e4 (2567e4), FUN_0025736c (25736c), FUN_002586c0 (2586c0), FUN_00259340 (259340), FUN_002593d0 (2593d0), FUN_0025c2c4 (25c2c4), FUN_0025c5ac (25c5ac), FUN_0025ca14 (25ca14), FUN_00261e3c (261e3c), FUN_00262554 (262554), FUN_00263668 (263668), FUN_00263a38 (263a38), FUN_00263f30 (263f30), FUN_002655a0 (2655a0), FUN_00265b64 (265b64), FUN_0026d470 (26d470), FUN_0026ebf0 (26ebf0), FUN_0026fc58 (26fc58), FUN_002737d4 (2737d4), FUN_00274c28 (274c28), FUN_002771f8 (2771f8), FUN_0027995c (27995c), FUN_00279b38 (279b38), FUN_0027a4e4 (27a4e4), FUN_0027c190 (27c190), FUN_0027d238 (27d238), FUN_002b65b8 (2b65b8), FUN_002b84cc (2b84cc), FUN_002cbdb8 (2cbdb8), FUN_002cbde8 (2cbde8), FUN_002cbec4 (2cbec4), FUN_002cdd98 (2cdd98), FUN_002d1688 (2d1688), FUN_002d2030 (2d2030), FUN_002d3f74 (2d3f74), FUN_002d404c (2d404c), FUN_002d419c (2d419c), FUN_002d424c (2d424c), FUN_002d4378 (2d4378), FUN_002d4428 (2d4428), FUN_002d45f4 (2d45f4), FUN_002d469c (2d469c), FUN_002d481c (2d481c), FUN_002d49fc (2d49fc), FUN_002d4acc (2d4acc), FUN_002d4b48 (2d4b48), FUN_002d4d70 (2d4d70), FUN_002d4e40 (2d4e40), FUN_002d4f98 (2d4f98), FUN_002d506c (2d506c), FUN_002d520c (2d520c), FUN_002d52a8 (2d52a8), FUN_002d5318 (2d5318), FUN_002d5510 (2d5510), FUN_002d55d0 (2d55d0), FUN_002d5604 (2d5604), FUN_002d569c (2d569c), FUN_002d56c0 (2d56c0), FUN_002d5730 (2d5730), FUN_002d57a0 (2d57a0), FUN_002d5be4 (2d5be4), FUN_002d5c10 (2d5c10), FUN_002db308 (2db308), FUN_002db6c4 (2db6c4), FUN_002e9114 (2e9114), validateImageDimensions (2ea114), FUN_002ea60c (2ea60c), FUN_002ea83c (2ea83c), FUN_002eaa50 (2eaa50), FUN_002eab5c (2eab5c), FUN_002eac7c (2eac7c), FUN_002eb540 (2eb540), FUN_002ef974 (2ef974), FUN_002f0308 (2f0308), FUN_002f0d4c (2f0d4c), FUN_002f0ed4 (2f0ed4), FUN_002f1024 (2f1024), FUN_002f1364 (2f1364), decompressZTXtChunk2 (2f1570), FUN_002f2384 (2f2384), FUN_002f339c (2f339c), FUN_002f3d54 (2f3d54), FUN_002f4088 (2f4088), FUN_002f53cc (2f53cc), FUN_002f5a94 (2f5a94), FUN_002f62dc (2f62dc), FUN_002f85c4 (2f85c4), FUN_002f8e90 (2f8e90), FUN_002f8f4c (2f8f4c), FUN_002fa2b4 (2fa2b4), FUN_002fa8f0 (2fa8f0), FUN_002fb4c4 (2fb4c4), FUN_002fd054 (2fd054), FUN_002fd5c4 (2fd5c4), FUN_002fe3e4 (2fe3e4), FUN_002fe768 (2fe768), FUN_002fec50 (2fec50), FUN_002ff0dc (2ff0dc), FUN_002ff3f0 (2ff3f0), FUN_002ff934 (2ff934), FUN_002ffd08 (2ffd08), FUN_00300fd8 (300fd8), FUN_003014dc (3014dc), FUN_00301508 (301508), FUN_00303364 (303364), FUN_0030413c (30413c), FUN_00305c5c (305c5c), FUN_00306470 (306470), FUN_00309d24 (309d24), FUN_0030a228 (30a228), FUN_0030a7c4 (30a7c4), FUN_0030a924 (30a924), FUN_0030c560 (30c560), FUN_0030cbd0 (30cbd0), FUN_0030db38 (30db38), FUN_0030dd5c (30dd5c), FUN_0030ddb8 (30ddb8), FUN_0030fc84 (30fc84), FUN_0031040c (31040c), FUN_0031052c (31052c), FUN_003105bc (3105bc), FUN_003107bc (3107bc), FUN_00310878 (310878), FUN_003132e0 (3132e0), FUN_0031330c (31330c), FUN_00313364 (313364), FUN_003135dc (3135dc), FUN_00313aa4 (313aa4), FUN_003140c8 (3140c8), FUN_003157bc (3157bc), FUN_00315848 (315848), FUN_003158e0 (3158e0), FUN_00315958 (315958), FUN_00315988 (315988), FUN_00315e9c (315e9c), FUN_00316048 (316048), FUN_003162f0 (3162f0), FUN_003196d0 (3196d0), FUN_00319bec (319bec), FUN_0031ac40 (31ac40), FUN_0031b1e0 (31b1e0), FUN_0031b8f8 (31b8f8), FUN_0031bac4 (31bac4), FUN_0031bcb4 (31bcb4), FUN_0031bd14 (31bd14), FUN_0031c448 (31c448), FUN_0031d3ec (31d3ec), FUN_0031dad0 (31dad0), FUN_0031e098 (31e098), FUN_0031e140 (31e140), FUN_0031e9cc (31e9cc), FUN_0031eff8 (31eff8), FUN_0031f574 (31f574), FUN_00320094 (320094), FUN_003203c0 (3203c0), FUN_003205e8 (3205e8), FUN_003212ec (3212ec), FUN_00321648 (321648), FUN_0032204c (32204c), FUN_00322968 (322968), FUN_00323358 (323358), FUN_0032396c (32396c), FUN_00323c88 (323c88), FUN_00323f80 (323f80), FUN_0032422c (32422c), FUN_00324940 (324940), FUN_00324fa4 (324fa4), FUN_0032549c (32549c), FUN_003261e4 (3261e4), FUN_00326258 (326258), FUN_00326280 (326280), FUN_00327214 (327214), FUN_00327228 (327228), FUN_0032733c (32733c), FUN_00327c34 (327c34), FUN_00327da8 (327da8), FUN_00328c14 (328c14), FUN_003290b0 (3290b0), FUN_003292e8 (3292e8), FUN_003295a4 (3295a4), FUN_00329660 (329660), FUN_0033006c (33006c), FUN_00331364 (331364), FUN_00331464 (331464), FUN_00331ad0 (331ad0), FUN_003351d4 (3351d4), FUN_00335248 (335248), FUN_00335cf0 (335cf0), FUN_00335fcc (335fcc), FUN_00336120 (336120), FUN_003370b0 (3370b0), FUN_003388d4 (3388d4), FUN_00339cd0 (339cd0), FUN_0033b6c4 (33b6c4), FUN_0033d2a8 (33d2a8), FUN_0033e43c (33e43c), processPostScriptFont (33f9e4), FUN_0033fac0 (33fac0), FUN_00340790 (340790), FUN_00340f30 (340f30), FUN_0034129c (34129c), FUN_003412f0 (3412f0), FUN_00344060 (344060), FUN_00345948 (345948), FUN_00345eb0 (345eb0), FUN_00346758 (346758), FUN_00347e14 (347e14), FUN_003482a0 (3482a0), FUN_003495b8 (3495b8), FUN_00349a38 (349a38), FUN_0034a450 (34a450), FUN_0034ab98 (34ab98), FUN_0034b070 (34b070), FUN_0034b23c (34b23c), FUN_0034b3e8 (34b3e8), FUN_0034bee8 (34bee8), FUN_0034c544 (34c544), FUN_0034ca1c (34ca1c), FUN_0034cdb4 (34cdb4), FUN_003503dc (3503dc), FUN_00351798 (351798), FUN_00352a78 (352a78), FUN_00352de0 (352de0), FUN_00352ec8 (352ec8), FUN_00353508 (353508), FUN_00353ba4 (353ba4), FUN_00353c58 (353c58), FUN_0035503c (35503c), FUN_0035689c (35689c), FUN_00356c10 (356c10), FUN_00356edc (356edc), FUN_0035775c (35775c), FUN_00357978 (357978), FUN_00357ce4 (357ce4), FUN_00357e88 (357e88), FUN_003580a8 (3580a8), FUN_003587dc (3587dc), FUN_003599a4 (3599a4), FUN_00359a98 (359a98), FUN_00367884 (367884), FUN_00368554 (368554), FUN_0036b3a4 (36b3a4), FUN_0036b730 (36b730), FUN_0036c058 (36c058), FUN_0036d07c (36d07c), FUN_00370918 (370918), FUN_00370d2c (370d2c), FUN_00373c78 (373c78), FUN_00373d4c (373d4c), FUN_00374e74 (374e74), FUN_00375ed4 (375ed4), FUN_0037a450 (37a450), FUN_0037a528 (37a528), FUN_0037c474 (37c474), FUN_0037d028 (37d028), FUN_0037e614 (37e614), FUN_0037f78c (37f78c), FUN_00381eb0 (381eb0), FUN_00384458 (384458), FUN_00384958 (384958), FUN_003849a8 (3849a8), FUN_00385510 (385510), FUN_00385718 (385718)
+All: FUN_000a22fc (a22fc), FUN_000a2a9c (a2a9c), FUN_000a34a8 (a34a8), FUN_000a5534 (a5534), FUN_000a5c88 (a5c88), FUN_000a7a14 (a7a14), FUN_000a7b50 (a7b50), FUN_000a7d10 (a7d10), FUN_000a7d88 (a7d88), FUN_000a7e00 (a7e00), FUN_000a7e64 (a7e64), FUN_000a864c (a864c), FUN_000a8868 (a8868), FUN_000a8898 (a8898), FUN_000a8c04 (a8c04), FUN_000a98c8 (a98c8), FUN_000a99c4 (a99c4), FUN_000aa088 (aa088), FUN_000aa558 (aa558), FUN_000aa6f0 (aa6f0), FUN_000aacd0 (aacd0), FUN_000aad5c (aad5c), FUN_000aafc4 (aafc4), FUN_000ab124 (ab124), FUN_000ab67c (ab67c), FUN_000abb5c (abb5c), FUN_000abc54 (abc54), FUN_000abcd8 (abcd8), FUN_000ac0b8 (ac0b8), FUN_000adbec (adbec), FUN_000af8e0 (af8e0), FUN_000b08d0 (b08d0), FUN_000b1520 (b1520), FUN_000b40a4 (b40a4), FUN_000b415c (b415c), FUN_000b4808 (b4808), FUN_000b4abc (b4abc), FUN_000b54c8 (b54c8), FUN_000b7024 (b7024), FUN_000b9448 (b9448), FUN_000b9fb4 (b9fb4), FUN_000ba9d4 (ba9d4), FUN_000bb38c (bb38c), FUN_000bc42c (bc42c), FUN_000bc5d8 (bc5d8), FUN_000bc794 (bc794), FUN_000bd964 (bd964), FUN_000bd988 (bd988), FUN_000be918 (be918), FUN_000bf494 (bf494), FUN_000bf520 (bf520), FUN_000c0384 (c0384), FUN_000c0aa0 (c0aa0), FUN_000c0c80 (c0c80), FUN_000c120c (c120c), FUN_000c1424 (c1424), FUN_000c1470 (c1470), FUN_000c24dc (c24dc), FUN_000c2530 (c2530), FUN_000c388c (c388c), FUN_000c47bc (c47bc), FUN_000c4a64 (c4a64), FUN_0027ead4 (27ead4), FUN_0027efb8 (27efb8), FUN_0027f2cc (27f2cc), FUN_0027f8a0 (27f8a0), FUN_0027fa54 (27fa54), FUN_0027ff4c (27ff4c), FUN_0028081c (28081c), FUN_0028104c (28104c), FUN_0028195c (28195c), FUN_002819a0 (2819a0), FUN_00281c30 (281c30), FUN_0028213c (28213c), FUN_00282150 (282150), FUN_00282930 (282930), FUN_00282c5c (282c5c), FUN_0028304c (28304c), FUN_002835d8 (2835d8), FUN_00283c24 (283c24), FUN_002856bc (2856bc), FUN_00286fb8 (286fb8), FUN_00288478 (288478), FUN_00288518 (288518), FUN_002892f0 (2892f0), FUN_0028d9fc (28d9fc), FUN_0028da6c (28da6c), FUN_0028dfa8 (28dfa8), FUN_0028e024 (28e024), FUN_0028e428 (28e428), FUN_0028eac0 (28eac0), FUN_00290d3c (290d3c), FUN_00292d3c (292d3c), FUN_00293328 (293328), FUN_00293900 (293900), FUN_002945bc (2945bc), FUN_00294628 (294628), FUN_00295200 (295200), FUN_00296314 (296314), FUN_00297010 (297010), FUN_00297c24 (297c24), FUN_00299d00 (299d00), FUN_00299edc (299edc), FUN_0029a020 (29a020), FUN_0029bf40 (29bf40), FUN_0029d170 (29d170), FUN_0029db84 (29db84), FUN_0029fadc (29fadc), FUN_002a0054 (2a0054), FUN_002a00dc (2a00dc), FUN_002a0154 (2a0154), FUN_002a0258 (2a0258), FUN_002a0994 (2a0994), FUN_002a0bf0 (2a0bf0), FUN_002a11d0 (2a11d0), FUN_002a1468 (2a1468), FUN_002a1c94 (2a1c94), FUN_002a3274 (2a3274), FUN_002a337c (2a337c), FUN_002a49b0 (2a49b0), FUN_002bb778 (2bb778), FUN_002bbf10 (2bbf10), FUN_002bc158 (2bc158), FUN_002bc728 (2bc728), FUN_002c0000 (2c0000), FUN_002c0c20 (2c0c20), FUN_002c1c18 (2c1c18), FUN_002c23f4 (2c23f4), FUN_002c3524 (2c3524), FUN_002c4230 (2c4230), FUN_002c4bc4 (2c4bc4), FUN_002c6388 (2c6388), FUN_002c7100 (2c7100), FUN_002c90b4 (2c90b4), FUN_002c91a4 (2c91a4), FUN_002c9370 (2c9370), FUN_002c93e4 (2c93e4), FUN_002c9430 (2c9430), FUN_002c95d0 (2c95d0), FUN_002c961c (2c961c), FUN_002c9668 (2c9668), FUN_002c96fc (2c96fc), FUN_002c9744 (2c9744), FUN_002c9824 (2c9824), FUN_0035aa60 (35aa60), FUN_0035ad2c (35ad2c), FUN_0035b090 (35b090), FUN_0035ddc4 (35ddc4), FUN_0035deec (35deec), FUN_0035e3ec (35e3ec), FUN_0035f640 (35f640), FUN_00360358 (360358), FUN_00360c60 (360c60), FUN_003611c8 (3611c8), FUN_0005cf24 (5cf24), FUN_0005d278 (5d278), FUN_0005dc00 (5dc00), FUN_0005f0e4 (5f0e4), FUN_0005f4a8 (5f4a8), FUN_0005f650 (5f650), FUN_0005f810 (5f810), FUN_0005f860 (5f860), FUN_0005fc54 (5fc54), FUN_000605a8 (605a8), updateShellWindowWantKeys (60808), FUN_0006222c (6222c), FUN_000622b0 (622b0), FUN_00062cec (62cec), FUN_00063724 (63724), FUN_00063818 (63818), FUN_000638cc (638cc), FUN_000638f0 (638f0), FUN_00063be8 (63be8), FUN_000648e8 (648e8), FUN_00064c40 (64c40), FUN_00065ac8 (65ac8), FUN_0006781c (6781c), FUN_00067c90 (67c90), FUN_00067cb4 (67cb4), FUN_00067e8c (67e8c), FUN_0006802c (6802c), FUN_0006806c (6806c), FUN_000696d0 (696d0), FUN_000698e0 (698e0), FUN_0006a4c0 (6a4c0), FUN_0006a4d4 (6a4d4), FUN_0006a754 (6a754), FUN_0006a80c (6a80c), FUN_0006a840 (6a840), FUN_0006a8bc (6a8bc), FUN_0006a910 (6a910), FUN_0006aaac (6aaac), FUN_0006ab28 (6ab28), FUN_0006ab90 (6ab90), FUN_0006abf0 (6abf0), FUN_0006acf4 (6acf4), FUN_0006b284 (6b284), FUN_0006b3d8 (6b3d8), FUN_0006b448 (6b448), FUN_0006b46c (6b46c), FUN_0006b558 (6b558), FUN_0006b610 (6b610), FUN_0006b64c (6b64c), FUN_0006b6d4 (6b6d4), FUN_0006bae4 (6bae4), FUN_0006baf4 (6baf4), FUN_0006bbdc (6bbdc), FUN_0006be94 (6be94), FUN_0006bec8 (6bec8), FUN_0006bef8 (6bef8), FUN_0006c128 (6c128), FUN_0006c168 (6c168), FUN_0006c298 (6c298), FUN_0006c440 (6c440), FUN_0006c464 (6c464), FUN_0006c4f4 (6c4f4), FUN_0006c5e0 (6c5e0), FUN_0006c94c (6c94c), FUN_0006c990 (6c990), FUN_0006c9f4 (6c9f4), FUN_0006cac4 (6cac4), FUN_0006cbdc (6cbdc), FUN_0006ccec (6ccec), FUN_0006cd80 (6cd80), FUN_0006ce64 (6ce64), FUN_0006cfc0 (6cfc0), FUN_0006d1a0 (6d1a0), FUN_0006d264 (6d264), FUN_0006d29c (6d29c), FUN_0006d4f0 (6d4f0), FUN_0006d580 (6d580), FUN_0006e258 (6e258), FUN_0006e52c (6e52c), FUN_0006e5a4 (6e5a4), FUN_0006e5cc (6e5cc), FUN_0006f318 (6f318), FUN_0006f398 (6f398), FUN_0006f784 (6f784), FUN_00070120 (70120), FUN_000701d4 (701d4), FUN_000702cc (702cc), FUN_00070ff4 (70ff4), FUN_000711a0 (711a0), FUN_00071860 (71860), FUN_00071ce4 (71ce4), FUN_00072390 (72390), FUN_0007273c (7273c), FUN_00072d64 (72d64), FUN_00072ecc (72ecc), FUN_00073004 (73004), FUN_00073074 (73074), FUN_0007329c (7329c), FUN_00073600 (73600), FUN_0007371c (7371c), FUN_00073a64 (73a64), FUN_00074384 (74384), FUN_00074498 (74498), FUN_000744b8 (744b8), FUN_0007498c (7498c), FUN_00074b38 (74b38), FUN_00074c2c (74c2c), FUN_00074d18 (74d18), FUN_00075274 (75274), FUN_00075298 (75298), FUN_00075334 (75334), FUN_0007588c (7588c), FUN_00075988 (75988), FUN_00075bd4 (75bd4), FUN_00075c10 (75c10), FUN_00075c4c (75c4c), FUN_00075c64 (75c64), closePluginEditor (75c7c), FUN_00075e54 (75e54), FUN_00075e68 (75e68), FUN_000762ec (762ec), FUN_00076460 (76460), FUN_00076478 (76478), FUN_00076548 (76548), FUN_000765d8 (765d8), FUN_000766e0 (766e0), FUN_000766f8 (766f8), FUN_0007682c (7682c), FUN_00076ac0 (76ac0), FUN_00076b0c (76b0c), FUN_00076bd0 (76bd0), FUN_00076c60 (76c60), FUN_00077020 (77020), FUN_000770c0 (770c0), FUN_00077124 (77124), FUN_00077190 (77190), FUN_00077208 (77208), FUN_00077af4 (77af4), FUN_00077ea8 (77ea8), FUN_00077f14 (77f14), FUN_00078038 (78038), FUN_00078540 (78540), FUN_000786fc (786fc), FUN_00078744 (78744), FUN_00078864 (78864), FUN_000789d8 (789d8), FUN_00078b38 (78b38), FUN_00078bf8 (78bf8), FUN_00078cd4 (78cd4), FUN_000791e4 (791e4), FUN_00079834 (79834), FUN_00079854 (79854), FUN_00079864 (79864), FUN_00079b7c (79b7c), FUN_00079bcc (79bcc), FUN_00079c5c (79c5c), FUN_00079ce8 (79ce8), FUN_00079ed0 (79ed0), FUN_00079f84 (79f84), FUN_0007a028 (7a028), FUN_0007a1a0 (7a1a0), FUN_0007a378 (7a378), FUN_0007a67c (7a67c), FUN_0007a918 (7a918), FUN_0007aa34 (7aa34), FUN_0007aa54 (7aa54), FUN_0007ab38 (7ab38), FUN_0007aef8 (7aef8), FUN_0007b2b8 (7b2b8), FUN_0007b524 (7b524), FUN_0007b584 (7b584), FUN_0007b5e8 (7b5e8), FUN_0007b778 (7b778), FUN_0007b8fc (7b8fc), FUN_0007bbe4 (7bbe4), FUN_0007be8c (7be8c), FUN_0007c31c (7c31c), FUN_0007c3f4 (7c3f4), FUN_0007c678 (7c678), FUN_0007c788 (7c788), FUN_0007c9ac (7c9ac), FUN_0007cc0c (7cc0c), FUN_0007ccac (7ccac), FUN_0007ccd8 (7ccd8), FUN_0007cd94 (7cd94), FUN_0007ce9c (7ce9c), FUN_0007cec8 (7cec8), FUN_0007cf4c (7cf4c), applyFilter7 (7cf7c), FUN_0007d044 (7d044), FUN_0007d2c8 (7d2c8), FUN_0007d714 (7d714), FUN_0007d7a0 (7d7a0), FUN_0007d850 (7d850), FUN_0007d990 (7d990), applyFilter9 (7da9c), FUN_0007de54 (7de54), FUN_0007de74 (7de74), FUN_0007e020 (7e020), FUN_0007e160 (7e160), FUN_0007e3c8 (7e3c8), FUN_0007e430 (7e430), FUN_0007e560 (7e560), FUN_0007e640 (7e640), FUN_0007ec40 (7ec40), FUN_0007ec64 (7ec64), FUN_0007eccc (7eccc), FUN_0007f298 (7f298), FUN_0007f53c (7f53c), FUN_000807a8 (807a8), FUN_00081050 (81050), FUN_0008160c (8160c), FUN_0008550c (8550c), FUN_000855fc (855fc), FUN_000858d0 (858d0), FUN_000859f4 (859f4), FUN_00085ab8 (85ab8), FUN_00085ecc (85ecc), FUN_00085f94 (85f94), FUN_000860e4 (860e4), FUN_000862a0 (862a0), FUN_0008656c (8656c), FUN_00086ef8 (86ef8), FUN_00087298 (87298), processInput49 (87308), FUN_00087784 (87784), processInput51 (88a18), FUN_000891b8 (891b8), FUN_00089538 (89538), FUN_0008a154 (8a154), setAndCalculateDotProduct8 (8a260), FUN_0008a8f4 (8a8f4), FUN_0008bd90 (8bd90), FUN_0008c470 (8c470), FUN_0008c4f4 (8c4f4), FUN_0008d7bc (8d7bc), FUN_0008d850 (8d850), FUN_0008df08 (8df08), FUN_0008df68 (8df68), FUN_0008ef30 (8ef30), FUN_0008fa9c (8fa9c), FUN_0008fb18 (8fb18), FUN_0008fe54 (8fe54), FUN_00091b6c (91b6c), FUN_00091c48 (91c48), FUN_00091c70 (91c70), FUN_00091d18 (91d18), FUN_00092e48 (92e48), FUN_000936e8 (936e8), FUN_00093790 (93790), FUN_00093808 (93808), FUN_00093920 (93920), FUN_00093960 (93960), FUN_000939c8 (939c8), FUN_00093b48 (93b48), FUN_00094bac (94bac), FUN_00094e64 (94e64), FUN_0009512c (9512c), FUN_00095390 (95390), FUN_00095be4 (95be4), FUN_00095c64 (95c64), processInput59 (95d10), FUN_0009607c (9607c), FUN_00096574 (96574), FUN_00096f10 (96f10), FUN_00096fb4 (96fb4), FUN_00097228 (97228), FUN_000974a8 (974a8), FUN_000985f4 (985f4), FUN_00098724 (98724), FUN_0009895c (9895c), FUN_0009938c (9938c), FUN_0009b124 (9b124), FUN_0009b1f4 (9b1f4), FUN_0009cd94 (9cd94), FUN_0009ce10 (9ce10), FUN_0009d250 (9d250), FUN_0009d2f8 (9d2f8), FUN_0009d45c (9d45c), FUN_0009f780 (9f780), FUN_000c4f24 (c4f24), FUN_000c5030 (c5030), FUN_000c51a8 (c51a8), FUN_000c5d3c (c5d3c), FUN_000c6544 (c6544), FUN_000c6a8c (c6a8c), FUN_000c73c0 (c73c0), FUN_000c8b40 (c8b40), FUN_000c9108 (c9108), FUN_000ca044 (ca044), FUN_000ca724 (ca724), FUN_000cb860 (cb860), FUN_000cd0d8 (cd0d8), FUN_000cf034 (cf034), FUN_000cf1d4 (cf1d4), FUN_000d06c4 (d06c4), FUN_000d1a68 (d1a68), FUN_000d2730 (d2730), FUN_000d4730 (d4730), FUN_000d5230 (d5230), FUN_000d6f70 (d6f70), FUN_000d7e58 (d7e58), FUN_000d8dd4 (d8dd4), FUN_000d8e90 (d8e90), FUN_000d8f88 (d8f88), FUN_000db014 (db014), FUN_000dc720 (dc720), FUN_000dca18 (dca18), FUN_000dca40 (dca40), FUN_000dcb10 (dcb10), FUN_000dd700 (dd700), FUN_000ddcac (ddcac), FUN_000de13c (de13c), FUN_000df094 (df094), FUN_000dfa20 (dfa20), FUN_000dfbfc (dfbfc), FUN_000e1468 (e1468), FUN_000e1d58 (e1d58), FUN_000e223c (e223c), FUN_000e31c8 (e31c8), FUN_000e3a88 (e3a88), FUN_000e3db4 (e3db4), FUN_000e49c0 (e49c0), FUN_000e4b14 (e4b14), FUN_000e50dc (e50dc), FUN_000e5708 (e5708), FUN_000e641c (e641c), FUN_000e7014 (e7014), FUN_000e792c (e792c), FUN_000e7b0c (e7b0c), FUN_000e7c54 (e7c54), FUN_000e7e84 (e7e84), FUN_000e8394 (e8394), FUN_000e878c (e878c), FUN_000e87f4 (e87f4), FUN_000e8968 (e8968), FUN_000e89f4 (e89f4), FUN_000e8f58 (e8f58), FUN_000e9070 (e9070), FUN_000e92ec (e92ec), FUN_000eb65c (eb65c), FUN_000ebe2c (ebe2c), FUN_000ec0f8 (ec0f8), FUN_000ec20c (ec20c), FUN_000ec674 (ec674), FUN_000edfb4 (edfb4), FUN_000eec38 (eec38), FUN_000f02dc (f02dc), FUN_000f0e80 (f0e80), FUN_000f128c (f128c), FUN_000f1338 (f1338), FUN_000f1d98 (f1d98), FUN_000f21fc (f21fc), FUN_000f2da0 (f2da0), FUN_000f3b9c (f3b9c), FUN_000f3df4 (f3df4), FUN_000f5844 (f5844), FUN_000f6ae8 (f6ae8), FUN_000f6e28 (f6e28), FUN_000f6f74 (f6f74), FUN_000f759c (f759c), FUN_000f79c4 (f79c4), FUN_000f7a18 (f7a18), FUN_000f8d4c (f8d4c), FUN_000f8d8c (f8d8c), FUN_000fdb24 (fdb24), FUN_000ff2a8 (ff2a8), FUN_000ffa08 (ffa08), FUN_00100548 (100548), FUN_00100dec (100dec), FUN_00101194 (101194), FUN_00101778 (101778), FUN_00101a84 (101a84), FUN_00101e60 (101e60), FUN_001030b0 (1030b0), FUN_001044a4 (1044a4), FUN_001047d0 (1047d0), FUN_00104ee8 (104ee8), FUN_00106144 (106144), FUN_00106ac4 (106ac4), FUN_00106e28 (106e28), FUN_001071d4 (1071d4), FUN_00107224 (107224), FUN_00108a48 (108a48), FUN_00108be0 (108be0), FUN_00109cc0 (109cc0), FUN_00109cf8 (109cf8), FUN_0010a360 (10a360), FUN_0010a5fc (10a5fc), FUN_0010ef3c (10ef3c), FUN_0010f14c (10f14c), FUN_0010fa24 (10fa24), FUN_0011288c (11288c), FUN_00113050 (113050), FUN_00113b0c (113b0c), FUN_00114414 (114414), FUN_00114b9c (114b9c), FUN_00114c10 (114c10), FUN_00114d38 (114d38), FUN_00114dac (114dac), FUN_00114fb8 (114fb8), FUN_0011551c (11551c), FUN_00115774 (115774), FUN_00115ae0 (115ae0), FUN_001161d0 (1161d0), FUN_001169a0 (1169a0), FUN_0011752c (11752c), FUN_00117ea4 (117ea4), FUN_00118130 (118130), FUN_00118cb8 (118cb8), FUN_00118f64 (118f64), FUN_00119494 (119494), FUN_0011a1f8 (11a1f8), FUN_0011b17c (11b17c), FUN_0011b230 (11b230), FUN_0011b3cc (11b3cc), FUN_0011dba8 (11dba8), FUN_0011dc30 (11dc30), FUN_0011f7ac (11f7ac), FUN_0011f9cc (11f9cc), FUN_00120c90 (120c90), FUN_00120e10 (120e10), FUN_0012180c (12180c), FUN_00121900 (121900), FUN_00123e8c (123e8c), FUN_001240b0 (1240b0), FUN_001248d0 (1248d0), FUN_001268a8 (1268a8), FUN_00127640 (127640), FUN_00127eac (127eac), FUN_001284d0 (1284d0), FUN_001289c4 (1289c4), FUN_00128ad8 (128ad8), FUN_00128d20 (128d20), FUN_0012928c (12928c), FUN_0012951c (12951c), FUN_0012a888 (12a888), FUN_0012b504 (12b504), FUN_0012b534 (12b534), FUN_0012b81c (12b81c), FUN_0012bba4 (12bba4), FUN_0012d49c (12d49c), FUN_0012dc30 (12dc30), FUN_0012dea8 (12dea8), FUN_0012e7c4 (12e7c4), FUN_0012ed14 (12ed14), FUN_0012ef48 (12ef48), FUN_0012f118 (12f118), FUN_0012f830 (12f830), FUN_001301a8 (1301a8), FUN_00130cf4 (130cf4), FUN_00130e18 (130e18), FUN_00130e90 (130e90), FUN_00130efc (130efc), FUN_00132074 (132074), FUN_00132148 (132148), FUN_001321b0 (1321b0), FUN_00133c80 (133c80), FUN_00136360 (136360), FUN_0013665c (13665c), FUN_0013675c (13675c), FUN_001370fc (1370fc), FUN_00137828 (137828), FUN_00137cb8 (137cb8), FUN_00137e04 (137e04), FUN_00137e9c (137e9c), FUN_00137f40 (137f40), FUN_0013815c (13815c), FUN_001381c0 (1381c0), FUN_001381e0 (1381e0), FUN_001389c4 (1389c4), FUN_00138b74 (138b74), FUN_00139944 (139944), FUN_00139f50 (139f50), FUN_0013a0f0 (13a0f0), FUN_0013a118 (13a118), FUN_0013a260 (13a260), FUN_0013a2ec (13a2ec), FUN_0013a548 (13a548), FUN_0013a580 (13a580), FUN_0013a644 (13a644), FUN_0013aa7c (13aa7c), FUN_0013abf0 (13abf0), FUN_0013ac68 (13ac68), FUN_0013ac7c (13ac7c), FUN_0013acd4 (13acd4), FUN_0013ada0 (13ada0), FUN_0013bcf0 (13bcf0), FUN_0013bd48 (13bd48), FUN_0013e43c (13e43c), FUN_001439c0 (1439c0), FUN_00147044 (147044), FUN_00153bd4 (153bd4), FUN_00153d80 (153d80), FUN_00154514 (154514), FUN_001558c4 (1558c4), FUN_00155924 (155924), FUN_001559d0 (1559d0), FUN_00155e28 (155e28), FUN_00156a70 (156a70), FUN_00156cec (156cec), FUN_0015750c (15750c), FUN_0015852c (15852c), FUN_00158bcc (158bcc), FUN_001592a8 (1592a8), FUN_00159bb0 (159bb0), FUN_00159d6c (159d6c), FUN_0015acd0 (15acd0), FUN_0015b1fc (15b1fc), FUN_0015b448 (15b448), FUN_00163454 (163454), FUN_001635f8 (1635f8), FUN_00164cf4 (164cf4), FUN_0016546c (16546c), FUN_00165730 (165730), FUN_001657e4 (1657e4), FUN_0016606c (16606c), FUN_0016615c (16615c), FUN_00166870 (166870), FUN_00166994 (166994), FUN_00166d6c (166d6c), waitUntilPendingCommandsCompleted (1689cc), FUN_00168bfc (168bfc), FUN_0016e7a0 (16e7a0), FUN_0016ee64 (16ee64), FUN_0016f000 (16f000), FUN_0016f308 (16f308), FUN_0016f460 (16f460), FUN_0016f85c (16f85c), FUN_0016f9a8 (16f9a8), FUN_001703c8 (1703c8), FUN_00170898 (170898), FUN_00170ad8 (170ad8), FUN_00170e70 (170e70), FUN_001723a0 (1723a0), FUN_00172a58 (172a58), FUN_00173f5c (173f5c), FUN_0017591c (17591c), FUN_00175fd0 (175fd0), FUN_00176298 (176298), FUN_00176668 (176668), FUN_00177c60 (177c60), FUN_001785fc (1785fc), FUN_0017861c (17861c), FUN_0017863c (17863c), FUN_001799f4 (1799f4), FUN_0017a1dc (17a1dc), FUN_0017a25c (17a25c), FUN_0017a314 (17a314), FUN_0017a674 (17a674), FUN_0017ac8c (17ac8c), FUN_0017b17c (17b17c), FUN_0017b79c (17b79c), FUN_0017d188 (17d188), FUN_0017e094 (17e094), FUN_0017e3c0 (17e3c0), FUN_0017f170 (17f170), FUN_0017f890 (17f890), FUN_0017f8b4 (17f8b4), FUN_0017fad4 (17fad4), FUN_0017fc7c (17fc7c), FUN_0017fd4c (17fd4c), FUN_0017fe74 (17fe74), FUN_00180420 (180420), FUN_00180d18 (180d18), FUN_00180e08 (180e08), FUN_00180e4c (180e4c), FUN_00180fb8 (180fb8), FUN_001810c8 (1810c8), FUN_00181334 (181334), FUN_0018198c (18198c), FUN_00181d14 (181d14), FUN_00181e88 (181e88), FUN_0018202c (18202c), FUN_001823c0 (1823c0), FUN_00182534 (182534), FUN_001829d4 (1829d4), FUN_00183594 (183594), FUN_001838e8 (1838e8), FUN_00183b40 (183b40), FUN_001843f0 (1843f0), FUN_0018466c (18466c), FUN_00184ca0 (184ca0), FUN_00184d08 (184d08), FUN_001853ec (1853ec), FUN_001856bc (1856bc), FUN_001857a4 (1857a4), FUN_001858b8 (1858b8), FUN_00185f94 (185f94), FUN_00186210 (186210), FUN_001865bc (1865bc), FUN_001865dc (1865dc), FUN_00186d40 (186d40), FUN_00186fbc (186fbc), FUN_00186fe4 (186fe4), FUN_0018738c (18738c), FUN_00187b0c (187b0c), FUN_00188038 (188038), FUN_00189214 (189214), FUN_0018a36c (18a36c), FUN_0018a474 (18a474), FUN_0018a53c (18a53c), FUN_0018a63c (18a63c), FUN_0018ac54 (18ac54), FUN_0018ad3c (18ad3c), FUN_0018adc8 (18adc8), FUN_0018af6c (18af6c), FUN_0018b1e8 (18b1e8), FUN_0018c4f4 (18c4f4), FUN_0018c5dc (18c5dc), FUN_0018c6f0 (18c6f0), FUN_0018cd44 (18cd44), FUN_0018d5f4 (18d5f4), FUN_0018d65c (18d65c), FUN_0018d8d8 (18d8d8), FUN_0018dfe0 (18dfe0), FUN_0018e820 (18e820), FUN_0018ed80 (18ed80), FUN_0018ee68 (18ee68), FUN_0018f490 (18f490), FUN_0018f5cc (18f5cc), FUN_0018f740 (18f740), FUN_0018f848 (18f848), FUN_0018fb30 (18fb30), FUN_0018fc18 (18fc18), FUN_00190398 (190398), FUN_001908a4 (1908a4), FUN_001908c4 (1908c4), FUN_00191e64 (191e64), FUN_00191f70 (191f70), FUN_001920c0 (1920c0), FUN_001921f8 (1921f8), FUN_00192aa0 (192aa0), FUN_00192ae8 (192ae8), FUN_00192b90 (192b90), FUN_00192bb0 (192bb0), FUN_00192c78 (192c78), FUN_00192c98 (192c98), FUN_00192d40 (192d40), FUN_00192e60 (192e60), FUN_00192f48 (192f48), FUN_001938d0 (1938d0), FUN_001939b8 (1939b8), FUN_00193c5c (193c5c), FUN_00193d44 (193d44), FUN_001945b8 (1945b8), FUN_001945e0 (1945e0), FUN_00194f1c (194f1c), FUN_00195030 (195030), FUN_00195690 (195690), FUN_0019590c (19590c), FUN_00195950 (195950), FUN_00196070 (196070), FUN_00196644 (196644), FUN_0019692c (19692c), FUN_00196a14 (196a14), FUN_00197168 (197168), FUN_001973e4 (1973e4), FUN_00197408 (197408), FUN_001976c8 (1976c8), FUN_001977b0 (1977b0), FUN_00197d4c (197d4c), FUN_00197f0c (197f0c), FUN_00197ff4 (197ff4), FUN_00198188 (198188), FUN_00198558 (198558), FUN_001987c8 (1987c8), FUN_00198cd4 (198cd4), FUN_001991e0 (1991e0), FUN_00199200 (199200), FUN_0019b48c (19b48c), FUN_0019b4d4 (19b4d4), FUN_0019b57c (19b57c), FUN_0019b59c (19b59c), FUN_0019b684 (19b684), FUN_0019b72c (19b72c), FUN_0019b74c (19b74c), FUN_0019b84c (19b84c), FUN_0019bfcc (19bfcc), FUN_0019c2e4 (19c2e4), FUN_0019c3cc (19c3cc), FUN_0019c66c (19c66c), FUN_0019d290 (19d290), FUN_0019d530 (19d530), FUN_0019d934 (19d934), FUN_0019d9dc (19d9dc), FUN_0019dba4 (19dba4), FUN_0019e09c (19e09c), FUN_0019e318 (19e318), FUN_0019ea7c (19ea7c), FUN_0019ead4 (19ead4), FUN_0019f050 (19f050), FUN_0019f338 (19f338), FUN_0019f420 (19f420), FUN_0019fb68 (19fb68), FUN_0019fe08 (19fe08), FUN_001a0420 (1a0420), FUN_001a0900 (1a0900), FUN_001a0b7c (1a0b7c), FUN_001a0ba4 (1a0ba4), FUN_001a0e64 (1a0e64), FUN_001a0f4c (1a0f4c), FUN_001a16b4 (1a16b4), FUN_001a179c (1a179c), FUN_001a680c (1a680c), FUN_001a6c10 (1a6c10), FUN_001a9718 (1a9718), FUN_001a9ac0 (1a9ac0), FUN_001a9d04 (1a9d04), FUN_001a9fa8 (1a9fa8), FUN_001aa410 (1aa410), FUN_001aa5dc (1aa5dc), FUN_001aaab0 (1aaab0), FUN_001aaef4 (1aaef4), FUN_001ac418 (1ac418), FUN_001acf90 (1acf90), FUN_001ae388 (1ae388), FUN_001ae3f0 (1ae3f0), FUN_001ae46c (1ae46c), FUN_001aec6c (1aec6c), FUN_001af234 (1af234), FUN_001af45c (1af45c), FUN_001af62c (1af62c), FUN_001b003c (1b003c), FUN_001b0ad0 (1b0ad0), FUN_001b2ae4 (1b2ae4), FUN_001b2dbc (1b2dbc), FUN_001b2e08 (1b2e08), FUN_001b2f14 (1b2f14), FUN_001b3180 (1b3180), FUN_001b337c (1b337c), FUN_001b3be0 (1b3be0), FUN_001b3d44 (1b3d44), FUN_001b4600 (1b4600), FUN_001b4af8 (1b4af8), FUN_001b4b2c (1b4b2c), FUN_001b4d44 (1b4d44), FUN_001b4d70 (1b4d70), FUN_001b5d5c (1b5d5c), FUN_001b6164 (1b6164), FUN_001b7bf0 (1b7bf0), FUN_001b8a34 (1b8a34), FUN_001b9648 (1b9648), FUN_001ba28c (1ba28c), FUN_001ba7a4 (1ba7a4), FUN_001ba80c (1ba80c), FUN_001ba980 (1ba980), FUN_001baa0c (1baa0c), FUN_001bc898 (1bc898), FUN_001bee10 (1bee10), FUN_001c14cc (1c14cc), FUN_001c1674 (1c1674), FUN_001c298c (1c298c), FUN_001c33ac (1c33ac), FUN_001c35b4 (1c35b4), FUN_001c5bfc (1c5bfc), FUN_001c6438 (1c6438), FUN_001c6b4c (1c6b4c), FUN_001c6e98 (1c6e98), FUN_001c70b4 (1c70b4), FUN_001c711c (1c711c), FUN_001ca768 (1ca768), FUN_001cbcf0 (1cbcf0), FUN_001ce830 (1ce830), FUN_001cf2f4 (1cf2f4), FUN_001cf354 (1cf354), FUN_001d1f50 (1d1f50), FUN_001d2414 (1d2414), FUN_001d2d8c (1d2d8c), FUN_001d3254 (1d3254), FUN_001d3bd0 (1d3bd0), FUN_001d46ac (1d46ac), FUN_001d4884 (1d4884), FUN_001d48e8 (1d48e8), FUN_001d4974 (1d4974), FUN_001d58a8 (1d58a8), FUN_001d5910 (1d5910), FUN_001d5a84 (1d5a84), FUN_001d5b10 (1d5b10), FUN_001d5b68 (1d5b68), FUN_001dc568 (1dc568), FUN_001dc82c (1dc82c), FUN_001dd148 (1dd148), FUN_001dd434 (1dd434), FUN_001df7e0 (1df7e0), FUN_001dfc68 (1dfc68), FUN_001e0d04 (1e0d04), FUN_001e4c7c (1e4c7c), FUN_001e4d58 (1e4d58), FUN_001e9558 (1e9558), FUN_001ec4c0 (1ec4c0), FUN_001ec974 (1ec974), FUN_001ed964 (1ed964), FUN_001f056c (1f056c), FUN_001f1444 (1f1444), FUN_001f5014 (1f5014), FUN_001f538c (1f538c), FUN_001f5dc0 (1f5dc0), FUN_001f5de8 (1f5de8), FUN_001f6468 (1f6468), FUN_001f7170 (1f7170), FUN_001f7414 (1f7414), FUN_001f74b8 (1f74b8), FUN_001f750c (1f750c), FUN_001f8158 (1f8158), FUN_001f81fc (1f81fc), FUN_001fb2b8 (1fb2b8), FUN_00203c18 (203c18), FUN_00203c40 (203c40), FUN_00204a3c (204a3c), FUN_00204a64 (204a64), FUN_00205d94 (205d94), FUN_00205dbc (205dbc), FUN_00205f70 (205f70), FUN_00206afc (206afc), FUN_00209c84 (209c84), FUN_00209e84 (209e84), FUN_00209ee4 (209ee4), FUN_0020df3c (20df3c), FUN_0020e118 (20e118), FUN_0020e6bc (20e6bc), FUN_0020e9d0 (20e9d0), FUN_0020ea2c (20ea2c), FUN_00212950 (212950), FUN_00212bac (212bac), FUN_00215e78 (215e78), FUN_00215ea0 (215ea0), FUN_00216db8 (216db8), FUN_00217130 (217130), FUN_00217540 (217540), FUN_00217574 (217574), FUN_002176bc (2176bc), FUN_0021789c (21789c), FUN_0021a31c (21a31c), FUN_0021eca8 (21eca8), FUN_0021f478 (21f478), FUN_00224d4c (224d4c), FUN_00225208 (225208), FUN_00225724 (225724), FUN_002269e8 (2269e8), FUN_00226af8 (226af8), FUN_002286b4 (2286b4), FUN_00228c28 (228c28), FUN_002293cc (2293cc), FUN_00232190 (232190), FUN_00253840 (253840), FUN_00253f7c (253f7c), FUN_00254bc8 (254bc8), FUN_002567e4 (2567e4), FUN_0025736c (25736c), FUN_002586c0 (2586c0), FUN_00259340 (259340), FUN_002593d0 (2593d0), FUN_0025c2c4 (25c2c4), FUN_0025c5ac (25c5ac), FUN_0025ca14 (25ca14), FUN_00261e3c (261e3c), FUN_00262554 (262554), FUN_00263668 (263668), FUN_00263a38 (263a38), FUN_00263f30 (263f30), FUN_002655a0 (2655a0), FUN_00265b64 (265b64), FUN_0026d470 (26d470), FUN_0026ebf0 (26ebf0), FUN_0026fc58 (26fc58), FUN_002737d4 (2737d4), FUN_00274c28 (274c28), FUN_002771f8 (2771f8), FUN_0027995c (27995c), FUN_00279b38 (279b38), FUN_0027a4e4 (27a4e4), FUN_0027c190 (27c190), FUN_0027d238 (27d238), FUN_002b65b8 (2b65b8), FUN_002b84cc (2b84cc), FUN_002cbdb8 (2cbdb8), FUN_002cbde8 (2cbde8), FUN_002cbec4 (2cbec4), FUN_002cdd98 (2cdd98), FUN_002d1688 (2d1688), FUN_002d2030 (2d2030), FUN_002d3f74 (2d3f74), FUN_002d404c (2d404c), FUN_002d419c (2d419c), FUN_002d424c (2d424c), FUN_002d4378 (2d4378), FUN_002d4428 (2d4428), FUN_002d45f4 (2d45f4), FUN_002d469c (2d469c), FUN_002d481c (2d481c), FUN_002d49fc (2d49fc), FUN_002d4acc (2d4acc), FUN_002d4b48 (2d4b48), FUN_002d4d70 (2d4d70), FUN_002d4e40 (2d4e40), FUN_002d4f98 (2d4f98), FUN_002d506c (2d506c), FUN_002d520c (2d520c), FUN_002d52a8 (2d52a8), FUN_002d5318 (2d5318), FUN_002d5510 (2d5510), FUN_002d55d0 (2d55d0), FUN_002d5604 (2d5604), FUN_002d569c (2d569c), FUN_002d56c0 (2d56c0), FUN_002d5730 (2d5730), FUN_002d57a0 (2d57a0), FUN_002d5be4 (2d5be4), FUN_002d5c10 (2d5c10), FUN_002db308 (2db308), FUN_002db6c4 (2db6c4), FUN_002e9114 (2e9114), validateImageDimensions (2ea114), FUN_002ea60c (2ea60c), FUN_002ea83c (2ea83c), FUN_002eaa50 (2eaa50), FUN_002eab5c (2eab5c), FUN_002eac7c (2eac7c), FUN_002eb540 (2eb540), FUN_002ef974 (2ef974), FUN_002f0308 (2f0308), FUN_002f0d4c (2f0d4c), FUN_002f0ed4 (2f0ed4), FUN_002f1024 (2f1024), FUN_002f1364 (2f1364), decompressZTXtChunk2 (2f1570), FUN_002f2384 (2f2384), FUN_002f339c (2f339c), FUN_002f3d54 (2f3d54), FUN_002f4088 (2f4088), FUN_002f53cc (2f53cc), FUN_002f5a94 (2f5a94), FUN_002f62dc (2f62dc), FUN_002f85c4 (2f85c4), FUN_002f8e90 (2f8e90), FUN_002f8f4c (2f8f4c), FUN_002fa2b4 (2fa2b4), FUN_002fa8f0 (2fa8f0), FUN_002fb4c4 (2fb4c4), FUN_002fd054 (2fd054), FUN_002fd5c4 (2fd5c4), FUN_002fe3e4 (2fe3e4), FUN_002fe768 (2fe768), FUN_002fec50 (2fec50), FUN_002ff0dc (2ff0dc), FUN_002ff3f0 (2ff3f0), FUN_002ff934 (2ff934), FUN_002ffd08 (2ffd08), FUN_00300fd8 (300fd8), FUN_003014dc (3014dc), FUN_00301508 (301508), FUN_00303364 (303364), FUN_0030413c (30413c), FUN_00305c5c (305c5c), FUN_00306470 (306470), FUN_00309d24 (309d24), FUN_0030a228 (30a228), FUN_0030a7c4 (30a7c4), FUN_0030a924 (30a924), FUN_0030c560 (30c560), FUN_0030cbd0 (30cbd0), FUN_0030db38 (30db38), FUN_0030dd5c (30dd5c), FUN_0030ddb8 (30ddb8), FUN_0030fc84 (30fc84), FUN_0031040c (31040c), FUN_0031052c (31052c), FUN_003105bc (3105bc), FUN_003107bc (3107bc), FUN_00310878 (310878), FUN_003132e0 (3132e0), FUN_0031330c (31330c), FUN_00313364 (313364), FUN_003135dc (3135dc), FUN_00313aa4 (313aa4), FUN_003140c8 (3140c8), FUN_003157bc (3157bc), FUN_00315848 (315848), FUN_003158e0 (3158e0), FUN_00315958 (315958), FUN_00315988 (315988), FUN_00315e9c (315e9c), FUN_00316048 (316048), FUN_003162f0 (3162f0), FUN_003196d0 (3196d0), FUN_00319bec (319bec), FUN_0031ac40 (31ac40), FUN_0031b1e0 (31b1e0), FUN_0031b8f8 (31b8f8), FUN_0031bac4 (31bac4), FUN_0031bcb4 (31bcb4), FUN_0031bd14 (31bd14), FUN_0031c448 (31c448), FUN_0031d3ec (31d3ec), FUN_0031dad0 (31dad0), FUN_0031e098 (31e098), FUN_0031e140 (31e140), FUN_0031e9cc (31e9cc), FUN_0031eff8 (31eff8), FUN_0031f574 (31f574), FUN_00320094 (320094), FUN_003203c0 (3203c0), FUN_003205e8 (3205e8), FUN_003212ec (3212ec), FUN_00321648 (321648), FUN_0032204c (32204c), FUN_00322968 (322968), FUN_00323358 (323358), FUN_0032396c (32396c), FUN_00323c88 (323c88), FUN_00323f80 (323f80), FUN_0032422c (32422c), FUN_00324940 (324940), FUN_00324fa4 (324fa4), FUN_0032549c (32549c), FUN_003261e4 (3261e4), FUN_00326258 (326258), FUN_00326280 (326280), FUN_00327214 (327214), FUN_00327228 (327228), FUN_0032733c (32733c), FUN_00327c34 (327c34), FUN_00327da8 (327da8), FUN_00328c14 (328c14), FUN_003290b0 (3290b0), FUN_003292e8 (3292e8), FUN_003295a4 (3295a4), FUN_00329660 (329660), FUN_0033006c (33006c), FUN_00331364 (331364), FUN_00331464 (331464), FUN_00331ad0 (331ad0), FUN_003351d4 (3351d4), FUN_00335248 (335248), FUN_00335cf0 (335cf0), FUN_00335fcc (335fcc), FUN_00336120 (336120), FUN_003370b0 (3370b0), FUN_003388d4 (3388d4), FUN_00339cd0 (339cd0), FUN_0033b6c4 (33b6c4), FUN_0033d2a8 (33d2a8), FUN_0033e43c (33e43c), processPostScriptFont (33f9e4), FUN_0033fac0 (33fac0), FUN_00340790 (340790), FUN_00340f30 (340f30), FUN_0034129c (34129c), FUN_003412f0 (3412f0), FUN_00344060 (344060), FUN_00345948 (345948), FUN_00345eb0 (345eb0), FUN_00346758 (346758), FUN_00347e14 (347e14), FUN_003482a0 (3482a0), FUN_003495b8 (3495b8), FUN_00349a38 (349a38), FUN_0034a450 (34a450), FUN_0034ab98 (34ab98), FUN_0034b070 (34b070), FUN_0034b23c (34b23c), FUN_0034b3e8 (34b3e8), FUN_0034bee8 (34bee8), FUN_0034c544 (34c544), FUN_0034ca1c (34ca1c), FUN_0034cdb4 (34cdb4), FUN_003503dc (3503dc), FUN_00351798 (351798), FUN_00352a78 (352a78), FUN_00352de0 (352de0), FUN_00352ec8 (352ec8), FUN_00353508 (353508), FUN_00353ba4 (353ba4), FUN_00353c58 (353c58), FUN_0035503c (35503c), FUN_0035689c (35689c), FUN_00356c10 (356c10), FUN_00356edc (356edc), FUN_0035775c (35775c), FUN_00357978 (357978), FUN_00357ce4 (357ce4), FUN_00357e88 (357e88), FUN_003580a8 (3580a8), FUN_003587dc (3587dc), FUN_003599a4 (3599a4), FUN_00359a98 (359a98), FUN_00367884 (367884), FUN_00368554 (368554), FUN_0036b3a4 (36b3a4), FUN_0036b730 (36b730), FUN_0036c058 (36c058), FUN_0036d07c (36d07c), FUN_00370918 (370918), FUN_00370d2c (370d2c), FUN_00373c78 (373c78), FUN_00373d4c (373d4c), FUN_00374e74 (374e74), FUN_00375ed4 (375ed4), FUN_0037a450 (37a450), FUN_0037a528 (37a528), FUN_0037c474 (37c474), FUN_0037d028 (37d028), FUN_0037e614 (37e614), FUN_0037f78c (37f78c), FUN_00381eb0 (381eb0), FUN_00384458 (384458), FUN_00384958 (384958), FUN_003849a8 (3849a8), FUN_00385510 (385510), FUN_00385718 (385718)
 
 #### FUN_000a22fc — funcs/__Z12FUN_000a22fclylyyyy.cpp, Ghidra a22fc, 1 model attempt(s)
 
@@ -62536,18 +62555,18 @@ long * FUN_000a7d10(long *param_1,long param_2) {
 }
 ```
 Notes:
-- 10-21 10:03 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
-- 10-21 10:03 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
-- 10-21 10:03 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
-- 10-21 10:03 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
-- 10-21 10:03 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
-- 10-21 10:03 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
-- 10-21 10:03 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
-- 10-21 10:03 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
-- 10-21 10:03 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
-- 10-21 10:03 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
-- 10-21 10:03 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
-- 10-21 10:03 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
+- 10-21 11:59 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
+- 10-21 11:59 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
+- 10-21 11:59 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
+- 10-21 11:59 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
+- 10-21 11:59 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
+- 10-21 11:59 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
+- 10-21 11:59 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
+- 10-21 11:59 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
+- 10-21 11:59 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
+- 10-21 11:59 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
+- 10-21 11:59 [compile] no matching function for call to 'FUN_00004a84' — fixed with a learned rule.
+- 10-21 11:59 [compile] subscripted value is not an array, pointer, or vector — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 long * FUN_000a7d10(long *param_1,long param_2)
@@ -62570,9 +62589,9 @@ long * FUN_000a7d10(long *param_1,long param_2)
 }
 ```
 
-### Not compiling yet — 687 × use of undeclared identifier 'X'
+### Not compiling yet — 673 × use of undeclared identifier 'X'
 
-All: FUN_000a2bd8 (a2bd8), FUN_000ab484 (ab484), FUN_000b1de0 (b1de0), FUN_000bc4ac (bc4ac), FUN_000be348 (be348), FUN_000c3d08 (c3d08), FUN_000c4500 (c4500), FUN_0027df70 (27df70), FUN_0027e098 (27e098), FUN_0027ea60 (27ea60), FUN_0027ea7c (27ea7c), FUN_0027ef08 (27ef08), FUN_0027ef44 (27ef44), FUN_0027f9b8 (27f9b8), FUN_0027fee4 (27fee4), FUN_00281184 (281184), FUN_002816c4 (2816c4), FUN_002819b4 (2819b4), FUN_00281db0 (281db0), FUN_00284a28 (284a28), FUN_00284dfc (284dfc), FUN_0028a4e4 (28a4e4), FUN_0028e0fc (28e0fc), FUN_0028e3f0 (28e3f0), FUN_0028f408 (28f408), FUN_0028fb48 (28fb48), FUN_00290c5c (290c5c), FUN_00291050 (291050), FUN_00293004 (293004), FUN_0029870c (29870c), FUN_0029a21c (29a21c), FUN_0029a234 (29a234), FUN_0029a24c (29a24c), FUN_002a0168 (2a0168), FUN_002a06c4 (2a06c4), FUN_002a06d8 (2a06d8), FUN_002a18b4 (2a18b4), FUN_002a2f98 (2a2f98), FUN_002a4e00 (2a4e00), FUN_002c4fcc (2c4fcc), FUN_002c5478 (2c5478), FUN_002c7020 (2c7020), FUN_0035dfe8 (35dfe8), FUN_0035faec (35faec), FUN_0035fd1c (35fd1c), FUN_00062348 (62348), FUN_00062a1c (62a1c), processInput48 (62b28), FUN_0006315c (6315c), FUN_00063944 (63944), FUN_000647c4 (647c4), FUN_00066900 (66900), FUN_0006b7b4 (6b7b4), FUN_0006d7c4 (6d7c4), FUN_00079a58 (79a58), FUN_0007cacc (7cacc), processArray8 (81aa8), FUN_000828e0 (828e0), FUN_0008796c (8796c), FUN_00088540 (88540), FUN_0008c394 (8c394), FUN_00091e34 (91e34), FUN_00091e74 (91e74), FUN_0009404c (9404c), FUN_00094e90 (94e90), FUN_00096364 (96364), FUN_0009714c (9714c), FUN_0009718c (9718c), FUN_000971cc (971cc), FUN_00098634 (98634), FUN_0009e044 (9e044), FUN_000a02ac (a02ac), FUN_000c6c68 (c6c68), FUN_000c6ca8 (c6ca8), FUN_000c7158 (c7158), FUN_000c9b88 (c9b88), FUN_000ce010 (ce010), FUN_000cef1c (cef1c), FUN_000d0f70 (d0f70), FUN_000d1ad0 (d1ad0), FUN_000e7750 (e7750), FUN_000f1388 (f1388), FUN_000f3ed0 (f3ed0), FUN_00105064 (105064), FUN_001134a8 (1134a8), FUN_00124ab8 (124ab8), FUN_00127878 (127878), FUN_0013a004 (13a004), FUN_0013a284 (13a284), FUN_0013ac14 (13ac14), FUN_0014211c (14211c), FUN_00142628 (142628), FUN_00142798 (142798), FUN_001427dc (1427dc), FUN_00142bec (142bec), FUN_00143214 (143214), FUN_00144bf8 (144bf8), FUN_001530bc (1530bc), FUN_00163110 (163110), FUN_00165ce4 (165ce4), FUN_00168068 (168068), autoForwardKeyEvents (169ac4), createMetalLayer (16c9d0), FUN_001708dc (1708dc), FUN_00170914 (170914), FUN_00175554 (175554), FUN_0017dcf8 (17dcf8), FUN_0017f870 (17f870), FUN_00180264 (180264), FUN_0018302c (18302c), FUN_00184734 (184734), FUN_0018684c (18684c), FUN_001896e4 (1896e4), FUN_0018bc5c (18bc5c), FUN_0018c84c (18c84c), FUN_0018d23c (18d23c), FUN_0018e338 (18e338), FUN_00191d54 (191d54), FUN_00196c84 (196c84), FUN_00198a90 (198a90), FUN_0019a688 (19a688), FUN_0019a9f4 (19a9f4), FUN_0019be00 (19be00), FUN_0019bea4 (19bea4), FUN_001a648c (1a648c), FUN_001a696c (1a696c), FUN_001a8664 (1a8664), FUN_001a9dd4 (1a9dd4), FUN_001ad0a4 (1ad0a4), FUN_001af258 (1af258), FUN_001b17fc (1b17fc), FUN_001b249c (1b249c), FUN_001b2578 (1b2578), FUN_001b37ec (1b37ec), FUN_001b387c (1b387c), FUN_001ba3d4 (1ba3d4), FUN_001ba9a4 (1ba9a4), FUN_001bb0bc (1bb0bc), FUN_001c22d4 (1c22d4), FUN_001c3020 (1c3020), FUN_001cab68 (1cab68), FUN_001d0f00 (1d0f00), FUN_001d40e4 (1d40e4), FUN_001d5aa8 (1d5aa8), FUN_001dd708 (1dd708), FUN_001e0ed8 (1e0ed8), rotateVectorAndRotateFunction4 (1ebe64), FUN_001ec298 (1ec298), FUN_001f1c10 (1f1c10), FUN_001f1c44 (1f1c44), FUN_001f1c80 (1f1c80), FUN_001f8720 (1f8720), FUN_001f8770 (1f8770), FUN_00204bc8 (204bc8), FUN_00204bec (204bec), FUN_00206378 (206378), FUN_002063b8 (2063b8), FUN_0020ca38 (20ca38), FUN_0020cae0 (20cae0), FUN_00213ec8 (213ec8), FUN_00214204 (214204), FUN_00214278 (214278), FUN_00215504 (215504), FUN_00215e28 (215e28), FUN_00215e50 (215e50), FUN_002164e8 (2164e8), FUN_0021ae4c (21ae4c), FUN_00220ed0 (220ed0), FUN_00223370 (223370), FUN_0022494c (22494c), FUN_00224b4c (224b4c), FUN_00224bcc (224bcc), FUN_00224d8c (224d8c), FUN_002251cc (2251cc), FUN_00228a5c (228a5c), FUN_00228d04 (228d04), FUN_0022f1f0 (22f1f0), FUN_00231cb0 (231cb0), FUN_00231e4c (231e4c), FUN_00236180 (236180), FUN_00246f64 (246f64), FUN_0024ae50 (24ae50), FUN_0024aea8 (24aea8), FUN_0024b8cc (24b8cc), FUN_0024bb38 (24bb38), FUN_0024bccc (24bccc), FUN_0024f7b0 (24f7b0), FUN_00254f84 (254f84), FUN_0025519c (25519c), FUN_00255278 (255278), FUN_00255514 (255514), FUN_00255658 (255658), FUN_002566a4 (2566a4), FUN_00257848 (257848), FUN_00259e88 (259e88), FUN_00259f78 (259f78), FUN_0025a0e8 (25a0e8), FUN_0025a24c (25a24c), FUN_0025a8f8 (25a8f8), FUN_0025b138 (25b138), FUN_0025b290 (25b290), FUN_0025b3e0 (25b3e0), FUN_0025b7b4 (25b7b4), FUN_0025be8c (25be8c), FUN_0025c45c (25c45c), FUN_002625d0 (2625d0), FUN_00264098 (264098), FUN_00264218 (264218), FUN_002645a0 (2645a0), FUN_002648d4 (2648d4), FUN_002655e8 (2655e8), FUN_00267128 (267128), FUN_002678e4 (2678e4), FUN_002685cc (2685cc), FUN_00268ad4 (268ad4), FUN_00268bec (268bec), FUN_00268dcc (268dcc), FUN_00268e9c (268e9c), FUN_00268fac (268fac), FUN_00268fc0 (268fc0), FUN_00268fec (268fec), FUN_0026909c (26909c), FUN_002690b4 (2690b4), FUN_002691e8 (2691e8), FUN_002691fc (2691fc), FUN_002692d8 (2692d8), FUN_00269300 (269300), FUN_00269470 (269470), FUN_002695d0 (2695d0), FUN_00269690 (269690), FUN_002696c8 (2696c8), FUN_00269784 (269784), FUN_0026979c (26979c), FUN_002697b4 (2697b4), FUN_002697e4 (2697e4), FUN_002697f8 (2697f8), FUN_00269aac (269aac), FUN_00269ddc (269ddc), FUN_00269edc (269edc), FUN_00269efc (269efc), FUN_00269f10 (269f10), FUN_00269f74 (269f74), FUN_00269f8c (269f8c), FUN_00269fb8 (269fb8), FUN_00269fd4 (269fd4), FUN_0026a018 (26a018), FUN_0026a034 (26a034), FUN_0026a064 (26a064), FUN_0026a078 (26a078), FUN_0026a0b4 (26a0b4), FUN_0026a0cc (26a0cc), FUN_0026a0e4 (26a0e4), FUN_0026a0f8 (26a0f8), FUN_0026a118 (26a118), FUN_0026a138 (26a138), FUN_0026a150 (26a150), FUN_0026a168 (26a168), FUN_0026a194 (26a194), FUN_0026a258 (26a258), FUN_0026a2d8 (26a2d8), FUN_0026a3bc (26a3bc), FUN_0026a3d0 (26a3d0), FUN_0026a3e8 (26a3e8), FUN_0026a4d0 (26a4d0), FUN_0026a4e4 (26a4e4), FUN_0026a55c (26a55c), FUN_0026a608 (26a608), FUN_0026a664 (26a664), FUN_0026a7fc (26a7fc), FUN_0026a810 (26a810), FUN_0026a824 (26a824), FUN_0026a8b8 (26a8b8), FUN_0026a9a0 (26a9a0), FUN_0026a9f4 (26a9f4), FUN_0026aac4 (26aac4), FUN_0026aadc (26aadc), FUN_0026ab18 (26ab18), FUN_0026ab60 (26ab60), FUN_0026ab78 (26ab78), FUN_0026ab8c (26ab8c), FUN_0026ac3c (26ac3c), FUN_0026ace0 (26ace0), FUN_0026ad24 (26ad24), FUN_0026adb0 (26adb0), FUN_0026adf8 (26adf8), FUN_0026ae20 (26ae20), FUN_0026ae3c (26ae3c), FUN_0026b020 (26b020), FUN_0026b0b4 (26b0b4), FUN_0026b0cc (26b0cc), FUN_0026b0ec (26b0ec), FUN_0026b100 (26b100), FUN_0026b11c (26b11c), FUN_0026b130 (26b130), FUN_0026b144 (26b144), FUN_0026b158 (26b158), FUN_0026b170 (26b170), FUN_0026b188 (26b188), FUN_0026b1b8 (26b1b8), FUN_0026b1cc (26b1cc), FUN_0026b23c (26b23c), FUN_0026b328 (26b328), FUN_0026b340 (26b340), FUN_0026b35c (26b35c), FUN_0026b3b0 (26b3b0), FUN_0026b3c4 (26b3c4), FUN_0026b458 (26b458), FUN_0026b4a4 (26b4a4), FUN_0026b4bc (26b4bc), FUN_0026b564 (26b564), FUN_0026b620 (26b620), FUN_0026b648 (26b648), FUN_0026bd10 (26bd10), FUN_0026bd24 (26bd24), FUN_0026bdf0 (26bdf0), FUN_0026be2c (26be2c), FUN_0026bfd8 (26bfd8), FUN_0026c060 (26c060), FUN_0026c074 (26c074), FUN_0026c168 (26c168), FUN_0026c17c (26c17c), FUN_0026c190 (26c190), FUN_0026c1f8 (26c1f8), FUN_0026c234 (26c234), FUN_0026c24c (26c24c), FUN_0026c288 (26c288), FUN_0026c2a0 (26c2a0), FUN_0026c2b4 (26c2b4), FUN_0026c2f8 (26c2f8), FUN_0026c334 (26c334), FUN_0026c3c0 (26c3c0), FUN_0026c3ec (26c3ec), FUN_0026c424 (26c424), FUN_0026c438 (26c438), FUN_0026c454 (26c454), FUN_0026c46c (26c46c), FUN_0026c484 (26c484), FUN_0026c6f0 (26c6f0), FUN_0026c704 (26c704), FUN_0026c744 (26c744), FUN_0026c7a0 (26c7a0), FUN_0026d154 (26d154), FUN_0026d168 (26d168), FUN_0026d17c (26d17c), FUN_0026d3c0 (26d3c0), FUN_0026d618 (26d618), FUN_0026d634 (26d634), FUN_0026d6a4 (26d6a4), FUN_0026d6f4 (26d6f4), FUN_0026d70c (26d70c), FUN_0026dc1c (26dc1c), FUN_0026e758 (26e758), FUN_0026e76c (26e76c), FUN_0026e944 (26e944), FUN_0026eb74 (26eb74), FUN_0026ebdc (26ebdc), FUN_0026ecb0 (26ecb0), FUN_0026ed40 (26ed40), FUN_0026ed7c (26ed7c), FUN_0026ed90 (26ed90), FUN_0026ee70 (26ee70), FUN_0026efac (26efac), FUN_0026f21c (26f21c), FUN_0026f234 (26f234), FUN_0026f260 (26f260), FUN_0026f280 (26f280), FUN_0026f600 (26f600), FUN_0026f624 (26f624), FUN_0026f7d4 (26f7d4), FUN_0026f838 (26f838), FUN_0026f980 (26f980), FUN_0026fae0 (26fae0), FUN_0026faf8 (26faf8), FUN_0026ff84 (26ff84), FUN_00270228 (270228), FUN_00270808 (270808), FUN_00270a9c (270a9c), FUN_00270ab4 (270ab4), FUN_00270ae4 (270ae4), FUN_00270b38 (270b38), FUN_00270c50 (270c50), FUN_00270d18 (270d18), FUN_00270d2c (270d2c), FUN_00270d74 (270d74), FUN_00270d90 (270d90), FUN_00270e00 (270e00), FUN_00270e14 (270e14), FUN_00270e30 (270e30), FUN_00270e84 (270e84), FUN_00270e98 (270e98), FUN_00271048 (271048), FUN_0027107c (27107c), FUN_00271100 (271100), FUN_002711bc (2711bc), FUN_002711d4 (2711d4), FUN_002711ec (2711ec), FUN_00271200 (271200), FUN_00271220 (271220), FUN_00271268 (271268), FUN_002712cc (2712cc), FUN_00271308 (271308), FUN_00271338 (271338), FUN_00271350 (271350), FUN_00271384 (271384), FUN_002713a4 (2713a4), FUN_002713bc (2713bc), FUN_002713d0 (2713d0), FUN_002714e8 (2714e8), FUN_00271510 (271510), FUN_002715a4 (2715a4), FUN_00271628 (271628), FUN_00271668 (271668), FUN_00271680 (271680), FUN_0027170c (27170c), FUN_00271728 (271728), FUN_0027177c (27177c), FUN_00271794 (271794), FUN_002717c4 (2717c4), FUN_002717fc (2717fc), FUN_00271814 (271814), FUN_00271870 (271870), FUN_00271884 (271884), FUN_00271904 (271904), FUN_00271918 (271918), FUN_002719b4 (2719b4), FUN_002719c8 (2719c8), FUN_002719e0 (2719e0), FUN_00271a2c (271a2c), FUN_00271a90 (271a90), FUN_00271b34 (271b34), FUN_00271b50 (271b50), FUN_00271ba4 (271ba4), FUN_00271bbc (271bbc), FUN_00271bf8 (271bf8), FUN_00271c40 (271c40), FUN_00271db0 (271db0), FUN_00271dfc (271dfc), FUN_00271ee0 (271ee0), FUN_00271ef4 (271ef4), FUN_00271f7c (271f7c), FUN_00271fa4 (271fa4), FUN_00272028 (272028), FUN_0027203c (27203c), FUN_00272094 (272094), FUN_002720d4 (2720d4), FUN_002720f0 (2720f0), FUN_00272220 (272220), FUN_00272264 (272264), FUN_00272304 (272304), FUN_00272318 (272318), FUN_00272380 (272380), FUN_002724a4 (2724a4), FUN_002725a4 (2725a4), FUN_002725c0 (2725c0), FUN_00272b38 (272b38), FUN_00272bf8 (272bf8), FUN_00272cec (272cec), FUN_00272dcc (272dcc), FUN_00272fa8 (272fa8), FUN_0027305c (27305c), FUN_0027307c (27307c), FUN_00273124 (273124), FUN_00273438 (273438), FUN_002734f0 (2734f0), FUN_00273504 (273504), FUN_0027353c (27353c), FUN_00273808 (273808), FUN_00273940 (273940), FUN_002739cc (2739cc), FUN_00273a00 (273a00), FUN_00273b58 (273b58), FUN_00274408 (274408), FUN_00274468 (274468), FUN_002747e0 (2747e0), FUN_00274b1c (274b1c), FUN_00274ea0 (274ea0), FUN_00274ebc (274ebc), FUN_002752dc (2752dc), FUN_002752e0 (2752e0), FUN_002753a4 (2753a4), FUN_002790e0 (2790e0), FUN_0027b3cc (27b3cc), FUN_0027c518 (27c518), FUN_0027c638 (27c638), FUN_0027c6c8 (27c6c8), FUN_002a71b8 (2a71b8), FUN_002a7330 (2a7330), FUN_002a7524 (2a7524), FUN_002a7614 (2a7614), FUN_002a7de0 (2a7de0), FUN_002a858c (2a858c), FUN_002a87c8 (2a87c8), FUN_002a8a24 (2a8a24), FUN_002a8da0 (2a8da0), FUN_002a8f28 (2a8f28), FUN_002a8ffc (2a8ffc), FUN_002a9014 (2a9014), FUN_002a9180 (2a9180), FUN_002a9240 (2a9240), FUN_002a9388 (2a9388), FUN_002a9488 (2a9488), FUN_002a97e0 (2a97e0), FUN_002a981c (2a981c), FUN_002a9c60 (2a9c60), FUN_002aad18 (2aad18), FUN_002aade4 (2aade4), FUN_002aaee4 (2aaee4), FUN_002ab4b0 (2ab4b0), FUN_002ab778 (2ab778), FUN_002ab9b8 (2ab9b8), FUN_002ac1a8 (2ac1a8), FUN_002ac20c (2ac20c), FUN_002ac6b0 (2ac6b0), FUN_002ac824 (2ac824), FUN_002acca8 (2acca8), FUN_002ad370 (2ad370), FUN_002af4c4 (2af4c4), FUN_002af760 (2af760), FUN_002af870 (2af870), FUN_002b0058 (2b0058), FUN_002b0f7c (2b0f7c), FUN_002b1204 (2b1204), FUN_002b139c (2b139c), FUN_002b1c10 (2b1c10), FUN_002b3fa0 (2b3fa0), FUN_002b51e4 (2b51e4), FUN_002d06dc (2d06dc), FUN_002d0c24 (2d0c24), FUN_002d0f38 (2d0f38), FUN_002d15a4 (2d15a4), FUN_002d1b0c (2d1b0c), FUN_002d4018 (2d4018), FUN_002dadd4 (2dadd4), FUN_002db950 (2db950), FUN_002dc1ac (2dc1ac), FUN_002dc2b4 (2dc2b4), FUN_002ddd40 (2ddd40), FUN_002dde90 (2dde90), FUN_002ddf38 (2ddf38), FUN_002ddfdc (2ddfdc), FUN_002de49c (2de49c), FUN_002de7b4 (2de7b4), FUN_002de9f8 (2de9f8), FUN_002e15ac (2e15ac), FUN_002e33f8 (2e33f8), FUN_002e3c78 (2e3c78), FUN_002e4360 (2e4360), FUN_002e4580 (2e4580), FUN_002e47c0 (2e47c0), FUN_002e4890 (2e4890), FUN_002e4e4c (2e4e4c), FUN_002e52f0 (2e52f0), FUN_002e66d8 (2e66d8), FUN_002e6c88 (2e6c88), FUN_002e6e28 (2e6e28), FUN_002e8ee8 (2e8ee8), FUN_002e9800 (2e9800), FUN_002eac08 (2eac08), FUN_002eac38 (2eac38), FUN_002f2fd4 (2f2fd4), FUN_002f425c (2f425c), FUN_002f6770 (2f6770), FUN_002f7800 (2f7800), FUN_002f934c (2f934c), FUN_002fa910 (2fa910), FUN_0030d24c (30d24c), FUN_0030dc8c (30dc8c), FUN_0030dcf4 (30dcf4), FUN_0030dee4 (30dee4), FUN_0030e030 (30e030), FUN_0030e25c (30e25c), FUN_0030e330 (30e330), FUN_0030e380 (30e380), FUN_0030e3b8 (30e3b8), FUN_0030e458 (30e458), FUN_0030e5c4 (30e5c4), FUN_0030e6dc (30e6dc), FUN_0030e834 (30e834), FUN_0030eb48 (30eb48), FUN_0030eb84 (30eb84), FUN_0030f82c (30f82c), FUN_0030fafc (30fafc), FUN_0030fec4 (30fec4), FUN_00311b84 (311b84), FUN_003126b4 (3126b4), FUN_00312cf4 (312cf4), FUN_00312f18 (312f18), FUN_0031471c (31471c), FUN_0031501c (31501c), FUN_003151a8 (3151a8), FUN_0031534c (31534c), FUN_00315898 (315898), FUN_00315a00 (315a00), FUN_00315a3c (315a3c), FUN_00315fa0 (315fa0), FUN_00315ff4 (315ff4), FUN_0031705c (31705c), FUN_003175b4 (3175b4), FUN_003197ac (3197ac), FUN_0031a040 (31a040), FUN_0031a0b0 (31a0b0), FUN_0031a8fc (31a8fc), FUN_0031af2c (31af2c), FUN_0031c530 (31c530), FUN_0031c670 (31c670), FUN_0031c6e8 (31c6e8), FUN_0031d248 (31d248), FUN_0031d97c (31d97c), FUN_0031dab8 (31dab8), FUN_00321240 (321240), FUN_00321428 (321428), FUN_0032195c (32195c), FUN_003225a0 (3225a0), FUN_00322788 (322788), FUN_00322c7c (322c7c), FUN_003238c0 (3238c0), FUN_00323aa8 (323aa8), FUN_00324344 (324344), FUN_003247ac (3247ac), FUN_00324b80 (324b80), FUN_00325e64 (325e64), FUN_00325f18 (325f18), FUN_00326014 (326014), FUN_003261a4 (3261a4), FUN_0032749c (32749c), FUN_00328590 (328590), FUN_0032aa20 (32aa20), FUN_0032ac08 (32ac08), FUN_0032ba98 (32ba98), FUN_0032c068 (32c068), FUN_0032dc78 (32dc78), FUN_0032f6dc (32f6dc), FUN_00330b74 (330b74), FUN_00333c38 (333c38), FUN_003349d0 (3349d0), FUN_00336880 (336880), FUN_0033697c (33697c), FUN_00336f14 (336f14), FUN_00339608 (339608), FUN_003396e4 (3396e4), FUN_003436ac (3436ac), FUN_0034381c (34381c), FUN_003455e0 (3455e0), FUN_0034bcfc (34bcfc), FUN_0034bf34 (34bf34), FUN_0034bf4c (34bf4c), FUN_0034ee54 (34ee54), FUN_0034f964 (34f964), FUN_00354d58 (354d58), FUN_0036d650 (36d650), FUN_00374618 (374618), FUN_0037485c (37485c), FUN_00374bf4 (374bf4), FUN_00374c38 (374c38), FUN_00375cb0 (375cb0), FUN_00375dfc (375dfc), FUN_003760d8 (3760d8), FUN_00376cc8 (376cc8), FUN_00377b20 (377b20), FUN_00377d24 (377d24), FUN_00377e34 (377e34), FUN_00377ea0 (377ea0), FUN_003781d0 (3781d0), FUN_0037827c (37827c), FUN_00378460 (378460), FUN_003784a8 (3784a8), FUN_003791d0 (3791d0), FUN_0037cb04 (37cb04), FUN_0037d93c (37d93c), FUN_0037e0a4 (37e0a4), FUN_0037e5b8 (37e5b8), FUN_0037f6f8 (37f6f8), FUN_003817a0 (3817a0), FUN_00381d64 (381d64), FUN_00383b18 (383b18), FUN_00383c64 (383c64), FUN_003843b8 (3843b8), FUN_00384660 (384660), FUN_00384728 (384728), FUN_003848b8 (3848b8), FUN_00384d90 (384d90), FUN_00384e08 (384e08), FUN_00384f48 (384f48), FUN_00385420 (385420), FUN_00385650 (385650), FUN_00385678 (385678), readLayerAndMaskInfoSection (3856c8)
+All: FUN_000a2bd8 (a2bd8), FUN_000aa41c (aa41c), FUN_000aa424 (aa424), FUN_000aa430 (aa430), FUN_000aa438 (aa438), FUN_000ab484 (ab484), FUN_000afcf4 (afcf4), FUN_000afcfc (afcfc), FUN_000afd08 (afd08), FUN_000afd10 (afd10), FUN_000b1de0 (b1de0), FUN_000bc4ac (bc4ac), FUN_000be348 (be348), FUN_000c3d08 (c3d08), FUN_000c4500 (c4500), FUN_0027df70 (27df70), FUN_0027e098 (27e098), FUN_0027ea60 (27ea60), FUN_0027ea7c (27ea7c), FUN_0027ef08 (27ef08), FUN_0027ef44 (27ef44), FUN_0027fee4 (27fee4), FUN_00281184 (281184), FUN_002819b4 (2819b4), FUN_00281db0 (281db0), FUN_00284a28 (284a28), FUN_00284dfc (284dfc), FUN_00289680 (289680), FUN_00289a88 (289a88), FUN_0028a2fc (28a2fc), FUN_0028a3b8 (28a3b8), FUN_0028a4e4 (28a4e4), FUN_0028e0fc (28e0fc), FUN_0028e3f0 (28e3f0), FUN_0028f408 (28f408), FUN_0028fb48 (28fb48), FUN_00290c5c (290c5c), FUN_00291050 (291050), FUN_00293004 (293004), FUN_0029870c (29870c), FUN_0029a21c (29a21c), FUN_0029a234 (29a234), FUN_0029a24c (29a24c), FUN_002a0168 (2a0168), FUN_002a06c4 (2a06c4), FUN_002a06d8 (2a06d8), FUN_002a2f98 (2a2f98), FUN_002a4e00 (2a4e00), FUN_002c4fcc (2c4fcc), FUN_002c5478 (2c5478), FUN_002c7020 (2c7020), FUN_0035dfe8 (35dfe8), FUN_0035faec (35faec), FUN_0035fd1c (35fd1c), FUN_00062348 (62348), FUN_00062a1c (62a1c), processInput48 (62b28), FUN_0006315c (6315c), FUN_00063944 (63944), FUN_000647c4 (647c4), FUN_00066900 (66900), FUN_0006b7b4 (6b7b4), FUN_0006d7c4 (6d7c4), FUN_00079a58 (79a58), FUN_0007cacc (7cacc), processArray8 (81aa8), FUN_000828e0 (828e0), FUN_0008796c (8796c), FUN_00088540 (88540), FUN_0008c394 (8c394), FUN_00091e34 (91e34), FUN_00091e74 (91e74), FUN_0009404c (9404c), FUN_00094e90 (94e90), FUN_00096364 (96364), FUN_0009714c (9714c), FUN_0009718c (9718c), FUN_000971cc (971cc), FUN_00098634 (98634), FUN_0009e044 (9e044), FUN_000a02ac (a02ac), FUN_000c6c68 (c6c68), FUN_000c6ca8 (c6ca8), FUN_000c7158 (c7158), FUN_000c9b88 (c9b88), FUN_000cef1c (cef1c), FUN_000d0f70 (d0f70), FUN_000d1ad0 (d1ad0), FUN_000f1388 (f1388), FUN_000f3ed0 (f3ed0), FUN_00105064 (105064), FUN_00124ab8 (124ab8), FUN_00127878 (127878), FUN_0014211c (14211c), FUN_00142628 (142628), FUN_00142798 (142798), FUN_001427dc (1427dc), FUN_00142bec (142bec), FUN_00143214 (143214), FUN_00144bf8 (144bf8), FUN_001530bc (1530bc), FUN_00163110 (163110), FUN_00168068 (168068), autoForwardKeyEvents (169ac4), createMetalLayer (16c9d0), FUN_001708dc (1708dc), FUN_00175554 (175554), FUN_0017dcf8 (17dcf8), FUN_0017f870 (17f870), FUN_00180264 (180264), FUN_0018302c (18302c), FUN_0018684c (18684c), FUN_001896e4 (1896e4), FUN_0018bc5c (18bc5c), FUN_0018c84c (18c84c), FUN_0018d23c (18d23c), FUN_0018e338 (18e338), FUN_00191d54 (191d54), FUN_00196c84 (196c84), FUN_0019a688 (19a688), FUN_0019a9f4 (19a9f4), FUN_0019be00 (19be00), FUN_0019bea4 (19bea4), FUN_001a648c (1a648c), FUN_001a696c (1a696c), FUN_001a8664 (1a8664), FUN_001ad0a4 (1ad0a4), FUN_001b17fc (1b17fc), FUN_001b249c (1b249c), FUN_001b2578 (1b2578), FUN_001b37ec (1b37ec), FUN_001b387c (1b387c), FUN_001ba3d4 (1ba3d4), FUN_001bb0bc (1bb0bc), FUN_001c22d4 (1c22d4), FUN_001cab68 (1cab68), FUN_001d0f00 (1d0f00), FUN_001d40e4 (1d40e4), FUN_001dd708 (1dd708), FUN_001e0ed8 (1e0ed8), rotateVectorAndRotateFunction4 (1ebe64), FUN_001ec298 (1ec298), FUN_001f1c10 (1f1c10), FUN_001f1c44 (1f1c44), FUN_001f1c80 (1f1c80), FUN_001f8720 (1f8720), FUN_001f8770 (1f8770), FUN_00204bc8 (204bc8), FUN_00204bec (204bec), FUN_00206378 (206378), FUN_002063b8 (2063b8), FUN_0020ca38 (20ca38), FUN_0020cae0 (20cae0), FUN_00213ec8 (213ec8), FUN_00214204 (214204), FUN_00214278 (214278), FUN_00215504 (215504), FUN_00215e28 (215e28), FUN_00215e50 (215e50), FUN_002164e8 (2164e8), FUN_0021ae4c (21ae4c), FUN_00220ed0 (220ed0), FUN_00223370 (223370), FUN_0022494c (22494c), FUN_00224b4c (224b4c), FUN_00224bcc (224bcc), FUN_00224d8c (224d8c), FUN_002251cc (2251cc), FUN_00228d04 (228d04), FUN_0022f1f0 (22f1f0), FUN_00231cb0 (231cb0), FUN_00231e4c (231e4c), FUN_00236180 (236180), FUN_00246f64 (246f64), FUN_0024ae50 (24ae50), FUN_0024aea8 (24aea8), FUN_0024b8cc (24b8cc), FUN_0024bb38 (24bb38), FUN_0024bccc (24bccc), FUN_0024f7b0 (24f7b0), FUN_00254f84 (254f84), FUN_0025519c (25519c), FUN_00255278 (255278), FUN_00255514 (255514), FUN_00255658 (255658), FUN_002566a4 (2566a4), FUN_00259e88 (259e88), FUN_00259f78 (259f78), FUN_0025a0e8 (25a0e8), FUN_0025a24c (25a24c), FUN_0025a8f8 (25a8f8), FUN_0025b138 (25b138), FUN_0025b290 (25b290), FUN_0025b3e0 (25b3e0), FUN_0025b7b4 (25b7b4), FUN_0025be8c (25be8c), FUN_0025c45c (25c45c), FUN_00264098 (264098), FUN_00264218 (264218), FUN_002645a0 (2645a0), FUN_002648d4 (2648d4), FUN_002655e8 (2655e8), FUN_00267128 (267128), FUN_002678e4 (2678e4), FUN_002685cc (2685cc), FUN_00268ad4 (268ad4), FUN_00268bec (268bec), FUN_00268dcc (268dcc), FUN_00268e9c (268e9c), FUN_00268fac (268fac), FUN_00268fc0 (268fc0), FUN_00268fec (268fec), FUN_0026909c (26909c), FUN_002690b4 (2690b4), FUN_002691e8 (2691e8), FUN_002691fc (2691fc), FUN_002692d8 (2692d8), FUN_00269300 (269300), FUN_00269470 (269470), FUN_002695d0 (2695d0), FUN_00269690 (269690), FUN_002696c8 (2696c8), FUN_00269784 (269784), FUN_0026979c (26979c), FUN_002697b4 (2697b4), FUN_002697e4 (2697e4), FUN_002697f8 (2697f8), FUN_00269aac (269aac), FUN_00269ddc (269ddc), FUN_00269edc (269edc), FUN_00269efc (269efc), FUN_00269f10 (269f10), FUN_00269f74 (269f74), FUN_00269f8c (269f8c), FUN_00269fb8 (269fb8), FUN_00269fd4 (269fd4), FUN_0026a018 (26a018), FUN_0026a034 (26a034), FUN_0026a064 (26a064), FUN_0026a078 (26a078), FUN_0026a0b4 (26a0b4), FUN_0026a0cc (26a0cc), FUN_0026a0e4 (26a0e4), FUN_0026a0f8 (26a0f8), FUN_0026a118 (26a118), FUN_0026a138 (26a138), FUN_0026a150 (26a150), FUN_0026a168 (26a168), FUN_0026a194 (26a194), FUN_0026a258 (26a258), FUN_0026a2d8 (26a2d8), FUN_0026a3bc (26a3bc), FUN_0026a3d0 (26a3d0), FUN_0026a3e8 (26a3e8), FUN_0026a4d0 (26a4d0), FUN_0026a4e4 (26a4e4), FUN_0026a55c (26a55c), FUN_0026a608 (26a608), FUN_0026a664 (26a664), FUN_0026a7fc (26a7fc), FUN_0026a810 (26a810), FUN_0026a824 (26a824), FUN_0026a8b8 (26a8b8), FUN_0026a9a0 (26a9a0), FUN_0026a9f4 (26a9f4), FUN_0026aac4 (26aac4), FUN_0026aadc (26aadc), FUN_0026ab18 (26ab18), FUN_0026ab60 (26ab60), FUN_0026ab78 (26ab78), FUN_0026ab8c (26ab8c), FUN_0026ac3c (26ac3c), FUN_0026ace0 (26ace0), FUN_0026ad24 (26ad24), FUN_0026adb0 (26adb0), FUN_0026adf8 (26adf8), FUN_0026ae20 (26ae20), FUN_0026ae3c (26ae3c), FUN_0026b020 (26b020), FUN_0026b0b4 (26b0b4), FUN_0026b0cc (26b0cc), FUN_0026b0ec (26b0ec), FUN_0026b100 (26b100), FUN_0026b11c (26b11c), FUN_0026b130 (26b130), FUN_0026b144 (26b144), FUN_0026b158 (26b158), FUN_0026b170 (26b170), FUN_0026b188 (26b188), FUN_0026b1b8 (26b1b8), FUN_0026b1cc (26b1cc), FUN_0026b23c (26b23c), FUN_0026b328 (26b328), FUN_0026b340 (26b340), FUN_0026b35c (26b35c), FUN_0026b3b0 (26b3b0), FUN_0026b3c4 (26b3c4), FUN_0026b458 (26b458), FUN_0026b4a4 (26b4a4), FUN_0026b4bc (26b4bc), FUN_0026b564 (26b564), FUN_0026b620 (26b620), FUN_0026b648 (26b648), FUN_0026bd10 (26bd10), FUN_0026bd24 (26bd24), FUN_0026bdf0 (26bdf0), FUN_0026be2c (26be2c), FUN_0026bfd8 (26bfd8), FUN_0026c060 (26c060), FUN_0026c074 (26c074), FUN_0026c168 (26c168), FUN_0026c17c (26c17c), FUN_0026c190 (26c190), FUN_0026c1f8 (26c1f8), FUN_0026c234 (26c234), FUN_0026c24c (26c24c), FUN_0026c288 (26c288), FUN_0026c2a0 (26c2a0), FUN_0026c2b4 (26c2b4), FUN_0026c2f8 (26c2f8), FUN_0026c334 (26c334), FUN_0026c3c0 (26c3c0), FUN_0026c3ec (26c3ec), FUN_0026c424 (26c424), FUN_0026c438 (26c438), FUN_0026c454 (26c454), FUN_0026c46c (26c46c), FUN_0026c484 (26c484), FUN_0026c6f0 (26c6f0), FUN_0026c704 (26c704), FUN_0026c744 (26c744), FUN_0026c7a0 (26c7a0), FUN_0026d154 (26d154), FUN_0026d168 (26d168), FUN_0026d17c (26d17c), FUN_0026d3c0 (26d3c0), FUN_0026d618 (26d618), FUN_0026d634 (26d634), FUN_0026d6a4 (26d6a4), FUN_0026d6f4 (26d6f4), FUN_0026d70c (26d70c), FUN_0026dc1c (26dc1c), FUN_0026e758 (26e758), FUN_0026e76c (26e76c), FUN_0026e944 (26e944), FUN_0026eb74 (26eb74), FUN_0026ebdc (26ebdc), FUN_0026ecb0 (26ecb0), FUN_0026ed40 (26ed40), FUN_0026ed7c (26ed7c), FUN_0026ed90 (26ed90), FUN_0026ee70 (26ee70), FUN_0026efac (26efac), FUN_0026f21c (26f21c), FUN_0026f234 (26f234), FUN_0026f260 (26f260), FUN_0026f280 (26f280), FUN_0026f600 (26f600), FUN_0026f624 (26f624), FUN_0026f7d4 (26f7d4), FUN_0026f838 (26f838), FUN_0026f980 (26f980), FUN_0026fae0 (26fae0), FUN_0026faf8 (26faf8), FUN_0026ff84 (26ff84), FUN_00270228 (270228), FUN_00270808 (270808), FUN_00270a9c (270a9c), FUN_00270ab4 (270ab4), FUN_00270ae4 (270ae4), FUN_00270b38 (270b38), FUN_00270c50 (270c50), FUN_00270d18 (270d18), FUN_00270d2c (270d2c), FUN_00270d74 (270d74), FUN_00270d90 (270d90), FUN_00270e00 (270e00), FUN_00270e14 (270e14), FUN_00270e30 (270e30), FUN_00270e84 (270e84), FUN_00270e98 (270e98), FUN_00271048 (271048), FUN_0027107c (27107c), FUN_00271100 (271100), FUN_002711bc (2711bc), FUN_002711d4 (2711d4), FUN_002711ec (2711ec), FUN_00271200 (271200), FUN_00271220 (271220), FUN_00271268 (271268), FUN_002712cc (2712cc), FUN_00271308 (271308), FUN_00271338 (271338), FUN_00271350 (271350), FUN_00271384 (271384), FUN_002713a4 (2713a4), FUN_002713bc (2713bc), FUN_002713d0 (2713d0), FUN_002714e8 (2714e8), FUN_00271510 (271510), FUN_002715a4 (2715a4), FUN_00271628 (271628), FUN_00271668 (271668), FUN_00271680 (271680), FUN_0027170c (27170c), FUN_00271728 (271728), FUN_0027177c (27177c), FUN_00271794 (271794), FUN_002717c4 (2717c4), FUN_002717fc (2717fc), FUN_00271814 (271814), FUN_00271870 (271870), FUN_00271884 (271884), FUN_00271904 (271904), FUN_00271918 (271918), FUN_002719b4 (2719b4), FUN_002719c8 (2719c8), FUN_002719e0 (2719e0), FUN_00271a2c (271a2c), FUN_00271a90 (271a90), FUN_00271b34 (271b34), FUN_00271b50 (271b50), FUN_00271ba4 (271ba4), FUN_00271bbc (271bbc), FUN_00271bf8 (271bf8), FUN_00271c40 (271c40), FUN_00271db0 (271db0), FUN_00271dfc (271dfc), FUN_00271ee0 (271ee0), FUN_00271ef4 (271ef4), FUN_00271f7c (271f7c), FUN_00271fa4 (271fa4), FUN_00272028 (272028), FUN_0027203c (27203c), FUN_00272094 (272094), FUN_002720d4 (2720d4), FUN_002720f0 (2720f0), FUN_00272220 (272220), FUN_00272264 (272264), FUN_00272304 (272304), FUN_00272318 (272318), FUN_00272380 (272380), FUN_002724a4 (2724a4), FUN_002725a4 (2725a4), FUN_002725c0 (2725c0), FUN_00272b38 (272b38), FUN_00272bf8 (272bf8), FUN_00272cec (272cec), FUN_00272dcc (272dcc), FUN_00272fa8 (272fa8), FUN_0027305c (27305c), FUN_0027307c (27307c), FUN_00273124 (273124), FUN_00273438 (273438), FUN_002734f0 (2734f0), FUN_00273504 (273504), FUN_0027353c (27353c), FUN_00273808 (273808), FUN_00273940 (273940), FUN_002739cc (2739cc), FUN_00273a00 (273a00), FUN_00273b58 (273b58), FUN_00274408 (274408), FUN_00274468 (274468), FUN_002747e0 (2747e0), FUN_00274b1c (274b1c), FUN_00274ea0 (274ea0), FUN_00274ebc (274ebc), FUN_002752dc (2752dc), FUN_002752e0 (2752e0), FUN_002753a4 (2753a4), FUN_002790e0 (2790e0), FUN_0027b3cc (27b3cc), FUN_0027c518 (27c518), FUN_0027c638 (27c638), FUN_0027c6c8 (27c6c8), FUN_002a71b8 (2a71b8), FUN_002a7330 (2a7330), FUN_002a7524 (2a7524), FUN_002a7614 (2a7614), FUN_002a7de0 (2a7de0), FUN_002a858c (2a858c), FUN_002a87c8 (2a87c8), FUN_002a8a24 (2a8a24), FUN_002a8da0 (2a8da0), FUN_002a8f28 (2a8f28), FUN_002a8ffc (2a8ffc), FUN_002a9014 (2a9014), FUN_002a9180 (2a9180), FUN_002a9240 (2a9240), FUN_002a9388 (2a9388), FUN_002a9488 (2a9488), FUN_002a97e0 (2a97e0), FUN_002a981c (2a981c), FUN_002a9c60 (2a9c60), FUN_002aad18 (2aad18), FUN_002aade4 (2aade4), FUN_002aaee4 (2aaee4), FUN_002ab4b0 (2ab4b0), FUN_002ab778 (2ab778), FUN_002ab9b8 (2ab9b8), FUN_002ac1a8 (2ac1a8), FUN_002ac20c (2ac20c), FUN_002ac6b0 (2ac6b0), FUN_002ac824 (2ac824), FUN_002acca8 (2acca8), FUN_002ad370 (2ad370), FUN_002af4c4 (2af4c4), FUN_002af760 (2af760), FUN_002af870 (2af870), FUN_002b0058 (2b0058), FUN_002b0f7c (2b0f7c), FUN_002b1204 (2b1204), FUN_002b139c (2b139c), FUN_002b1c10 (2b1c10), FUN_002b3fa0 (2b3fa0), FUN_002b51e4 (2b51e4), FUN_002d06dc (2d06dc), FUN_002d0c24 (2d0c24), FUN_002d0f38 (2d0f38), FUN_002d15a4 (2d15a4), FUN_002d1b0c (2d1b0c), FUN_002d4018 (2d4018), FUN_002dadd4 (2dadd4), FUN_002db950 (2db950), FUN_002dc1ac (2dc1ac), FUN_002dc2b4 (2dc2b4), FUN_002ddd40 (2ddd40), FUN_002dde90 (2dde90), FUN_002ddf38 (2ddf38), FUN_002ddfdc (2ddfdc), FUN_002de49c (2de49c), FUN_002de7b4 (2de7b4), FUN_002de9f8 (2de9f8), FUN_002e15ac (2e15ac), FUN_002e4360 (2e4360), FUN_002e4580 (2e4580), FUN_002e47c0 (2e47c0), FUN_002e4890 (2e4890), FUN_002e66d8 (2e66d8), FUN_002e6c88 (2e6c88), FUN_002e6e28 (2e6e28), FUN_002e8ee8 (2e8ee8), FUN_002e9800 (2e9800), FUN_002eac08 (2eac08), FUN_002eac38 (2eac38), FUN_002f2fd4 (2f2fd4), FUN_002f425c (2f425c), FUN_002f6770 (2f6770), FUN_002f7800 (2f7800), FUN_002f934c (2f934c), FUN_002fa910 (2fa910), FUN_0030d24c (30d24c), FUN_0030dc8c (30dc8c), FUN_0030dcf4 (30dcf4), FUN_0030dee4 (30dee4), FUN_0030e030 (30e030), FUN_0030e25c (30e25c), FUN_0030e330 (30e330), FUN_0030e380 (30e380), FUN_0030e3b8 (30e3b8), FUN_0030e458 (30e458), FUN_0030e5c4 (30e5c4), FUN_0030e6dc (30e6dc), FUN_0030e834 (30e834), FUN_0030eb48 (30eb48), FUN_0030eb84 (30eb84), FUN_0030f82c (30f82c), FUN_0030fafc (30fafc), FUN_0030fec4 (30fec4), FUN_00311b84 (311b84), FUN_003126b4 (3126b4), FUN_00312cf4 (312cf4), FUN_00312f18 (312f18), FUN_0031471c (31471c), FUN_0031501c (31501c), FUN_003151a8 (3151a8), FUN_0031534c (31534c), FUN_00315898 (315898), FUN_00315a00 (315a00), FUN_00315a3c (315a3c), FUN_00315fa0 (315fa0), FUN_00315ff4 (315ff4), FUN_0031705c (31705c), FUN_003175b4 (3175b4), FUN_003197ac (3197ac), FUN_0031a040 (31a040), FUN_0031a0b0 (31a0b0), FUN_0031a8fc (31a8fc), FUN_0031af2c (31af2c), FUN_0031c530 (31c530), FUN_0031c670 (31c670), FUN_0031c6e8 (31c6e8), FUN_0031d248 (31d248), FUN_0031d97c (31d97c), FUN_0031dab8 (31dab8), FUN_00321240 (321240), FUN_00321428 (321428), FUN_0032195c (32195c), FUN_003225a0 (3225a0), FUN_00322788 (322788), FUN_00322c7c (322c7c), FUN_003238c0 (3238c0), FUN_00323aa8 (323aa8), FUN_00324344 (324344), FUN_003247ac (3247ac), FUN_00324b80 (324b80), FUN_00325e64 (325e64), FUN_00325f18 (325f18), FUN_00326014 (326014), FUN_003261a4 (3261a4), FUN_0032749c (32749c), FUN_00328590 (328590), FUN_0032aa20 (32aa20), FUN_0032ac08 (32ac08), FUN_0032ba98 (32ba98), FUN_0032c068 (32c068), FUN_0032dc78 (32dc78), FUN_0032f6dc (32f6dc), FUN_00330b74 (330b74), FUN_00333c38 (333c38), FUN_003349d0 (3349d0), FUN_0033697c (33697c), FUN_00336f14 (336f14), FUN_00339608 (339608), FUN_003396e4 (3396e4), FUN_003436ac (3436ac), FUN_0034381c (34381c), FUN_003455e0 (3455e0), FUN_0034bcfc (34bcfc), FUN_0034bf34 (34bf34), FUN_0034bf4c (34bf4c), FUN_0034ee54 (34ee54), FUN_0034f964 (34f964), FUN_00354d58 (354d58), FUN_0036d650 (36d650), FUN_00374618 (374618), FUN_0037485c (37485c), FUN_00374bf4 (374bf4), FUN_00374c38 (374c38), FUN_00375cb0 (375cb0), FUN_00375dfc (375dfc), FUN_003760d8 (3760d8), FUN_00376cc8 (376cc8), FUN_00377b20 (377b20), FUN_00377d24 (377d24), FUN_00377e34 (377e34), FUN_00377ea0 (377ea0), FUN_003781d0 (3781d0), FUN_0037827c (37827c), FUN_00378460 (378460), FUN_003784a8 (3784a8), FUN_003791d0 (3791d0), FUN_0037cb04 (37cb04), FUN_0037d93c (37d93c), FUN_0037e0a4 (37e0a4), FUN_0037e5b8 (37e5b8), FUN_0037f6f8 (37f6f8), FUN_003817a0 (3817a0), FUN_00381d64 (381d64), FUN_00383b18 (383b18), FUN_00383c64 (383c64), FUN_003843b8 (3843b8), FUN_00384660 (384660), FUN_00384728 (384728), FUN_003848b8 (3848b8), FUN_00384d90 (384d90), FUN_00384e08 (384e08), FUN_00384f48 (384f48), FUN_00385420 (385420), FUN_00385650 (385650), FUN_00385678 (385678), readLayerAndMaskInfoSection (3856c8)
 
 #### FUN_000a2bd8 — funcs/__Z12FUN_000a2bd8yyyyy.cpp, Ghidra a2bd8, 1 model attempt(s)
 
@@ -62673,6 +62692,162 @@ void FUN_000a2bd8(undefined8 param_1,undefined8 param_2,undefined8 param_3,undef
 }
 ```
 
+#### FUN_000aa41c — funcs/__Z12FUN_000aa41cv.cpp, Ghidra aa41c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa41cv.cpp:6:20: error: use of undeclared identifier 'SoftwareBreakpoint'
+    6 |   pcVar1 = (void *)SoftwareBreakpoint(1,0xaa424);
+      |                    ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa41cv.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    7 |   (*pcVar1)();
+      |    ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa41cv.cpp:7:12: error: called object type 'void' is not a function or function pointer
+    7 |   (*pcVar1)();
+      |   ~~~~~~~~~^
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000aa41c(void) {
+  void *pcVar1;
+
+  pcVar1 = (void *)SoftwareBreakpoint(1,0xaa424);
+  (*pcVar1)();
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_000aa41c(void)
+
+{
+  code *pcVar1;
+  
+                    /* WARNING: Does not return */
+  pcVar1 = (code *)SoftwareBreakpoint(1,0xaa424);
+  (*pcVar1)();
+}
+```
+
+#### FUN_000aa424 — funcs/__Z12FUN_000aa424v.cpp, Ghidra aa424, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa424v.cpp:6:20: error: use of undeclared identifier 'SoftwareBreakpoint'
+    6 |   pcVar1 = (void *)SoftwareBreakpoint(1,0xaa430);
+      |                    ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa424v.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    7 |   (*pcVar1)();
+      |    ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa424v.cpp:7:12: error: called object type 'void' is not a function or function pointer
+    7 |   (*pcVar1)();
+      |   ~~~~~~~~~^
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000aa424(void) {
+  void *pcVar1;
+
+  pcVar1 = (void *)SoftwareBreakpoint(1,0xaa430);
+  (*pcVar1)();
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_000aa424(void)
+
+{
+  code *pcVar1;
+  
+                    /* WARNING: Does not return */
+  pcVar1 = (code *)SoftwareBreakpoint(1,0xaa430);
+  (*pcVar1)();
+}
+```
+
+#### FUN_000aa430 — funcs/__Z12FUN_000aa430v.cpp, Ghidra aa430, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa430v.cpp:6:20: error: use of undeclared identifier 'SoftwareBreakpoint'
+    6 |   pcVar1 = (void *)SoftwareBreakpoint(1,0xaa438);
+      |                    ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa430v.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    7 |   (*pcVar1)();
+      |    ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa430v.cpp:7:12: error: called object type 'void' is not a function or function pointer
+    7 |   (*pcVar1)();
+      |   ~~~~~~~~~^
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000aa430(void) {
+  void *pcVar1;
+
+  pcVar1 = (void *)SoftwareBreakpoint(1,0xaa438);
+  (*pcVar1)();
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_000aa430(void)
+
+{
+  code *pcVar1;
+  
+                    /* WARNING: Does not return */
+  pcVar1 = (code *)SoftwareBreakpoint(1,0xaa438);
+  (*pcVar1)();
+}
+```
+
+#### FUN_000aa438 — funcs/__Z12FUN_000aa438v.cpp, Ghidra aa438, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa438v.cpp:6:20: error: use of undeclared identifier 'SoftwareBreakpoint'
+    6 |   pcVar1 = (void *)SoftwareBreakpoint(1,0xaa444);
+      |                    ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa438v.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    7 |   (*pcVar1)();
+      |    ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa438v.cpp:7:12: error: called object type 'void' is not a function or function pointer
+    7 |   (*pcVar1)();
+      |   ~~~~~~~~~^
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000aa438(void) {
+  void *pcVar1;
+
+  pcVar1 = (void *)SoftwareBreakpoint(1,0xaa444);
+  (*pcVar1)();
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_000aa438(void)
+
+{
+  code *pcVar1;
+  
+                    /* WARNING: Does not return */
+  pcVar1 = (code *)SoftwareBreakpoint(1,0xaa444);
+  (*pcVar1)();
+}
+```
+
 #### FUN_000ab484 — funcs/__Z12FUN_000ab484yPy.cpp, Ghidra ab484, 0 model attempt(s)
 
 Compiler output:
@@ -62701,482 +62876,81 @@ void FUN_000ab484(undefined8 param_1,undefined8 *param_2)
 }
 ```
 
-#### FUN_000b1de0 — funcs/__Z12FUN_000b1de0ljPi.cpp, Ghidra b1de0, 0 model attempt(s)
+#### FUN_000afcf4 — funcs/__Z12FUN_000afcf4v.cpp, Ghidra afcf4, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b1de0ljPi.cpp:14:5: error: use of undeclared identifier 'FUN_000b10a0'
-   14 |     FUN_000b10a0(param_1, (byte)param_2, (undefined8 *)param_3);
-      |     ^~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b1de0(long param_1, uint param_2, int *param_3) {
-  bool bVar1;
-  long lVar2;
-  undefined8 uVar3;
-
-  if ((*(byte *)(param_1 + 0x394) != param_2) ||
-     (bVar1 = FUN_001f56c0((int *)(param_1 + 0x398), param_3), bVar1)) {
-    *(byte *)(param_1 + 0x394) = (byte)param_2;
-    uVar3 = *(undefined8 *)param_3;
-    *(int *)(param_1 + 0x3a0) = param_3[2];
-    *(undefined8 *)(param_1 + 0x398) = uVar3;
-    FUN_000b10a0(param_1, (byte)param_2, (undefined8 *)param_3);
-    lVar2 = FUN_000b1b1c((undefined8 *)(param_1 + 0x3a8));
-    if (lVar2 != 0) {
-      lVar2 = FUN_00045bf4((undefined8 *)(param_1 + 0x3a8));
-      FUN_0012a740(lVar2, param_2 & 0xff, (undefined8 *)param_3);
-    }
-    FUN_0011c2e0(param_1);
-  }
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_000b1de0(long param_1,uint param_2,int *param_3)
-
-{
-  bool bVar1;
-  long lVar2;
-  undefined8 uVar3;
-  
-  if ((*(byte *)(param_1 + 0x394) != param_2) ||
-     (bVar1 = FUN_001f56c0((int *)(param_1 + 0x398),param_3), bVar1)) {
-    *(byte *)(param_1 + 0x394) = (byte)param_2;
-    uVar3 = *(undefined8 *)param_3;
-    *(int *)(param_1 + 0x3a0) = param_3[2];
-    *(undefined8 *)(param_1 + 0x398) = uVar3;
-    FUN_000b10a0(param_1,(byte)param_2,(undefined8 *)param_3);
-    lVar2 = FUN_000b1b1c((undefined8 *)(param_1 + 0x3a8));
-    if (lVar2 != 0) {
-      lVar2 = FUN_00045bf4((undefined8 *)(param_1 + 0x3a8));
-      FUN_0012a740(lVar2,param_2 & 0xff,(undefined8 *)param_3);
-    }
-    FUN_0011c2e0(param_1);
-  }
-  return;
-}
-```
-
-#### FUN_000bc4ac — funcs/__Z12FUN_000bc4acv.cpp, Ghidra bc4ac, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bc4acv.cpp:5:5: error: use of undeclared identifier '___cxa_atexit'
-    5 |     ___cxa_atexit(FUN_00046040, DAT_00871ad8, 0);
-      |     ^~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000bc4ac(void) {
-    float *DAT_00871ad8 = (float *)DAT_00871ad8;
-    ___cxa_atexit(FUN_00046040, DAT_00871ad8, 0);
-    return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_000bc4ac(void)
-
-{
-  FUN_00045b70((undefined8 *)&DAT_00871ad8);
-  ___cxa_atexit(FUN_00046040,&DAT_00871ad8,0);
-  return;
-}
-```
-
-#### FUN_000be348 — funcs/__Z12FUN_000be348lliSt4byte.cpp, Ghidra be348, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000be348lliSt4byte.cpp:41:25: error: use of undeclared identifier 'FUN_00175758'
-   41 |                 _Var8 = FUN_00175758(param_2, 1);
-      |                         ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000be348lliSt4byte.cpp:83:33: error: use of undeclared identifier 'FUN_00175758'
-   83 |                         _Var8 = FUN_00175758(param_2, 1);
-      |                                 ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000be348lliSt4byte.cpp:98:3: error: no matching function for call to '___stack_chk_fail'
-   98 |   ___stack_chk_fail(local_2b9);
-      |   ^~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1169:17: note: candidate function not viable: requires 2 arguments, but 1 was provided
- 1169 | extern "C" void ___stack_chk_fail(uint64_t, uint32_t);
-      |                 ^                 ~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000afcf4v.cpp:6:20: error: use of undeclared identifier 'SoftwareBreakpoint'
+    6 |   pcVar1 = (void *)SoftwareBreakpoint(1,0xafcfc);
+      |                    ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000afcf4v.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    7 |   (*pcVar1)();
+      |    ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000afcf4v.cpp:7:12: error: called object type 'void' is not a function or function pointer
+    7 |   (*pcVar1)();
+      |   ~~~~~~~~~^
 3 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000be348(long param_1, long param_2, int param_3, byte param_4) {
-    uint64_t PTR____stack_chk_guard_004241e8 = 0; // auto-declared (undeclared in the rewrite)
+void FUN_000afcf4(void) {
+  void *pcVar1;
 
-    bool bVar1;
-    bool bVar2;
-    bool bVar3;
-    bool bVar4;
-    bool bVar5;
-    short sVar6;
-    ushort uVar7;
-    __darwin_ct_rune_t _Var8;
-    __darwin_ct_rune_t _Var9;
-    undefined1 local_2b9;
-    undefined8 auStack_2b8 [16];
-    undefined8 auStack_238 [16];
-    undefined8 auStack_1b8 [16];
-    undefined8 auStack_138 [16];
-    undefined8 auStack_b8 [16];
-    long local_38;
-
-    local_38 = *(long *)PTR____stack_chk_guard_004241e8;
-    FUN_001aa228(auStack_b8, 0x5b, 0);
-    bVar1 = false;
-    bVar3 = FUN_00164bc4(param_2, (long)auStack_b8);
-    bVar4 = true;
-    if (!bVar3) {
-        FUN_001aa228(auStack_138, 0x5b, 2);
-        bVar1 = true;
-        bVar4 = FUN_00164bc4(param_2, (long)auStack_138);
-        if (bVar4) {
-            bVar4 = true;
-        }
-        else {
-            sVar6 = FUN_000be720(param_1);
-            if (sVar6 == 0) {
-                bVar4 = false;
-            }
-            else {
-                _Var8 = FUN_00175758(param_2, 1);
-                _Var8 = FUN_0021cb48(_Var8);
-                uVar7 = FUN_000be720(param_1);
-                _Var9 = FUN_0021cb48((uint)uVar7);
-                bVar4 = _Var8 == _Var9;
-            }
-        }
-    }
-    if (bVar1) {
-        FUN_001aa24c(auStack_138);
-    }
-    FUN_001aa24c(auStack_b8);
-    if (bVar4) {
-        if ((param_3 == 0) && ((param_4 & 1) == 0)) {
-            FUN_000bd964(param_1);
-        }
-    }
-    else {
-        FUN_001aa228(auStack_b8, 0x68, 0);
-        bVar2 = false;
-        bVar3 = false;
-        bVar1 = false;
-        bVar5 = FUN_00164bc4(param_2, (long)auStack_b8);
-        bVar4 = true;
-        if (!bVar5) {
-            FUN_001aa228(auStack_1b8, 0x68, 2);
-            bVar2 = true;
-            bVar5 = FUN_00164bc4(param_2, (long)auStack_1b8);
-            bVar4 = true;
-            if (!bVar5) {
-                FUN_001aa228(auStack_238, 0x25, 0);
-                bVar1 = true;
-                bVar4 = FUN_00164bc4(param_2, (long)auStack_238);
-                if (bVar4) {
-                    bVar4 = true;
-                }
-                else {
-                    sVar6 = FUN_000be70c(param_1);
-                    if (sVar6 == 0) {
-                        bVar4 = false;
-                    }
-                    else {
-                        _Var8 = FUN_00175758(param_2, 1);
-                        _Var8 = FUN_0021cb48(_Var8);
-                        uVar7 = FUN_000be70c(param_1);
-                        _Var9 = FUN_0021cb48((uint)uVar7);
-                        bVar4 = _Var8 == _Var9;
-                    }
-                }
-            }
-        }
-    }
-    local_2b9 = 0;
-LAB_000be5e8:
-    if (*(long *)PTR____stack_chk_guard_004241e8 == local_38) {
-        return;
-    }
-  ___stack_chk_fail(local_2b9);
+  pcVar1 = (void *)SoftwareBreakpoint(1,0xafcfc);
+  (*pcVar1)();
 }
 ```
 Ghidra's pseudocode:
 ```c
-void FUN_000be348(long param_1,long param_2,int param_3,byte param_4)
+void FUN_000afcf4(void)
 
 {
-  bool bVar1;
-  bool bVar2;
-  bool bVar3;
-  bool bVar4;
-  bool bVar5;
-  short sVar6;
-  ushort uVar7;
-  __darwin_ct_rune_t _Var8;
-  __darwin_ct_rune_t _Var9;
-  undefined1 local_2b9;
-  undefined8 auStack_2b8 [16];
-  undefined8 auStack_238 [16];
-  undefined8 auStack_1b8 [16];
-  undefined8 auStack_138 [16];
-  undefined8 auStack_b8 [16];
-  long local_38;
+  code *pcVar1;
   
-  local_38 = *(long *)PTR____stack_chk_guard_004241e8;
-  FUN_001aa228(auStack_b8,0x5b,0);
-  bVar1 = false;
-  bVar3 = FUN_00164bc4(param_2,(long)auStack_b8);
-  bVar4 = true;
-  if (!bVar3) {
-    FUN_001aa228(auStack_138,0x5b,2);
-    bVar1 = true;
-    bVar4 = FUN_00164bc4(param_2,(long)auStack_138);
-    if (bVar4) {
-      bVar4 = true;
-    }
-    else {
-      sVar6 = FUN_000be720(param_1);
-      if (sVar6 == 0) {
-        bVar4 = false;
-      }
-      else {
-        _Var8 = FUN_00175758(param_2,1);
-        _Var8 = FUN_0021cb48(_Var8);
-        uVar7 = FUN_000be720(param_1);
-        _Var9 = FUN_0021cb48((uint)uVar7);
-        bVar4 = _Var8 == _Var9;
-      }
-    }
-  }
-  if (bVar1) {
-    FUN_001aa24c(auStack_138);
-  }
-  FUN_001aa24c(auStack_b8);
-  if (bVar4) {
-    if ((param_3 == 0) && ((param_4 & 1) == 0)) {
-      FUN_000bd964(param_1);
-    }
-  }
-  else {
-    FUN_001aa228(auStack_b8,0x68,0);
-    bVar2 = false;
-    bVar3 = false;
-    bVar1 = false;
-    bVar5 = FUN_00164bc4(param_2,(long)auStack_b8);
-    bVar4 = true;
-    if (!bVar5) {
-      FUN_001aa228(auStack_1b8,0x68,2);
-      bVar2 = true;
-      bVar5 = FUN_00164bc4(param_2,(long)auStack_1b8);
-      bVar4 = true;
-      if (!bVar5) {
-        FUN_001aa228(auStack_238,0x25,0);
-        bVar3 = true;
-        bVar5 = FUN_00164bc4(param_2,(long)auStack_238);
-        bVar4 = true;
-        if (!bVar5) {
-          FUN_001aa228(auStack_2b8,0x25,2);
-          bVar1 = true;
-          bVar4 = FUN_00164bc4(param_2,(long)auStack_2b8);
-          if (bVar4) {
-            bVar4 = true;
-          }
-          else {
-            sVar6 = FUN_000be70c(param_1);
-            if (sVar6 == 0) {
-              bVar4 = false;
-            }
-            else {
-              _Var8 = FUN_00175758(param_2,1);
-              _Var8 = FUN_0021cb48(_Var8);
-              uVar7 = FUN_000be70c(param_1);
-              _Var9 = FUN_0021cb48((uint)uVar7);
-              bVar4 = _Var8 == _Var9;
-            }
-          }
-        }
-      }
-    }
-    if (bVar1) {
-      FUN_001aa24c(auStack_2b8);
-    }
-    if (bVar3) {
-      FUN_001aa24c(auStack_238);
-    }
-    if (bVar2) {
-      FUN_001aa24c(auStack_1b8);
-    }
-    FUN_001aa24c(auStack_b8);
-    if (!bVar4) {
-      local_2b9 = 0;
-      goto LAB_000be5e8;
-    }
-    if ((param_3 == 0) && ((param_4 & 1) == 0)) {
-      FUN_000bd988(param_1);
-    }
-  }
-  local_2b9 = 1;
-LAB_000be5e8:
-  if (*(long *)PTR____stack_chk_guard_004241e8 == local_38) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail(local_2b9);
+                    /* WARNING: Does not return */
+  pcVar1 = (code *)SoftwareBreakpoint(1,0xafcfc);
+  (*pcVar1)();
 }
 ```
 
-#### FUN_000c3d08 — funcs/__Z12FUN_000c3d08PylPiS0_.cpp, Ghidra c3d08, 0 model attempt(s)
+#### FUN_000afcfc — funcs/__Z12FUN_000afcfcv.cpp, Ghidra afcfc, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c3d08PylPiS0_.cpp:19:3: error: use of undeclared identifier 'FUN_000c0d88'
-   19 |   FUN_000c0d88(param_1,param_2,alStack_50,local_40);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c3d08PylPiS0_.cpp:20:3: error: no matching function for call to 'FUN_000031f4'
-   20 |   FUN_000031f4((long)alStack_50);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1239:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
- 1239 | void FUN_000031f4(float[4], float, float[4]);
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c3d08PylPiS0_.cpp:21:14: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &
-   21 |   *param_1 = &DAT_00436210;
-      |              ^~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c3d08PylPiS0_.cpp:22:16: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'uint64_t *' (aka 'unsigned long long *'); remove &
-   22 |   param_1[2] = &DAT_00436268;
-      |                ^~~~~~~~~~~~~
-4 errors generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000afcfcv.cpp:6:20: error: use of undeclared identifier 'SoftwareBreakpoint'
+    6 |   pcVar1 = (void *)SoftwareBreakpoint(1,0xafd08);
+      |                    ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000afcfcv.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    7 |   (*pcVar1)();
+      |    ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000afcfcv.cpp:7:12: error: called object type 'void' is not a function or function pointer
+    7 |   (*pcVar1)();
+      |   ~~~~~~~~~^
+3 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-uint64_t * FUN_000c3d08(uint64_t *param_1,long param_2,int *param_3,int *param_4) {
-    uint64_t DAT_00436268 = 0; // auto-declared (undeclared in the rewrite)
+void FUN_000afcfc(void) {
+  void *pcVar1;
 
-    uint64_t DAT_00436210 = 0; // auto-declared (undeclared in the rewrite)
-
-  long alStack_50 [2];
-  int *local_40;
-  int *local_38;
-  long local_30;
-  uint64_t *puStack_28;
-
-  local_40 = param_4;
-  local_38 = param_3;
-  local_30 = param_2;
-  puStack_28 = param_1;
-  FUN_0021a1f4(alStack_50,"File");
-  FUN_000c0d88(param_1,param_2,alStack_50,local_40);
-  FUN_000031f4((long)alStack_50);
-  *param_1 = &DAT_00436210;
-  param_1[2] = &DAT_00436268;
-  FUN_0005e49c((int *)(param_1 + 0xe),local_38);
-  return param_1;
+  pcVar1 = (void *)SoftwareBreakpoint(1,0xafd08);
+  (*pcVar1)();
 }
 ```
 Ghidra's pseudocode:
 ```c
-undefined8 * FUN_000c3d08(undefined8 *param_1,long param_2,int *param_3,int *param_4)
+void FUN_000afcfc(void)
 
 {
-  long alStack_50 [2];
-  int *local_40;
-  int *local_38;
-  long local_30;
-  undefined8 *puStack_28;
+  code *pcVar1;
   
-  local_40 = param_4;
-  local_38 = param_3;
-  local_30 = param_2;
-  puStack_28 = param_1;
-  FUN_0021a1f4(alStack_50,"File");
-  FUN_000c0d88(param_1,param_2,alStack_50,local_40);
-  FUN_000031f4((long)alStack_50);
-  *param_1 = &DAT_00436210;
-  param_1[2] = &DAT_00436268;
-  FUN_0005e49c((int *)(param_1 + 0xe),local_38);
-  return param_1;
-}
-```
-
-#### FUN_000c4500 — funcs/__Z12FUN_000c4500Pl.cpp, Ghidra c4500, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c4500Pl.cpp:7:3: error: use of undeclared identifier '___cxa_bad_typeid'
-    7 |   ___cxa_bad_typeid();
-      |   ^~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-uint64_t FUN_000c4500(long *param_1) {
-  if (param_1 != (long *)0x0) {
-    return *(undefined8 *)(*param_1 + -8);
-  }
-  ___cxa_bad_typeid();
-}
-```
-Ghidra's pseudocode:
-```c
-undefined8 FUN_000c4500(long *param_1)
-
-{
-  if (param_1 != (long *)0x0) {
-    return *(undefined8 *)(*param_1 + -8);
-  }
-                    /* WARNING: Subroutine does not return */
-  ___cxa_bad_typeid();
-}
-```
-
-#### FUN_0027df70 — funcs/__Z12FUN_0027df70Py.cpp, Ghidra 27df70, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027df70Py.cpp:7:3: error: use of undeclared identifier 'FUN_002740cc'
-    7 |   FUN_002740cc(param_1 + 2);
-      |   ^~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0027df70(uint64_t *param_1) {
-    uint64_t DAT_00447420 = 0; // auto-declared (undeclared in the rewrite)
-
-  *param_1 = (uint64_t)&DAT_00447420;
-  FUN_002740cc(param_1 + 2);
-  operator_delete(param_1);
-  return;
-}
-```
-Notes:
-- 10-20 23:53 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_0027df70(undefined8 *param_1)
-
-{
-  *param_1 = &DAT_00447420;
-  FUN_002740cc(param_1 + 2);
-  operator_delete(param_1);
-  return;
+                    /* WARNING: Does not return */
+  pcVar1 = (code *)SoftwareBreakpoint(1,0xafd08);
+  (*pcVar1)();
 }
 ```
 
@@ -63737,9 +63511,9 @@ void FUN_000bc84c(long param_1,long param_2)
 }
 ```
 
-### Not compiling yet — 334 × cannot cast from type 'X' to pointer type 'X'
+### Not compiling yet — 332 × cannot cast from type 'X' to pointer type 'X'
 
-All: FUN_000a9b58 (a9b58), FUN_000aa9c4 (aa9c4), FUN_000ac590 (ac590), FUN_000b10fc (b10fc), FUN_000b1f88 (b1f88), FUN_000b3098 (b3098), FUN_000b310c (b310c), FUN_000b33b4 (b33b4), FUN_000b3418 (b3418), FUN_000ba1b8 (ba1b8), FUN_000c043c (c043c), FUN_000c12e0 (c12e0), FUN_00280970 (280970), FUN_00280ecc (280ecc), FUN_0028209c (28209c), FUN_002820cc (2820cc), FUN_00282a58 (282a58), FUN_0028d6e8 (28d6e8), FUN_0028dbd4 (28dbd4), FUN_0028e114 (28e114), FUN_0028e1f8 (28e1f8), FUN_0028e4ec (28e4ec), FUN_0028e6f4 (28e6f4), FUN_00290dac (290dac), FUN_0029114c (29114c), FUN_0029cd68 (29cd68), FUN_0029f8cc (29f8cc), FUN_0029fc5c (29fc5c), FUN_002a1154 (2a1154), FUN_002a1654 (2a1654), FUN_002a2460 (2a2460), FUN_002c7764 (2c7764), FUN_002c9f44 (2c9f44), FUN_003624fc (3624fc), FUN_00363f8c (363f8c), FUN_003648d0 (3648d0), FUN_0005beb4 (5beb4), FUN_0005e4e4 (5e4e4), FUN_000617cc (617cc), FUN_0006574c (6574c), FUN_00067fe8 (67fe8), FUN_0006af5c (6af5c), FUN_0006bc68 (6bc68), FUN_0006c6cc (6c6cc), FUN_0006ca38 (6ca38), FUN_0006ca80 (6ca80), FUN_0006e298 (6e298), FUN_00072f40 (72f40), FUN_00072f84 (72f84), FUN_00074cd0 (74cd0), FUN_000763dc (763dc), FUN_0007738c (7738c), FUN_000777ec (777ec), FUN_0007798c (7798c), FUN_0007a820 (7a820), FUN_0007adc8 (7adc8), FUN_0007afec (7afec), FUN_0007b204 (7b204), FUN_0007b480 (7b480), FUN_0007b87c (7b87c), FUN_0007c52c (7c52c), FUN_0007e848 (7e848), FUN_0007e95c (7e95c), FUN_0007fcb0 (7fcb0), FUN_000802ac (802ac), FUN_00080384 (80384), FUN_00080724 (80724), FUN_00080f30 (80f30), FUN_00081534 (81534), FUN_000819b0 (819b0), FUN_0008a830 (8a830), FUN_0008cf64 (8cf64), FUN_0008d124 (8d124), FUN_0008d320 (8d320), processInput57 (8ee90), FUN_0008f0ac (8f0ac), FUN_0008f500 (8f500), FUN_00090680 (90680), FUN_0009642c (9642c), FUN_0009664c (9664c), FUN_00096bc0 (96bc0), FUN_00098e14 (98e14), FUN_0009a688 (9a688), FUN_0009a9b8 (9a9b8), FUN_0009de0c (9de0c), FUN_000c4e04 (c4e04), FUN_000c4ea0 (c4ea0), FUN_000ca670 (ca670), FUN_000cb798 (cb798), FUN_000cbe00 (cbe00), FUN_000cdb1c (cdb1c), FUN_000cddec (cddec), FUN_000d4774 (d4774), FUN_000d58d4 (d58d4), FUN_000dd65c (dd65c), FUN_000de508 (de508), FUN_000dfafc (dfafc), FUN_000dfb84 (dfb84), FUN_000dfca0 (dfca0), FUN_000dffac (dffac), FUN_000e0634 (e0634), FUN_000e30a0 (e30a0), FUN_000e33d0 (e33d0), FUN_000e49e0 (e49e0), FUN_000e5f9c (e5f9c), FUN_000e62c0 (e62c0), FUN_000e6a1c (e6a1c), FUN_000e7118 (e7118), FUN_000ebd70 (ebd70), FUN_000ec080 (ec080), FUN_000ed974 (ed974), FUN_000f1684 (f1684), FUN_000f18e0 (f18e0), FUN_000f1f28 (f1f28), FUN_000f2f44 (f2f44), FUN_000f313c (f313c), FUN_000f425c (f425c), FUN_000f4428 (f4428), FUN_000f8918 (f8918), FUN_000f8a6c (f8a6c), FUN_000fe714 (fe714), FUN_0010338c (10338c), FUN_00109db4 (109db4), FUN_0010f4ac (10f4ac), FUN_0010f698 (10f698), FUN_0010f838 (10f838), FUN_0010f9b0 (10f9b0), FUN_0010fbd8 (10fbd8), FUN_0010fc48 (10fc48), FUN_00113264 (113264), FUN_00117f50 (117f50), FUN_0011850c (11850c), FUN_00119e2c (119e2c), FUN_00119ee8 (119ee8), FUN_0011e2ac (11e2ac), FUN_0011e568 (11e568), FUN_0011e9d8 (11e9d8), FUN_0011f418 (11f418), FUN_00121cdc (121cdc), FUN_00121dc8 (121dc8), FUN_001282cc (1282cc), FUN_00135198 (135198), FUN_00137400 (137400), FUN_0013913c (13913c), FUN_00139408 (139408), FUN_00139d84 (139d84), FUN_0013a708 (13a708), FUN_0013dcbc (13dcbc), FUN_0014377c (14377c), FUN_00156420 (156420), FUN_0015745c (15745c), FUN_00166564 (166564), FUN_001671b4 (1671b4), FUN_00168088 (168088), FUN_00171fa4 (171fa4), FUN_00173e3c (173e3c), FUN_00176c68 (176c68), FUN_00177540 (177540), FUN_0017763c (17763c), FUN_00177824 (177824), FUN_00177eb0 (177eb0), FUN_00178d58 (178d58), FUN_0017945c (17945c), FUN_0017ae00 (17ae00), FUN_0017cd1c (17cd1c), FUN_0017d9c4 (17d9c4), FUN_0017de6c (17de6c), FUN_0017e618 (17e618), FUN_0017ee84 (17ee84), FUN_0017f3f4 (17f3f4), FUN_00181430 (181430), FUN_0018268c (18268c), FUN_00183ce4 (183ce4), FUN_001847ec (1847ec), FUN_00184e88 (184e88), FUN_00185918 (185918), FUN_00186750 (186750), FUN_00187500 (187500), FUN_001884f4 (1884f4), FUN_001894f8 (1894f8), FUN_00189c30 (189c30), FUN_0018c750 (18c750), FUN_0018d140 (18d140), FUN_0018d7dc (18d7dc), FUN_0018e23c (18e23c), FUN_0018efdc (18efdc), FUN_0018fd8c (18fd8c), FUN_00190928 (190928), FUN_00191484 (191484), FUN_00191d84 (191d84), FUN_00192454 (192454), FUN_00193f28 (193f28), FUN_00194270 (194270), FUN_00195090 (195090), FUN_00195a8c (195a8c), FUN_00196128 (196128), FUN_00196b88 (196b88), FUN_00197924 (197924), FUN_001986cc (1986cc), FUN_00199240 (199240), FUN_001996bc (1996bc), FUN_00199dc0 (199dc0), FUN_00199f38 (199f38), FUN_0019a6b8 (19a6b8), FUN_0019b0b0 (19b0b0), FUN_0019c938 (19c938), FUN_0019daa8 (19daa8), FUN_0019e498 (19e498), FUN_0019eb34 (19eb34), FUN_0019f594 (19f594), FUN_001a0324 (1a0324), FUN_001a10c0 (1a10c0), FUN_001a3e94 (1a3e94), FUN_001a6458 (1a6458), FUN_001a65d0 (1a65d0), FUN_001aa2ac (1aa2ac), FUN_001ab12c (1ab12c), FUN_001ae70c (1ae70c), FUN_001aed58 (1aed58), FUN_001b4728 (1b4728), FUN_001b7548 (1b7548), FUN_001b8ee8 (1b8ee8), FUN_001b98c0 (1b98c0), FUN_001b9e98 (1b9e98), FUN_001b9f04 (1b9f04), FUN_001ba160 (1ba160), FUN_001ba4c0 (1ba4c0), FUN_001ba740 (1ba740), FUN_001c2a70 (1c2a70), FUN_001c3260 (1c3260), FUN_001c6134 (1c6134), FUN_001c61a0 (1c61a0), FUN_001c6818 (1c6818), FUN_001c699c (1c699c), FUN_001c6a08 (1c6a08), FUN_001c6f04 (1c6f04), FUN_001c92c4 (1c92c4), FUN_001d2bec (1d2bec), FUN_001d3578 (1d3578), FUN_001d371c (1d371c), FUN_001d3a30 (1d3a30), FUN_001d3ec8 (1d3ec8), FUN_001d5824 (1d5824), FUN_001d6a14 (1d6a14), FUN_001d9ad8 (1d9ad8), FUN_001dddfc (1dddfc), FUN_001deca0 (1deca0), FUN_001dede0 (1dede0), FUN_001e05ac (1e05ac), FUN_001ef604 (1ef604), FUN_001f14a8 (1f14a8), FUN_001f14ec (1f14ec), FUN_001f40a0 (1f40a0), FUN_001f485c (1f485c), FUN_001f4cd4 (1f4cd4), FUN_001f7688 (1f7688), FUN_001f8844 (1f8844), FUN_0020e0f4 (20e0f4), FUN_0021ebf0 (21ebf0), FUN_002261fc (2261fc), FUN_002266c8 (2266c8), FUN_00226934 (226934), FUN_002272bc (2272bc), FUN_00227f58 (227f58), FUN_002287d4 (2287d4), FUN_00228f34 (228f34), FUN_002522b4 (2522b4), FUN_002536a4 (2536a4), FUN_00255a54 (255a54), FUN_002565a4 (2565a4), FUN_002572cc (2572cc), FUN_00259258 (259258), FUN_0025d6ec (25d6ec), FUN_00269d28 (269d28), FUN_0026d2c4 (26d2c4), FUN_0026f994 (26f994), FUN_0026fa04 (26fa04), FUN_0026fc10 (26fc10), FUN_00277478 (277478), FUN_0027ba40 (27ba40), FUN_0027bda4 (27bda4), FUN_0027bf7c (27bf7c), FUN_0027cc70 (27cc70), FUN_002cc6e0 (2cc6e0), FUN_002cd99c (2cd99c), FUN_002ce4d4 (2ce4d4), FUN_002ce550 (2ce550), FUN_002f3814 (2f3814), FUN_00301c14 (301c14), FUN_00301ff0 (301ff0), Fax3Cleanup2 (304acc), FUN_0030b8e0 (30b8e0), FUN_0030d964 (30d964), FUN_0030de44 (30de44), FUN_0030e718 (30e718), FUN_0030e7b8 (30e7b8), FUN_0030ffb8 (30ffb8), FUN_00312658 (312658), FUN_00314bb4 (314bb4), FUN_00317a28 (317a28), FUN_0031cea8 (31cea8), FUN_0031d0e8 (31d0e8), FUN_0031ec08 (31ec08), FUN_0031eeec (31eeec), FUN_0031f1a8 (31f1a8), FUN_0031f3f8 (31f3f8), FUN_0031f448 (31f448), FUN_0031f804 (31f804), FUN_0031f898 (31f898), FUN_00320874 (320874), FUN_00320ac0 (320ac0), FUN_0032187c (32187c), FUN_00321e34 (321e34), FUN_00322b9c (322b9c), FUN_00323154 (323154), FUN_00323530 (323530), FUN_00323ebc (323ebc), FUN_00325a90 (325a90), FUN_00325d54 (325d54), FUN_0032710c (32710c), FUN_003281a4 (3281a4), FUN_00328208 (328208), FUN_0032b080 (32b080), FUN_0032b74c (32b74c), FUN_00331f8c (331f8c), FUN_00334870 (334870), FUN_0033572c (33572c), FUN_003378e8 (3378e8), FUN_0034fdc0 (34fdc0), FUN_0034ffcc (34ffcc), FUN_00354b8c (354b8c), FUN_0036621c (36621c), FUN_0036a548 (36a548), FUN_0036ea24 (36ea24)
+All: FUN_000a9b58 (a9b58), FUN_000aa9c4 (aa9c4), FUN_000ac590 (ac590), FUN_000b10fc (b10fc), FUN_000b1f88 (b1f88), FUN_000b3098 (b3098), FUN_000b310c (b310c), FUN_000b33b4 (b33b4), FUN_000b3418 (b3418), FUN_000ba1b8 (ba1b8), FUN_000c043c (c043c), FUN_000c12e0 (c12e0), FUN_00280970 (280970), FUN_00280ecc (280ecc), FUN_0028209c (28209c), FUN_002820cc (2820cc), FUN_00282a58 (282a58), FUN_0028d6e8 (28d6e8), FUN_0028dbd4 (28dbd4), FUN_0028e114 (28e114), FUN_0028e1f8 (28e1f8), FUN_0028e4ec (28e4ec), FUN_0028e6f4 (28e6f4), FUN_00290dac (290dac), FUN_0029114c (29114c), FUN_0029cd68 (29cd68), FUN_0029f8cc (29f8cc), FUN_0029fc5c (29fc5c), FUN_002a1154 (2a1154), FUN_002a1654 (2a1654), FUN_002c7764 (2c7764), FUN_002c9f44 (2c9f44), FUN_003624fc (3624fc), FUN_00363f8c (363f8c), FUN_003648d0 (3648d0), FUN_0005beb4 (5beb4), FUN_0005e4e4 (5e4e4), FUN_000617cc (617cc), FUN_0006574c (6574c), FUN_00067fe8 (67fe8), FUN_0006af5c (6af5c), FUN_0006bc68 (6bc68), FUN_0006c6cc (6c6cc), FUN_0006ca38 (6ca38), FUN_0006ca80 (6ca80), FUN_0006e298 (6e298), FUN_00072f40 (72f40), FUN_00072f84 (72f84), FUN_00074cd0 (74cd0), FUN_000763dc (763dc), FUN_0007738c (7738c), FUN_000777ec (777ec), FUN_0007798c (7798c), FUN_0007a820 (7a820), FUN_0007adc8 (7adc8), FUN_0007afec (7afec), FUN_0007b204 (7b204), FUN_0007b480 (7b480), FUN_0007b87c (7b87c), FUN_0007c52c (7c52c), FUN_0007e848 (7e848), FUN_0007e95c (7e95c), FUN_0007fcb0 (7fcb0), FUN_000802ac (802ac), FUN_00080384 (80384), FUN_00080724 (80724), FUN_00080f30 (80f30), FUN_00081534 (81534), FUN_000819b0 (819b0), FUN_0008a830 (8a830), FUN_0008cf64 (8cf64), FUN_0008d124 (8d124), FUN_0008d320 (8d320), processInput57 (8ee90), FUN_0008f0ac (8f0ac), FUN_0008f500 (8f500), FUN_00090680 (90680), FUN_0009642c (9642c), FUN_0009664c (9664c), FUN_00096bc0 (96bc0), FUN_00098e14 (98e14), FUN_0009a688 (9a688), FUN_0009a9b8 (9a9b8), FUN_0009de0c (9de0c), FUN_000c4e04 (c4e04), FUN_000c4ea0 (c4ea0), FUN_000ca670 (ca670), FUN_000cb798 (cb798), FUN_000cbe00 (cbe00), FUN_000cdb1c (cdb1c), FUN_000cddec (cddec), FUN_000d4774 (d4774), FUN_000d58d4 (d58d4), FUN_000dd65c (dd65c), FUN_000de508 (de508), FUN_000dfafc (dfafc), FUN_000dfb84 (dfb84), FUN_000dfca0 (dfca0), FUN_000dffac (dffac), FUN_000e0634 (e0634), FUN_000e30a0 (e30a0), FUN_000e33d0 (e33d0), FUN_000e49e0 (e49e0), FUN_000e5f9c (e5f9c), FUN_000e62c0 (e62c0), FUN_000e6a1c (e6a1c), FUN_000e7118 (e7118), FUN_000ebd70 (ebd70), FUN_000ec080 (ec080), FUN_000ed974 (ed974), FUN_000f1684 (f1684), FUN_000f18e0 (f18e0), FUN_000f1f28 (f1f28), FUN_000f2f44 (f2f44), FUN_000f313c (f313c), FUN_000f425c (f425c), FUN_000f4428 (f4428), FUN_000f8918 (f8918), FUN_000f8a6c (f8a6c), FUN_000fe714 (fe714), FUN_0010338c (10338c), FUN_00109db4 (109db4), FUN_0010f4ac (10f4ac), FUN_0010f698 (10f698), FUN_0010f838 (10f838), FUN_0010f9b0 (10f9b0), FUN_0010fbd8 (10fbd8), FUN_0010fc48 (10fc48), FUN_00113264 (113264), FUN_00117f50 (117f50), FUN_0011850c (11850c), FUN_00119e2c (119e2c), FUN_00119ee8 (119ee8), FUN_0011e2ac (11e2ac), FUN_0011e568 (11e568), FUN_0011e9d8 (11e9d8), FUN_0011f418 (11f418), FUN_00121cdc (121cdc), FUN_00121dc8 (121dc8), FUN_001282cc (1282cc), FUN_00135198 (135198), FUN_00137400 (137400), FUN_0013913c (13913c), FUN_00139408 (139408), FUN_00139d84 (139d84), FUN_0013a708 (13a708), FUN_0013dcbc (13dcbc), FUN_0014377c (14377c), FUN_00156420 (156420), FUN_0015745c (15745c), FUN_00166564 (166564), FUN_001671b4 (1671b4), FUN_00168088 (168088), FUN_00171fa4 (171fa4), FUN_00173e3c (173e3c), FUN_00176c68 (176c68), FUN_00177540 (177540), FUN_0017763c (17763c), FUN_00177824 (177824), FUN_00177eb0 (177eb0), FUN_00178d58 (178d58), FUN_0017945c (17945c), FUN_0017ae00 (17ae00), FUN_0017cd1c (17cd1c), FUN_0017d9c4 (17d9c4), FUN_0017de6c (17de6c), FUN_0017e618 (17e618), FUN_0017ee84 (17ee84), FUN_0017f3f4 (17f3f4), FUN_00181430 (181430), FUN_0018268c (18268c), FUN_00183ce4 (183ce4), FUN_001847ec (1847ec), FUN_00184e88 (184e88), FUN_00185918 (185918), FUN_00186750 (186750), FUN_00187500 (187500), FUN_001884f4 (1884f4), FUN_001894f8 (1894f8), FUN_00189c30 (189c30), FUN_0018c750 (18c750), FUN_0018d140 (18d140), FUN_0018d7dc (18d7dc), FUN_0018e23c (18e23c), FUN_0018efdc (18efdc), FUN_0018fd8c (18fd8c), FUN_00190928 (190928), FUN_00191484 (191484), FUN_00191d84 (191d84), FUN_00192454 (192454), FUN_00193f28 (193f28), FUN_00194270 (194270), FUN_00195090 (195090), FUN_00195a8c (195a8c), FUN_00196128 (196128), FUN_00196b88 (196b88), FUN_00197924 (197924), FUN_001986cc (1986cc), FUN_00199240 (199240), FUN_001996bc (1996bc), FUN_00199dc0 (199dc0), FUN_00199f38 (199f38), FUN_0019a6b8 (19a6b8), FUN_0019b0b0 (19b0b0), FUN_0019c938 (19c938), FUN_0019daa8 (19daa8), FUN_0019e498 (19e498), FUN_0019eb34 (19eb34), FUN_0019f594 (19f594), FUN_001a0324 (1a0324), FUN_001a10c0 (1a10c0), FUN_001a3e94 (1a3e94), FUN_001a6458 (1a6458), FUN_001a65d0 (1a65d0), FUN_001aa2ac (1aa2ac), FUN_001ab12c (1ab12c), FUN_001ae70c (1ae70c), FUN_001aed58 (1aed58), FUN_001b4728 (1b4728), FUN_001b7548 (1b7548), FUN_001b8ee8 (1b8ee8), FUN_001b98c0 (1b98c0), FUN_001b9e98 (1b9e98), FUN_001b9f04 (1b9f04), FUN_001ba160 (1ba160), FUN_001ba4c0 (1ba4c0), FUN_001ba740 (1ba740), FUN_001c2a70 (1c2a70), FUN_001c3260 (1c3260), FUN_001c6134 (1c6134), FUN_001c61a0 (1c61a0), FUN_001c6818 (1c6818), FUN_001c699c (1c699c), FUN_001c6a08 (1c6a08), FUN_001c6f04 (1c6f04), FUN_001c92c4 (1c92c4), FUN_001d2bec (1d2bec), FUN_001d3578 (1d3578), FUN_001d371c (1d371c), FUN_001d3a30 (1d3a30), FUN_001d3ec8 (1d3ec8), FUN_001d5824 (1d5824), FUN_001d6a14 (1d6a14), FUN_001d9ad8 (1d9ad8), FUN_001dddfc (1dddfc), FUN_001deca0 (1deca0), FUN_001dede0 (1dede0), FUN_001e05ac (1e05ac), FUN_001ef604 (1ef604), FUN_001f14a8 (1f14a8), FUN_001f14ec (1f14ec), FUN_001f40a0 (1f40a0), FUN_001f485c (1f485c), FUN_001f4cd4 (1f4cd4), FUN_001f7688 (1f7688), FUN_001f8844 (1f8844), FUN_0020e0f4 (20e0f4), FUN_0021ebf0 (21ebf0), FUN_002261fc (2261fc), FUN_002266c8 (2266c8), FUN_00226934 (226934), FUN_002272bc (2272bc), FUN_00227f58 (227f58), FUN_002287d4 (2287d4), FUN_00228f34 (228f34), FUN_002522b4 (2522b4), FUN_002536a4 (2536a4), FUN_00255a54 (255a54), FUN_002565a4 (2565a4), FUN_002572cc (2572cc), FUN_00259258 (259258), FUN_0025d6ec (25d6ec), FUN_00269d28 (269d28), FUN_0026d2c4 (26d2c4), FUN_0026f994 (26f994), FUN_0026fa04 (26fa04), FUN_0026fc10 (26fc10), FUN_00277478 (277478), FUN_0027ba40 (27ba40), FUN_0027bda4 (27bda4), FUN_0027bf7c (27bf7c), FUN_0027cc70 (27cc70), FUN_002cc6e0 (2cc6e0), FUN_002cd99c (2cd99c), FUN_002ce4d4 (2ce4d4), FUN_002ce550 (2ce550), FUN_002f3814 (2f3814), FUN_00301c14 (301c14), FUN_00301ff0 (301ff0), Fax3Cleanup2 (304acc), FUN_0030b8e0 (30b8e0), FUN_0030d964 (30d964), FUN_0030de44 (30de44), FUN_0030e718 (30e718), FUN_0030e7b8 (30e7b8), FUN_0030ffb8 (30ffb8), FUN_00312658 (312658), FUN_00314bb4 (314bb4), FUN_00317a28 (317a28), FUN_0031cea8 (31cea8), FUN_0031d0e8 (31d0e8), FUN_0031ec08 (31ec08), FUN_0031eeec (31eeec), FUN_0031f1a8 (31f1a8), FUN_0031f3f8 (31f3f8), FUN_0031f448 (31f448), FUN_0031f804 (31f804), FUN_0031f898 (31f898), FUN_00320874 (320874), FUN_00320ac0 (320ac0), FUN_0032187c (32187c), FUN_00321e34 (321e34), FUN_00322b9c (322b9c), FUN_00323518 (323518), FUN_00323814 (323814), FUN_00325a90 (325a90), FUN_00325d54 (325d54), FUN_0032710c (32710c), FUN_003281a4 (3281a4), FUN_00328208 (328208), FUN_0032b080 (32b080), FUN_0032b74c (32b74c), FUN_00331f8c (331f8c), FUN_00334870 (334870), FUN_0033572c (33572c), FUN_003378e8 (3378e8), FUN_0034fdc0 (34fdc0), FUN_0034ffcc (34ffcc), FUN_00354b8c (354b8c), FUN_0036621c (36621c), FUN_0036a548 (36a548), FUN_0036ea24 (36ea24)
 
 #### FUN_000a9b58 — funcs/__Z12FUN_000a9b58Py.cpp, Ghidra a9b58, 0 model attempt(s)
 
@@ -63748,7 +63522,10 @@ Compiler output:
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000a9b58Py.cpp:4:18: error: cannot cast from type 'void' to pointer type 'void *'
     4 |   void *pvVar1 = (void *)FUN_000a9ae0(param_1);
       |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000a9b58Py.cpp:5:3: error: use of undeclared identifier 'operator_delete'
+    5 |   operator_delete(pvVar1);
+      |   ^~~~~~~~~~~~~~~
+2 errors generated.
 ```
 Code:
 ```cpp
@@ -63844,18 +63621,18 @@ long * FUN_000aa9c4(uint64_t param_1,long *param_2,uint64_t *param_3) {
 }
 ```
 Notes:
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 long * FUN_000aa9c4(undefined8 param_1,long *param_2,undefined8 *param_3)
@@ -64007,18 +63784,18 @@ return uVar1;
 }
 ```
 Notes:
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined1 FUN_000ac590(long param_1,undefined8 param_2,undefined8 param_3)
@@ -64120,18 +63897,18 @@ void FUN_000b10fc(long *param_1,long *param_2) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000b10fc(long *param_1,long *param_2)
@@ -64186,18 +63963,18 @@ void FUN_000b1f88(long param_1) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000b1f88(long param_1)
@@ -64346,18 +64123,18 @@ uint8_t FUN_000b310c(long param_1) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined1 FUN_000b310c(long param_1)
@@ -64421,18 +64198,18 @@ void FUN_000b33b4(long param_1) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'byte' (aka 'unsigned char') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000b33b4(long param_1)
@@ -64455,615 +64232,9 @@ void FUN_000b33b4(long param_1)
 }
 ```
 
-### Not compiling yet — 298 × assigning to 'X' from incompatible type 'X'
-
-All: FUN_000a54b8 (a54b8), FUN_000b1cfc (b1cfc), FUN_000b2ee0 (b2ee0), FUN_000bb55c (bb55c), FUN_000c02d4 (c02d4), FUN_000c0cdc (c0cdc), FUN_000c46c0 (c46c0), FUN_00280a64 (280a64), FUN_00280d9c (280d9c), FUN_00280fd0 (280fd0), FUN_002818a8 (2818a8), FUN_002818c0 (2818c0), FUN_00282518 (282518), FUN_002826f0 (2826f0), FUN_00282848 (282848), FUN_00282b3c (282b3c), FUN_00285dc8 (285dc8), FUN_00285f5c (285f5c), FUN_0028e668 (28e668), FUN_0028e7b0 (28e7b0), FUN_0028e7c8 (28e7c8), FUN_00292f28 (292f28), FUN_0029a434 (29a434), FUN_0029d038 (29d038), FUN_0029dfcc (29dfcc), FUN_0029f938 (29f938), FUN_0029f958 (29f958), FUN_0029f970 (29f970), FUN_002a1e84 (2a1e84), FUN_002bedb0 (2bedb0), FUN_002c1930 (2c1930), FUN_002c1de8 (2c1de8), FUN_002cba6c (2cba6c), FUN_0035a7ec (35a7ec), FUN_0035a91c (35a91c), FUN_0035be84 (35be84), FUN_0035e788 (35e788), FUN_0035f194 (35f194), FUN_0035f518 (35f518), FUN_00360bf0 (360bf0), FUN_00361010 (361010), FUN_0036134c (36134c), FUN_00362e9c (362e9c), FUN_00362f84 (362f84), FUN_003630c4 (3630c4), FUN_00365bec (365bec), shellWindowGlue (6013c), FUN_000649d4 (649d4), FUN_00064c54 (64c54), FUN_0006a448 (6a448), FUN_0006b57c (6b57c), FUN_0006b850 (6b850), FUN_0006d900 (6d900), FUN_0006e75c (6e75c), FUN_0007850c (7850c), FUN_00078a94 (78a94), FUN_00079780 (79780), FUN_0007a7fc (7a7fc), FUN_0007bac4 (7bac4), FUN_0007d490 (7d490), FUN_0007fff8 (7fff8), FUN_00081280 (81280), FUN_00081a70 (81a70), FUN_00086ca4 (86ca4), FUN_00087e6c (87e6c), FUN_00088084 (88084), FUN_0008bb04 (8bb04), FUN_0008bea4 (8bea4), FUN_0008d278 (8d278), FUN_0008dda4 (8dda4), FUN_0009076c (9076c), FUN_0009383c (9383c), FUN_00093878 (93878), FUN_000938b8 (938b8), FUN_000939fc (939fc), FUN_00093a68 (93a68), FUN_00093aa0 (93aa0), FUN_00093ad8 (93ad8), FUN_00093b10 (93b10), FUN_00093bb8 (93bb8), FUN_00097abc (97abc), FUN_000989a4 (989a4), FUN_0009af44 (9af44), FUN_0009b2f0 (9b2f0), FUN_0009c1cc (9c1cc), FUN_0009d03c (9d03c), FUN_0009eb00 (9eb00), FUN_000a0718 (a0718), FUN_000c5f30 (c5f30), FUN_000c7a5c (c7a5c), FUN_000cbf64 (cbf64), FUN_000cc488 (cc488), FUN_000cda4c (cda4c), FUN_000cf2dc (cf2dc), FUN_000d2e00 (d2e00), FUN_000d7500 (d7500), FUN_000d753c (d753c), FUN_000d7a68 (d7a68), FUN_000d84c8 (d84c8), FUN_000d9520 (d9520), FUN_000d96dc (d96dc), FUN_000d9804 (d9804), FUN_000da1fc (da1fc), FUN_000dbbc4 (dbbc4), FUN_000dfde4 (dfde4), FUN_000e108c (e108c), FUN_000e122c (e122c), FUN_000e12d0 (e12d0), FUN_000e1520 (e1520), FUN_000e5ae0 (e5ae0), FUN_000e5ca8 (e5ca8), FUN_000f0888 (f0888), FUN_000f1940 (f1940), FUN_001066f0 (1066f0), FUN_0010e7f8 (10e7f8), FUN_001125e8 (1125e8), FUN_00112a08 (112a08), FUN_00117748 (117748), FUN_00117bd8 (117bd8), FUN_0011aad0 (11aad0), FUN_0011acf4 (11acf4), FUN_0011dd8c (11dd8c), FUN_0011e6d0 (11e6d0), FUN_0012315c (12315c), FUN_00126948 (126948), FUN_001286fc (1286fc), FUN_0012db8c (12db8c), FUN_0012e030 (12e030), FUN_0013a4ac (13a4ac), FUN_0013aec8 (13aec8), FUN_0013c0d0 (13c0d0), FUN_0013d330 (13d330), FUN_00155f58 (155f58), FUN_001580bc (1580bc), FUN_0015828c (15828c), FUN_0015898c (15898c), FUN_00163c80 (163c80), lowpassFilter2430 (166ba4), FUN_00166dfc (166dfc), FUN_0016828c (16828c), makeBackingLayer (16c910), FUN_0016f1e0 (16f1e0), FUN_0017648c (17648c), FUN_00176554 (176554), FUN_0017b200 (17b200), FUN_0017e9d8 (17e9d8), FUN_0017f018 (17f018), FUN_00180d84 (180d84), FUN_00180f34 (180f34), FUN_00180ffc (180ffc), FUN_00183abc (183abc), FUN_001857c8 (1857c8), FUN_00186600 (186600), FUN_001873b0 (1873b0), FUN_0018a2e8 (18a2e8), FUN_0018a3b0 (18a3b0), FUN_0018a498 (18a498), FUN_0018a560 (18a560), FUN_0018ce2c (18ce2c), FUN_0018e0ec (18e0ec), FUN_00191bc4 (191bc4), FUN_00192b0c (192b0c), FUN_00192cbc (192cbc), FUN_00194f40 (194f40), FUN_00196a38 (196a38), FUN_001977d4 (1977d4), FUN_0019857c (19857c), FUN_0019a4f8 (19a4f8), FUN_0019b4f8 (19b4f8), FUN_0019b5c0 (19b5c0), FUN_0019b6a8 (19b6a8), FUN_0019b770 (19b770), FUN_0019d958 (19d958), FUN_0019f444 (19f444), FUN_001a01d4 (1a01d4), FUN_001a0f70 (1a0f70), FUN_001a6eb0 (1a6eb0), FUN_001aa654 (1aa654), FUN_001afa08 (1afa08), FUN_001b2724 (1b2724), FUN_001b3f80 (1b3f80), FUN_001b414c (1b414c), FUN_001b4580 (1b4580), FUN_001b81e0 (1b81e0), FUN_001b8b40 (1b8b40), FUN_001bac14 (1bac14), FUN_001c6d78 (1c6d78), LowpassFilter (1c959c), FUN_001c9978 (1c9978), FUN_001ca15c (1ca15c), FUN_001ca5b8 (1ca5b8), FUN_001d5cc4 (1d5cc4), FUN_001e0d4c (1e0d4c), FUN_001f08dc (1f08dc), FUN_001f0bf0 (1f0bf0), FUN_001f0e84 (1f0e84), FUN_001f54e4 (1f54e4), FUN_001f8278 (1f8278), FUN_00203ebc (203ebc), FUN_00204ce0 (204ce0), FUN_00206064 (206064), FUN_0020fbe8 (20fbe8), FUN_0021d474 (21d474), FUN_0021e314 (21e314), FUN_0021f4e4 (21f4e4), FUN_00225788 (225788), FUN_0022587c (22587c), FUN_00226010 (226010), FUN_002290d4 (2290d4), FUN_00229864 (229864), FUN_0022996c (22996c), FUN_00250e28 (250e28), FUN_002544d0 (2544d0), FUN_00254b30 (254b30), FUN_00255568 (255568), FUN_0026036c (26036c), FUN_00269a34 (269a34), FUN_00274308 (274308), FUN_0027d01c (27d01c), FUN_002cd704 (2cd704), FUN_002cdc0c (2cdc0c), FUN_002dc424 (2dc424), FUN_002e9950 (2e9950), FUN_002eaab4 (2eaab4), FUN_002eac9c (2eac9c), FUN_002eccdc (2eccdc), FUN_002f2b84 (2f2b84), FUN_002f3540 (2f3540), FUN_002f3e9c (2f3e9c), FUN_002f48bc (2f48bc), FUN_002f5ab4 (2f5ab4), FUN_002f5d2c (2f5d2c), FUN_002fa204 (2fa204), FUN_002fb0f0 (2fb0f0), FUN_002fb1c0 (2fb1c0), FUN_002fb374 (2fb374), FUN_002fd224 (2fd224), FUN_00309314 (309314), FUN_0030ab8c (30ab8c), FUN_0030e494 (30e494), FUN_0030e644 (30e644), FUN_0031202c (31202c), FUN_0031571c (31571c), FUN_00323814 (323814), FUN_00324ec8 (324ec8), FUN_003259f4 (3259f4), FUN_00325ae4 (325ae4), FUN_00325afc (325afc), FUN_00326584 (326584), FUN_003266d0 (3266d0), FUN_00328034 (328034), FUN_0032ff58 (32ff58), FUN_00330314 (330314), FUN_003304bc (3304bc), FUN_00330b88 (330b88), FUN_00330e04 (330e04), FUN_00331ccc (331ccc), FUN_00333a68 (333a68), FUN_00334a4c (334a4c), FUN_00334a80 (334a80), FUN_003365dc (3365dc), FUN_0033731c (33731c), FUN_00338124 (338124), FUN_00339d20 (339d20), FUN_0033aa18 (33aa18), FUN_0033aba8 (33aba8), FUN_0033b9a8 (33b9a8), FUN_0033c914 (33c914), FUN_0033e548 (33e548), FUN_0033e7e0 (33e7e0), FUN_00341384 (341384), FUN_00346e24 (346e24), FUN_0034747c (34747c), FUN_00347b34 (347b34), FUN_00348718 (348718), FUN_003496b4 (3496b4), FUN_0034bc30 (34bc30), FUN_0034bd7c (34bd7c), FUN_0034cd60 (34cd60), FUN_0034e8e0 (34e8e0), FUN_0034ff54 (34ff54), FUN_0035081c (35081c), FUN_003519e4 (3519e4), FUN_003528d8 (3528d8), FUN_0035378c (35378c), FUN_0035386c (35386c), FUN_00359b9c (359b9c), FUN_00359e7c (359e7c), FUN_00368218 (368218), FUN_0036a5ec (36a5ec), FUN_0036c4e0 (36c4e0), FUN_00371228 (371228), FUN_00371448 (371448), FUN_0037165c (37165c), FUN_0037189c (37189c), FUN_0037285c (37285c), FUN_00375278 (375278), FUN_003774fc (3774fc)
-
-#### FUN_000a54b8 — funcs/__Z12FUN_000a54b8m.cpp, Ghidra a54b8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000a54b8m.cpp:11:14: error: assigning to 'void *' from incompatible type 'void'
-   11 |     pvVar1 = FUN_000041f4(0x4323e0);
-      |              ^~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000a54b8m.cpp:18:3: error: void function 'FUN_000a54b8' should not return a value [-Wreturn-mismatch]
-   18 |   return pvVar1;
-      |   ^      ~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000a54b8(ulong param_1) {
-    uint64_t DAT_00453508 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t DAT_00453500 = 0; // auto-declared (undeclared in the rewrite)
-
-  void *pvVar1;
-
-  if ((DAT_00453508 & 1) == 0) {
-    pvVar1 = FUN_000041f4(0x4323e0);
-    DAT_00453508 = 1;
-  }
-
-  pvVar1 = FUN_0021608c(DAT_00453500, param_1 * 0x28);
-
-  FUN_000a5558((long)pvVar1, param_1);
-  return pvVar1;
-}
-```
-Ghidra's pseudocode:
-```c
-void * FUN_000a54b8(ulong param_1)
-
-{
-  void *pvVar1;
-  
-  if ((DAT_00453508 & 1) == 0) {
-    DAT_00453500 = FUN_000041f4(0x4323e0);
-    DAT_00453508 = 1;
-  }
-  pvVar1 = FUN_0021608c(DAT_00453500,param_1 * 0x28);
-  FUN_000a5558((long)pvVar1,param_1);
-  return pvVar1;
-}
-```
-
-#### FUN_000b1cfc — funcs/__Z12FUN_000b1cfcl.cpp, Ghidra b1cfc, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b1cfcl.cpp:7:13: error: assigning to 'long' from incompatible type 'void'
-    7 |     lVar1 = FUN_000b1b0c();
-      |             ^~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b1cfc(long param_1) {
-    long lVar1;
-
-    FUN_000b10d8(param_1);
-    lVar1 = FUN_000b1b0c();
-
-    if (lVar1 != 0) {
-        FUN_0012a740(lVar1, (uint)*(byte *)(param_1 + 0x394), (undefined8 *)(param_1 + 0x398));
-        if ((*(byte *)(param_1 + 0x379) & 1) == 0) {
-            FUN_0012b808(lVar1);
-        }
-        else {
-            FUN_0012b7cc(lVar1, (undefined8 *)(param_1 + 0x37c), (undefined8 *)(param_1 + 0x388));
-        }
-    }
-
-    return;
-}
-```
-Notes:
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000b1cfc(long param_1)
-
-{
-  long lVar1;
-  
-  FUN_000b10d8(param_1);
-  lVar1 = FUN_000b1b0c();
-  if (lVar1 != 0) {
-    FUN_0012a740(lVar1,(uint)*(byte *)(param_1 + 0x394),(undefined8 *)(param_1 + 0x398));
-    if ((*(byte *)(param_1 + 0x379) & 1) == 0) {
-      FUN_0012b808(lVar1);
-    }
-    else {
-      FUN_0012b7cc(lVar1,(undefined8 *)(param_1 + 0x37c),(undefined8 *)(param_1 + 0x388));
-    }
-  }
-  return;
-}
-```
-
-#### FUN_000b2ee0 — funcs/__Z12FUN_000b2ee0Pl.cpp, Ghidra b2ee0, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b2ee0Pl.cpp:8:27: error: assigning to 'long' from incompatible type 'void'
-    8 |   if ((bVar1) && (lVar2 = FUN_000bb434((long)param_1), lVar2 != 0)) {
-      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b2ee0(long *param_1) {
-  bool bVar1;
-  long lVar2;
-
-  bVar1 = FUN_00048b70((long)param_1);
-  if ((bVar1) && (lVar2 = FUN_000bb434((long)param_1), lVar2 != 0)) {
-    (**(code **)(*param_1 + 0x1a0))(param_1);
-  }
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_000b2ee0(long *param_1)
-
-{
-  bool bVar1;
-  long lVar2;
-  
-  bVar1 = FUN_00048b70((long)param_1);
-  if ((bVar1) && (lVar2 = FUN_000bb434((long)param_1), lVar2 != 0)) {
-    (**(code **)(*param_1 + 0x1a0))(param_1);
-  }
-  return;
-}
-```
-
-#### FUN_000bb55c — funcs/__Z12FUN_000bb55cPll.cpp, Ghidra bb55c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:18:11: error: assigning to 'long' from incompatible type 'void'
-   18 |   lVar2 = FUN_00124b18();
-      |           ^~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:20:13: error: assigning to 'long' from incompatible type 'void'
-   20 |     lVar2 = FUN_00124b18();
-      |             ^~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:21:13: error: assigning to 'long' from incompatible type 'void'
-   21 |     lVar2 = FUN_00124c28(lVar2);
-      |             ^~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:25:17: error: assigning to 'long' from incompatible type 'void'
-   25 |         lVar2 = FUN_00124b18();
-      |                 ^~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:26:17: error: assigning to 'long' from incompatible type 'void'
-   26 |         lVar2 = FUN_00124c28(lVar2);
-      |                 ^~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:27:17: error: assigning to 'long' from incompatible type 'void'
-   27 |         lVar2 = FUN_001be388(lVar2);
-      |                 ^~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:30:17: error: no matching function for call to 'FUN_0021f318'
-   30 |         bVar1 = FUN_0021f318(auStack_40, alStack_50);
-      |                 ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42569:6: note: candidate function not viable: no known conversion from 'undefined8[2]' (aka 'unsigned long long[2]') to 'const ushort *' (aka 'const unsigned short *') for 1st argument
- 42569 | bool FUN_0021f318(const ushort *, const ushort *);
-       |      ^            ~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:31:9: error: no matching function for call to 'FUN_000031f4'
-   31 |         FUN_000031f4((long)alStack_50);
-      |         ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1239:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
- 1239 | void FUN_000031f4(float[4], float, float[4]);
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:41:11: error: no matching function for call to 'FUN_0021a090'
-   41 |           FUN_0021a090(param_1, alStack_50, auStack_40, auStack_70, auStack_80, auStack_90, auStack_a0);
-      |           ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42277:6: note: candidate function not viable: no known conversion from 'long *' to 'float *' for 1st argument
- 42277 | void FUN_0021a090(float *, float *, int, LowPassFilter, uint64_t, uint64_t, uint64_t);
-       |      ^            ~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:42:11: error: no matching function for call to 'FUN_000031f4'
-   42 |           FUN_000031f4((long)auStack_a0);
-      |           ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1239:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
- 1239 | void FUN_000031f4(float[4], float, float[4]);
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpa
-...
-~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:51:3: error: no matching function for call to 'FUN_0021a214'
-   51 |   FUN_0021a214(param_1);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42281:6: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 42281 | void FUN_0021a214(uint64_t *);
-       |      ^            ~~~~~~~~~~
-15 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000bb55c(long *param_1, long param_2) {
-  bool bVar1;
-  long lVar2;
-  undefined8 auStack_a0[2];
-  undefined8 auStack_90[2];
-  undefined8 auStack_80[2];
-  undefined8 auStack_70[2];
-  undefined4 local_60;
-  long alStack_50[2];
-  undefined8 auStack_40[2];
-  long local_30;
-  long *plStack_28;
-
-  local_30 = param_2;
-  plStack_28 = param_1;
-  lVar2 = FUN_00124b18();
-  if (lVar2 != 0) {
-    lVar2 = FUN_00124b18();
-    lVar2 = FUN_00124c28(lVar2);
-    if (lVar2 != 0) {
-      bVar1 = FUN_001aa78c((undefined8 *)(param_2 + 0x1a0));
-      if (bVar1) {
-        lVar2 = FUN_00124b18();
-        lVar2 = FUN_00124c28(lVar2);
-        lVar2 = FUN_001be388(lVar2);
-        FUN_0015828c(auStack_40, lVar2, param_2 + 0x1a0);
-        FUN_0021a1f4(alStack_50, "Global");
-        bVar1 = FUN_0021f318(auStack_40, alStack_50);
-        FUN_000031f4((long)alStack_50);
-        if (bVar1) {
-          FUN_0021a1f4(param_1, "");
-        }
-        else {
-          FUN_0021a1f4(alStack_50, "- when \'%s\' is focused");
-          FUN_0021a214(auStack_70);
-          FUN_0021a214(auStack_80);
-          FUN_0021a214(auStack_90);
-          FUN_0021a214(auStack_a0);
-          FUN_0021a090(param_1, alStack_50, auStack_40, auStack_70, auStack_80, auStack_90, auStack_a0);
-          FUN_000031f4((long)auStack_a0);
-          FUN_000031f4((long)auStack_90);
-          FUN_000031f4((long)auStack_80);
-          FUN_000031f4((long)auStack_70);
-          FUN_000031f4((long)alStack_50);
-        }
-      }
-    }
-  }
-  FUN_0021a214(param_1);
-  return;
-}
-```
-Notes:
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000bb55c(long *param_1,long param_2)
-
-{
-  bool bVar1;
-  long lVar2;
-  undefined8 auStack_a0 [2];
-  undefined8 auStack_90 [2];
-  undefined8 auStack_80 [2];
-  undefined8 auStack_70 [2];
-  undefined4 local_60;
-  long alStack_50 [2];
-  undefined8 auStack_40 [2];
-  long local_30;
-  long *plStack_28;
-  
-  local_30 = param_2;
-  plStack_28 = param_1;
-  lVar2 = FUN_00124b18();
-  if (lVar2 != 0) {
-    lVar2 = FUN_00124b18();
-    lVar2 = FUN_00124c28(lVar2);
-    if (lVar2 != 0) {
-      bVar1 = FUN_001aa78c((undefined8 *)(param_2 + 0x1a0));
-      if (bVar1) {
-        lVar2 = FUN_00124b18();
-        lVar2 = FUN_00124c28(lVar2);
-        lVar2 = FUN_001be388(lVar2);
-        FUN_0015828c(auStack_40,lVar2,param_2 + 0x1a0);
-        FUN_0021a1f4(alStack_50,"Global");
-        bVar1 = FUN_0021f318(auStack_40,alStack_50);
-        FUN_000031f4((long)alStack_50);
-        if (bVar1) {
-          FUN_0021a1f4(param_1,"");
-        }
-        else {
-          FUN_0021a1f4(alStack_50,"- when \'%s\' is focused");
-          FUN_0021a214(auStack_70);
-          FUN_0021a214(auStack_80);
-          FUN_0021a214(auStack_90);
-          FUN_0021a214(auStack_a0);
-          FUN_0021a090(param_1,alStack_50,auStack_40,auStack_70,auStack_80,auStack_90,auStack_a0);
-          FUN_000031f4((long)auStack_a0);
-          FUN_000031f4((long)auStack_90);
-          FUN_000031f4((long)auStack_80);
-          FUN_000031f4((long)auStack_70);
-          FUN_000031f4((long)alStack_50);
-        }
-        local_60 = 1;
-        FUN_000031f4((long)auStack_40);
-        return;
-      }
-    }
-  }
-  FUN_0021a214(param_1);
-  return;
-}
-```
-
-#### FUN_000c02d4 — funcs/__Z12FUN_000c02d4PhdydPl.cpp, Ghidra c02d4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c02d4PhdydPl.cpp:12:14: error: assigning to 'long' from incompatible type 'void'
-   12 |   local_30 = FUN_000c0374();
-      |              ^~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c02d4PhdydPl.cpp:13:3: error: no matching function for call to 'FUN_000b23bc'
-   13 |   FUN_000b23bc(alStack_40,local_30);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:15121:6: note: candidate function not viable: no known conversion from 'long[2]' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 15121 | void FUN_000b23bc(uint64_t *, long);
-       |      ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c02d4PhdydPl.cpp:15:12: error: no matching function for call to 'FUN_000031f4'
-   15 |   auVar2 = FUN_000031f4((long)alStack_40);
-      |            ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1239:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
- 1239 | void FUN_000031f4(float[4], float, float[4]);
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c02d4PhdydPl.cpp:15:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   15 |   auVar2 = FUN_000031f4((long)alStack_40);
-      |   ~~~~~~ ^
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-uint8_t FUN_000c02d4(uint8_t param_1 [16],double param_2,uint64_t param_3,double param_4,long *param_5) {
-  undefined1 uVar1;
-  undefined1 auVar2 [16];
-  long alStack_40 [2];
-  long local_30;
-  long *local_28;
-
-  local_28 = param_5;
-  FUN_000c5828();
-  local_30 = FUN_000c0374();
-  FUN_000b23bc(alStack_40,local_30);
-  FUN_0021a8a0(param_5 + 0x3d,alStack_40);
-  auVar2 = FUN_000031f4((long)alStack_40);
-  uVar1 = FUN_001bcc84(auVar2,param_2,param_3,param_4,param_5);
-  return uVar1;
-}
-```
-Notes:
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-undefined1
-FUN_000c02d4(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5)
-
-{
-  undefined1 uVar1;
-  undefined1 auVar2 [16];
-  long alStack_40 [2];
-  long local_30;
-  long *local_28;
-  
-  local_28 = param_5;
-  FUN_000c5828();
-  local_30 = FUN_000c0374();
-  FUN_000b23bc(alStack_40,local_30);
-  FUN_0021a8a0(param_5 + 0x3d,alStack_40);
-  auVar2 = FUN_000031f4((long)alStack_40);
-  uVar1 = FUN_001bcc84(auVar2,param_2,param_3,param_4,param_5);
-  return uVar1;
-}
-```
-
-#### FUN_000c0cdc — funcs/__Z12FUN_000c0cdcPllPy.cpp, Ghidra c0cdc, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c0cdcPllPy.cpp:6:11: error: assigning to 'long' from incompatible type 'void'
-    6 |   lVar1 = FUN_000279f4(param_1, param_2);
-      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000c0cdc(long *param_1,long param_2,uint64_t *param_3) {
-  long lVar1;
-
-  lVar1 = FUN_000279f4(param_1, param_2);
-  *(uint8_t *)(lVar1 + 0x10) = 1;
-  *(uint64_t *)(lVar1 + 0x14) = *param_3;
-  *(uint64_t *)(lVar1 + 0x1c) = *param_3;
-  return;
-}
-```
-Notes:
-- 10-21 10:03 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000c0cdc(long *param_1,long param_2,undefined8 *param_3)
-
-{
-  long lVar1;
-  
-  lVar1 = FUN_000279f4(param_1,param_2);
-  *(undefined1 *)(lVar1 + 0x10) = 1;
-  *(undefined8 *)(lVar1 + 0x14) = *param_3;
-  *(undefined8 *)(lVar1 + 0x1c) = *param_3;
-  return;
-}
-```
-
-#### FUN_000c46c0 — funcs/__Z12FUN_000c46c0Pljjj.cpp, Ghidra c46c0, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c46c0Pljjj.cpp:15:18: error: assigning to 'long' from incompatible type 'void'
-   15 |     for (lVar2 = FUN_000ba0a4((long)param_1); lVar2 != 0; lVar2 = FUN_000ba0a4(lVar2)) {
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c46c0Pljjj.cpp:15:67: error: assigning to 'long' from incompatible type 'void'
-   15 |     for (lVar2 = FUN_000ba0a4((long)param_1); lVar2 != 0; lVar2 = FUN_000ba0a4(lVar2)) {
-      |                                                                   ^~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c46c0Pljjj.cpp:18:26: error: use of undeclared identifier '___dynamic_cast'
-   18 |         plVar3 = (long *)___dynamic_cast(lVar2,&PTR_vtable_0043cca8,&PTR_vtable_00436508,0);
-      |                          ^~~~~~~~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-uint8_t FUN_000c46c0(long *param_1,uint32_t param_2,uint32_t param_3,uint32_t param_4) {
-    uint64_t PTR_vtable_0043cca8 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t PTR_vtable_00436508 = 0; // auto-declared (undeclared in the rewrite)
-
-  int iVar1;
-  long lVar2;
-  long *plVar3;
-  undefined1 local_31;
-
-  iVar1 = (**(code **)(*param_1 + 0x240))();
-  if (iVar1 == 0) {
-    for (lVar2 = FUN_000ba0a4((long)param_1); lVar2 != 0; lVar2 = FUN_000ba0a4(lVar2)) {
-      plVar3 = (long *)0x0;
-      if (lVar2 != 0) {
-        plVar3 = (long *)___dynamic_cast(lVar2,&PTR_vtable_0043cca8,&PTR_vtable_00436508,0);
-      }
-      if ((plVar3 != (long *)0x0) &&
-         (iVar1 = (**(code **)(*plVar3 + 0x240))(plVar3,param_2,param_3,param_4), iVar1 != 0)) {
-        return 1;
-      }
-    }
-    local_31 = 0;
-  }
-  else {
-    local_31 = 1;
-  }
-
-  return local_31;
-  return local_31;
-}
-```
-Ghidra's pseudocode:
-```c
-undefined1 FUN_000c46c0(long *param_1,undefined4 param_2,undefined4 param_3,undefined4 param_4)
-
-{
-  int iVar1;
-  long lVar2;
-  long *plVar3;
-  undefined1 local_31;
-  
-  iVar1 = (**(code **)(*param_1 + 0x240))();
-  if (iVar1 == 0) {
-    for (lVar2 = FUN_000ba0a4((long)param_1); lVar2 != 0; lVar2 = FUN_000ba0a4(lVar2)) {
-      plVar3 = (long *)0x0;
-      if (lVar2 != 0) {
-        plVar3 = (long *)___dynamic_cast(lVar2,&PTR_vtable_0043cca8,&PTR_vtable_00436508,0);
-      }
-      if ((plVar3 != (long *)0x0) &&
-         (iVar1 = (**(code **)(*plVar3 + 0x240))(plVar3,param_2,param_3,param_4), iVar1 != 0)) {
-        return 1;
-      }
-    }
-    local_31 = 0;
-  }
-  else {
-    local_31 = 1;
-  }
-  return local_31;
-}
-```
-
-#### FUN_00280a64 — funcs/__Z12FUN_00280a64v.cpp, Ghidra 280a64, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00280a64v.cpp:6:11: error: assigning to 'long' from incompatible type 'void'
-    6 |   lVar1 = FUN_00280a84();
-      |           ^~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-bool FUN_00280a64(void) {
-  long lVar1;
-
-  lVar1 = FUN_00280a84();
-  return *(char *)(lVar1 + 0x17) < '\0';
-}
-```
-Notes:
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:05 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:05 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-bool FUN_00280a64(void)
-
-{
-  long lVar1;
-  
-  lVar1 = FUN_00280a84();
-  return *(char *)(lVar1 + 0x17) < '\0';
-}
-```
-
 ### Not compiling yet — 298 × assigning to 'X' (aka 'X') from incompatible type 'X'
 
-All: FUN_000a9c18 (a9c18), FUN_000aa640 (aa640), FUN_000b071c (b071c), FUN_000b1034 (b1034), FUN_000b144c (b144c), FUN_000b16ac (b16ac), FUN_000b178c (b178c), FUN_000b1ea4 (b1ea4), FUN_0028175c (28175c), FUN_00281bc8 (281bc8), FUN_00286e64 (286e64), FUN_00286f0c (286f0c), FUN_00288fac (288fac), FUN_0028ac90 (28ac90), FUN_0028ada0 (28ada0), FUN_0028d870 (28d870), FUN_0028dc64 (28dc64), FUN_0028e864 (28e864), FUN_0028fb5c (28fb5c), FUN_00290bc4 (290bc4), FUN_00291cac (291cac), FUN_0029202c (29202c), FUN_00293f94 (293f94), FUN_0029514c (29514c), FUN_00296488 (296488), FUN_00297b88 (297b88), FUN_00297d08 (297d08), FUN_0029a26c (29a26c), FUN_0029ffac (29ffac), FUN_002a076c (2a076c), FUN_002a0adc (2a0adc), FUN_002a0fe0 (2a0fe0), FUN_002c39a8 (2c39a8), FUN_002c6c3c (2c6c3c), FUN_002c6d94 (2c6d94), FUN_002c70ec (2c70ec), FUN_002c7bac (2c7bac), FUN_0035b658 (35b658), FUN_0035d7d8 (35d7d8), FUN_0035e0a0 (35e0a0), FUN_003632c4 (3632c4), FUN_003642d0 (3642d0), FUN_00364cbc (364cbc), FUN_00365050 (365050), FUN_00072824 (72824), FUN_00074d04 (74d04), FUN_00077a10 (77a10), FUN_0007b10c (7b10c), FUN_0007be00 (7be00), LowPassFilter686 (7c718), FUN_0007f854 (7f854), FUN_0007f924 (7f924), FUN_0007fdd0 (7fdd0), FUN_00080ad4 (80ad4), FUN_00080ba4 (80ba4), lowpassFilter686 (80c9c), FUN_0008547c (8547c), FUN_00085548 (85548), FUN_00085d14 (85d14), FUN_00087b3c (87b3c), FUN_000883a4 (883a4), FUN_00088440 (88440), FUN_0008f904 (8f904), FUN_00095224 (95224), FUN_00098a28 (98a28), FUN_00098d48 (98d48), FUN_0009df28 (9df28), FUN_0009f4b8 (9f4b8), FUN_000a0190 (a0190), FUN_000c9968 (c9968), FUN_000cd9c8 (cd9c8), FUN_000ced74 (ced74), FUN_000d0430 (d0430), FUN_000d2384 (d2384), FUN_000d29cc (d29cc), FUN_000e43dc (e43dc), FUN_000e7a8c (e7a8c), FUN_000e8064 (e8064), FUN_000e88b0 (e88b0), FUN_000e93ac (e93ac), FUN_000eddf8 (eddf8), FUN_000f17a8 (f17a8), FUN_00112c78 (112c78), FUN_0011547c (11547c), FUN_00118ea0 (118ea0), FUN_00125230 (125230), FUN_00128be8 (128be8), FUN_00131f70 (131f70), FUN_00136990 (136990), FUN_001382e8 (1382e8), FUN_0013929c (13929c), FUN_001394f0 (1394f0), FUN_001398c4 (1398c4), FUN_00139a70 (139a70), FUN_00139e94 (139e94), FUN_0013a818 (13a818), FUN_0013ab38 (13ab38), FUN_0013b9a8 (13b9a8), FUN_0015436c (15436c), FUN_00154788 (154788), FUN_00158d5c (158d5c), FUN_00159c8c (159c8c), FUN_001650c4 (1650c4), FUN_001655b0 (1655b0), FUN_0016e488 (16e488), FUN_0016e684 (16e684), FUN_0016ea24 (16ea24), FUN_0016eaf4 (16eaf4), FUN_0017033c (17033c), FUN_001715bc (1715bc), FUN_00171e34 (171e34), FUN_00173b50 (173b50), FUN_00173de8 (173de8), FUN_0017bd34 (17bd34), FUN_0017c228 (17c228), FUN_0017d890 (17d890), FUN_0017d8fc (17d8fc), FUN_0017e55c (17e55c), FUN_0017efc8 (17efc8), FUN_0017f338 (17f338), FUN_00184564 (184564), FUN_00185e34 (185e34), FUN_00186108 (186108), FUN_00186eb4 (186eb4), FUN_00187c80 (187c80), FUN_0018a8f0 (18a8f0), FUN_0018ceb8 (18ceb8), FUN_0018ee8c (18ee8c), FUN_0018fc3c (18fc3c), FUN_0019050c (19050c), FUN_00192bd4 (192bd4), FUN_00192d84 (192d84), FUN_00193114 (193114), FUN_001970a4 (1970a4), FUN_00198080 (198080), FUN_00198be8 (198be8), FUN_0019fab0 (19fab0), FUN_001a0a74 (1a0a74), FUN_001a15dc (1a15dc), FUN_001a713c (1a713c), FUN_001aad28 (1aad28), FUN_001aaf50 (1aaf50), FUN_001acaa0 (1acaa0), FUN_001ae8a4 (1ae8a4), FUN_001aee68 (1aee68), FUN_001af180 (1af180), FUN_001af794 (1af794), FUN_001b77ec (1b77ec), FUN_001ba8c8 (1ba8c8), FUN_001bec24 (1bec24), FUN_001ccbe0 (1ccbe0), FUN_001d10bc (1d10bc), FUN_001d1344 (1d1344), FUN_001d59cc (1d59cc), FUN_001e1450 (1e1450), FUN_001e1960 (1e1960), FUN_001e3050 (1e3050), FUN_001f4968 (1f4968), FUN_00202974 (202974), FUN_00202df0 (202df0), FUN_002051fc (2051fc), FUN_0020d3fc (20d3fc), FUN_002187ac (2187ac), FUN_0021cf04 (21cf04), FUN_00226134 (226134), FUN_00226600 (226600), FUN_002271f4 (2271f4), FUN_00228630 (228630), FUN_0022870c (22870c), FUN_00228aec (228aec), FUN_002468c0 (2468c0), FUN_00257198 (257198), FUN_00257f9c (257f9c), FUN_00258338 (258338), FUN_00258444 (258444), FUN_00258e8c (258e8c), FUN_00259388 (259388), FUN_0025a4e4 (25a4e4), FUN_0025a68c (25a68c), FUN_0025bc0c (25bc0c), FUN_002605ac (2605ac), FUN_00262194 (262194), FUN_00262e10 (262e10), FUN_00263080 (263080), FUN_00265274 (265274), FUN_002775e8 (2775e8), FUN_002776c4 (2776c4), FUN_0027bafc (27bafc), FUN_0027bb2c (27bb2c), FUN_0027bb5c (27bb5c), FUN_0027bb94 (27bb94), FUN_0027bbc4 (27bbc4), FUN_0027bc28 (27bc28), FUN_0027bc68 (27bc68), FUN_0027bea8 (27bea8), FUN_0027bee0 (27bee0), FUN_0027bf18 (27bf18), FUN_0027bf50 (27bf50), FUN_0027c040 (27c040), FUN_0027c0dc (27c0dc), FUN_0027c178 (27c178), FUN_0027c214 (27c214), FUN_0027c2b0 (27c2b0), FUN_0027cd64 (27cd64), FUN_0027ce30 (27ce30), FUN_002d24c4 (2d24c4), FUN_002e853c (2e853c), FUN_002f1770 (2f1770), FUN_002fb57c (2fb57c), FUN_002fb6ac (2fb6ac), FUN_002fedb0 (2fedb0), FUN_002fff30 (2fff30), FUN_00302544 (302544), FUN_003025c4 (3025c4), FUN_00302750 (302750), FUN_00303310 (303310), FUN_0030392c (30392c), FUN_00306014 (306014), FUN_0031045c (31045c), FUN_00311838 (311838), FUN_003143d4 (3143d4), FUN_0031cc40 (31cc40), FUN_0031f2ac (31f2ac), FUN_0031fea0 (31fea0), FUN_00323fbc (323fbc), FUN_00324c78 (324c78), FUN_00327448 (327448), FUN_00327d54 (327d54), FUN_00328c34 (328c34), FUN_0032b240 (32b240), FUN_0032fea0 (32fea0), FUN_00330ebc (330ebc), FUN_00331c0c (331c0c), FUN_003323ac (3323ac), FUN_00333d9c (333d9c), FUN_00334578 (334578), FUN_003354fc (3354fc), FUN_003359f4 (3359f4), FUN_00335b34 (335b34), FUN_00335ea4 (335ea4), FUN_003362bc (3362bc), FUN_003368f0 (3368f0), FUN_00336c14 (336c14), FUN_00336ca0 (336ca0), FUN_00337c04 (337c04), FUN_00338c7c (338c7c), FUN_0033a1e4 (33a1e4), FUN_0033a4d4 (33a4d4), FUN_0033ad20 (33ad20), FUN_0033b728 (33b728), FUN_0033bcc4 (33bcc4), FUN_0034140c (34140c), FUN_00342990 (342990), FUN_00343060 (343060), FUN_00343338 (343338), FUN_00343f04 (343f04), FUN_00345078 (345078), FUN_00346118 (346118), FUN_0034625c (34625c), FUN_00348300 (348300), FUN_00349194 (349194), FUN_0034a114 (34a114), FUN_0034a54c (34a54c), FUN_0034a8f0 (34a8f0), FUN_0034cc70 (34cc70), FUN_0035061c (35061c), FUN_00350e24 (350e24), FUN_003511cc (3511cc), FUN_00355da8 (355da8), FUN_0036613c (36613c), FUN_00366394 (366394), FUN_00366bc4 (366bc4), FUN_00369198 (369198), FUN_00369694 (369694), FUN_00369bd0 (369bd0), FUN_00369d24 (369d24), FUN_00369ee8 (369ee8), FUN_0036a0f0 (36a0f0), FUN_0036ae94 (36ae94), FUN_0036b05c (36b05c), FUN_0036d44c (36d44c), FUN_0036eae0 (36eae0), FUN_0036ed94 (36ed94), FUN_0036ff78 (36ff78), FUN_0037048c (37048c), FUN_00370728 (370728), FUN_00371e3c (371e3c), FUN_00374480 (374480), FUN_00374ed4 (374ed4), FUN_00375310 (375310), FUN_0037565c (37565c), FUN_0037acc8 (37acc8), FUN_0037b7a4 (37b7a4), FUN_0037bc30 (37bc30), FUN_0037c6b0 (37c6b0), FUN_0037d9e4 (37d9e4), FUN_0037dcdc (37dcdc), FUN_0037f118 (37f118)
+All: FUN_000a9c18 (a9c18), FUN_000aa640 (aa640), FUN_000b071c (b071c), FUN_000b1034 (b1034), FUN_000b144c (b144c), FUN_000b16ac (b16ac), FUN_000b178c (b178c), FUN_000b1ea4 (b1ea4), FUN_0028175c (28175c), FUN_00281bc8 (281bc8), FUN_00286e64 (286e64), FUN_00286f0c (286f0c), FUN_00288fac (288fac), FUN_0028ac90 (28ac90), FUN_0028ada0 (28ada0), FUN_0028d870 (28d870), FUN_0028dc64 (28dc64), FUN_0028e864 (28e864), FUN_0028fb5c (28fb5c), FUN_00290bc4 (290bc4), FUN_00291cac (291cac), FUN_0029202c (29202c), FUN_00293f94 (293f94), FUN_0029514c (29514c), FUN_00296488 (296488), FUN_00297b88 (297b88), FUN_00297d08 (297d08), FUN_0029a26c (29a26c), FUN_0029ffac (29ffac), FUN_002a076c (2a076c), FUN_002a0adc (2a0adc), FUN_002a0fe0 (2a0fe0), FUN_002a2460 (2a2460), FUN_002c39a8 (2c39a8), FUN_002c6c3c (2c6c3c), FUN_002c6d94 (2c6d94), FUN_002c70ec (2c70ec), FUN_002c7bac (2c7bac), FUN_0035b658 (35b658), FUN_0035d7d8 (35d7d8), FUN_0035e0a0 (35e0a0), FUN_003632c4 (3632c4), FUN_003642d0 (3642d0), FUN_00364cbc (364cbc), FUN_00365050 (365050), FUN_00072824 (72824), FUN_00074d04 (74d04), FUN_00077a10 (77a10), FUN_0007b10c (7b10c), FUN_0007be00 (7be00), LowPassFilter686 (7c718), FUN_0007f854 (7f854), FUN_0007f924 (7f924), FUN_0007fdd0 (7fdd0), FUN_00080ad4 (80ad4), FUN_00080ba4 (80ba4), lowpassFilter686 (80c9c), FUN_0008547c (8547c), FUN_00085548 (85548), FUN_00085d14 (85d14), FUN_00087b3c (87b3c), FUN_000883a4 (883a4), FUN_00088440 (88440), FUN_0008f904 (8f904), FUN_00095224 (95224), FUN_00098a28 (98a28), FUN_00098d48 (98d48), FUN_0009df28 (9df28), FUN_0009f4b8 (9f4b8), FUN_000a0190 (a0190), FUN_000c9968 (c9968), FUN_000cd9c8 (cd9c8), FUN_000ced74 (ced74), FUN_000d0430 (d0430), FUN_000d2384 (d2384), FUN_000d29cc (d29cc), FUN_000e43dc (e43dc), FUN_000e7a8c (e7a8c), FUN_000e8064 (e8064), FUN_000e88b0 (e88b0), FUN_000e93ac (e93ac), FUN_000eddf8 (eddf8), FUN_000f17a8 (f17a8), FUN_00112c78 (112c78), FUN_0011547c (11547c), FUN_00118ea0 (118ea0), FUN_00125230 (125230), FUN_00128be8 (128be8), FUN_00131f70 (131f70), FUN_00136990 (136990), FUN_001382e8 (1382e8), FUN_0013929c (13929c), FUN_001394f0 (1394f0), FUN_001398c4 (1398c4), FUN_00139a70 (139a70), FUN_00139e94 (139e94), FUN_0013a818 (13a818), FUN_0013ab38 (13ab38), FUN_0013b9a8 (13b9a8), FUN_0015436c (15436c), FUN_00154788 (154788), FUN_00158d5c (158d5c), FUN_00159c8c (159c8c), FUN_001650c4 (1650c4), FUN_001655b0 (1655b0), FUN_0016e488 (16e488), FUN_0016e684 (16e684), FUN_0016ea24 (16ea24), FUN_0016eaf4 (16eaf4), FUN_0017033c (17033c), FUN_001715bc (1715bc), FUN_00171e34 (171e34), FUN_00173b50 (173b50), FUN_00173de8 (173de8), FUN_0017bd34 (17bd34), FUN_0017c228 (17c228), FUN_0017d890 (17d890), FUN_0017d8fc (17d8fc), FUN_0017e55c (17e55c), FUN_0017efc8 (17efc8), FUN_0017f338 (17f338), FUN_00184564 (184564), FUN_00185e34 (185e34), FUN_00186108 (186108), FUN_00186eb4 (186eb4), FUN_00187c80 (187c80), FUN_0018a8f0 (18a8f0), FUN_0018ceb8 (18ceb8), FUN_0018ee8c (18ee8c), FUN_0018fc3c (18fc3c), FUN_0019050c (19050c), FUN_00192bd4 (192bd4), FUN_00192d84 (192d84), FUN_00193114 (193114), FUN_001970a4 (1970a4), FUN_00198080 (198080), FUN_00198be8 (198be8), FUN_0019fab0 (19fab0), FUN_001a0a74 (1a0a74), FUN_001a15dc (1a15dc), FUN_001a713c (1a713c), FUN_001aad28 (1aad28), FUN_001aaf50 (1aaf50), FUN_001acaa0 (1acaa0), FUN_001ae8a4 (1ae8a4), FUN_001aee68 (1aee68), FUN_001af180 (1af180), FUN_001af794 (1af794), FUN_001b77ec (1b77ec), FUN_001ba8c8 (1ba8c8), FUN_001bec24 (1bec24), FUN_001ccbe0 (1ccbe0), FUN_001d10bc (1d10bc), FUN_001d1344 (1d1344), FUN_001d59cc (1d59cc), FUN_001e1450 (1e1450), FUN_001e1960 (1e1960), FUN_001e3050 (1e3050), FUN_001f4968 (1f4968), FUN_00202974 (202974), FUN_00202df0 (202df0), FUN_002051fc (2051fc), FUN_0020d3fc (20d3fc), FUN_002187ac (2187ac), FUN_0021cf04 (21cf04), FUN_00226134 (226134), FUN_00226600 (226600), FUN_002271f4 (2271f4), FUN_00228630 (228630), FUN_0022870c (22870c), FUN_00228aec (228aec), FUN_002468c0 (2468c0), FUN_00257198 (257198), FUN_00257f9c (257f9c), FUN_00258338 (258338), FUN_00258444 (258444), FUN_00258e8c (258e8c), FUN_00259388 (259388), FUN_0025a4e4 (25a4e4), FUN_0025a68c (25a68c), FUN_0025bc0c (25bc0c), FUN_002605ac (2605ac), FUN_00262194 (262194), FUN_00262e10 (262e10), FUN_00263080 (263080), FUN_00265274 (265274), FUN_002775e8 (2775e8), FUN_002776c4 (2776c4), FUN_0027bafc (27bafc), FUN_0027bb2c (27bb2c), FUN_0027bb5c (27bb5c), FUN_0027bb94 (27bb94), FUN_0027bbc4 (27bbc4), FUN_0027bc28 (27bc28), FUN_0027bc68 (27bc68), FUN_0027bea8 (27bea8), FUN_0027bee0 (27bee0), FUN_0027bf18 (27bf18), FUN_0027bf50 (27bf50), FUN_0027c040 (27c040), FUN_0027c0dc (27c0dc), FUN_0027c178 (27c178), FUN_0027c214 (27c214), FUN_0027c2b0 (27c2b0), FUN_0027cd64 (27cd64), FUN_0027ce30 (27ce30), FUN_002d24c4 (2d24c4), FUN_002e853c (2e853c), FUN_002f1770 (2f1770), FUN_002fb57c (2fb57c), FUN_002fb6ac (2fb6ac), FUN_002fedb0 (2fedb0), FUN_002fff30 (2fff30), FUN_00302544 (302544), FUN_003025c4 (3025c4), FUN_00302750 (302750), FUN_00303310 (303310), FUN_0030392c (30392c), FUN_00306014 (306014), FUN_0031045c (31045c), FUN_00311838 (311838), FUN_003143d4 (3143d4), FUN_0031cc40 (31cc40), FUN_0031f2ac (31f2ac), FUN_0031fea0 (31fea0), FUN_00324c78 (324c78), FUN_00327448 (327448), FUN_00327d54 (327d54), FUN_00328c34 (328c34), FUN_0032b240 (32b240), FUN_0032fea0 (32fea0), FUN_00330ebc (330ebc), FUN_00331c0c (331c0c), FUN_003323ac (3323ac), FUN_00333d9c (333d9c), FUN_00334578 (334578), FUN_003354fc (3354fc), FUN_003359f4 (3359f4), FUN_00335b34 (335b34), FUN_00335ea4 (335ea4), FUN_003362bc (3362bc), FUN_003368f0 (3368f0), FUN_00336c14 (336c14), FUN_00336ca0 (336ca0), FUN_00337c04 (337c04), FUN_00338c7c (338c7c), FUN_0033a1e4 (33a1e4), FUN_0033a4d4 (33a4d4), FUN_0033ad20 (33ad20), FUN_0033b728 (33b728), FUN_0033bcc4 (33bcc4), FUN_0034140c (34140c), FUN_00342990 (342990), FUN_00343060 (343060), FUN_00343338 (343338), FUN_00343f04 (343f04), FUN_00345078 (345078), FUN_00346118 (346118), FUN_0034625c (34625c), FUN_00348300 (348300), FUN_00349194 (349194), FUN_0034a114 (34a114), FUN_0034a54c (34a54c), FUN_0034a8f0 (34a8f0), FUN_0034cc70 (34cc70), FUN_0035061c (35061c), FUN_00350e24 (350e24), FUN_003511cc (3511cc), FUN_00355da8 (355da8), FUN_0036613c (36613c), FUN_00366394 (366394), FUN_00366bc4 (366bc4), FUN_00369198 (369198), FUN_00369694 (369694), FUN_00369bd0 (369bd0), FUN_00369d24 (369d24), FUN_00369ee8 (369ee8), FUN_0036a0f0 (36a0f0), FUN_0036ae94 (36ae94), FUN_0036b05c (36b05c), FUN_0036d44c (36d44c), FUN_0036eae0 (36eae0), FUN_0036ed94 (36ed94), FUN_0036ff78 (36ff78), FUN_0037048c (37048c), FUN_00370728 (370728), FUN_00371e3c (371e3c), FUN_00374480 (374480), FUN_00374ed4 (374ed4), FUN_00375310 (375310), FUN_0037565c (37565c), FUN_0037acc8 (37acc8), FUN_0037b7a4 (37b7a4), FUN_0037bc30 (37bc30), FUN_0037c6b0 (37c6b0), FUN_0037d9e4 (37d9e4), FUN_0037dcdc (37dcdc), FUN_0037f118 (37f118)
 
 #### FUN_000a9c18 — funcs/__Z12FUN_000a9c18ly.cpp, Ghidra a9c18, 0 model attempt(s)
 
@@ -65100,18 +64271,18 @@ long FUN_000a9c18(long param_1,uint64_t param_2) {
 }
 ```
 Notes:
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 long FUN_000a9c18(long param_1,undefined8 param_2)
@@ -65185,18 +64356,18 @@ LAB_000aa6ac:
 }
 ```
 Notes:
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined8 FUN_000aa640(undefined8 param_1,undefined8 *param_2,long param_3,long *param_4)
@@ -65841,9 +65012,615 @@ void FUN_000b1ea4(long *param_1)
 }
 ```
 
-### Not compiling yet — 280 × ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]
+### Not compiling yet — 297 × assigning to 'X' from incompatible type 'X'
 
-All: FUN_000a5b80 (a5b80), FUN_000a7bbc (a7bbc), FUN_000a9848 (a9848), FUN_000aa41c (aa41c), FUN_000aa424 (aa424), FUN_000aa430 (aa430), FUN_000aa438 (aa438), FUN_000afcf4 (afcf4), FUN_000afcfc (afcfc), FUN_000afd08 (afd08), FUN_000afd10 (afd10), FUN_000bea48 (bea48), FUN_000c1110 (c1110), FUN_000c1138 (c1138), FUN_000c1160 (c1160), FUN_000c1188 (c1188), FUN_000c4554 (c4554), FUN_0027deb4 (27deb4), FUN_0027dfb0 (27dfb0), FUN_0027e0d8 (27e0d8), FUN_0027e21c (27e21c), FUN_0028b384 (28b384), FUN_00296530 (296530), FUN_002979b8 (2979b8), FUN_0029a0ac (29a0ac), FUN_0029a0e4 (29a0e4), FUN_0029e65c (29e65c), FUN_002c64f8 (2c64f8), FUN_002c6eac (2c6eac), FUN_0035ab94 (35ab94), FUN_0035f178 (35f178), FUN_00363844 (363844), FUN_00363c08 (363c08), FUN_0007b334 (7b334), FUN_00081f54 (81f54), FUN_00081f88 (81f88), FUN_00081fc0 (81fc0), FUN_00081ff8 (81ff8), FUN_00082030 (82030), FUN_000821a8 (821a8), FUN_000821b0 (821b0), processInput47 (82678), FUN_0008297c (8297c), FUN_00085a6c (85a6c), FUN_000877f4 (877f4), FUN_00087838 (87838), FUN_000878cc (878cc), FUN_00087a18 (87a18), FUN_000899c4 (899c4), FUN_000899cc (899cc), FUN_0008d08c (8d08c), FUN_00095438 (95438), FUN_00095450 (95450), FUN_00095470 (95470), FUN_00095498 (95498), FUN_000957dc (957dc), FUN_000959f0 (959f0), FUN_00095a24 (95a24), FUN_00095a54 (95a54), FUN_00095a7c (95a7c), FUN_00095aa4 (95aa4), FUN_00095acc (95acc), FUN_00095e1c (95e1c), FUN_00095e68 (95e68), FUN_00095f50 (95f50), FUN_0009622c (9622c), FUN_00096254 (96254), FUN_000962dc (962dc), FUN_00096d34 (96d34), FUN_00096d9c (96d9c), FUN_00098504 (98504), FUN_0009a300 (9a300), FUN_0009a33c (9a33c), FUN_0009a364 (9a364), FUN_0009a38c (9a38c), FUN_0009a3b4 (9a3b4), FUN_000c5628 (c5628), FUN_000c5be0 (c5be0), FUN_000c5c18 (c5c18), FUN_000c5d5c (c5d5c), FUN_000c5db0 (c5db0), FUN_000c5e04 (c5e04), FUN_000c6790 (c6790), FUN_000c67c0 (c67c0), FUN_000c680c (c680c), FUN_000c683c (c683c), FUN_000c686c (c686c), FUN_000c689c (c689c), FUN_000c68cc (c68cc), FUN_000c808c (c808c), FUN_000c8094 (c8094), FUN_000c9c20 (c9c20), FUN_000cf5f0 (cf5f0), FUN_000cf640 (cf640), FUN_000d01f0 (d01f0), FUN_000d1158 (d1158), FUN_000e6318 (e6318), FUN_000e6d80 (e6d80), FUN_000e96f0 (e96f0), FUN_000e9814 (e9814), FUN_000f05d4 (f05d4), FUN_000f07bc (f07bc), FUN_000f2834 (f2834), FUN_000f2ccc (f2ccc), FUN_000f2cd4 (f2cd4), FUN_000f3fb4 (f3fb4), FUN_000f3fe4 (f3fe4), FUN_000f41e4 (f41e4), FUN_000f420c (f420c), FUN_000f4234 (f4234), FUN_000f43b0 (f43b0), FUN_000f43d8 (f43d8), FUN_000f4400 (f4400), FUN_000f44d8 (f44d8), FUN_000f45c4 (f45c4), FUN_000f45f0 (f45f0), FUN_000f46d8 (f46d8), FUN_000f47b0 (f47b0), FUN_000f47d8 (f47d8), FUN_000f4800 (f4800), FUN_000f4828 (f4828), FUN_000f4850 (f4850), FUN_000f4878 (f4878), FUN_0010631c (10631c), FUN_0010e0d8 (10e0d8), FUN_0010ebc8 (10ebc8), FUN_0011bcf4 (11bcf4), FUN_0011dd38 (11dd38), FUN_0012553c (12553c), FUN_00125564 (125564), FUN_00127818 (127818), FUN_00127830 (127830), FUN_00127850 (127850), FUN_00127d78 (127d78), FUN_0012817c (12817c), FUN_00128184 (128184), FUN_00128190 (128190), FUN_001281b8 (1281b8), FUN_0012a85c (12a85c), FUN_0012f194 (12f194), FUN_0012f19c (12f19c), FUN_00133c34 (133c34), FUN_00134b98 (134b98), FUN_00137e48 (137e48), FUN_00137e50 (137e50), FUN_0013bef8 (13bef8), FUN_0013bf00 (13bf00), FUN_0013c240 (13c240), FUN_0013c278 (13c278), FUN_0013e414 (13e414), FUN_0013e524 (13e524), FUN_0013e57c (13e57c), FUN_0013e654 (13e654), FUN_0013e808 (13e808), FUN_00142590 (142590), FUN_00142598 (142598), FUN_00153114 (153114), FUN_0015311c (15311c), FUN_00164c68 (164c68), FUN_0016ec60 (16ec60), FUN_0016ec68 (16ec68), FUN_0017711c (17711c), FUN_00177124 (177124), FUN_00179890 (179890), FUN_00179898 (179898), FUN_001aabb0 (1aabb0), FUN_001ae3c8 (1ae3c8), FUN_001ae3d0 (1ae3d0), FUN_001b3938 (1b3938), FUN_001b3978 (1b3978), FUN_001b39b4 (1b39b4), FUN_001b474c (1b474c), FUN_001b4754 (1b4754), FUN_001b47ac (1b47ac), FUN_001b47b4 (1b47b4), FUN_001b47c0 (1b47c0), FUN_001b47c8 (1b47c8), FUN_001b71c4 (1b71c4), FUN_001b71f0 (1b71f0), FUN_001b7224 (1b7224), FUN_001b73ac (1b73ac), FUN_001bd7a0 (1bd7a0), FUN_001be360 (1be360), FUN_001c3e18 (1c3e18), FUN_001c3e30 (1c3e30), FUN_001c6fb4 (1c6fb4), FUN_001c6fbc (1c6fbc), FUN_001cb9bc (1cb9bc), FUN_001dc918 (1dc918), FUN_001dc920 (1dc920), FUN_001dd204 (1dd204), FUN_001dd20c (1dd20c), FUN_001e05f4 (1e05f4), FUN_001e05fc (1e05fc), FUN_001e3538 (1e3538), FUN_001e3540 (1e3540), FUN_001e7474 (1e7474), FUN_001e747c (1e747c), FUN_001f1554 (1f1554), FUN_001f155c (1f155c), FUN_001f1dbc (1f1dbc), FUN_001f1e8c (1f1e8c), FUN_001f1e98 (1f1e98), FUN_00200e08 (200e08), FUN_0021730c (21730c), FUN_00233808 (233808), FUN_0024f080 (24f080), FUN_00250230 (250230), FUN_00254c70 (254c70), FUN_00255e68 (255e68), FUN_00255f28 (255f28), FUN_00256f6c (256f6c), FUN_0026c9e0 (26c9e0), FUN_0026d2bc (26d2bc), FUN_0026d2c0 (26d2c0), FUN_002744d4 (2744d4), FUN_00274a8c (274a8c), FUN_00275778 (275778), FUN_00277498 (277498), FUN_00277af8 (277af8), FUN_0027ba60 (27ba60), FUN_0027be68 (27be68), FUN_0027bf9c (27bf9c), FUN_0027cc90 (27cc90), FUN_0027d308 (27d308), FUN_0027d960 (27d960), FUN_0027d9a4 (27d9a4), FUN_002a6a6c (2a6a6c), FUN_002ac8b8 (2ac8b8), FUN_002b08e4 (2b08e4), FUN_002b0ce0 (2b0ce0), FUN_002b154c (2b154c), FUN_002b2fc4 (2b2fc4), FUN_002b4404 (2b4404), FUN_002b4d80 (2b4d80), FUN_002d9a60 (2d9a60), FUN_002e16d8 (2e16d8), FUN_002fb444 (2fb444), FUN_00310068 (310068), FUN_0031349c (31349c), FUN_0031bc5c (31bc5c), FUN_0031d52c (31d52c), FUN_0032ba2c (32ba2c), FUN_00347bf4 (347bf4), FUN_00348d18 (348d18), FUN_0034ea74 (34ea74), FUN_0034ea94 (34ea94), FUN_0034fbec (34fbec), FUN_00366524 (366524), FUN_003693e8 (3693e8), FUN_00372384 (372384), FUN_00383f9c (383f9c), FUN_00383fa0 (383fa0), FUN_00383fa4 (383fa4), FUN_00383fa8 (383fa8), ___assert_rtn (385f9c), _atol (386104), _deflate (386164), _deflateEnd (386170), _deflateInit_ (386188), _deflateParams (386194), _deflateReset (3861a0), _div (3861b8), _freopen (386290), _ftell (3862c0), _inflate (386374), _inflateEnd (386380), _inflateInit2_ (38638c), _inflateInit_ (386398), _inflateReset (3863a4), _inflateSync (3863b0), _longjmp (38641c), _memchr (386458), _mktemp (3864ac), _strchr (386764), _strncat (386794), _strrchr (3867b8), _strstr (3867c4), _strtod (3867d0), _strtol (3867dc)
+All: FUN_000a54b8 (a54b8), FUN_000b1cfc (b1cfc), FUN_000b2ee0 (b2ee0), FUN_000bb55c (bb55c), FUN_000c02d4 (c02d4), FUN_000c0cdc (c0cdc), FUN_000c46c0 (c46c0), FUN_00280a64 (280a64), FUN_00280d9c (280d9c), FUN_00280fd0 (280fd0), FUN_002818a8 (2818a8), FUN_002818c0 (2818c0), FUN_00282518 (282518), FUN_002826f0 (2826f0), FUN_00282848 (282848), FUN_00282b3c (282b3c), FUN_00285dc8 (285dc8), FUN_00285f5c (285f5c), FUN_0028e668 (28e668), FUN_0028e7b0 (28e7b0), FUN_0028e7c8 (28e7c8), FUN_00292f28 (292f28), FUN_0029a434 (29a434), FUN_0029d038 (29d038), FUN_0029dfcc (29dfcc), FUN_0029f938 (29f938), FUN_0029f958 (29f958), FUN_0029f970 (29f970), FUN_002a1e84 (2a1e84), FUN_002bedb0 (2bedb0), FUN_002c1930 (2c1930), FUN_002c1de8 (2c1de8), FUN_002cba6c (2cba6c), FUN_0035a7ec (35a7ec), FUN_0035a91c (35a91c), FUN_0035be84 (35be84), FUN_0035e788 (35e788), FUN_0035f194 (35f194), FUN_0035f518 (35f518), FUN_00360bf0 (360bf0), FUN_00361010 (361010), FUN_0036134c (36134c), FUN_00362e9c (362e9c), FUN_00362f84 (362f84), FUN_003630c4 (3630c4), FUN_00365bec (365bec), shellWindowGlue (6013c), FUN_000649d4 (649d4), FUN_00064c54 (64c54), FUN_0006a448 (6a448), FUN_0006b57c (6b57c), FUN_0006b850 (6b850), FUN_0006d900 (6d900), FUN_0006e75c (6e75c), FUN_0007850c (7850c), FUN_00078a94 (78a94), FUN_00079780 (79780), FUN_0007a7fc (7a7fc), FUN_0007bac4 (7bac4), FUN_0007d490 (7d490), FUN_0007fff8 (7fff8), FUN_00081280 (81280), FUN_00081a70 (81a70), FUN_00086ca4 (86ca4), FUN_00087e6c (87e6c), FUN_00088084 (88084), FUN_0008bb04 (8bb04), FUN_0008bea4 (8bea4), FUN_0008d278 (8d278), FUN_0008dda4 (8dda4), FUN_0009076c (9076c), FUN_0009383c (9383c), FUN_00093878 (93878), FUN_000938b8 (938b8), FUN_000939fc (939fc), FUN_00093a68 (93a68), FUN_00093aa0 (93aa0), FUN_00093ad8 (93ad8), FUN_00093b10 (93b10), FUN_00093bb8 (93bb8), FUN_00097abc (97abc), FUN_000989a4 (989a4), FUN_0009af44 (9af44), FUN_0009b2f0 (9b2f0), FUN_0009c1cc (9c1cc), FUN_0009d03c (9d03c), FUN_0009eb00 (9eb00), FUN_000a0718 (a0718), FUN_000c5f30 (c5f30), FUN_000c7a5c (c7a5c), FUN_000cbf64 (cbf64), FUN_000cc488 (cc488), FUN_000cda4c (cda4c), FUN_000cf2dc (cf2dc), FUN_000d2e00 (d2e00), FUN_000d7500 (d7500), FUN_000d753c (d753c), FUN_000d7a68 (d7a68), FUN_000d84c8 (d84c8), FUN_000d9520 (d9520), FUN_000d96dc (d96dc), FUN_000d9804 (d9804), FUN_000da1fc (da1fc), FUN_000dbbc4 (dbbc4), FUN_000dfde4 (dfde4), FUN_000e108c (e108c), FUN_000e122c (e122c), FUN_000e12d0 (e12d0), FUN_000e1520 (e1520), FUN_000e5ae0 (e5ae0), FUN_000e5ca8 (e5ca8), FUN_000f0888 (f0888), FUN_000f1940 (f1940), FUN_001066f0 (1066f0), FUN_0010e7f8 (10e7f8), FUN_001125e8 (1125e8), FUN_00112a08 (112a08), FUN_00117748 (117748), FUN_00117bd8 (117bd8), FUN_0011aad0 (11aad0), FUN_0011acf4 (11acf4), FUN_0011dd8c (11dd8c), FUN_0011e6d0 (11e6d0), FUN_0012315c (12315c), FUN_00126948 (126948), FUN_001286fc (1286fc), FUN_0012db8c (12db8c), FUN_0012e030 (12e030), FUN_0013a4ac (13a4ac), FUN_0013aec8 (13aec8), FUN_0013c0d0 (13c0d0), FUN_0013d330 (13d330), FUN_00155f58 (155f58), FUN_001580bc (1580bc), FUN_0015828c (15828c), FUN_0015898c (15898c), FUN_00163c80 (163c80), lowpassFilter2430 (166ba4), FUN_00166dfc (166dfc), FUN_0016828c (16828c), makeBackingLayer (16c910), FUN_0016f1e0 (16f1e0), FUN_0017648c (17648c), FUN_00176554 (176554), FUN_0017b200 (17b200), FUN_0017e9d8 (17e9d8), FUN_0017f018 (17f018), FUN_00180d84 (180d84), FUN_00180f34 (180f34), FUN_00180ffc (180ffc), FUN_00183abc (183abc), FUN_001857c8 (1857c8), FUN_00186600 (186600), FUN_001873b0 (1873b0), FUN_0018a2e8 (18a2e8), FUN_0018a3b0 (18a3b0), FUN_0018a498 (18a498), FUN_0018a560 (18a560), FUN_0018ce2c (18ce2c), FUN_0018e0ec (18e0ec), FUN_00191bc4 (191bc4), FUN_00192b0c (192b0c), FUN_00192cbc (192cbc), FUN_00194f40 (194f40), FUN_00196a38 (196a38), FUN_001977d4 (1977d4), FUN_0019857c (19857c), FUN_0019a4f8 (19a4f8), FUN_0019b4f8 (19b4f8), FUN_0019b5c0 (19b5c0), FUN_0019b6a8 (19b6a8), FUN_0019b770 (19b770), FUN_0019d958 (19d958), FUN_0019f444 (19f444), FUN_001a01d4 (1a01d4), FUN_001a0f70 (1a0f70), FUN_001a6eb0 (1a6eb0), FUN_001aa654 (1aa654), FUN_001afa08 (1afa08), FUN_001b2724 (1b2724), FUN_001b3f80 (1b3f80), FUN_001b414c (1b414c), FUN_001b4580 (1b4580), FUN_001b81e0 (1b81e0), FUN_001b8b40 (1b8b40), FUN_001bac14 (1bac14), FUN_001c6d78 (1c6d78), LowpassFilter (1c959c), FUN_001c9978 (1c9978), FUN_001ca15c (1ca15c), FUN_001ca5b8 (1ca5b8), FUN_001d5cc4 (1d5cc4), FUN_001e0d4c (1e0d4c), FUN_001f08dc (1f08dc), FUN_001f0bf0 (1f0bf0), FUN_001f0e84 (1f0e84), FUN_001f54e4 (1f54e4), FUN_001f8278 (1f8278), FUN_00203ebc (203ebc), FUN_00204ce0 (204ce0), FUN_00206064 (206064), FUN_0020fbe8 (20fbe8), FUN_0021d474 (21d474), FUN_0021e314 (21e314), FUN_0021f4e4 (21f4e4), FUN_00225788 (225788), FUN_0022587c (22587c), FUN_00226010 (226010), FUN_002290d4 (2290d4), FUN_00229864 (229864), FUN_0022996c (22996c), FUN_00250e28 (250e28), FUN_002544d0 (2544d0), FUN_00254b30 (254b30), FUN_00255568 (255568), FUN_0026036c (26036c), FUN_00269a34 (269a34), FUN_00274308 (274308), FUN_0027d01c (27d01c), FUN_002cd704 (2cd704), FUN_002cdc0c (2cdc0c), FUN_002dc424 (2dc424), FUN_002e9950 (2e9950), FUN_002eaab4 (2eaab4), FUN_002eac9c (2eac9c), FUN_002eccdc (2eccdc), FUN_002f2b84 (2f2b84), FUN_002f3540 (2f3540), FUN_002f3e9c (2f3e9c), FUN_002f48bc (2f48bc), FUN_002f5ab4 (2f5ab4), FUN_002f5d2c (2f5d2c), FUN_002fa204 (2fa204), FUN_002fb0f0 (2fb0f0), FUN_002fb1c0 (2fb1c0), FUN_002fb374 (2fb374), FUN_002fd224 (2fd224), FUN_00309314 (309314), FUN_0030ab8c (30ab8c), FUN_0030e494 (30e494), FUN_0030e644 (30e644), FUN_0031202c (31202c), FUN_0031571c (31571c), FUN_00324ec8 (324ec8), FUN_003259f4 (3259f4), FUN_00325ae4 (325ae4), FUN_00325afc (325afc), FUN_00326584 (326584), FUN_003266d0 (3266d0), FUN_00328034 (328034), FUN_0032ff58 (32ff58), FUN_00330314 (330314), FUN_003304bc (3304bc), FUN_00330b88 (330b88), FUN_00330e04 (330e04), FUN_00331ccc (331ccc), FUN_00333a68 (333a68), FUN_00334a4c (334a4c), FUN_00334a80 (334a80), FUN_003365dc (3365dc), FUN_0033731c (33731c), FUN_00338124 (338124), FUN_00339d20 (339d20), FUN_0033aa18 (33aa18), FUN_0033aba8 (33aba8), FUN_0033b9a8 (33b9a8), FUN_0033c914 (33c914), FUN_0033e548 (33e548), FUN_0033e7e0 (33e7e0), FUN_00341384 (341384), FUN_00346e24 (346e24), FUN_0034747c (34747c), FUN_00347b34 (347b34), FUN_00348718 (348718), FUN_003496b4 (3496b4), FUN_0034bc30 (34bc30), FUN_0034bd7c (34bd7c), FUN_0034cd60 (34cd60), FUN_0034e8e0 (34e8e0), FUN_0034ff54 (34ff54), FUN_0035081c (35081c), FUN_003519e4 (3519e4), FUN_003528d8 (3528d8), FUN_0035378c (35378c), FUN_0035386c (35386c), FUN_00359b9c (359b9c), FUN_00359e7c (359e7c), FUN_00368218 (368218), FUN_0036a5ec (36a5ec), FUN_0036c4e0 (36c4e0), FUN_00371228 (371228), FUN_00371448 (371448), FUN_0037165c (37165c), FUN_0037189c (37189c), FUN_0037285c (37285c), FUN_00375278 (375278), FUN_003774fc (3774fc)
+
+#### FUN_000a54b8 — funcs/__Z12FUN_000a54b8m.cpp, Ghidra a54b8, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000a54b8m.cpp:11:14: error: assigning to 'void *' from incompatible type 'void'
+   11 |     pvVar1 = FUN_000041f4(0x4323e0);
+      |              ^~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000a54b8m.cpp:18:3: error: void function 'FUN_000a54b8' should not return a value [-Wreturn-mismatch]
+   18 |   return pvVar1;
+      |   ^      ~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000a54b8(ulong param_1) {
+    uint64_t DAT_00453508 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t DAT_00453500 = 0; // auto-declared (undeclared in the rewrite)
+
+  void *pvVar1;
+
+  if ((DAT_00453508 & 1) == 0) {
+    pvVar1 = FUN_000041f4(0x4323e0);
+    DAT_00453508 = 1;
+  }
+
+  pvVar1 = FUN_0021608c(DAT_00453500, param_1 * 0x28);
+
+  FUN_000a5558((long)pvVar1, param_1);
+  return pvVar1;
+}
+```
+Ghidra's pseudocode:
+```c
+void * FUN_000a54b8(ulong param_1)
+
+{
+  void *pvVar1;
+  
+  if ((DAT_00453508 & 1) == 0) {
+    DAT_00453500 = FUN_000041f4(0x4323e0);
+    DAT_00453508 = 1;
+  }
+  pvVar1 = FUN_0021608c(DAT_00453500,param_1 * 0x28);
+  FUN_000a5558((long)pvVar1,param_1);
+  return pvVar1;
+}
+```
+
+#### FUN_000b1cfc — funcs/__Z12FUN_000b1cfcl.cpp, Ghidra b1cfc, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b1cfcl.cpp:7:13: error: assigning to 'long' from incompatible type 'void'
+    7 |     lVar1 = FUN_000b1b0c();
+      |             ^~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000b1cfc(long param_1) {
+    long lVar1;
+
+    FUN_000b10d8(param_1);
+    lVar1 = FUN_000b1b0c();
+
+    if (lVar1 != 0) {
+        FUN_0012a740(lVar1, (uint)*(byte *)(param_1 + 0x394), (undefined8 *)(param_1 + 0x398));
+        if ((*(byte *)(param_1 + 0x379) & 1) == 0) {
+            FUN_0012b808(lVar1);
+        }
+        else {
+            FUN_0012b7cc(lVar1, (undefined8 *)(param_1 + 0x37c), (undefined8 *)(param_1 + 0x388));
+        }
+    }
+
+    return;
+}
+```
+Notes:
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000b1cfc(long param_1)
+
+{
+  long lVar1;
+  
+  FUN_000b10d8(param_1);
+  lVar1 = FUN_000b1b0c();
+  if (lVar1 != 0) {
+    FUN_0012a740(lVar1,(uint)*(byte *)(param_1 + 0x394),(undefined8 *)(param_1 + 0x398));
+    if ((*(byte *)(param_1 + 0x379) & 1) == 0) {
+      FUN_0012b808(lVar1);
+    }
+    else {
+      FUN_0012b7cc(lVar1,(undefined8 *)(param_1 + 0x37c),(undefined8 *)(param_1 + 0x388));
+    }
+  }
+  return;
+}
+```
+
+#### FUN_000b2ee0 — funcs/__Z12FUN_000b2ee0Pl.cpp, Ghidra b2ee0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b2ee0Pl.cpp:8:27: error: assigning to 'long' from incompatible type 'void'
+    8 |   if ((bVar1) && (lVar2 = FUN_000bb434((long)param_1), lVar2 != 0)) {
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000b2ee0(long *param_1) {
+  bool bVar1;
+  long lVar2;
+
+  bVar1 = FUN_00048b70((long)param_1);
+  if ((bVar1) && (lVar2 = FUN_000bb434((long)param_1), lVar2 != 0)) {
+    (**(code **)(*param_1 + 0x1a0))(param_1);
+  }
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_000b2ee0(long *param_1)
+
+{
+  bool bVar1;
+  long lVar2;
+  
+  bVar1 = FUN_00048b70((long)param_1);
+  if ((bVar1) && (lVar2 = FUN_000bb434((long)param_1), lVar2 != 0)) {
+    (**(code **)(*param_1 + 0x1a0))(param_1);
+  }
+  return;
+}
+```
+
+#### FUN_000bb55c — funcs/__Z12FUN_000bb55cPll.cpp, Ghidra bb55c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:18:11: error: assigning to 'long' from incompatible type 'void'
+   18 |   lVar2 = FUN_00124b18();
+      |           ^~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:20:13: error: assigning to 'long' from incompatible type 'void'
+   20 |     lVar2 = FUN_00124b18();
+      |             ^~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:21:13: error: assigning to 'long' from incompatible type 'void'
+   21 |     lVar2 = FUN_00124c28(lVar2);
+      |             ^~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:25:17: error: assigning to 'long' from incompatible type 'void'
+   25 |         lVar2 = FUN_00124b18();
+      |                 ^~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:26:17: error: assigning to 'long' from incompatible type 'void'
+   26 |         lVar2 = FUN_00124c28(lVar2);
+      |                 ^~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:27:17: error: assigning to 'long' from incompatible type 'void'
+   27 |         lVar2 = FUN_001be388(lVar2);
+      |                 ^~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:30:17: error: no matching function for call to 'FUN_0021f318'
+   30 |         bVar1 = FUN_0021f318(auStack_40, alStack_50);
+      |                 ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42569:6: note: candidate function not viable: no known conversion from 'undefined8[2]' (aka 'unsigned long long[2]') to 'const ushort *' (aka 'const unsigned short *') for 1st argument
+ 42569 | bool FUN_0021f318(const ushort *, const ushort *);
+       |      ^            ~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:31:9: error: no matching function for call to 'FUN_000031f4'
+   31 |         FUN_000031f4((long)alStack_50);
+      |         ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1239:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
+ 1239 | void FUN_000031f4(float[4], float, float[4]);
+      |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:41:11: error: no matching function for call to 'FUN_0021a090'
+   41 |           FUN_0021a090(param_1, alStack_50, auStack_40, auStack_70, auStack_80, auStack_90, auStack_a0);
+      |           ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42277:6: note: candidate function not viable: no known conversion from 'long *' to 'float *' for 1st argument
+ 42277 | void FUN_0021a090(float *, float *, int, LowPassFilter, uint64_t, uint64_t, uint64_t);
+       |      ^            ~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:42:11: error: no matching function for call to 'FUN_000031f4'
+   42 |           FUN_000031f4((long)auStack_a0);
+      |           ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1239:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
+ 1239 | void FUN_000031f4(float[4], float, float[4]);
+      |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpa
+...
+~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bb55cPll.cpp:51:3: error: no matching function for call to 'FUN_0021a214'
+   51 |   FUN_0021a214(param_1);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42281:6: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
+ 42281 | void FUN_0021a214(uint64_t *);
+       |      ^            ~~~~~~~~~~
+15 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000bb55c(long *param_1, long param_2) {
+  bool bVar1;
+  long lVar2;
+  undefined8 auStack_a0[2];
+  undefined8 auStack_90[2];
+  undefined8 auStack_80[2];
+  undefined8 auStack_70[2];
+  undefined4 local_60;
+  long alStack_50[2];
+  undefined8 auStack_40[2];
+  long local_30;
+  long *plStack_28;
+
+  local_30 = param_2;
+  plStack_28 = param_1;
+  lVar2 = FUN_00124b18();
+  if (lVar2 != 0) {
+    lVar2 = FUN_00124b18();
+    lVar2 = FUN_00124c28(lVar2);
+    if (lVar2 != 0) {
+      bVar1 = FUN_001aa78c((undefined8 *)(param_2 + 0x1a0));
+      if (bVar1) {
+        lVar2 = FUN_00124b18();
+        lVar2 = FUN_00124c28(lVar2);
+        lVar2 = FUN_001be388(lVar2);
+        FUN_0015828c(auStack_40, lVar2, param_2 + 0x1a0);
+        FUN_0021a1f4(alStack_50, "Global");
+        bVar1 = FUN_0021f318(auStack_40, alStack_50);
+        FUN_000031f4((long)alStack_50);
+        if (bVar1) {
+          FUN_0021a1f4(param_1, "");
+        }
+        else {
+          FUN_0021a1f4(alStack_50, "- when \'%s\' is focused");
+          FUN_0021a214(auStack_70);
+          FUN_0021a214(auStack_80);
+          FUN_0021a214(auStack_90);
+          FUN_0021a214(auStack_a0);
+          FUN_0021a090(param_1, alStack_50, auStack_40, auStack_70, auStack_80, auStack_90, auStack_a0);
+          FUN_000031f4((long)auStack_a0);
+          FUN_000031f4((long)auStack_90);
+          FUN_000031f4((long)auStack_80);
+          FUN_000031f4((long)auStack_70);
+          FUN_000031f4((long)alStack_50);
+        }
+      }
+    }
+  }
+  FUN_0021a214(param_1);
+  return;
+}
+```
+Notes:
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000bb55c(long *param_1,long param_2)
+
+{
+  bool bVar1;
+  long lVar2;
+  undefined8 auStack_a0 [2];
+  undefined8 auStack_90 [2];
+  undefined8 auStack_80 [2];
+  undefined8 auStack_70 [2];
+  undefined4 local_60;
+  long alStack_50 [2];
+  undefined8 auStack_40 [2];
+  long local_30;
+  long *plStack_28;
+  
+  local_30 = param_2;
+  plStack_28 = param_1;
+  lVar2 = FUN_00124b18();
+  if (lVar2 != 0) {
+    lVar2 = FUN_00124b18();
+    lVar2 = FUN_00124c28(lVar2);
+    if (lVar2 != 0) {
+      bVar1 = FUN_001aa78c((undefined8 *)(param_2 + 0x1a0));
+      if (bVar1) {
+        lVar2 = FUN_00124b18();
+        lVar2 = FUN_00124c28(lVar2);
+        lVar2 = FUN_001be388(lVar2);
+        FUN_0015828c(auStack_40,lVar2,param_2 + 0x1a0);
+        FUN_0021a1f4(alStack_50,"Global");
+        bVar1 = FUN_0021f318(auStack_40,alStack_50);
+        FUN_000031f4((long)alStack_50);
+        if (bVar1) {
+          FUN_0021a1f4(param_1,"");
+        }
+        else {
+          FUN_0021a1f4(alStack_50,"- when \'%s\' is focused");
+          FUN_0021a214(auStack_70);
+          FUN_0021a214(auStack_80);
+          FUN_0021a214(auStack_90);
+          FUN_0021a214(auStack_a0);
+          FUN_0021a090(param_1,alStack_50,auStack_40,auStack_70,auStack_80,auStack_90,auStack_a0);
+          FUN_000031f4((long)auStack_a0);
+          FUN_000031f4((long)auStack_90);
+          FUN_000031f4((long)auStack_80);
+          FUN_000031f4((long)auStack_70);
+          FUN_000031f4((long)alStack_50);
+        }
+        local_60 = 1;
+        FUN_000031f4((long)auStack_40);
+        return;
+      }
+    }
+  }
+  FUN_0021a214(param_1);
+  return;
+}
+```
+
+#### FUN_000c02d4 — funcs/__Z12FUN_000c02d4PhdydPl.cpp, Ghidra c02d4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c02d4PhdydPl.cpp:12:14: error: assigning to 'long' from incompatible type 'void'
+   12 |   local_30 = FUN_000c0374();
+      |              ^~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c02d4PhdydPl.cpp:13:3: error: no matching function for call to 'FUN_000b23bc'
+   13 |   FUN_000b23bc(alStack_40,local_30);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:15121:6: note: candidate function not viable: no known conversion from 'long[2]' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
+ 15121 | void FUN_000b23bc(uint64_t *, long);
+       |      ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c02d4PhdydPl.cpp:15:12: error: no matching function for call to 'FUN_000031f4'
+   15 |   auVar2 = FUN_000031f4((long)alStack_40);
+      |            ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:1239:6: note: candidate function not viable: requires 3 arguments, but 1 was provided
+ 1239 | void FUN_000031f4(float[4], float, float[4]);
+      |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c02d4PhdydPl.cpp:15:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+   15 |   auVar2 = FUN_000031f4((long)alStack_40);
+      |   ~~~~~~ ^
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint8_t FUN_000c02d4(uint8_t param_1 [16],double param_2,uint64_t param_3,double param_4,long *param_5) {
+  undefined1 uVar1;
+  undefined1 auVar2 [16];
+  long alStack_40 [2];
+  long local_30;
+  long *local_28;
+
+  local_28 = param_5;
+  FUN_000c5828();
+  local_30 = FUN_000c0374();
+  FUN_000b23bc(alStack_40,local_30);
+  FUN_0021a8a0(param_5 + 0x3d,alStack_40);
+  auVar2 = FUN_000031f4((long)alStack_40);
+  uVar1 = FUN_001bcc84(auVar2,param_2,param_3,param_4,param_5);
+  return uVar1;
+}
+```
+Notes:
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:01 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:01 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:01 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:01 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:01 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+undefined1
+FUN_000c02d4(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5)
+
+{
+  undefined1 uVar1;
+  undefined1 auVar2 [16];
+  long alStack_40 [2];
+  long local_30;
+  long *local_28;
+  
+  local_28 = param_5;
+  FUN_000c5828();
+  local_30 = FUN_000c0374();
+  FUN_000b23bc(alStack_40,local_30);
+  FUN_0021a8a0(param_5 + 0x3d,alStack_40);
+  auVar2 = FUN_000031f4((long)alStack_40);
+  uVar1 = FUN_001bcc84(auVar2,param_2,param_3,param_4,param_5);
+  return uVar1;
+}
+```
+
+#### FUN_000c0cdc — funcs/__Z12FUN_000c0cdcPllPy.cpp, Ghidra c0cdc, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c0cdcPllPy.cpp:6:11: error: assigning to 'long' from incompatible type 'void'
+    6 |   lVar1 = FUN_000279f4(param_1, param_2);
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000c0cdc(long *param_1,long param_2,uint64_t *param_3) {
+  long lVar1;
+
+  lVar1 = FUN_000279f4(param_1, param_2);
+  *(uint8_t *)(lVar1 + 0x10) = 1;
+  *(uint64_t *)(lVar1 + 0x14) = *param_3;
+  *(uint64_t *)(lVar1 + 0x1c) = *param_3;
+  return;
+}
+```
+Notes:
+- 10-21 11:58 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'void *' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000c0cdc(long *param_1,long param_2,undefined8 *param_3)
+
+{
+  long lVar1;
+  
+  lVar1 = FUN_000279f4(param_1,param_2);
+  *(undefined1 *)(lVar1 + 0x10) = 1;
+  *(undefined8 *)(lVar1 + 0x14) = *param_3;
+  *(undefined8 *)(lVar1 + 0x1c) = *param_3;
+  return;
+}
+```
+
+#### FUN_000c46c0 — funcs/__Z12FUN_000c46c0Pljjj.cpp, Ghidra c46c0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c46c0Pljjj.cpp:15:18: error: assigning to 'long' from incompatible type 'void'
+   15 |     for (lVar2 = FUN_000ba0a4((long)param_1); lVar2 != 0; lVar2 = FUN_000ba0a4(lVar2)) {
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c46c0Pljjj.cpp:15:67: error: assigning to 'long' from incompatible type 'void'
+   15 |     for (lVar2 = FUN_000ba0a4((long)param_1); lVar2 != 0; lVar2 = FUN_000ba0a4(lVar2)) {
+      |                                                                   ^~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c46c0Pljjj.cpp:18:26: error: use of undeclared identifier '___dynamic_cast'
+   18 |         plVar3 = (long *)___dynamic_cast(lVar2,&PTR_vtable_0043cca8,&PTR_vtable_00436508,0);
+      |                          ^~~~~~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint8_t FUN_000c46c0(long *param_1,uint32_t param_2,uint32_t param_3,uint32_t param_4) {
+    uint64_t PTR_vtable_0043cca8 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t PTR_vtable_00436508 = 0; // auto-declared (undeclared in the rewrite)
+
+  int iVar1;
+  long lVar2;
+  long *plVar3;
+  undefined1 local_31;
+
+  iVar1 = (**(code **)(*param_1 + 0x240))();
+  if (iVar1 == 0) {
+    for (lVar2 = FUN_000ba0a4((long)param_1); lVar2 != 0; lVar2 = FUN_000ba0a4(lVar2)) {
+      plVar3 = (long *)0x0;
+      if (lVar2 != 0) {
+        plVar3 = (long *)___dynamic_cast(lVar2,&PTR_vtable_0043cca8,&PTR_vtable_00436508,0);
+      }
+      if ((plVar3 != (long *)0x0) &&
+         (iVar1 = (**(code **)(*plVar3 + 0x240))(plVar3,param_2,param_3,param_4), iVar1 != 0)) {
+        return 1;
+      }
+    }
+    local_31 = 0;
+  }
+  else {
+    local_31 = 1;
+  }
+
+  return local_31;
+  return local_31;
+}
+```
+Ghidra's pseudocode:
+```c
+undefined1 FUN_000c46c0(long *param_1,undefined4 param_2,undefined4 param_3,undefined4 param_4)
+
+{
+  int iVar1;
+  long lVar2;
+  long *plVar3;
+  undefined1 local_31;
+  
+  iVar1 = (**(code **)(*param_1 + 0x240))();
+  if (iVar1 == 0) {
+    for (lVar2 = FUN_000ba0a4((long)param_1); lVar2 != 0; lVar2 = FUN_000ba0a4(lVar2)) {
+      plVar3 = (long *)0x0;
+      if (lVar2 != 0) {
+        plVar3 = (long *)___dynamic_cast(lVar2,&PTR_vtable_0043cca8,&PTR_vtable_00436508,0);
+      }
+      if ((plVar3 != (long *)0x0) &&
+         (iVar1 = (**(code **)(*plVar3 + 0x240))(plVar3,param_2,param_3,param_4), iVar1 != 0)) {
+        return 1;
+      }
+    }
+    local_31 = 0;
+  }
+  else {
+    local_31 = 1;
+  }
+  return local_31;
+}
+```
+
+#### FUN_00280a64 — funcs/__Z12FUN_00280a64v.cpp, Ghidra 280a64, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00280a64v.cpp:6:11: error: assigning to 'long' from incompatible type 'void'
+    6 |   lVar1 = FUN_00280a84();
+      |           ^~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+bool FUN_00280a64(void) {
+  long lVar1;
+
+  lVar1 = FUN_00280a84();
+  return *(char *)(lVar1 + 0x17) < '\0';
+}
+```
+Notes:
+- 10-21 12:01 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:01 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:01 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:01 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:01 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:01 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:01 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:01 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:01 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:01 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:01 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:01 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+bool FUN_00280a64(void)
+
+{
+  long lVar1;
+  
+  lVar1 = FUN_00280a84();
+  return *(char *)(lVar1 + 0x17) < '\0';
+}
+```
+
+### Not compiling yet — 272 × ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]
+
+All: FUN_000a5b80 (a5b80), FUN_000a7bbc (a7bbc), FUN_000a9848 (a9848), FUN_000bea48 (bea48), FUN_000c1110 (c1110), FUN_000c1138 (c1138), FUN_000c1160 (c1160), FUN_000c1188 (c1188), FUN_000c4554 (c4554), FUN_0027deb4 (27deb4), FUN_0027dfb0 (27dfb0), FUN_0027e0d8 (27e0d8), FUN_0027e21c (27e21c), FUN_0028b384 (28b384), FUN_00296530 (296530), FUN_002979b8 (2979b8), FUN_0029a0ac (29a0ac), FUN_0029a0e4 (29a0e4), FUN_0029e65c (29e65c), FUN_002c64f8 (2c64f8), FUN_002c6eac (2c6eac), FUN_0035ab94 (35ab94), FUN_0035f178 (35f178), FUN_00363844 (363844), FUN_00363c08 (363c08), FUN_0007b334 (7b334), FUN_00081f54 (81f54), FUN_00081f88 (81f88), FUN_00081fc0 (81fc0), FUN_00081ff8 (81ff8), FUN_00082030 (82030), FUN_000821a8 (821a8), FUN_000821b0 (821b0), processInput47 (82678), FUN_0008297c (8297c), FUN_00085a6c (85a6c), FUN_000877f4 (877f4), FUN_00087838 (87838), FUN_000878cc (878cc), FUN_00087a18 (87a18), FUN_000899c4 (899c4), FUN_000899cc (899cc), FUN_0008d08c (8d08c), FUN_00095438 (95438), FUN_00095450 (95450), FUN_00095470 (95470), FUN_00095498 (95498), FUN_000957dc (957dc), FUN_000959f0 (959f0), FUN_00095a24 (95a24), FUN_00095a54 (95a54), FUN_00095a7c (95a7c), FUN_00095aa4 (95aa4), FUN_00095acc (95acc), FUN_00095e1c (95e1c), FUN_00095e68 (95e68), FUN_00095f50 (95f50), FUN_0009622c (9622c), FUN_00096254 (96254), FUN_000962dc (962dc), FUN_00096d34 (96d34), FUN_00096d9c (96d9c), FUN_00098504 (98504), FUN_0009a300 (9a300), FUN_0009a33c (9a33c), FUN_0009a364 (9a364), FUN_0009a38c (9a38c), FUN_0009a3b4 (9a3b4), FUN_000c5628 (c5628), FUN_000c5be0 (c5be0), FUN_000c5c18 (c5c18), FUN_000c5d5c (c5d5c), FUN_000c5db0 (c5db0), FUN_000c5e04 (c5e04), FUN_000c6790 (c6790), FUN_000c67c0 (c67c0), FUN_000c680c (c680c), FUN_000c683c (c683c), FUN_000c686c (c686c), FUN_000c689c (c689c), FUN_000c68cc (c68cc), FUN_000c808c (c808c), FUN_000c8094 (c8094), FUN_000c9c20 (c9c20), FUN_000cf5f0 (cf5f0), FUN_000cf640 (cf640), FUN_000d01f0 (d01f0), FUN_000d1158 (d1158), FUN_000e6318 (e6318), FUN_000e6d80 (e6d80), FUN_000e96f0 (e96f0), FUN_000e9814 (e9814), FUN_000f05d4 (f05d4), FUN_000f07bc (f07bc), FUN_000f2834 (f2834), FUN_000f2ccc (f2ccc), FUN_000f2cd4 (f2cd4), FUN_000f3fb4 (f3fb4), FUN_000f3fe4 (f3fe4), FUN_000f41e4 (f41e4), FUN_000f420c (f420c), FUN_000f4234 (f4234), FUN_000f43b0 (f43b0), FUN_000f43d8 (f43d8), FUN_000f4400 (f4400), FUN_000f44d8 (f44d8), FUN_000f45c4 (f45c4), FUN_000f45f0 (f45f0), FUN_000f46d8 (f46d8), FUN_000f47b0 (f47b0), FUN_000f47d8 (f47d8), FUN_000f4800 (f4800), FUN_000f4828 (f4828), FUN_000f4850 (f4850), FUN_000f4878 (f4878), FUN_0010631c (10631c), FUN_0010e0d8 (10e0d8), FUN_0010ebc8 (10ebc8), FUN_0011bcf4 (11bcf4), FUN_0011dd38 (11dd38), FUN_0012553c (12553c), FUN_00125564 (125564), FUN_00127818 (127818), FUN_00127830 (127830), FUN_00127850 (127850), FUN_00127d78 (127d78), FUN_0012817c (12817c), FUN_00128184 (128184), FUN_00128190 (128190), FUN_001281b8 (1281b8), FUN_0012a85c (12a85c), FUN_0012f194 (12f194), FUN_0012f19c (12f19c), FUN_00133c34 (133c34), FUN_00134b98 (134b98), FUN_00137e48 (137e48), FUN_00137e50 (137e50), FUN_0013bef8 (13bef8), FUN_0013bf00 (13bf00), FUN_0013c240 (13c240), FUN_0013c278 (13c278), FUN_0013e414 (13e414), FUN_0013e524 (13e524), FUN_0013e57c (13e57c), FUN_0013e654 (13e654), FUN_0013e808 (13e808), FUN_00142590 (142590), FUN_00142598 (142598), FUN_00153114 (153114), FUN_0015311c (15311c), FUN_00164c68 (164c68), FUN_0016ec60 (16ec60), FUN_0016ec68 (16ec68), FUN_0017711c (17711c), FUN_00177124 (177124), FUN_00179890 (179890), FUN_00179898 (179898), FUN_001aabb0 (1aabb0), FUN_001ae3c8 (1ae3c8), FUN_001ae3d0 (1ae3d0), FUN_001b3938 (1b3938), FUN_001b3978 (1b3978), FUN_001b39b4 (1b39b4), FUN_001b474c (1b474c), FUN_001b4754 (1b4754), FUN_001b47ac (1b47ac), FUN_001b47b4 (1b47b4), FUN_001b47c0 (1b47c0), FUN_001b47c8 (1b47c8), FUN_001b71c4 (1b71c4), FUN_001b71f0 (1b71f0), FUN_001b7224 (1b7224), FUN_001b73ac (1b73ac), FUN_001bd7a0 (1bd7a0), FUN_001be360 (1be360), FUN_001c3e18 (1c3e18), FUN_001c3e30 (1c3e30), FUN_001c6fb4 (1c6fb4), FUN_001c6fbc (1c6fbc), FUN_001cb9bc (1cb9bc), FUN_001dc918 (1dc918), FUN_001dc920 (1dc920), FUN_001dd204 (1dd204), FUN_001dd20c (1dd20c), FUN_001e05f4 (1e05f4), FUN_001e05fc (1e05fc), FUN_001e3538 (1e3538), FUN_001e3540 (1e3540), FUN_001e7474 (1e7474), FUN_001e747c (1e747c), FUN_001f1554 (1f1554), FUN_001f155c (1f155c), FUN_001f1dbc (1f1dbc), FUN_001f1e8c (1f1e8c), FUN_001f1e98 (1f1e98), FUN_00200e08 (200e08), FUN_0021730c (21730c), FUN_00233808 (233808), FUN_0024f080 (24f080), FUN_00250230 (250230), FUN_00254c70 (254c70), FUN_00255e68 (255e68), FUN_00255f28 (255f28), FUN_00256f6c (256f6c), FUN_0026c9e0 (26c9e0), FUN_0026d2bc (26d2bc), FUN_0026d2c0 (26d2c0), FUN_002744d4 (2744d4), FUN_00274a8c (274a8c), FUN_00275778 (275778), FUN_00277498 (277498), FUN_00277af8 (277af8), FUN_0027ba60 (27ba60), FUN_0027be68 (27be68), FUN_0027bf9c (27bf9c), FUN_0027cc90 (27cc90), FUN_0027d308 (27d308), FUN_0027d960 (27d960), FUN_0027d9a4 (27d9a4), FUN_002a6a6c (2a6a6c), FUN_002ac8b8 (2ac8b8), FUN_002b08e4 (2b08e4), FUN_002b0ce0 (2b0ce0), FUN_002b154c (2b154c), FUN_002b2fc4 (2b2fc4), FUN_002b4404 (2b4404), FUN_002b4d80 (2b4d80), FUN_002d9a60 (2d9a60), FUN_002e16d8 (2e16d8), FUN_002fb444 (2fb444), FUN_00310068 (310068), FUN_0031349c (31349c), FUN_0031bc5c (31bc5c), FUN_0031d52c (31d52c), FUN_0032ba2c (32ba2c), FUN_00347bf4 (347bf4), FUN_00348d18 (348d18), FUN_0034ea74 (34ea74), FUN_0034ea94 (34ea94), FUN_0034fbec (34fbec), FUN_00366524 (366524), FUN_003693e8 (3693e8), FUN_00372384 (372384), FUN_00383f9c (383f9c), FUN_00383fa0 (383fa0), FUN_00383fa4 (383fa4), FUN_00383fa8 (383fa8), ___assert_rtn (385f9c), _atol (386104), _deflate (386164), _deflateEnd (386170), _deflateInit_ (386188), _deflateParams (386194), _deflateReset (3861a0), _div (3861b8), _freopen (386290), _ftell (3862c0), _inflate (386374), _inflateEnd (386380), _inflateInit2_ (38638c), _inflateInit_ (386398), _inflateReset (3863a4), _inflateSync (3863b0), _longjmp (38641c), _memchr (386458), _mktemp (3864ac), _strchr (386764), _strncat (386794), _strrchr (3867b8), _strstr (3867c4), _strtod (3867d0), _strtol (3867dc)
 
 #### FUN_000a5b80 — funcs/__Z12FUN_000a5b80Pl.cpp, Ghidra a5b80, 0 model attempt(s)
 
@@ -65971,183 +65748,158 @@ void FUN_000a9848(undefined8 *param_1)
 }
 ```
 
-#### FUN_000aa41c — funcs/__Z12FUN_000aa41cv.cpp, Ghidra aa41c, 0 model attempt(s)
+#### FUN_000bea48 — funcs/__Z12FUN_000bea48Pl.cpp, Ghidra bea48, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa41cv.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
-    7 |   (*pcVar1)();
-      |    ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa41cv.cpp:7:12: error: called object type 'void' is not a function or function pointer
-    7 |   (*pcVar1)();
-      |   ~~~~~~~~~^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bea48Pl.cpp:4:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    4 |   (**(void **)(*param_1 + 0x60))();
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000bea48Pl.cpp:4:33: error: called object type 'void' is not a function or function pointer
+    4 |   (**(void **)(*param_1 + 0x60))();
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000aa41c(void) {
-  void *pcVar1;
-
-  pcVar1 = (void *)SoftwareBreakpoint(1,0xaa424);
-  (*pcVar1)();
+long * FUN_000bea48(long *param_1) {
+  (**(void **)(*param_1 + 0x60))();
+  return param_1;
 }
 ```
 Ghidra's pseudocode:
 ```c
-void FUN_000aa41c(void)
+long * FUN_000bea48(long *param_1)
 
 {
-  code *pcVar1;
-  
-                    /* WARNING: Does not return */
-  pcVar1 = (code *)SoftwareBreakpoint(1,0xaa424);
-  (*pcVar1)();
+  (**(code **)(*param_1 + 0x60))();
+  return param_1;
 }
 ```
 
-#### FUN_000aa424 — funcs/__Z12FUN_000aa424v.cpp, Ghidra aa424, 0 model attempt(s)
+#### FUN_000c1110 — funcs/__Z12FUN_000c1110Pl.cpp, Ghidra c1110, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa424v.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
-    7 |   (*pcVar1)();
-      |    ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa424v.cpp:7:12: error: called object type 'void' is not a function or function pointer
-    7 |   (*pcVar1)();
-      |   ~~~~~~~~~^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c1110Pl.cpp:4:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    4 |   (**(void **)(*param_1 + 0x28))();
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c1110Pl.cpp:4:33: error: called object type 'void' is not a function or function pointer
+    4 |   (**(void **)(*param_1 + 0x28))();
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000aa424(void) {
-  void *pcVar1;
-
-  pcVar1 = (void *)SoftwareBreakpoint(1,0xaa430);
-  (*pcVar1)();
+void FUN_000c1110(long *param_1) {
+  (**(void **)(*param_1 + 0x28))();
+  return;
 }
 ```
 Ghidra's pseudocode:
 ```c
-void FUN_000aa424(void)
+void FUN_000c1110(long *param_1)
 
 {
-  code *pcVar1;
-  
-                    /* WARNING: Does not return */
-  pcVar1 = (code *)SoftwareBreakpoint(1,0xaa430);
-  (*pcVar1)();
+  (**(code **)(*param_1 + 0x28))();
+  return;
 }
 ```
 
-#### FUN_000aa430 — funcs/__Z12FUN_000aa430v.cpp, Ghidra aa430, 0 model attempt(s)
+#### FUN_000c1138 — funcs/__Z12FUN_000c1138Pl.cpp, Ghidra c1138, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa430v.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
-    7 |   (*pcVar1)();
-      |    ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa430v.cpp:7:12: error: called object type 'void' is not a function or function pointer
-    7 |   (*pcVar1)();
-      |   ~~~~~~~~~^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c1138Pl.cpp:4:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    4 |   (**(void **)(*param_1 + 0x30))();
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c1138Pl.cpp:4:33: error: called object type 'void' is not a function or function pointer
+    4 |   (**(void **)(*param_1 + 0x30))();
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000aa430(void) {
-  void *pcVar1;
-
-  pcVar1 = (void *)SoftwareBreakpoint(1,0xaa438);
-  (*pcVar1)();
+void FUN_000c1138(long *param_1) {
+  (**(void **)(*param_1 + 0x30))();
+  return;
 }
 ```
 Ghidra's pseudocode:
 ```c
-void FUN_000aa430(void)
+void FUN_000c1138(long *param_1)
 
 {
-  code *pcVar1;
-  
-                    /* WARNING: Does not return */
-  pcVar1 = (code *)SoftwareBreakpoint(1,0xaa438);
-  (*pcVar1)();
+  (**(code **)(*param_1 + 0x30))();
+  return;
 }
 ```
 
-#### FUN_000aa438 — funcs/__Z12FUN_000aa438v.cpp, Ghidra aa438, 0 model attempt(s)
+#### FUN_000c1160 — funcs/__Z12FUN_000c1160Pl.cpp, Ghidra c1160, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa438v.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
-    7 |   (*pcVar1)();
-      |    ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000aa438v.cpp:7:12: error: called object type 'void' is not a function or function pointer
-    7 |   (*pcVar1)();
-      |   ~~~~~~~~~^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c1160Pl.cpp:4:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    4 |   (**(void **)(*param_1 + 0x38))();
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c1160Pl.cpp:4:33: error: called object type 'void' is not a function or function pointer
+    4 |   (**(void **)(*param_1 + 0x38))();
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000aa438(void) {
-  void *pcVar1;
-
-  pcVar1 = (void *)SoftwareBreakpoint(1,0xaa444);
-  (*pcVar1)();
+void FUN_000c1160(long *param_1) {
+  (**(void **)(*param_1 + 0x38))();
+  return;
 }
 ```
 Ghidra's pseudocode:
 ```c
-void FUN_000aa438(void)
+void FUN_000c1160(long *param_1)
 
 {
-  code *pcVar1;
-  
-                    /* WARNING: Does not return */
-  pcVar1 = (code *)SoftwareBreakpoint(1,0xaa444);
-  (*pcVar1)();
+  (**(code **)(*param_1 + 0x38))();
+  return;
 }
 ```
 
-#### FUN_000afcf4 — funcs/__Z12FUN_000afcf4v.cpp, Ghidra afcf4, 0 model attempt(s)
+#### FUN_000c1188 — funcs/__Z12FUN_000c1188Pl.cpp, Ghidra c1188, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000afcf4v.cpp:7:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
-    7 |   (*pcVar1)();
-      |    ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000afcf4v.cpp:7:12: error: called object type 'void' is not a function or function pointer
-    7 |   (*pcVar1)();
-      |   ~~~~~~~~~^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c1188Pl.cpp:4:4: error: ISO C++ does not allow indirection on operand of type 'void *' [-Wvoid-ptr-dereference]
+    4 |   (**(void **)(*param_1 + 0x40))();
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000c1188Pl.cpp:4:33: error: called object type 'void' is not a function or function pointer
+    4 |   (**(void **)(*param_1 + 0x40))();
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000afcf4(void) {
-  void *pcVar1;
-
-  pcVar1 = (void *)SoftwareBreakpoint(1,0xafcfc);
-  (*pcVar1)();
+void FUN_000c1188(long *param_1) {
+  (**(void **)(*param_1 + 0x40))();
+  return;
 }
 ```
 Ghidra's pseudocode:
 ```c
-void FUN_000afcf4(void)
+void FUN_000c1188(long *param_1)
 
 {
-  code *pcVar1;
-  
-                    /* WARNING: Does not return */
-  pcVar1 = (code *)SoftwareBreakpoint(1,0xafcfc);
-  (*pcVar1)();
+  (**(code **)(*param_1 + 0x40))();
+  return;
 }
 ```
 
@@ -67114,9 +66866,9 @@ int FUN_00284da8(FILE *param_1,long param_2,int param_3)
 }
 ```
 
-### Not compiling yet — 192 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
+### Not compiling yet — 193 × cannot cast from type 'X' to pointer type 'X' (aka 'X')
 
-All: FUN_000a588c (a588c), FUN_000a827c (a827c), FUN_000aa3f0 (aa3f0), FUN_000aa744 (aa744), FUN_000aac28 (aac28), FUN_000aada8 (aada8), FUN_000ac698 (ac698), FUN_000afc34 (afc34), FUN_000afcc8 (afcc8), FUN_000b0638 (b0638), FUN_000b09ac (b09ac), FUN_00280264 (280264), FUN_002810e8 (2810e8), FUN_002812a0 (2812a0), FUN_002816ac (2816ac), FUN_00281914 (281914), FUN_002819cc (2819cc), FUN_00281d6c (281d6c), FUN_00281dd8 (281dd8), FUN_00282020 (282020), FUN_0028217c (28217c), FUN_0028235c (28235c), FUN_0028a534 (28a534), FUN_0028e688 (28e688), FUN_0028e81c (28e81c), FUN_00292634 (292634), FUN_00299954 (299954), FUN_0029f9f4 (29f9f4), FUN_0029fee0 (29fee0), FUN_0029ff30 (29ff30), FUN_002a0180 (2a0180), FUN_002a0380 (2a0380), FUN_002a0d44 (2a0d44), FUN_002a0db8 (2a0db8), FUN_002a0ef4 (2a0ef4), FUN_002a113c (2a113c), FUN_002a1210 (2a1210), FUN_002a1414 (2a1414), FUN_002a1578 (2a1578), FUN_002a189c (2a189c), FUN_002a18ec (2a18ec), FUN_002a1934 (2a1934), FUN_002a1a44 (2a1a44), FUN_002a1ffc (2a1ffc), FUN_0005d46c (5d46c), FUN_0005d75c (5d75c), FUN_0005d9a4 (5d9a4), FUN_0006b2c8 (6b2c8), FUN_00074f68 (74f68), FUN_000772e0 (772e0), FUN_00078a58 (78a58), FUN_00079290 (79290), FUN_0007b6c0 (7b6c0), FUN_0007f1e0 (7f1e0), FUN_0007f444 (7f444), FUN_0007f78c (7f78c), FUN_0007fe60 (7fe60), FUN_0007fec8 (7fec8), FUN_000800c0 (800c0), FUN_000804bc (804bc), FUN_00080a0c (80a0c), FUN_000810e4 (810e4), FUN_0008114c (8114c), FUN_00081348 (81348), FUN_00081748 (81748), FUN_000896d8 (896d8), FUN_00089724 (89724), FUN_00089770 (89770), FUN_0008d908 (8d908), FUN_0009105c (9105c), FUN_000991e4 (991e4), FUN_0009a3dc (9a3dc), FUN_0009aa78 (9aa78), FUN_000c99f8 (c99f8), FUN_000c9f34 (c9f34), FUN_000cb57c (cb57c), FUN_000ce398 (ce398), FUN_000cea50 (cea50), FUN_000d2d54 (d2d54), FUN_000e7d30 (e7d30), FUN_000e86e4 (e86e4), FUN_000e886c (e886c), FUN_000ff69c (ff69c), FUN_00108c1c (108c1c), FUN_001090f0 (1090f0), FUN_00121ec8 (121ec8), FUN_001385b4 (1385b4), FUN_0013957c (13957c), FUN_00139618 (139618), FUN_00139fe0 (139fe0), FUN_0013a168 (13a168), FUN_0013a1ac (13a1ac), FUN_0013a96c (13a96c), FUN_0013aaf4 (13aaf4), FUN_0013c81c (13c81c), FUN_001639e8 (1639e8), FUN_00165630 (165630), FUN_00165890 (165890), FUN_00165cc0 (165cc0), FUN_00165f54 (165f54), FUN_001667c8 (1667c8), FUN_00166a68 (166a68), FUN_0016f048 (16f048), FUN_0016f56c (16f56c), FUN_0016fb58 (16fb58), FUN_00173bd0 (173bd0), FUN_00175f1c (175f1c), FUN_00176f44 (176f44), FUN_00177180 (177180), FUN_00177a18 (177a18), FUN_0017929c (17929c), FUN_00188a38 (188a38), FUN_001912c4 (1912c4), FUN_001a1a58 (1a1a58), FUN_001a4e40 (1a4e40), FUN_001a5308 (1a5308), FUN_001ae660 (1ae660), FUN_001aefb4 (1aefb4), FUN_001af13c (1af13c), FUN_001af8e4 (1af8e4), FUN_001b7b30 (1b7b30), FUN_001ba71c (1ba71c), FUN_001ba884 (1ba884), FUN_001c1db4 (1c1db4), FUN_001c2c28 (1c2c28), FUN_001d5800 (1d5800), FUN_001d5988 (1d5988), FUN_001de204 (1de204), FUN_001de380 (1de380), FUN_00217338 (217338), FUN_002173c0 (2173c0), FUN_0021ec14 (21ec14), FUN_00226860 (226860), FUN_002268cc (2268cc), FUN_00226cb8 (226cb8), FUN_00226f28 (226f28), FUN_00228558 (228558), FUN_00251934 (251934), FUN_002546dc (2546dc), FUN_002558dc (2558dc), FUN_00255938 (255938), FUN_0025603c (25603c), FUN_00256ac0 (256ac0), FUN_00256c78 (256c78), FUN_00257474 (257474), FUN_002575ac (2575ac), FUN_00257648 (257648), FUN_00257790 (257790), FUN_00258084 (258084), FUN_002585ac (2585ac), FUN_002588f8 (2588f8), FUN_00258a10 (258a10), FUN_00258c7c (258c7c), FUN_00258d70 (258d70), FUN_00259038 (259038), FUN_0025cc8c (25cc8c), FUN_0025edf8 (25edf8), FUN_0025f37c (25f37c), FUN_00263828 (263828), FUN_00264f48 (264f48), FUN_002fd52c (2fd52c), FUN_002ff4dc (2ff4dc), FUN_003004c4 (3004c4), FUN_003010ac (3010ac), FUN_00301254 (301254), FUN_00314148 (314148), FUN_00314830 (314830), FUN_0031fa14 (31fa14), FUN_0031fc54 (31fc54), FUN_0031fdb4 (31fdb4), FUN_0031fffc (31fffc), FUN_003200d4 (3200d4), FUN_00320e98 (320e98), FUN_0032107c (32107c), FUN_003217ac (3217ac), FUN_00321e78 (321e78), FUN_003221f8 (3221f8), FUN_00323518 (323518), FUN_00323550 (323550), FUN_00324578 (324578), FUN_00325854 (325854), FUN_00325b68 (325b68), FUN_00326d94 (326d94), FUN_003270f4 (3270f4), FUN_00327254 (327254), FUN_003279a0 (3279a0), FUN_003279f0 (3279f0), FUN_00327b60 (327b60), FUN_00356d78 (356d78), FUN_00358274 (358274), FUN_00358308 (358308), FUN_00359be4 (359be4)
+All: FUN_000a588c (a588c), FUN_000a827c (a827c), FUN_000aa3f0 (aa3f0), FUN_000aa744 (aa744), FUN_000aac28 (aac28), FUN_000aada8 (aada8), FUN_000ac698 (ac698), FUN_000afc34 (afc34), FUN_000afcc8 (afcc8), FUN_000b0638 (b0638), FUN_000b09ac (b09ac), FUN_00280264 (280264), FUN_002810e8 (2810e8), FUN_002812a0 (2812a0), FUN_002816ac (2816ac), FUN_00281914 (281914), FUN_002819cc (2819cc), FUN_00281d6c (281d6c), FUN_00281dd8 (281dd8), FUN_00282020 (282020), FUN_0028217c (28217c), FUN_0028235c (28235c), FUN_0028a534 (28a534), FUN_0028e688 (28e688), FUN_0028e81c (28e81c), FUN_00292634 (292634), FUN_00299954 (299954), FUN_0029f9f4 (29f9f4), FUN_0029fee0 (29fee0), FUN_0029ff30 (29ff30), FUN_002a0180 (2a0180), FUN_002a0380 (2a0380), FUN_002a0d44 (2a0d44), FUN_002a0db8 (2a0db8), FUN_002a0ef4 (2a0ef4), FUN_002a113c (2a113c), FUN_002a1210 (2a1210), FUN_002a1414 (2a1414), FUN_002a1578 (2a1578), FUN_002a189c (2a189c), FUN_002a18ec (2a18ec), FUN_002a1934 (2a1934), FUN_002a1a44 (2a1a44), FUN_002a1ffc (2a1ffc), FUN_0005d46c (5d46c), FUN_0005d75c (5d75c), FUN_0005d9a4 (5d9a4), FUN_0006b2c8 (6b2c8), FUN_00074f68 (74f68), FUN_000772e0 (772e0), FUN_00078a58 (78a58), FUN_00079290 (79290), FUN_0007b6c0 (7b6c0), FUN_0007f1e0 (7f1e0), FUN_0007f444 (7f444), FUN_0007f78c (7f78c), FUN_0007fe60 (7fe60), FUN_0007fec8 (7fec8), FUN_000800c0 (800c0), FUN_000804bc (804bc), FUN_00080a0c (80a0c), FUN_000810e4 (810e4), FUN_0008114c (8114c), FUN_00081348 (81348), FUN_00081748 (81748), FUN_000896d8 (896d8), FUN_00089724 (89724), FUN_00089770 (89770), FUN_0008d908 (8d908), FUN_0009105c (9105c), FUN_000991e4 (991e4), FUN_0009a3dc (9a3dc), FUN_0009aa78 (9aa78), FUN_000c99f8 (c99f8), FUN_000c9f34 (c9f34), FUN_000cb57c (cb57c), FUN_000ce398 (ce398), FUN_000cea50 (cea50), FUN_000d2d54 (d2d54), FUN_000e7d30 (e7d30), FUN_000e86e4 (e86e4), FUN_000e886c (e886c), FUN_000ff69c (ff69c), FUN_00108c1c (108c1c), FUN_001090f0 (1090f0), FUN_00121ec8 (121ec8), FUN_001385b4 (1385b4), FUN_0013957c (13957c), FUN_00139618 (139618), FUN_00139fe0 (139fe0), FUN_0013a168 (13a168), FUN_0013a1ac (13a1ac), FUN_0013a96c (13a96c), FUN_0013aaf4 (13aaf4), FUN_0013c81c (13c81c), FUN_001639e8 (1639e8), FUN_00165630 (165630), FUN_00165890 (165890), FUN_00165cc0 (165cc0), FUN_00165f54 (165f54), FUN_001667c8 (1667c8), FUN_00166a68 (166a68), FUN_0016f048 (16f048), FUN_0016f56c (16f56c), FUN_0016fb58 (16fb58), FUN_00173bd0 (173bd0), FUN_00175f1c (175f1c), FUN_00176f44 (176f44), FUN_00177180 (177180), FUN_00177a18 (177a18), FUN_0017929c (17929c), FUN_00188a38 (188a38), FUN_001912c4 (1912c4), FUN_001a1a58 (1a1a58), FUN_001a4e40 (1a4e40), FUN_001a5308 (1a5308), FUN_001ae660 (1ae660), FUN_001aefb4 (1aefb4), FUN_001af13c (1af13c), FUN_001af8e4 (1af8e4), FUN_001b7b30 (1b7b30), FUN_001ba71c (1ba71c), FUN_001ba884 (1ba884), FUN_001c1db4 (1c1db4), FUN_001c2c28 (1c2c28), FUN_001d5800 (1d5800), FUN_001d5988 (1d5988), FUN_001de204 (1de204), FUN_001de380 (1de380), FUN_00217338 (217338), FUN_002173c0 (2173c0), FUN_0021ec14 (21ec14), FUN_00226860 (226860), FUN_002268cc (2268cc), FUN_00226cb8 (226cb8), FUN_00226f28 (226f28), FUN_00228558 (228558), FUN_00251934 (251934), FUN_002546dc (2546dc), FUN_002558dc (2558dc), FUN_00255938 (255938), FUN_0025603c (25603c), FUN_00256ac0 (256ac0), FUN_00256c78 (256c78), FUN_00257474 (257474), FUN_002575ac (2575ac), FUN_00257648 (257648), FUN_00257790 (257790), FUN_00258084 (258084), FUN_002585ac (2585ac), FUN_002588f8 (2588f8), FUN_00258a10 (258a10), FUN_00258c7c (258c7c), FUN_00258d70 (258d70), FUN_00259038 (259038), FUN_0025cc8c (25cc8c), FUN_0025edf8 (25edf8), FUN_0025f37c (25f37c), FUN_00263828 (263828), FUN_00264f48 (264f48), FUN_002fd52c (2fd52c), FUN_002ff4dc (2ff4dc), FUN_003004c4 (3004c4), FUN_003010ac (3010ac), FUN_00301254 (301254), FUN_00314148 (314148), FUN_00314830 (314830), FUN_0031fa14 (31fa14), FUN_0031fc54 (31fc54), FUN_0031fdb4 (31fdb4), FUN_0031fffc (31fffc), FUN_003200d4 (3200d4), FUN_00320e98 (320e98), FUN_0032107c (32107c), FUN_003217ac (3217ac), FUN_00321e78 (321e78), FUN_003221f8 (3221f8), FUN_00323154 (323154), FUN_00323550 (323550), FUN_00323ebc (323ebc), FUN_00324578 (324578), FUN_00325854 (325854), FUN_00325b68 (325b68), FUN_00326d94 (326d94), FUN_003270f4 (3270f4), FUN_00327254 (327254), FUN_003279a0 (3279a0), FUN_003279f0 (3279f0), FUN_00327b60 (327b60), FUN_00356d78 (356d78), FUN_00358274 (358274), FUN_00358308 (358308), FUN_00359be4 (359be4)
 
 #### FUN_000a588c — funcs/__Z12FUN_000a588cPyl.cpp, Ghidra a588c, 0 model attempt(s)
 
@@ -67152,18 +66904,18 @@ uint64_t * FUN_000a588c(uint64_t *param_1,long param_2) {
 }
 ```
 Notes:
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:58 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined8 * FUN_000a588c(undefined8 *param_1,long param_2)
@@ -67511,18 +67263,18 @@ uint32_t FUN_000aa744(uint64_t param_1,uint64_t *param_2) {
 }
 ```
 Notes:
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:58 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 uint FUN_000aa744(undefined8 param_1,undefined8 *param_2)
@@ -67558,18 +67310,18 @@ uint64_t FUN_000aac28(void) {
 }
 ```
 Notes:
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined8 FUN_000aac28(void)
@@ -67603,18 +67355,18 @@ uint64_t FUN_000aada8(void) {
 }
 ```
 Notes:
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined8 FUN_000aada8(void)
@@ -68095,18 +67847,18 @@ local_2a0 = auVar13._8_4_;
 }
 ```
 Notes:
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000ac698(long param_1,long *param_2,int *param_3)
@@ -68508,18 +68260,18 @@ void FUN_000afc34(uint64_t *param_1) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'uint64_t *' (aka 'unsigned long long *') — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot cast from type 'void' to pointer type 'long *' — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000afc34(undefined8 *param_1)
@@ -70459,18 +70211,18 @@ int FUN_000c22b0(long * param_1) {
 }
 ```
 Notes:
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long[4]' vs 'long *' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000c22b0(long *param_1)
@@ -70511,18 +70263,18 @@ int FUN_0027f844(long * param_1) {
 }
 ```
 Notes:
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:05 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:01 [compile] redefinition of 'param_1' with a different type: 'long' vs 'long *' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined2 FUN_0027f844(long *param_1)
@@ -70611,18 +70363,18 @@ void FUN_000a53d0(int *param_1, int param_2) {
 }
 ```
 Notes:
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 11:58 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000a53d0(int *param_1,int param_2)
@@ -70669,18 +70421,18 @@ uint64_t * FUN_000b038c(long param_1) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined8 * FUN_000b038c(long param_1)
@@ -70720,18 +70472,18 @@ uint64_t * FUN_000b0d54(long param_1,long param_2) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined8 * FUN_000b0d54(long param_1,long param_2)
@@ -70860,18 +70612,18 @@ void FUN_000b11f8(long *param_1,long *param_2) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000b11f8(long *param_1,long *param_2)
@@ -70979,18 +70731,18 @@ bool FUN_000b3344(long param_1,uint32_t param_2,uint32_t param_3) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 bool FUN_000b3344(long param_1,undefined4 param_2,undefined4 param_3)
@@ -71044,18 +70796,18 @@ void FUN_000b510c(long param_1) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000b510c(long param_1)
@@ -71100,18 +70852,18 @@ void FUN_000b9e8c(long param_1) {
 }
 ```
 Notes:
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'long long' is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'int' is not allowed — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000b9e8c(long param_1)
@@ -72448,9 +72200,9 @@ bool Glitch215vst3WindowView::becomeFirstResponder(undefined8 param_1,undefined8
 }
 ```
 
-### Not compiling yet — 104 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
+### Not compiling yet — 103 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
 
-All: FUN_000a620c (a620c), FUN_000a63ac (a63ac), FUN_000a658c (a658c), processAudioData10 (a6694), FUN_000a890c (a890c), FUN_000af418 (af418), FUN_000b319c (b319c), FUN_000b325c (b325c), FUN_000b3f1c (b3f1c), FUN_000b82e0 (b82e0), FUN_000b8888 (b8888), FUN_000bc918 (bc918), FUN_000bdae4 (bdae4), FUN_000bdb6c (bdb6c), FUN_000bece4 (bece4), FUN_000bf950 (bf950), FUN_000bf988 (bf988), FUN_002c7034 (2c7034), FUN_0035ecc4 (35ecc4), FUN_0005c368 (5c368), FUN_0005ecac (5ecac), closeShellWindow (606b4), FUN_0006b8b8 (6b8b8), FUN_00088c34 (88c34), FUN_0008954c (8954c), FUN_00091ecc (91ecc), FUN_00092704 (92704), FUN_000940bc (940bc), FUN_000c815c (c815c), FUN_000ca098 (ca098), FUN_000cba08 (cba08), FUN_000d0218 (d0218), FUN_000d3d20 (d3d20), FUN_000d44e8 (d44e8), FUN_000d4b48 (d4b48), FUN_000d4c88 (d4c88), FUN_000d5404 (d5404), FUN_000d54f0 (d54f0), FUN_000d56dc (d56dc), FUN_000d70b4 (d70b4), FUN_000d70dc (d70dc), FUN_000d7304 (d7304), FUN_000de7e4 (de7e4), FUN_000e06ac (e06ac), FUN_000e47e4 (e47e4), FUN_000e7ecc (e7ecc), FUN_000e8de8 (e8de8), FUN_000e9844 (e9844), FUN_000e9950 (e9950), FUN_000ea3dc (ea3dc), FUN_000eacc4 (eacc4), FUN_000eaec8 (eaec8), FUN_000ebc24 (ebc24), FUN_000f5678 (f5678), FUN_00106410 (106410), FUN_0011ad24 (11ad24), FUN_0011afa8 (11afa8), FUN_00120f98 (120f98), FUN_00121204 (121204), FUN_0012136c (12136c), FUN_00121644 (121644), FUN_00121c74 (121c74), FUN_001258fc (1258fc), FUN_0012701c (12701c), FUN_00143aa4 (143aa4), FUN_00155b50 (155b50), FUN_0016f90c (16f90c), FUN_0018a5e4 (18a5e4), FUN_0018eac0 (18eac0), FUN_001a2f74 (1a2f74), FUN_001a406c (1a406c), FUN_001a6a48 (1a6a48), FUN_001a6b04 (1a6b04), viewDidMoveToWindow__1a8cf8 (1a8cf8), FUN_001a8f80 (1a8f80), FUN_001a9258 (1a9258), FUN_001a9c4c (1a9c4c), FUN_001bde04 (1bde04), FUN_001be084 (1be084), FUN_001e034c (1e034c), FUN_001f53e0 (1f53e0), FUN_0024798c (24798c), FUN_00271e10 (271e10), FUN_00277d6c (277d6c), FUN_002a8548 (2a8548), FUN_002b50cc (2b50cc), FUN_002d4c34 (2d4c34), FUN_002d4d24 (2d4d24), FUN_002d5934 (2d5934), FUN_002d5a24 (2d5a24), FUN_002e42d0 (2e42d0), FUN_00301fa8 (301fa8), FUN_003077f0 (3077f0), FUN_00307860 (307860), FUN_0030798c (30798c), FUN_0031c07c (31c07c), FUN_00326994 (326994), FUN_0032c888 (32c888), FUN_0032eee4 (32eee4), FUN_00353fa4 (353fa4), FUN_00354168 (354168), FUN_0036d1c4 (36d1c4), FUN_0036df48 (36df48), FUN_0037868c (37868c)
+All: FUN_000a620c (a620c), FUN_000a63ac (a63ac), FUN_000a658c (a658c), processAudioData10 (a6694), FUN_000a890c (a890c), FUN_000af418 (af418), FUN_000b319c (b319c), FUN_000b325c (b325c), FUN_000b3f1c (b3f1c), FUN_000b82e0 (b82e0), FUN_000b8888 (b8888), FUN_000bc918 (bc918), FUN_000bdae4 (bdae4), FUN_000bdb6c (bdb6c), FUN_000bece4 (bece4), FUN_000bf950 (bf950), FUN_000bf988 (bf988), FUN_002c7034 (2c7034), FUN_0035ecc4 (35ecc4), FUN_0005c368 (5c368), FUN_0005ecac (5ecac), closeShellWindow (606b4), FUN_0006b8b8 (6b8b8), FUN_00088c34 (88c34), FUN_0008954c (8954c), FUN_00091ecc (91ecc), FUN_00092704 (92704), FUN_000940bc (940bc), FUN_000c815c (c815c), FUN_000ca098 (ca098), FUN_000cba08 (cba08), FUN_000d0218 (d0218), FUN_000d3d20 (d3d20), FUN_000d44e8 (d44e8), FUN_000d4b48 (d4b48), FUN_000d4c88 (d4c88), FUN_000d5404 (d5404), FUN_000d54f0 (d54f0), FUN_000d56dc (d56dc), FUN_000d70b4 (d70b4), FUN_000d70dc (d70dc), FUN_000d7304 (d7304), FUN_000de7e4 (de7e4), FUN_000e06ac (e06ac), FUN_000e47e4 (e47e4), FUN_000e7ecc (e7ecc), FUN_000e8de8 (e8de8), FUN_000e9844 (e9844), FUN_000e9950 (e9950), FUN_000ea3dc (ea3dc), FUN_000eacc4 (eacc4), FUN_000eaec8 (eaec8), FUN_000ebc24 (ebc24), FUN_000f5678 (f5678), FUN_00106410 (106410), FUN_0011ad24 (11ad24), FUN_0011afa8 (11afa8), FUN_00120f98 (120f98), FUN_00121204 (121204), FUN_0012136c (12136c), FUN_00121644 (121644), FUN_00121c74 (121c74), FUN_001258fc (1258fc), FUN_0012701c (12701c), FUN_00143aa4 (143aa4), FUN_00155b50 (155b50), FUN_0016f90c (16f90c), FUN_0018a5e4 (18a5e4), FUN_0018eac0 (18eac0), FUN_001a2f74 (1a2f74), FUN_001a406c (1a406c), FUN_001a6a48 (1a6a48), FUN_001a6b04 (1a6b04), viewDidMoveToWindow__1a8cf8 (1a8cf8), FUN_001a8f80 (1a8f80), FUN_001a9258 (1a9258), FUN_001a9c4c (1a9c4c), FUN_001bde04 (1bde04), FUN_001be084 (1be084), FUN_001e034c (1e034c), FUN_001f53e0 (1f53e0), FUN_0024798c (24798c), FUN_00271e10 (271e10), FUN_00277d6c (277d6c), FUN_002a8548 (2a8548), FUN_002b50cc (2b50cc), FUN_002d4c34 (2d4c34), FUN_002d4d24 (2d4d24), FUN_002d5934 (2d5934), FUN_002d5a24 (2d5a24), FUN_002e42d0 (2e42d0), FUN_00301fa8 (301fa8), FUN_003077f0 (3077f0), FUN_00307860 (307860), FUN_0030798c (30798c), FUN_0031c07c (31c07c), FUN_0032c888 (32c888), FUN_0032eee4 (32eee4), FUN_00353fa4 (353fa4), FUN_00354168 (354168), FUN_0036d1c4 (36d1c4), FUN_0036df48 (36df48), FUN_0037868c (37868c)
 
 #### FUN_000a620c — funcs/__Z12FUN_000a620cPyPhS0_ddS_S_.cpp, Ghidra a620c, 0 model attempt(s)
 
@@ -72567,18 +72319,18 @@ void FUN_000a620c(uint64_t *param_1,uint8_t param_2 [16],uint8_t param_3 [16],do
 }
 ```
 Notes:
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000a620c(undefined8 *param_1,undefined1 param_2 [16],undefined1 param_3 [16],double param_4
@@ -72739,18 +72491,18 @@ void FUN_000a63ac(undefined8 *param_1,undefined1 param_2 [16],undefined1 param_3
 }
 ```
 Notes:
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000a63ac(undefined8 *param_1,undefined1 param_2 [16],undefined1 param_3 [16],double param_4
@@ -72902,18 +72654,18 @@ void FUN_000a658c(undefined8 *param_1, undefined1 param_2 [16], undefined1 param
 }
 ```
 Notes:
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000a658c(undefined8 *param_1,undefined1 param_2 [16],undefined1 param_3 [16],double param_4
@@ -73439,18 +73191,18 @@ FUN_000a8868(local_b0, param_5, FUN_000a8898, 0);
 }
 ```
 Notes:
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:03 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000a6694(undefined1 param_1 [16],undefined1 param_2 [16],double param_3,double param_4,
@@ -73909,18 +73661,18 @@ LAB_000a8adc:
 }
 ```
 Notes:
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 11:59 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000a890c(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
@@ -74132,18 +73884,18 @@ bVar1 = FUN_001205e8((int *)local_48, (int *)&local_38);
 }
 ```
 Notes:
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 10:04 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 12:00 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1 *' (aka 'unsigned char *') vs 'uint — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000af418(undefined1 param_1 [16],double param_2,double param_3,double param_4,long param_5,
@@ -78497,8 +78249,8 @@ long * FUN_000be7b4(undefined8 param_1,int param_2)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027e86cf.cpp:10:27: error: member reference base type 'uint64_t (...)' (aka 'unsigned long long (...)') is not a structure or union
-   10 |         output[i] = filter.processSample(input[i]);
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027e86cf.cpp:12:27: error: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
+   12 |         output[i] = filter.processSample(input[i]);
       |                     ~~~~~~^~~~~~~~~~~~~~
 1 error generated.
 ```
@@ -78507,6 +78259,8 @@ Code:
 #include "shared.h"
 
 void FUN_0027e86c(float cutoff) {
+    uint64_t filter = 0; // auto-declared (undeclared in the rewrite)
+
     float alpha{};   // not passed (Ghidra's signature has 1 parameter(s))
     const std:: vector<float>input;
     const std:: vector<float>output;
@@ -81837,18 +81591,18 @@ int FUN_0028ddd8(uint64_t * param_1) {
 }
 ```
 Notes:
-- 10-21 10:06 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
-- 10-21 10:06 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' with a different type: 'float *' vs 'uint64_t *' (aka 'unsigned long long — fixed with a learned rule.
+- 10-21 12:02 [compile] redefinition of 'param_1' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined8 * FUN_0028ddd8(undefined8 *param_1)
@@ -82746,9 +82500,6 @@ Compiler output:
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:3:127: note: to match this '{'
     3 | void initWithFrame:(NSRect frame, NSRect contentSize, uint64_t param_3, uint64_t param_4, uint64_t param_5, uint64_t param_6) {
       |                                                                                                                               ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:18:91: error: use of undeclared identifier 'objc_msgSend'
-   18 |     Glitch215vst3AudioUnitPluginShellView *self = (Glitch215vst3AudioUnitPluginShellView*)objc_msgSend(self, &Glitch215vst3AudioUnitPluginShellView_view_initWithFrame_);
-      |                                                                                           ^~~~~~~~~~~~
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:19:5: error: a type specifier is required for all declarations
    19 |     objc_msgSend(self, &NSStackView_setTranslatesAutoresizingMaskIntoConstraints_, 0);
       |     ^
@@ -82758,9 +82509,13 @@ Compiler output:
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:21:5: error: a type specifier is required for all declarations
    21 |     objc_msgSend(self, &NSStackView_setContentSizeConstraints_, contentSize, 0);
       |     ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:21:65: error: use o
-...
-astpass 3/build/funcs/initWithFrame_.cpp:23:5: error: a type specifier is required for all declarations
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:21:65: error: use of undeclared identifier 'contentSize'
+   21 |     objc_msgSend(self, &NSStackView_setContentSizeConstraints_, contentSize, 0);
+      |                                                                 ^~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:22:5: error: a type specifier is required for all declarations
+   22 |     objc_msgSend(self, &NSStackView_setPostsFrameChangedNotifications_, 1);
+      |     ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:23:5: error: a type specifier is required for all declarations
    23 |     objc_msgSend(self, &NSStackView_setPostsBoundsChangedNotifications_, 1);
       |     ^
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:24:5: error: expected unqualified-id
@@ -82769,7 +82524,7 @@ astpass 3/build/funcs/initWithFrame_.cpp:23:5: error: a type specifier is requir
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/initWithFrame_.cpp:25:1: error: extraneous closing brace ('}')
    25 | }
       | ^
-15 errors generated.
+14 errors generated.
 ```
 Code:
 ```cpp
@@ -83605,18 +83360,18 @@ void FUN_000db560(long param_1) {
 }
 ```
 Notes:
-- 10-21 10:05 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] unknown type name 'undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] unknown type name 'undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] unknown type name 'undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] unknown type name 'undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] unknown type name 'undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
-- 10-21 10:05 [compile] unknown type name 'undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] unknown type name 'undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] unknown type name 'undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] unknown type name 'undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] unknown type name 'undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] unknown type name 'undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] variable has incomplete type 'struct undefined7' — fixed with a learned rule.
+- 10-21 12:00 [compile] unknown type name 'undefined7' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000db560(long param_1)
@@ -83815,6 +83570,589 @@ void Glitch215vst3Application::sendEvent_(undefined8 param_1,undefined8 param_2,
   }
   NSApplication::sendEvent_((ID)self,PTR_s_sendEvent__004528a0,local_28);
   return;
+}
+```
+
+### Not compiling yet — 57 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
+
+All: FUN_000ab6f4 (ab6f4), FUN_000b2f2c (b2f2c), FUN_00280d74 (280d74), FUN_00289044 (289044), FUN_0028dcb4 (28dcb4), FUN_002907fc (2907fc), FUN_00299e9c (299e9c), FUN_0029c84c (29c84c), FUN_0035e830 (35e830), FUN_000621ec (621ec), FUN_0006e540 (6e540), FUN_0006e554 (6e554), FUN_0006e590 (6e590), processAudioData7 (74514), processAndModifyData (873a4), processInput55 (8d2e0), FUN_0008f9c0 (8f9c0), FUN_0009ae28 (9ae28), FUN_000cfdd8 (cfdd8), FUN_000dbeb0 (dbeb0), FUN_000e5b80 (e5b80), FUN_000e8c34 (e8c34), FUN_000f0a20 (f0a20), FUN_000f1808 (f1808), FUN_000f3da4 (f3da4), FUN_000f59e8 (f59e8), FUN_000f6b80 (f6b80), FUN_000f70c0 (f70c0), FUN_00113c8c (113c8c), FUN_0011ff30 (11ff30), FUN_001214cc (1214cc), FUN_00126924 (126924), FUN_00126ff8 (126ff8), FUN_001366bc (1366bc), FUN_0015633c (15633c), FUN_001795d4 (1795d4), FUN_0017fb18 (17fb18), FUN_00190d80 (190d80), FUN_001b96cc (1b96cc), FUN_001c66b8 (1c66b8), FUN_001c6ca4 (1c6ca4), FUN_001e072c (1e072c), FUN_001f75b4 (1f75b4), FUN_0020134c (20134c), FUN_0021b4fc (21b4fc), FUN_00306de0 (306de0), FUN_00318934 (318934), FUN_00320d00 (320d00), FUN_00321194 (321194), FUN_00321c9c (321c9c), FUN_00322060 (322060), FUN_00323380 (323380), FUN_00323530 (323530), FUN_00324494 (324494), FUN_00328274 (328274), FUN_003499e4 (3499e4), FUN_003751d8 (3751d8)
+
+#### FUN_000ab6f4 — funcs/__Z12FUN_000ab6f4PyS_.cpp, Ghidra ab6f4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000ab6f4PyS_.cpp:4:10: error: cannot initialize a variable of type 'long' with an rvalue of type 'void'
+    4 |     long lVar1 = FUN_000aa620(param_1, *param_2);
+      |          ^       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000ab6f4(undefined8 *param_1, undefined8 *param_2) {
+    long lVar1 = FUN_000aa620(param_1, *param_2);
+    *(undefined1 *)(lVar1 + 8) = *(undefined1 *)(param_2 + 1);
+    return;
+}
+```
+Notes:
+- 10-21 11:59 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000ab6f4(undefined8 *param_1,undefined8 *param_2)
+
+{
+  long lVar1;
+  
+  lVar1 = FUN_000aa620(param_1,*param_2);
+  *(undefined1 *)(lVar1 + 8) = *(undefined1 *)(param_2 + 1);
+  return;
+}
+```
+
+#### FUN_000b2f2c — funcs/__Z12FUN_000b2f2cl.cpp, Ghidra b2f2c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b2f2cl.cpp:6:10: error: cannot initialize a variable of type 'long' with an rvalue of type 'void'
+    6 |     long lVar3 = FUN_000bb434(param_1);
+      |          ^       ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b2f2cl.cpp:15:9: error: no matching function for call to 'FUN_0011d17c'
+   15 |         FUN_0011d17c(plVar4, iVar1, iVar2 + 2);
+      |         ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:20925:6: note: candidate function not viable: no known conversion from 'std::vector<long>' to 'long *' for 1st argument
+ 20925 | void FUN_0011d17c(long *, int, int);
+       |      ^            ~~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000b2f2c(long param_1) {
+    int iVar1;
+    int iVar2;
+    long lVar3 = FUN_000bb434(param_1);
+    if ((lVar3 == 0) || ((*(int *)(param_1 + 0x2c0) != 9 && (*(int *)(param_1 + 0x2c0) != 8)))) {
+        FUN_000bc2a0(param_1);
+    }
+    else {
+        std::vector<long> plVar4;
+        plVar4.push_back(lVar3);
+        plVar4.push_back(iVar1);
+        plVar4.push_back(iVar2 + 2);
+        FUN_0011d17c(plVar4, iVar1, iVar2 + 2);
+    }
+}
+```
+Notes:
+- 10-21 12:00 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000b2f2c(long param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  long lVar3;
+  long *plVar4;
+  
+  lVar3 = FUN_000bb434(param_1);
+  if ((lVar3 == 0) || ((*(int *)(param_1 + 0x2c0) != 9 && (*(int *)(param_1 + 0x2c0) != 8)))) {
+    FUN_000bc2a0(param_1);
+  }
+  else {
+    plVar4 = (long *)FUN_000bb434(param_1);
+    FUN_0011d040(plVar4,0,-1);
+    plVar4 = (long *)FUN_000bb434(param_1);
+    iVar1 = FUN_000064c0(param_1);
+    iVar2 = FUN_00003628(param_1);
+    FUN_0011d17c(plVar4,iVar1,iVar2 + 2);
+  }
+  return;
+}
+```
+
+#### FUN_00280d74 — funcs/__Z12FUN_00280d74Pl.cpp, Ghidra 280d74, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00280d74Pl.cpp:4:11: error: cannot initialize a variable of type 'long *' with an rvalue of type 'void'
+    4 |     long *plVar1 = FUN_00280d9c(*param_1);
+      |           ^        ~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00280d74(long *param_1) {
+    long *plVar1 = FUN_00280d9c(*param_1);
+    *param_1 = (long)plVar1;
+    return;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_00280d74(long *param_1)
+
+{
+  long *plVar1;
+  
+  plVar1 = FUN_00280d9c(*param_1);
+  *param_1 = (long)plVar1;
+  return;
+}
+```
+
+#### FUN_00289044 — funcs/__Z12FUN_00289044Pll.cpp, Ghidra 289044, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289044Pll.cpp:7:19: error: cannot initialize a variable of type 'long *' with an rvalue of type 'void'
+    7 |             long *filtered = FUN_0027efb8(input[0], input[1], sampleRate, 0, 0, 0);
+      |                   ^          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289044Pll.cpp:11:28: error: no matching function for call to 'FUN_0027ffc0'
+   11 |             long lowpass = FUN_0027ffc0(filtered);
+      |                            ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46521:6: note: candidate function not viable: no known conversion from 'long *' to 'uint *' (aka 'unsigned int *') for 1st argument
+ 46521 | uint FUN_0027ffc0(uint *);
+       |      ^            ~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289044Pll.cpp:12:18: error: cannot initialize a variable of type 'long' with an rvalue of type 'void'
+   12 |             long highpass = FUN_00285274(filtered, input[1] - 1);
+      |                  ^          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00289044(long *input, long sampleRate) {
+    if (sampleRate != 0) {
+        FUN_0027fcac(input);
+        if ((input[0] != 0) && (input[1] != 0)) {
+            long *filtered = FUN_0027efb8(input[0], input[1], sampleRate, 0, 0, 0);
+            if (filtered == nullptr) {
+                return;
+            }
+            long lowpass = FUN_0027ffc0(filtered);
+            long highpass = FUN_00285274(filtered, input[1] - 1);
+            int sampleCount = input[1] * input[0];
+            float lowpassFactor = (float)sampleCount / sampleRate;
+            float highpassFactor = (float)(sampleCount - 1) / sampleRate;
+
+            for (int i = 0; i < sampleCount; i++) {
+                input[i] = lowpass * lowpassFactor + highpass * highpassFactor;
+            }
+        }
+    }
+}
+```
+Ghidra's pseudocode:
+```c
+long * FUN_00289044(undefined8 *param_1,long param_2)
+
+{
+  int iVar1;
+  undefined1 uVar2;
+  uint uVar3;
+  long *plVar4;
+  long lVar5;
+  long lVar6;
+  undefined1 *puVar7;
+  int iVar8;
+  uint uVar9;
+  undefined2 local_6a;
+  short local_68;
+  short local_66;
+  
+  if (param_2 != 0) {
+    (*(code *)*param_1)(&local_68,1,8,param_2);
+    if ((local_68 != 0) && (local_66 != 0)) {
+      plVar4 = (long *)FUN_0027efb8((int)local_68,(int)local_66,8,0,0,0);
+      if (plVar4 == (long *)0x0) {
+        return (long *)0x0;
+      }
+      lVar5 = FUN_0027fcac(plVar4);
+      lVar6 = 0;
+      puVar7 = (undefined1 *)(lVar5 + 2);
+      do {
+        uVar2 = (undefined1)lVar6;
+        *puVar7 = uVar2;
+        puVar7[-1] = uVar2;
+        puVar7[-2] = uVar2;
+        lVar6 = lVar6 + 1;
+        puVar7 = puVar7 + 4;
+      } while (lVar6 != 0x100);
+      lVar6 = FUN_00285274(plVar4,local_66 + -1);
+      uVar3 = FUN_0027ffc0(plVar4);
+      iVar1 = (int)local_66 * (int)local_68;
+      local_6a = 0;
+      if (iVar1 < 1) {
+        return plVar4;
+      }
+      iVar8 = 0;
+      uVar9 = 0;
+      do {
+        while( true ) {
+          (*(code *)*param_1)((long)&local_6a + 1,1,1,param_2);
+          if (local_6a._1_1_ != '\0') break;
+          lVar6 = lVar6 - (int)uVar3;
+          (*(code *)*param_1)((long)&local_6a + 1,1,1,param_2);
+          (*(code *)*param_1)((long)&local_6a + 1,1,1,param_2);
+          if (iVar1 <= iVar8) {
+            return plVar4;
+          }
+          uVar9 = 0;
+        }
+        if ((short)local_6a < 0) {
+          local_6a = local_6a & 0x7fff;
+          (*(code *)*param_1)(&local_6a,1,1,param_2);
+          _memset((void *)(lVar6 + (ulong)uVar9),(uint)(byte)local_6a,(ulong)local_6a._1_1_);
+        }
+        else {
+          (*(code *)*param_1)((void *)(lVar6 + (ulong)uVar9),local_6a._1_1_,1,param_2);
+        }
+        uVar9 = uVar9 + local_6a._1_1_;
+        iVar8 = iVar8 + (uint)local_6a._1_1_;
+      } while (iVar8 < iVar1);
+      return plVar4;
+    }
+  }
+  return (long *)0x0;
+}
+```
+
+#### FUN_0028dcb4 — funcs/__Z12FUN_0028dcb4iPlPcttjjPv.cpp, Ghidra 28dcb4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0028dcb4iPlPcttjjPv.cpp:6:9: error: cannot initialize a variable of type 'long *' with an rvalue of type 'void'
+    6 |   long *plVar1 = FUN_00324bd0();
+      |         ^        ~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0028dcb4iPlPcttjjPv.cpp:8:5: error: no matching function for call to 'FUN_00324dc0'
+    8 |     FUN_00324dc0(plVar1, param_3);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:53425:6: note: candidate function not viable: no known conversion from 'long *' to 'float *' for 1st argument
+ 53425 | void FUN_00324dc0(float *, float *);
+       |      ^            ~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0028dcb4iPlPcttjjPv.cpp:22:5: error: no matching function for call to 'FUN_00324c28'
+   22 |     FUN_00324c28(plVar1);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:53409:6: note: candidate function not viable: no known conversion from 'long *' to 'uint8_t *' (aka 'unsigned char *') for 1st argument
+ 53409 | void FUN_00324c28(uint8_t *);
+       |      ^            ~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0028dcb4(int param_1, long *param_2, char *param_3, ushort param_4,
+                             undefined2 param_5, undefined4 param_6, undefined4 param_7,
+                             void *param_8) {
+  long *plVar1 = FUN_00324bd0();
+  if (plVar1 != (long *)0x0) {
+    FUN_00324dc0(plVar1, param_3);
+    FUN_00324e78(plVar1, param_4);
+    FUN_00324e8c(plVar1, param_5);
+    FUN_00324ea0(plVar1, param_6);
+    FUN_00324eb4(plVar1, param_7);
+    FUN_00324ec8(plVar1, param_8);
+    if (param_1 == 9) {
+      std::cout << "Processing param_4: " << param_4 << std::endl;
+      std::cout << "Processing param_5: " << param_5 << std::endl;
+      std::cout << "Processing param_6: " << param_6 << std::endl;
+      std::cout << "Processing param_7: " << param_7 << std::endl;
+      std::cout << "Processing param_8: " << param_8 << std::endl;
+    }
+    FUN_00280494(param_1, param_2, param_3, plVar1);
+    FUN_00324c28(plVar1);
+  }
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_0028dcb4(int param_1,long *param_2,char *param_3,ushort param_4,undefined2 param_5,
+                 undefined4 param_6,undefined4 param_7,void *param_8)
+
+{
+  long *plVar1;
+  undefined *puVar2;
+  char *pcVar3;
+  
+  plVar1 = FUN_00324bd0();
+  if (plVar1 != (long *)0x0) {
+    FUN_00324dc0(plVar1,param_3);
+    FUN_00324e78(plVar1,param_4);
+    FUN_00324e8c(plVar1,param_5);
+    FUN_00324ea0(plVar1,param_6);
+    FUN_00324eb4(plVar1,param_7);
+    FUN_00324ec8(plVar1,param_8);
+    if (param_1 == 9) {
+      puVar2 = FUN_00326854();
+      pcVar3 = (char *)FUN_00326978(puVar2,0x15,param_4);
+      FUN_00324e1c(plVar1,pcVar3);
+    }
+    FUN_00280494(param_1,param_2,param_3,plVar1);
+    FUN_00324c28(plVar1);
+  }
+  return;
+}
+```
+
+#### FUN_002907fc — funcs/__Z12FUN_002907fcPl.cpp, Ghidra 2907fc, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002907fcPl.cpp:4:9: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
+    4 |     int iVar1 = FUN_0027fcec(param_1);
+      |         ^       ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002907fcPl.cpp:5:9: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
+    5 |     int iVar2 = FUN_0027f80c(param_1);
+      |         ^       ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002907fcPl.cpp:6:9: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
+    6 |     int iVar3 = FUN_0027f828(param_1);
+      |         ^       ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002907fcPl.cpp:7:17: error: no matching function for call to 'FUN_0027ffc0'
+    7 |     int uVar4 = FUN_0027ffc0(param_1);
+      |                 ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46521:6: note: candidate function not viable: no known conversion from 'long *' to 'uint *' (aka 'unsigned int *') for 1st argument
+ 46521 | uint FUN_0027ffc0(uint *);
+       |      ^            ~~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+int FUN_002907fc(long *param_1) {
+    int iVar1 = FUN_0027fcec(param_1);
+    int iVar2 = FUN_0027f80c(param_1);
+    int iVar3 = FUN_0027f828(param_1);
+    int uVar4 = FUN_0027ffc0(param_1);
+
+    int output = (iVar2 + uVar4) * iVar3 + iVar1 * 4 + 0x28;
+
+    return output;
+}
+```
+Notes:
+- 10-21 12:02 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+int FUN_002907fc(long *param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  int iVar3;
+  uint uVar4;
+  
+  iVar1 = FUN_0027fcec(param_1);
+  iVar2 = FUN_0027f80c(param_1);
+  iVar3 = FUN_0027f828(param_1);
+  uVar4 = FUN_0027ffc0(param_1);
+  iVar2 = FUN_0029077c(iVar2);
+  return (iVar2 + uVar4) * iVar3 + iVar1 * 4 + 0x28;
+}
+```
+
+#### FUN_00299e9c — funcs/__Z12FUN_00299e9cPlji.cpp, Ghidra 299e9c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00299e9cPlji.cpp:4:7: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
+    4 |   int iVar1 = FUN_0027f828(param_1);
+      |       ^       ~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00299e9c(long * param_1, uint param_2, int param_3) {
+  int iVar1 = FUN_0027f828(param_1);
+  param_2 = iVar1 + ~param_2;
+}
+```
+Notes:
+- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_00299e9c(long *param_1,uint param_2,int param_3)
+
+{
+  int iVar1;
+  
+  if (param_3 == 0) {
+    iVar1 = FUN_0027f828(param_1);
+    param_2 = iVar1 + ~param_2;
+  }
+  FUN_00285274(param_1,param_2);
+  return;
+}
+```
+
+#### FUN_0029c84c — funcs/__Z12FUN_0029c84clii.cpp, Ghidra 29c84c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0029c84clii.cpp:7:7: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
+    7 |   int iVar3 = FUN_002fb684(param_1, 0x153);
+      |       ^       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0029c84c(long param_1, int param_2, int param_3) {
+    uint64_t bVar2 = 0; // auto-declared (undeclared in the rewrite)
+
+  uint uVar5 = param_3 * param_2;
+  int iVar3 = FUN_002fb684(param_1, 0x153);
+  if (iVar3 == 0) {
+    if (param_3 == 4) {
+      bVar2 = (uVar5 & 0xffff) == 0x40;
+      uVar5 = 10;
+    }
+    else {
+      if (param_3 != 3) {
+        uVar6 = 4;
+        if ((uVar5 & 0xffff) != 0x20) {
+          uVar6 = 1;
+        }
+        uVar1 = 2;
+        if ((uVar5 & 0xffff) != 0x10) {
+          uVar1 = uVar6;
+        }
+        uVar5 = 1;
+        if (param_3 == 1) {
+          uVar5 = uVar1;
+        }
+      }
+      bVar2 = (uVar5 & 0xffff) == 0x30;
+      uVar5 = 9;
+    }
+    if (!bVar2) {
+      uVar5 = 1;
+    }
+    uVar4 = (ulong)uVar5;
+  }
+  else {
+    uVar4 = 1;
+  }
+  std::cout << "Filtered value: " << uVar4 << std::endl;
+}
+```
+Ghidra's pseudocode:
+```c
+/* WARNING: Removing unreachable block (ram,0x0029c890) */
+/* WARNING: Removing unreachable block (ram,0x0029c984) */
+/* WARNING: Removing unreachable block (ram,0x0029c954) */
+/* WARNING: Removing unreachable block (ram,0x0029c96c) */
+/* WARNING: Removing unreachable block (ram,0x0029c974) */
+/* WARNING: Removing unreachable block (ram,0x0029c97c) */
+/* WARNING: Removing unreachable block (ram,0x0029c928) */
+/* WARNING: Removing unreachable block (ram,0x0029c93c) */
+/* WARNING: Removing unreachable block (ram,0x0029c944) */
+/* WARNING: Removing unreachable block (ram,0x0029c94c) */
+/* WARNING: Removing unreachable block (ram,0x0029c8a8) */
+/* WARNING: Removing unreachable block (ram,0x0029c8c0) */
+/* WARNING: Removing unreachable block (ram,0x0029c9b0) */
+/* WARNING: Recovered jumptable eliminated as dead code */
+
+ulong FUN_0029c84c(long param_1,int param_2,int param_3)
+
+{
+  uint uVar1;
+  bool bVar2;
+  int iVar3;
+  ulong uVar4;
+  uint uVar5;
+  uint uVar6;
+  
+  uVar5 = param_3 * param_2;
+  iVar3 = FUN_002fb684(param_1,0x153);
+  if (iVar3 == 0) {
+    if (param_3 == 4) {
+      bVar2 = (uVar5 & 0xffff) == 0x40;
+      uVar5 = 10;
+    }
+    else {
+      if (param_3 != 3) {
+        uVar6 = 4;
+        if ((uVar5 & 0xffff) != 0x20) {
+          uVar6 = 1;
+        }
+        uVar1 = 2;
+        if ((uVar5 & 0xffff) != 0x10) {
+          uVar1 = uVar6;
+        }
+        uVar5 = 1;
+        if (param_3 == 1) {
+          uVar5 = uVar1;
+        }
+        return (ulong)uVar5;
+      }
+      bVar2 = (uVar5 & 0xffff) == 0x30;
+      uVar5 = 9;
+    }
+    if (!bVar2) {
+      uVar5 = 1;
+    }
+    uVar4 = (ulong)uVar5;
+  }
+  else {
+    uVar4 = 1;
+  }
+  return uVar4;
 }
 ```
 
@@ -84216,589 +84554,6 @@ void FUN_00293cb0(undefined8 *param_1)
   param_1[0xd] = FUN_00293d70;
   param_1[0xe] = 0;
   return;
-}
-```
-
-### Not compiling yet — 56 × cannot initialize a variable of type 'X' with an rvalue of type 'X'
-
-All: FUN_000ab6f4 (ab6f4), FUN_000b2f2c (b2f2c), FUN_00280d74 (280d74), FUN_00289044 (289044), FUN_0028dcb4 (28dcb4), FUN_002907fc (2907fc), FUN_00299e9c (299e9c), FUN_0029c84c (29c84c), FUN_0035e830 (35e830), FUN_000621ec (621ec), FUN_0006e540 (6e540), FUN_0006e554 (6e554), FUN_0006e590 (6e590), processAudioData7 (74514), processAndModifyData (873a4), processInput55 (8d2e0), FUN_0008f9c0 (8f9c0), FUN_0009ae28 (9ae28), FUN_000cfdd8 (cfdd8), FUN_000dbeb0 (dbeb0), FUN_000e5b80 (e5b80), FUN_000e8c34 (e8c34), FUN_000f0a20 (f0a20), FUN_000f1808 (f1808), FUN_000f3da4 (f3da4), FUN_000f59e8 (f59e8), FUN_000f6b80 (f6b80), FUN_000f70c0 (f70c0), FUN_00113c8c (113c8c), FUN_0011ff30 (11ff30), FUN_001214cc (1214cc), FUN_00126924 (126924), FUN_00126ff8 (126ff8), FUN_001366bc (1366bc), FUN_0015633c (15633c), FUN_001795d4 (1795d4), FUN_0017fb18 (17fb18), FUN_00190d80 (190d80), FUN_001b96cc (1b96cc), FUN_001c66b8 (1c66b8), FUN_001c6ca4 (1c6ca4), FUN_001e072c (1e072c), FUN_001f75b4 (1f75b4), FUN_0020134c (20134c), FUN_0021b4fc (21b4fc), FUN_00306de0 (306de0), FUN_00318934 (318934), FUN_00320d00 (320d00), FUN_00321194 (321194), FUN_00321c9c (321c9c), FUN_00322060 (322060), FUN_00323380 (323380), FUN_00324494 (324494), FUN_00328274 (328274), FUN_003499e4 (3499e4), FUN_003751d8 (3751d8)
-
-#### FUN_000ab6f4 — funcs/__Z12FUN_000ab6f4PyS_.cpp, Ghidra ab6f4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000ab6f4PyS_.cpp:4:10: error: cannot initialize a variable of type 'long' with an rvalue of type 'void'
-    4 |     long lVar1 = FUN_000aa620(param_1, *param_2);
-      |          ^       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000ab6f4(undefined8 *param_1, undefined8 *param_2) {
-    long lVar1 = FUN_000aa620(param_1, *param_2);
-    *(undefined1 *)(lVar1 + 8) = *(undefined1 *)(param_2 + 1);
-    return;
-}
-```
-Notes:
-- 10-21 10:03 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'long' is not allowed — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000ab6f4(undefined8 *param_1,undefined8 *param_2)
-
-{
-  long lVar1;
-  
-  lVar1 = FUN_000aa620(param_1,*param_2);
-  *(undefined1 *)(lVar1 + 8) = *(undefined1 *)(param_2 + 1);
-  return;
-}
-```
-
-#### FUN_000b2f2c — funcs/__Z12FUN_000b2f2cl.cpp, Ghidra b2f2c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b2f2cl.cpp:6:10: error: cannot initialize a variable of type 'long' with an rvalue of type 'void'
-    6 |     long lVar3 = FUN_000bb434(param_1);
-      |          ^       ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b2f2cl.cpp:15:9: error: no matching function for call to 'FUN_0011d17c'
-   15 |         FUN_0011d17c(plVar4, iVar1, iVar2 + 2);
-      |         ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:20925:6: note: candidate function not viable: no known conversion from 'std::vector<long>' to 'long *' for 1st argument
- 20925 | void FUN_0011d17c(long *, int, int);
-       |      ^            ~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b2f2c(long param_1) {
-    int iVar1;
-    int iVar2;
-    long lVar3 = FUN_000bb434(param_1);
-    if ((lVar3 == 0) || ((*(int *)(param_1 + 0x2c0) != 9 && (*(int *)(param_1 + 0x2c0) != 8)))) {
-        FUN_000bc2a0(param_1);
-    }
-    else {
-        std::vector<long> plVar4;
-        plVar4.push_back(lVar3);
-        plVar4.push_back(iVar1);
-        plVar4.push_back(iVar2 + 2);
-        FUN_0011d17c(plVar4, iVar1, iVar2 + 2);
-    }
-}
-```
-Notes:
-- 10-21 10:04 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000b2f2c(long param_1)
-
-{
-  int iVar1;
-  int iVar2;
-  long lVar3;
-  long *plVar4;
-  
-  lVar3 = FUN_000bb434(param_1);
-  if ((lVar3 == 0) || ((*(int *)(param_1 + 0x2c0) != 9 && (*(int *)(param_1 + 0x2c0) != 8)))) {
-    FUN_000bc2a0(param_1);
-  }
-  else {
-    plVar4 = (long *)FUN_000bb434(param_1);
-    FUN_0011d040(plVar4,0,-1);
-    plVar4 = (long *)FUN_000bb434(param_1);
-    iVar1 = FUN_000064c0(param_1);
-    iVar2 = FUN_00003628(param_1);
-    FUN_0011d17c(plVar4,iVar1,iVar2 + 2);
-  }
-  return;
-}
-```
-
-#### FUN_00280d74 — funcs/__Z12FUN_00280d74Pl.cpp, Ghidra 280d74, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00280d74Pl.cpp:4:11: error: cannot initialize a variable of type 'long *' with an rvalue of type 'void'
-    4 |     long *plVar1 = FUN_00280d9c(*param_1);
-      |           ^        ~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00280d74(long *param_1) {
-    long *plVar1 = FUN_00280d9c(*param_1);
-    *param_1 = (long)plVar1;
-    return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_00280d74(long *param_1)
-
-{
-  long *plVar1;
-  
-  plVar1 = FUN_00280d9c(*param_1);
-  *param_1 = (long)plVar1;
-  return;
-}
-```
-
-#### FUN_00289044 — funcs/__Z12FUN_00289044Pll.cpp, Ghidra 289044, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289044Pll.cpp:7:19: error: cannot initialize a variable of type 'long *' with an rvalue of type 'void'
-    7 |             long *filtered = FUN_0027efb8(input[0], input[1], sampleRate, 0, 0, 0);
-      |                   ^          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289044Pll.cpp:11:28: error: no matching function for call to 'FUN_0027ffc0'
-   11 |             long lowpass = FUN_0027ffc0(filtered);
-      |                            ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46521:6: note: candidate function not viable: no known conversion from 'long *' to 'uint *' (aka 'unsigned int *') for 1st argument
- 46521 | uint FUN_0027ffc0(uint *);
-       |      ^            ~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289044Pll.cpp:12:18: error: cannot initialize a variable of type 'long' with an rvalue of type 'void'
-   12 |             long highpass = FUN_00285274(filtered, input[1] - 1);
-      |                  ^          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00289044(long *input, long sampleRate) {
-    if (sampleRate != 0) {
-        FUN_0027fcac(input);
-        if ((input[0] != 0) && (input[1] != 0)) {
-            long *filtered = FUN_0027efb8(input[0], input[1], sampleRate, 0, 0, 0);
-            if (filtered == nullptr) {
-                return;
-            }
-            long lowpass = FUN_0027ffc0(filtered);
-            long highpass = FUN_00285274(filtered, input[1] - 1);
-            int sampleCount = input[1] * input[0];
-            float lowpassFactor = (float)sampleCount / sampleRate;
-            float highpassFactor = (float)(sampleCount - 1) / sampleRate;
-
-            for (int i = 0; i < sampleCount; i++) {
-                input[i] = lowpass * lowpassFactor + highpass * highpassFactor;
-            }
-        }
-    }
-}
-```
-Ghidra's pseudocode:
-```c
-long * FUN_00289044(undefined8 *param_1,long param_2)
-
-{
-  int iVar1;
-  undefined1 uVar2;
-  uint uVar3;
-  long *plVar4;
-  long lVar5;
-  long lVar6;
-  undefined1 *puVar7;
-  int iVar8;
-  uint uVar9;
-  undefined2 local_6a;
-  short local_68;
-  short local_66;
-  
-  if (param_2 != 0) {
-    (*(code *)*param_1)(&local_68,1,8,param_2);
-    if ((local_68 != 0) && (local_66 != 0)) {
-      plVar4 = (long *)FUN_0027efb8((int)local_68,(int)local_66,8,0,0,0);
-      if (plVar4 == (long *)0x0) {
-        return (long *)0x0;
-      }
-      lVar5 = FUN_0027fcac(plVar4);
-      lVar6 = 0;
-      puVar7 = (undefined1 *)(lVar5 + 2);
-      do {
-        uVar2 = (undefined1)lVar6;
-        *puVar7 = uVar2;
-        puVar7[-1] = uVar2;
-        puVar7[-2] = uVar2;
-        lVar6 = lVar6 + 1;
-        puVar7 = puVar7 + 4;
-      } while (lVar6 != 0x100);
-      lVar6 = FUN_00285274(plVar4,local_66 + -1);
-      uVar3 = FUN_0027ffc0(plVar4);
-      iVar1 = (int)local_66 * (int)local_68;
-      local_6a = 0;
-      if (iVar1 < 1) {
-        return plVar4;
-      }
-      iVar8 = 0;
-      uVar9 = 0;
-      do {
-        while( true ) {
-          (*(code *)*param_1)((long)&local_6a + 1,1,1,param_2);
-          if (local_6a._1_1_ != '\0') break;
-          lVar6 = lVar6 - (int)uVar3;
-          (*(code *)*param_1)((long)&local_6a + 1,1,1,param_2);
-          (*(code *)*param_1)((long)&local_6a + 1,1,1,param_2);
-          if (iVar1 <= iVar8) {
-            return plVar4;
-          }
-          uVar9 = 0;
-        }
-        if ((short)local_6a < 0) {
-          local_6a = local_6a & 0x7fff;
-          (*(code *)*param_1)(&local_6a,1,1,param_2);
-          _memset((void *)(lVar6 + (ulong)uVar9),(uint)(byte)local_6a,(ulong)local_6a._1_1_);
-        }
-        else {
-          (*(code *)*param_1)((void *)(lVar6 + (ulong)uVar9),local_6a._1_1_,1,param_2);
-        }
-        uVar9 = uVar9 + local_6a._1_1_;
-        iVar8 = iVar8 + (uint)local_6a._1_1_;
-      } while (iVar8 < iVar1);
-      return plVar4;
-    }
-  }
-  return (long *)0x0;
-}
-```
-
-#### FUN_0028dcb4 — funcs/__Z12FUN_0028dcb4iPlPcttjjPv.cpp, Ghidra 28dcb4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0028dcb4iPlPcttjjPv.cpp:6:9: error: cannot initialize a variable of type 'long *' with an rvalue of type 'void'
-    6 |   long *plVar1 = FUN_00324bd0();
-      |         ^        ~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0028dcb4iPlPcttjjPv.cpp:8:5: error: no matching function for call to 'FUN_00324dc0'
-    8 |     FUN_00324dc0(plVar1, param_3);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:53425:6: note: candidate function not viable: no known conversion from 'long *' to 'float *' for 1st argument
- 53425 | void FUN_00324dc0(float *, float *);
-       |      ^            ~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0028dcb4iPlPcttjjPv.cpp:22:5: error: no matching function for call to 'FUN_00324c28'
-   22 |     FUN_00324c28(plVar1);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:53409:6: note: candidate function not viable: no known conversion from 'long *' to 'uint8_t *' (aka 'unsigned char *') for 1st argument
- 53409 | void FUN_00324c28(uint8_t *);
-       |      ^            ~~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0028dcb4(int param_1, long *param_2, char *param_3, ushort param_4,
-                             undefined2 param_5, undefined4 param_6, undefined4 param_7,
-                             void *param_8) {
-  long *plVar1 = FUN_00324bd0();
-  if (plVar1 != (long *)0x0) {
-    FUN_00324dc0(plVar1, param_3);
-    FUN_00324e78(plVar1, param_4);
-    FUN_00324e8c(plVar1, param_5);
-    FUN_00324ea0(plVar1, param_6);
-    FUN_00324eb4(plVar1, param_7);
-    FUN_00324ec8(plVar1, param_8);
-    if (param_1 == 9) {
-      std::cout << "Processing param_4: " << param_4 << std::endl;
-      std::cout << "Processing param_5: " << param_5 << std::endl;
-      std::cout << "Processing param_6: " << param_6 << std::endl;
-      std::cout << "Processing param_7: " << param_7 << std::endl;
-      std::cout << "Processing param_8: " << param_8 << std::endl;
-    }
-    FUN_00280494(param_1, param_2, param_3, plVar1);
-    FUN_00324c28(plVar1);
-  }
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_0028dcb4(int param_1,long *param_2,char *param_3,ushort param_4,undefined2 param_5,
-                 undefined4 param_6,undefined4 param_7,void *param_8)
-
-{
-  long *plVar1;
-  undefined *puVar2;
-  char *pcVar3;
-  
-  plVar1 = FUN_00324bd0();
-  if (plVar1 != (long *)0x0) {
-    FUN_00324dc0(plVar1,param_3);
-    FUN_00324e78(plVar1,param_4);
-    FUN_00324e8c(plVar1,param_5);
-    FUN_00324ea0(plVar1,param_6);
-    FUN_00324eb4(plVar1,param_7);
-    FUN_00324ec8(plVar1,param_8);
-    if (param_1 == 9) {
-      puVar2 = FUN_00326854();
-      pcVar3 = (char *)FUN_00326978(puVar2,0x15,param_4);
-      FUN_00324e1c(plVar1,pcVar3);
-    }
-    FUN_00280494(param_1,param_2,param_3,plVar1);
-    FUN_00324c28(plVar1);
-  }
-  return;
-}
-```
-
-#### FUN_002907fc — funcs/__Z12FUN_002907fcPl.cpp, Ghidra 2907fc, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002907fcPl.cpp:4:9: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
-    4 |     int iVar1 = FUN_0027fcec(param_1);
-      |         ^       ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002907fcPl.cpp:5:9: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
-    5 |     int iVar2 = FUN_0027f80c(param_1);
-      |         ^       ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002907fcPl.cpp:6:9: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
-    6 |     int iVar3 = FUN_0027f828(param_1);
-      |         ^       ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002907fcPl.cpp:7:17: error: no matching function for call to 'FUN_0027ffc0'
-    7 |     int uVar4 = FUN_0027ffc0(param_1);
-      |                 ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46521:6: note: candidate function not viable: no known conversion from 'long *' to 'uint *' (aka 'unsigned int *') for 1st argument
- 46521 | uint FUN_0027ffc0(uint *);
-       |      ^            ~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-int FUN_002907fc(long *param_1) {
-    int iVar1 = FUN_0027fcec(param_1);
-    int iVar2 = FUN_0027f80c(param_1);
-    int iVar3 = FUN_0027f828(param_1);
-    int uVar4 = FUN_0027ffc0(param_1);
-
-    int output = (iVar2 + uVar4) * iVar3 + iVar1 * 4 + 0x28;
-
-    return output;
-}
-```
-Notes:
-- 10-21 10:06 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-int FUN_002907fc(long *param_1)
-
-{
-  int iVar1;
-  int iVar2;
-  int iVar3;
-  uint uVar4;
-  
-  iVar1 = FUN_0027fcec(param_1);
-  iVar2 = FUN_0027f80c(param_1);
-  iVar3 = FUN_0027f828(param_1);
-  uVar4 = FUN_0027ffc0(param_1);
-  iVar2 = FUN_0029077c(iVar2);
-  return (iVar2 + uVar4) * iVar3 + iVar1 * 4 + 0x28;
-}
-```
-
-#### FUN_00299e9c — funcs/__Z12FUN_00299e9cPlji.cpp, Ghidra 299e9c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00299e9cPlji.cpp:4:7: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
-    4 |   int iVar1 = FUN_0027f828(param_1);
-      |       ^       ~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00299e9c(long * param_1, uint param_2, int param_3) {
-  int iVar1 = FUN_0027f828(param_1);
-  param_2 = iVar1 + ~param_2;
-}
-```
-Notes:
-- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'int' with an rvalue of type 'void' — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'long' with an rvalue of type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00299e9c(long *param_1,uint param_2,int param_3)
-
-{
-  int iVar1;
-  
-  if (param_3 == 0) {
-    iVar1 = FUN_0027f828(param_1);
-    param_2 = iVar1 + ~param_2;
-  }
-  FUN_00285274(param_1,param_2);
-  return;
-}
-```
-
-#### FUN_0029c84c — funcs/__Z12FUN_0029c84clii.cpp, Ghidra 29c84c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0029c84clii.cpp:7:7: error: cannot initialize a variable of type 'int' with an rvalue of type 'void'
-    7 |   int iVar3 = FUN_002fb684(param_1, 0x153);
-      |       ^       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0029c84c(long param_1, int param_2, int param_3) {
-    uint64_t bVar2 = 0; // auto-declared (undeclared in the rewrite)
-
-  uint uVar5 = param_3 * param_2;
-  int iVar3 = FUN_002fb684(param_1, 0x153);
-  if (iVar3 == 0) {
-    if (param_3 == 4) {
-      bVar2 = (uVar5 & 0xffff) == 0x40;
-      uVar5 = 10;
-    }
-    else {
-      if (param_3 != 3) {
-        uVar6 = 4;
-        if ((uVar5 & 0xffff) != 0x20) {
-          uVar6 = 1;
-        }
-        uVar1 = 2;
-        if ((uVar5 & 0xffff) != 0x10) {
-          uVar1 = uVar6;
-        }
-        uVar5 = 1;
-        if (param_3 == 1) {
-          uVar5 = uVar1;
-        }
-      }
-      bVar2 = (uVar5 & 0xffff) == 0x30;
-      uVar5 = 9;
-    }
-    if (!bVar2) {
-      uVar5 = 1;
-    }
-    uVar4 = (ulong)uVar5;
-  }
-  else {
-    uVar4 = 1;
-  }
-  std::cout << "Filtered value: " << uVar4 << std::endl;
-}
-```
-Ghidra's pseudocode:
-```c
-/* WARNING: Removing unreachable block (ram,0x0029c890) */
-/* WARNING: Removing unreachable block (ram,0x0029c984) */
-/* WARNING: Removing unreachable block (ram,0x0029c954) */
-/* WARNING: Removing unreachable block (ram,0x0029c96c) */
-/* WARNING: Removing unreachable block (ram,0x0029c974) */
-/* WARNING: Removing unreachable block (ram,0x0029c97c) */
-/* WARNING: Removing unreachable block (ram,0x0029c928) */
-/* WARNING: Removing unreachable block (ram,0x0029c93c) */
-/* WARNING: Removing unreachable block (ram,0x0029c944) */
-/* WARNING: Removing unreachable block (ram,0x0029c94c) */
-/* WARNING: Removing unreachable block (ram,0x0029c8a8) */
-/* WARNING: Removing unreachable block (ram,0x0029c8c0) */
-/* WARNING: Removing unreachable block (ram,0x0029c9b0) */
-/* WARNING: Recovered jumptable eliminated as dead code */
-
-ulong FUN_0029c84c(long param_1,int param_2,int param_3)
-
-{
-  uint uVar1;
-  bool bVar2;
-  int iVar3;
-  ulong uVar4;
-  uint uVar5;
-  uint uVar6;
-  
-  uVar5 = param_3 * param_2;
-  iVar3 = FUN_002fb684(param_1,0x153);
-  if (iVar3 == 0) {
-    if (param_3 == 4) {
-      bVar2 = (uVar5 & 0xffff) == 0x40;
-      uVar5 = 10;
-    }
-    else {
-      if (param_3 != 3) {
-        uVar6 = 4;
-        if ((uVar5 & 0xffff) != 0x20) {
-          uVar6 = 1;
-        }
-        uVar1 = 2;
-        if ((uVar5 & 0xffff) != 0x10) {
-          uVar1 = uVar6;
-        }
-        uVar5 = 1;
-        if (param_3 == 1) {
-          uVar5 = uVar1;
-        }
-        return (ulong)uVar5;
-      }
-      bVar2 = (uVar5 & 0xffff) == 0x30;
-      uVar5 = 9;
-    }
-    if (!bVar2) {
-      uVar5 = 1;
-    }
-    uVar4 = (ulong)uVar5;
-  }
-  else {
-    uVar4 = 1;
-  }
-  return uVar4;
 }
 ```
 
@@ -86097,7 +85852,10 @@ Compiler output:
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027de74Py.cpp:7:3: error: use of undeclared identifier 'FUN_002740cc'
     7 |   FUN_002740cc(param_1 + 2);
       |   ^~~~~~~~~~~~
-2 errors generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027de74Py.cpp:8:3: error: use of undeclared identifier 'operator_delete'
+    8 |   operator_delete(param_1);
+      |   ^~~~~~~~~~~~~~~
+3 errors generated.
 ```
 Code:
 ```cpp
@@ -89084,18 +88842,18 @@ LAB_000ac484:
 }
 ```
 Notes:
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000ac208(long param_1)
@@ -89499,18 +89257,18 @@ LAB_000bd790:
 }
 ```
 Notes:
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000bd534(long param_1,long param_2,int param_3,byte param_4)
@@ -89666,18 +89424,18 @@ Compiler output:
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002802b0Pll.cpp:27:41: error: assigning to 'long' from incompatible type 'void'
    27 |         if ((local_4c != 9) && (lVar4 = FUN_0027f4a0(&local_48), *(long *)(lVar4 + 8) != 0)) {
       |                                         ^~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002802b0Pll.cpp:34:20: error: incompatible integer to pointer conversion assigning to 'void *' from 'uint64_t' (aka 'unsigned long long')
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002802b0Pll.cpp:34:20: error: use of undeclared identifier 'operator_new'; did you mean 'operator'?
    34 |           pvVar5 = operator_new(0x18);
-      |                    ^~~~~~~~~~~~~~~~~~
+      |                    ^~~~~~~~~~~~
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002802b0Pll.cpp:36:12: error: assigning to 'long' from incompatible type 'void'
    36 | local_58 = FUN_0027f4b8();
       |            ^~~~~~~~~~~~~~
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002802b0Pll.cpp:37:25: error: assigning to 'long' from incompatible type 'void'
    37 |           local_70[0] = FUN_0027f4f8();
       |                         ^~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002802b0Pll.cpp:42:20: error: incompatible integer to pointer conversion assigning to 'void *' from 'uint64_t' (aka 'unsigned long long')
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002802b0Pll.cpp:42:20: error: use of undeclared identifier 'operator_new'; did you mean 'operator'?
    42 |           pvVar5 = operator_new(0x18);
-      |                    ^~~~~~~~~~~~~~~~~~
+      |                    ^~~~~~~~~~~~
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002802b0Pll.cpp:46:25: error: use of undeclared identifier 'string'
    46 |               psVar6 = (string *)FUN_0027f524(&local_58);
       |                         ^~~~~~
@@ -89687,7 +89445,10 @@ Compiler output:
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002802b0Pll.cpp:47:15: error: no member named 'string' in 'std::string'; did you mean 'String'?
    47 |               std::string::string((string *)local_70,psVar6);
       |               ^            ~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:935:8: note: 'String' declared here
+  935 | struct String {
+      |        ^
+/Users/a
 ...
 ka 'unsigned long long *'); dereference with *
    51 |               *puVar8 = puVar7;
@@ -89772,18 +89533,18 @@ local_58 = FUN_0027f4b8();
 }
 ```
 Notes:
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 undefined8 FUN_002802b0(long *param_1,long param_2)
@@ -89960,18 +89721,18 @@ void FUN_00292dac(long *param_1) {
 }
 ```
 Notes:
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:07 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:07 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:07 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:07 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
-- 10-21 10:07 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:03 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:03 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:03 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:03 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:03 [compile] assignment to cast is illegal, lvalue casts are not supported — fixed with a learned rule.
+- 10-21 12:03 [compile] assigning to 'long *' from incompatible type 'void' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_00292dac(long *param_1)
@@ -98575,18 +98336,18 @@ void FUN_000c3e5c(uint64_t *param_1) {
 }
 ```
 Notes:
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_000c3e5c(undefined8 *param_1)
@@ -98674,18 +98435,18 @@ void FUN_0027e798(uint64_t *param_1,uint64_t *param_2) {
 }
 ```
 Notes:
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
-- 10-21 10:05 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
-- 10-21 10:05 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
+- 10-21 12:01 [compile] incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from ' — fixed with a learned rule.
+- 10-21 12:01 [compile] indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid) — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 void FUN_0027e798(undefined8 *param_1,undefined8 *param_2)
@@ -100241,85 +100002,558 @@ long FUN_0006dbb8(undefined1 param_1 [16],undefined1 param_2 [16],undefined8 par
 }
 ```
 
-### Not compiling yet — 22 × incompatible integer to pointer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')
+### Not compiling yet — 21 × C-style cast from 'X' to 'X' (aka 'X') is not allowed
 
-All: FUN_00289680 (289680), FUN_002c4a78 (?), FUN_003644b4 (3644b4), finishLaunching (1676f4), alloc__168cf4 (168cf4), alloc__16c4f4 (16c4f4), resignFirstResponder (16c7e8), FUN_001a1b50 (1a1b50), alloc__1a86b8 (1a86b8), layout (1a88bc), viewDidHide (1a8e8c), viewDidUnhide (1a90dc), FUN_002a61d4 (2a61d4), FUN_002a6c00 (2a6c00), FUN_002a8bbc (2a8bbc), FUN_002ae1ac (2ae1ac), FUN_002b1098 (2b1098), FUN_002b4a2c (2b4a2c), FUN_002e185c (2e185c), FUN_002e1910 (2e1910), FUN_0030bcbc (30bcbc), FUN_00334e78 (334e78)
+All: FUN_000a3db0 (a3db0), FUN_000b6238 (b6238), FUN_00290a28 (290a28), FUN_002cb90c (2cb90c), FUN_0006b980 (6b980), FUN_000793d4 (793d4), FUN_000df460 (df460), FUN_000e7fb4 (e7fb4), FUN_00163814 (163814), FUN_001676bc (1676bc), FUN_00172064 (172064), FUN_00182ea4 (182ea4), FUN_001f4b98 (1f4b98), FUN_001f880c (1f880c), FUN_001f9af8 (1f9af8), FUN_00206430 (206430), FUN_0022b430 (22b430), FUN_003084a0 (3084a0), FUN_0031fb00 (31fb00), FUN_00323fbc (323fbc), FUN_003397f0 (3397f0)
 
-#### FUN_00289680 — funcs/__Z12FUN_00289680PyyPljji.cpp, Ghidra 289680, 0 model attempt(s)
+#### FUN_000a3db0 — funcs/__Z12FUN_000a3db0lylylyy.cpp, Ghidra a3db0, 1 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:24:12: error: incompatible integer to pointer conversion assigning to 'ushort *' (aka 'unsigned short *') from 'uint64_t' (aka 'unsigned long long')
-   24 |   puVar4 = operator_new__(uVar7);
-      |            ^~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:30:10: error: redefinition of 'uVar1'
-   30 |     uint uVar1;
-      |          ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:4:8: note: previous definition is here
-    4 |   uint uVar1;
-      |        ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:31:10: error: redefinition of 'uVar2'
-   31 |     uint uVar2;
-      |          ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:5:8: note: previous definition is here
-    5 |   uint uVar2;
-      |        ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:32:10: error: redefinition of 'uVar3'
-   32 |     uint uVar3;
-      |          ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:6:8: note: previous definition is here
-    6 |   uint uVar3;
-      |        ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:33:13: error: redefinition of 'puVar4'
-   33 |     ushort *puVar4;
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:7:11: note: previous definition is here
-    7 |   ushort *puVar4;
-      |           ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:34:10: error: redefinition of 'lVar5'
-   34 |     long lVar5;
-      |          ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:8:8: note: previous definition is here
-    8 |   long lVar5;
-      |        ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:35:10: error: redefinition of 'uVar6'
-   35 |     uint uVar6;
-      |          ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:9:8: note: previous definition is here
-    9 |   uint uVar6;
-      |        ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:36:11: error: redefinition of 'uVar7'
-   36 |     ulong uVar7;
-      |           ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:10:9: note: previous definition is here
-   10 |   ulong uVar7;
-      |         ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:37:13: error: redefinition of 'puVar8'
-   37 |     ushort *puVar8;
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:11:11: note: previous definition is here
-   11 |   ushort *puVar8;
-      |           ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:38:9: error: redefinition of 'iVar9'
-   38 |     int iVar9;
-      |         ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:12:7: note: previous definition is here
-   12 |   int iVar9;
-      |       ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:39:11: error: redefinition of 'uVar10'
-   39 |     ulong uVar10;
-      |           ^
-/Users/admin/glitchdecomp/fastpass 3/b
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000a3db0lylylyy.cpp:8:11: error: C-style cast from 'void' to 'uint32_t' (aka 'unsigned int') is not allowed
+    8 |   uVar1 = (uint32_t)FUN_000a41bc(param_1,param_2,param_3,param_4,param_5,param_6,param_7);
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint32_t
+FUN_000a3db0(long param_1,uint64_t param_2,long param_3,uint64_t param_4,long param_5,
+            uint64_t param_6,uint64_t param_7) {
+  uint32_t uVar1;
+
+  uVar1 = (uint32_t)FUN_000a41bc(param_1,param_2,param_3,param_4,param_5,param_6,param_7);
+  return uVar1;
+}
+```
+Notes:
+- 10-21 10:55 [compile] assigning to 'uint32_t' (aka 'unsigned int') from incompatible type 'void' — plan: Change `uint32_t uVar1 = FUN_000a41bc(param_1,param_2,param_3,param_4,param_5,param_6,param_7);` to `uint32_t uVar1 = (uint32_t)FUN_000a41bc(param_1,param_2,par — still fails: C-style cast from 'void' to 'uint32_t' (aka 'unsigned int') is not allowed
+Ghidra's pseudocode:
+```c
+undefined4
+FUN_000a3db0(long param_1,undefined8 param_2,long param_3,undefined8 param_4,long param_5,
+            undefined8 param_6,undefined8 param_7)
+
+{
+  undefined4 uVar1;
+  
+  uVar1 = FUN_000a41bc(param_1,param_2,param_3,param_4,param_5,param_6,param_7);
+  return uVar1;
+}
+```
+
+#### FUN_000b6238 — funcs/__Z12FUN_000b6238v.cpp, Ghidra b6238, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b6238v.cpp:9:20: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+    9 |     DAT_00453548 = (uint64_t)FUN_002023cc();
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000b6238(void) {
+    uint64_t DAT_00453550 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t DAT_00453548 = 0; // auto-declared (undeclared in the rewrite)
+
+  if ((DAT_00453550 & 1) == 0) {
+    DAT_00453548 = (uint64_t)FUN_002023cc();
+    DAT_00453550 = 1;
+  }
+  return;
+}
+```
+Notes:
+- 10-21 12:00 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:00 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:00 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000b6238(void)
+
+{
+  if ((DAT_00453550 & 1) == 0) {
+    DAT_00453548 = FUN_002023cc();
+    DAT_00453550 = 1;
+  }
+  return;
+}
+```
+
+#### FUN_00290a28 — funcs/__Z12FUN_00290a28PlPy.cpp, Ghidra 290a28, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00290a28PlPy.cpp:13:11: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+   13 |   uVar2 = (uint64_t)FUN_00290b30();
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00290a28PlPy.cpp:18:12: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'undefined8 *' (aka 'unsigned long long *'); dereference with *
+   18 |   puVar1 = local_48;
+      |            ^~~~~~~~
+      |            *
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00290a28PlPy.cpp:21:3: error: no matching function for call to 'FUN_00290b1c'
+   21 |   FUN_00290b1c(puVar1,param_2);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:48089:6: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint64_t *' (aka 'unsigned long long *') for 1st argument; take the address of the argument with &
+ 48089 | void FUN_00290b1c(uint64_t *, uint64_t *);
+       |      ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00290a28PlPy.cpp:23:3: error: no matching function for call to 'FUN_00290c5c'
+   23 |   FUN_00290c5c(param_1,alStack_58);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:48119:6: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
+ 48119 | void FUN_00290c5c(uint64_t *, uint64_t *);
+       |      ^            ~~~~~~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00290a28(long *param_1,uint64_t *param_2) {
+    uint64_t puVar1 = 0; // auto-declared (undeclared in the rewrite)
+
+  undefined8 uVar2;
+  undefined8 uVar4;
+  long lVar3;
+  ulong uVar5;
+  long alStack_58 [2];
+  undefined8 *local_48;
+
+  uVar2 = (uint64_t)FUN_00290b30();
+  lVar3 = FUN_00290c34(param_1);
+  uVar4 = FUN_00290bc4(param_1,lVar3 + 1);
+  lVar3 = FUN_00290c34(param_1);
+  FUN_00290c44(alStack_58,uVar4,lVar3,uVar2);
+  puVar1 = local_48;
+  FUN_00290b48();
+  FUN_00290c58();
+  FUN_00290b1c(puVar1,param_2);
+  local_48 = local_48 + 1;
+  FUN_00290c5c(param_1,alStack_58);
+  FUN_00290cdc(alStack_58);
+  return;
+}
+```
+Notes:
+- 10-21 12:02 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 12:02 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 12:02 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_00290a28(long *param_1,undefined8 *param_2)
+
+{
+  undefined8 *puVar1;
+  undefined8 uVar2;
+  long lVar3;
+  ulong uVar4;
+  long alStack_58 [2];
+  undefined8 *local_48;
+  
+  uVar2 = FUN_00290b30();
+  lVar3 = FUN_00290c34(param_1);
+  uVar4 = FUN_00290bc4(param_1,lVar3 + 1);
+  lVar3 = FUN_00290c34(param_1);
+  FUN_00290c44(alStack_58,uVar4,lVar3,uVar2);
+  puVar1 = local_48;
+  FUN_00290b48();
+  FUN_00290c58();
+  FUN_00290b1c(puVar1,param_2);
+  local_48 = local_48 + 1;
+  FUN_00290c5c(param_1,alStack_58);
+  FUN_00290cdc(alStack_58);
+  return;
+}
+```
+
+#### FUN_002cb90c — funcs/__Z12FUN_002cb90cPi.cpp, Ghidra 2cb90c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002cb90cPi.cpp:38:38: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+   38 |                     uint64_t uVar2 = (uint64_t)FUN_002e2e60((long)param_1);
+      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002cb90cPi.cpp:51:5: error: void function 'FUN_002cb90c' should not return a value [-Wreturn-mismatch]
+   51 |     return uVar2;
+      |     ^      ~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_002cb90c(int *param_1) {
+    long lVar1;
+    undefined8 uVar2;
+    int iVar3;
+
+    param_1[0xe2] = 0;
+    param_1[0xe4] = 0;
+    iVar3 = param_1[6];
+    param_1[0xe3] = iVar3;
+    param_1[0xe5] = param_1[7];
+    param_1[0xde] = 0;
+    param_1[0xdf] = iVar3;
+    param_1[0xe0] = 0;
+    param_1[0xe1] = param_1[7];
+    *(undefined1 *)(param_1 + 0xc4) = 0xff;
+    param_1[0xc5] = 0;
+    param_1[0xc6] = 1;
+    param_1[199] = 0;
+    param_1[200] = 1;
+    param_1[0xc9] = iVar3;
+    param_1[0xcd] = iVar3 << 2;
+    *(undefined2 *)(param_1 + 0xdc) = 0x100;
+    FUN_002cb90c((int *)((long)param_1));
+    lVar1 = (**(code **)(param_1 + 0x2a))((long)param_1[0xcd]);
+    *(long *)(param_1 + 0xda) = lVar1;
+    if (lVar1 == 0) {
+        uVar2 = 1;
+        FUN_002cfdd8(param_1,1,0,0);
+    }
+    else {
+        iVar3 = param_1[0xe4];
+        if (iVar3 < param_1[0xe5]) {
+            do {
+                uVar2 = (**(code **)(param_1 + 0x130))(param_1);
+                if ((int)uVar2 == 0) {
+                    uint64_t uVar2 = (uint64_t)FUN_002e2e60((long)param_1);
+                }
+            } while (((int)uVar2 == 0) && (iVar3 = iVar3 + 1, iVar3 < param_1[0xe5]));
+        }
+        else {
+            uVar2 = 0;
+        }
+        if (*(long *)(param_1 + 0xda) != 0) {
+            (**(code **)(param_1 + 0x2c))(*(long *)(param_1 + 0xda),(long)param_1[0xcd]);
+            param_1[0xda] = 0;
+            param_1[0xdb] = 0;
+        }
+    }
+    return uVar2;
+}
+```
+Notes:
+- 10-21 10:07 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:07 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:07 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:07 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:08 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:08 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:08 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:08 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:08 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+undefined8 FUN_002cb90c(int *param_1)
+
+{
+  long lVar1;
+  undefined8 uVar2;
+  int iVar3;
+  
+  param_1[0xe2] = 0;
+  param_1[0xe4] = 0;
+  iVar3 = param_1[6];
+  param_1[0xe3] = iVar3;
+  param_1[0xe5] = param_1[7];
+  param_1[0xde] = 0;
+  param_1[0xdf] = iVar3;
+  param_1[0xe0] = 0;
+  param_1[0xe1] = param_1[7];
+  *(undefined1 *)(param_1 + 0xc4) = 0xff;
+  param_1[0xc5] = 0;
+  param_1[0xc6] = 1;
+  param_1[199] = 0;
+  param_1[200] = 1;
+  param_1[0xc9] = iVar3;
+  param_1[0xcd] = iVar3 << 2;
+  *(undefined2 *)(param_1 + 0xdc) = 0x100;
+  FUN_002caa84((long)param_1);
+  lVar1 = (**(code **)(param_1 + 0x2a))((long)param_1[0xcd]);
+  *(long *)(param_1 + 0xda) = lVar1;
+  if (lVar1 == 0) {
+    uVar2 = 1;
+    FUN_002cfdd8(param_1,1,0,0);
+  }
+  else {
+    iVar3 = param_1[0xe4];
+    if (iVar3 < param_1[0xe5]) {
+      do {
+        uVar2 = (**(code **)(param_1 + 0x130))(param_1);
+        if ((int)uVar2 == 0) {
+          uVar2 = FUN_002e2e60((long)param_1);
+        }
+      } while (((int)uVar2 == 0) && (iVar3 = iVar3 + 1, iVar3 < param_1[0xe5]));
+    }
+    else {
+      uVar2 = 0;
+    }
+    if (*(long *)(param_1 + 0xda) != 0) {
+      (**(code **)(param_1 + 0x2c))(*(long *)(param_1 + 0xda),(long)param_1[0xcd]);
+      param_1[0xda] = 0;
+      param_1[0xdb] = 0;
+    }
+  }
+  return uVar2;
+}
+```
+
+#### FUN_0006b980 — funcs/FUN_0006b980.cpp, Ghidra 6b980, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0006b980.cpp:14:15: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+   14 |       uVar3 = (uint64_t)FUN_0006b2a4();
+      |               ^~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0006b980.cpp:15:15: error: no matching function for call to 'FUN_0006b310'
+   15 |       bVar2 = FUN_0006b310(uVar3,local_40 + 4,param_2);
+      |               ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:8657:6: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t' (aka 'unsigned long long') for 2nd argument; dereference the argument with *
+ 8657 | bool FUN_0006b310(uint64_t, uint64_t, uint64_t *);
+      |      ^                      ~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0006b980.cpp:24:3: error: no matching function for call to 'FUN_0006ba84'
+   24 |   FUN_0006ba84(&local_28,param_4);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:8745:6: note: candidate function not viable: no known conversion from 'long *' to 'undefined8' (aka 'unsigned long long') for 2nd argument; dereference the argument with *
+ 8745 | void FUN_0006ba84(undefined8 *, undefined8);
+      |      ^                          ~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+uint64_t FUN_0006b980(uint64_t param_1,uint64_t *param_2,long param_3,long *param_4) {
+    uint64_t local_28 = 0; // auto-declared (undeclared in the rewrite)
+
+  long *plVar1;
+  bool bVar2;
+  undefined8 uVar3;
+  long *local_40;
+
+  plVar1 = (long *)param_3;
+  while (local_40 = plVar1, local_40 != (long *)0x0) {
+    while( true ) {
+      uVar3 = (uint64_t)FUN_0006b2a4();
+      bVar2 = FUN_0006b310(uVar3,local_40 + 4,param_2);
+      if (!bVar2) break;
+      local_40 = (long *)local_40[1];
+      if (local_40 == (long *)0x0) goto LAB_0006b9ec;
+    }
+    param_4 = local_40;
+    plVar1 = (long *)*local_40;
+  }
+LAB_0006b9ec:
+  FUN_0006ba84(&local_28,param_4);
+  return local_28;
+}
+```
+Notes:
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+undefined8 FUN_0006b980(undefined8 param_1,ulong *param_2,long param_3,long *param_4)
+
+{
+  long *plVar1;
+  bool bVar2;
+  undefined8 uVar3;
+  long *local_40;
+  undefined8 local_28;
+  
+  plVar1 = (long *)param_3;
+  while (local_40 = plVar1, local_40 != (long *)0x0) {
+    while( true ) {
+      uVar3 = FUN_0006b2a4();
+      bVar2 = FUN_0006b310(uVar3,local_40 + 4,param_2);
+      if (!bVar2) break;
+      local_40 = (long *)local_40[1];
+      if (local_40 == (long *)0x0) goto LAB_0006b9ec;
+    }
+    param_4 = local_40;
+    plVar1 = (long *)*local_40;
+  }
+LAB_0006b9ec:
+  FUN_0006ba84(&local_28,param_4);
+  return local_28;
+}
+```
+
+#### FUN_000793d4 — funcs/FUN_000793d4.cpp, Ghidra 793d4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000793d4.cpp:19:17: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+   19 |         uVar2 = (uint64_t)FUN_00079474();
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000793d4.cpp:20:18: error: cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *')
+   20 |         puVar3 = (undefined8 *)FUN_00079770();
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000793d4.cpp:21:9: error: no matching function for call to 'FUN_00079750'
+   21 |         FUN_00079750(uVar2, puVar3);
+      |         ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:10269:6: note: candidate function not viable: requires 3 arguments, but 2 were provided
+ 10269 | void FUN_00079750(float *, float *, int);
+       |      ^            ~~~~~~~~~~~~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000793d4(long param_1, long param_2) {
+    uint64_t lStack_28 = 0; // auto-declared (undeclared in the rewrite)
+
+    long lVar1;
+    undefined8 uVar2;
+    undefined8 *puVar3;
+    long lStack_48;
+    long local_40;
+    long lStack_38;
+    long local_28;
+
+    local_40 = param_2;
+    lStack_28 = param_1;
+
+    FUN_0007972c(&lStack_48, param_1, param_2);
+    while (lVar1 = local_40, local_40 != lStack_38) {
+        uVar2 = (uint64_t)FUN_00079474();
+        puVar3 = (undefined8 *)FUN_00079770();
+        FUN_00079750(uVar2, puVar3);
+        local_40 = lVar1 + 8;
+    }
+    FUN_00079780(&lStack_48);
+    return;
+}
+```
+Notes:
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:11 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 10:11 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:11 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000793d4(long param_1,long param_2)
+
+{
+  long lVar1;
+  undefined8 uVar2;
+  undefined8 *puVar3;
+  long lStack_48;
+  long local_40;
+  long lStack_38;
+  long local_30;
+  long lStack_28;
+  
+  local_30 = param_2;
+  lStack_28 = param_1;
+  FUN_0007972c(&lStack_48,param_1,param_2);
+  while (lVar1 = local_40, local_40 != lStack_38) {
+    uVar2 = FUN_00079474();
+    puVar3 = (undefined8 *)FUN_00079770();
+    FUN_00079750(uVar2,puVar3);
+    local_40 = lVar1 + 8;
+  }
+  FUN_00079780(&lStack_48);
+  return;
+}
+```
+
+#### FUN_000df460 — funcs/FUN_000df460.cpp, Ghidra df460, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:24:34: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+   24 |                 uint64_t lVar6 = (uint64_t)FUN_000dc844((long)param_1);
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:25:17: error: no matching function for call to 'FUN_000d86b0'
+   25 |                 FUN_000d86b0(auStack_50,lVar6);
+      |                 ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:17439:6: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint64_t *' (aka 'unsigned long long *') for 1st argument; take the address of the argument with &
+ 17439 | void FUN_000d86b0(uint64_t *, long);
+       |      ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:26:51: error: no matching function for call to 'FUN_0021b59c'
+   26 |                 while ((iVar1 = local_60, iVar5 = FUN_0021b59c(auStack_50), iVar1 < iVar5 &&
+      |                                                   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42375:5: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint64_t *' (aka 'unsigned long long *') for 1st argument; take the address of the argument with &
+ 42375 | int FUN_0021b59c(uint64_t *);
+       |     ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:28:29: error: no matching function for call to 'FUN_0021c89c'
+   28 |                     uVar3 = FUN_0021c89c(auStack_50,local_60);
+      |                             ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42423:10: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint64_t *' (aka 'unsigned long long *') for 1st argument; take the address of the argument with &
+ 42423 | uint16_t FUN_0021c89c(uint64_t *, int);
+       |          ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:37:25: error: no matching function for call to 'FUN_000db3a4'
+   37 |                 lVar6 = FUN_000db3a4(param_1 + 0x2e);
+      |                         ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:17615:10: note: candidate function not viable: no known conversion from 'float *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
+ 17615 | uint64_t FUN_000db3a4(uint64_t *);
+       |          ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:40:29: error: no matching function for call to 'FUN_000db3a4'
+   40 |                     lVar6 = FUN_000db3a4(param_1 + 0x2e);
+      |                             ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:17615:10: note: candidate function not viable: no known conversion from 'float *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
+ 17615 | uint64_t FUN_000db3a4(uint64_t *);
+       |          ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:41:21: error: no matching function for call to 'FUN_0021a214'
+   41 |                     FUN_0021a214(alStack_70);
+      |                     ^~~~~~~~~~~~
+/U
 ...
-680PyyPljji.cpp:9:8: note: previous definition is here
-    9 |   uint uVar6;
-      |        ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:79:9: error: redefinition of 'uVar7'
-   79 |   ulong uVar7;
-      |         ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00289680PyyPljji.cpp:10:9: note: previous definition is here
-   10 |   ulong uVar7;
-      |         ^
+uires 3 arguments, but 1 was provided
+    3 | void FUN_000df460(float *param_1, float param_2, float param_3) {
+      |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:68:13: error: void function 'FUN_000df460' should not return a value [-Wreturn-mismatch]
+   68 |             return local_21;
+      |             ^      ~~~~~~~~
 fatal error: too many errors emitted, stopping now [-ferror-limit=]
 21 errors generated.
 ```
@@ -100327,913 +100561,409 @@ Code:
 ```cpp
 #include "shared.h"
 
-void FUN_00289680(uint64_t *param_1,uint64_t param_2,long *param_3,uint32_t param_4,uint32_t param_5, int param_6) {
-  uint uVar1;
-  uint uVar2;
-  uint uVar3;
-  ushort *puVar4;
-  long lVar5;
-  uint uVar6;
-  ulong uVar7;
-  ushort *puVar8;
-  int iVar9;
-  ulong uVar10;
+void FUN_000df460(float *param_1, float param_2, float param_3) {
+    uint64_t local_21 = 0; // auto-declared (undeclared in the rewrite)
 
-  uVar1 = param_4 + 6;
-  if (-1 < (int)(param_4 + 3)) {
-    uVar1 = param_4 + 3;
-  }
-  uVar10 = (ulong)(uint)((int)uVar1 >> 2);
-  uVar7 = -(ulong)((uint)((int)uVar1 >> 2) >> 0x1f) & 0xfffffff800000000 | uVar10 << 3;
-  if ((ulong)((long)((ulong)uVar1 << 0x20) >> 0x22) >> 0x3d != 0) {
-    uVar7 = 0xffffffffffffffff;
-  }
-  puVar4 = operator_new__(uVar7);
-  uVar1 = param_4 & 3;
-  uVar2 = param_5 & 3;
-  if ((int)param_5 < 4) {
-    iVar9 = -1;
-  }
-    uint uVar1;
-    uint uVar2;
-    uint uVar3;
-    ushort *puVar4;
-    long lVar5;
-    uint uVar6;
-    ulong uVar7;
-    ushort *puVar8;
-    int iVar9;
-    ulong uVar10;
+    uint64_t alStack_70 = 0; // auto-declared (undeclared in the rewrite)
 
-    uVar7 = 0xffffffffffffffff;
-    puVar4 = operator_new__(uVar7);
-    uVar1 = param_4 & 3;
-    uVar2 = param_5 & 3;
+    uint64_t local_60 = 0; // auto-declared (undeclared in the rewrite)
 
-    if ((int)param_5 < 4) {
-        iVar9 = -1;
-    }
+    uint64_t lVar6 = 0; // auto-declared (undeclared in the rewrite)
 
-    else {
-        uVar3 = 0;
-        do {
-            uVar6 = uVar3;
-            (*(code *)*param_1)(puVar4,8,uVar10,param_2);
-            lVar5 = FUN_00285274(param_3,~uVar6 + param_5);
-            puVar8 = puVar4;
-            if (3 < (int)param_4) {
-                iVar9 = 0;
-                do {
-                    FUN_00289c8c(lVar5,puVar8,(long)param_6,4,4);
-                    puVar8 = puVar8 + 4;
-                    lVar5 = lVar5 + 0x10;
-                    iVar9 = iVar9 + 4;
-                } while (iVar9 < (int)param_4);
+    uint64_t iVar5 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t auStack_50 = 0; // auto-declared (undeclared in the rewrite)
+
+    int iVar1 = (int)(uintptr_t)param_1;
+    bool bVar2 = (bool)param_2;
+    ushort uVar3 = *(ushort *)param_1 + 0x18;
+    undefined4 uVar4 = FUN_001aa7b0(param_2);
+    switch(uVar4) {
+        case 0x47:
+            case 0x68:
+                local_60 = 0;
+                uint64_t lVar6 = (uint64_t)FUN_000dc844((long)param_1);
+                FUN_000d86b0(auStack_50,lVar6);
+                while ((iVar1 = local_60, iVar5 = FUN_0021b59c(auStack_50), iVar1 < iVar5 &&
+                       (local_60 < *(int *)((long)param_1 + 0x1c4)))) {
+                    uVar3 = FUN_0021c89c(auStack_50,local_60);
+                    bVar2 = FUN_0021ab5c((uint)uVar3);
+                    if (!bVar2) break;
+                    local_60 = local_60 + 1;
+                }
+                bVar2 = FUN_000db488((long)param_1);
+                if (bVar2) {
+                    FUN_000dc720((long)param_1);
+                }
+                lVar6 = FUN_000db3a4(param_1 + 0x2e);
+                bVar2 = FUN_000d9984(lVar6);
+                if (bVar2) {
+                    lVar6 = FUN_000db3a4(param_1 + 0x2e);
+                    FUN_0021a214(alStack_70);
+                    FUN_000d9a08(lVar6,alStack_70);
+                    FUN_000df460((long)alStack_70);
+                }
+                if (*(int *)((long)param_1 + 0x1c4) == 0) {
+                    lVar6 = FUN_000db3a4(param_1 + 0x2e);
+                    FUN_0021a214(alStack_70);
+                    FUN_000d9a48(lVar6,alStack_70,(int)param_1[0x38]);
+                    FUN_000df460((long)alStack_70);
+                    *(int *)(param_1 + 0x38) = (int)param_1[0x38] + 1;
+                }
+                else {
+                    iVar1 = *(int *)((long)param_1 + 0x1c4);
+                    iVar5 = FUN_0021b59c(auStack_50);
+                    if (iVar1 != iVar5) {
+                        lVar6 = FUN_000dc844((long)param_1);
+                        FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
+                        FUN_000db510((long)param_1);
+                        return 1;
+                    }
+                    FUN_000e1c4c((long)param_1,(int)param_1[0x38],(int)param_1[0x38] + 1);
+                    param_1[0x39] = param_1[0x38];
+                    return 1;
+                }
             }
-            if (uVar1 != 0) {
-                FUN_00289c8c(lVar5,puVar8,(long)param_6,uVar1,4);
+            local_21 = 1;
+            FUN_000df460((long)auStack_50);
+            return local_21;
+        default:
+            return 0;
+        case 0x5b:
+            FUN_000dafdc(param_1);
+            return 1;
+        case 0x66:
+            lVar6 = FUN_000db3a4(param_1 + 0x2e);
+            bVar2 = FUN_000d9984(lVar6);
+            if (bVar2) {
+                lVar6 = FUN_000db3a4(param_1 + 0x2e);
+                FUN_0021a214(auStack_50);
+                FUN_000d9a08(lVar6,auStack_50);
+                FUN_000df460((long)auStack_50);
             }
-            uVar3 = uVar6 + 4;
-        } while ((int)(uVar6 + 4) < (int)param_5);
-        iVar9 = -5 - uVar6;
+            bVar2 = FUN_000db488((long)param_1);
+            if (!bVar2) {
+                iVar1 = *(int *)((long)param_1 + 0x1c4);
+                lVar6 = FUN_000dc844((long)param_1);
+                uVar7 = FUN_000d878c(lVar6);
+                if (iVar1 < (int)uVar7) {
+                    lVar6 = FUN_000dc844((long)param_1);
+                    FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
+                    FUN_000db510((long)param_1);
+                    return 1;
+                }
+                FUN_000e1c4c((long)param_1,(int)param_1[0x38],(int)param_1[0x38] + 1);
+                param_1[0x39] = param_1[0x38];
+                return 1;
+            }
+            break;
+        case 0x67:
+            lVar6 = FUN_000db3a4(param_1 + 0x2e);
+            bVar2 = FUN_000d9984(lVar6);
+            if (bVar2) {
+                lVar6 = FUN_000db3a4(param_1 + 0x2e);
+                FUN_0021a214(auStack_50);
+                FUN_000d9a08(lVar6,auStack_50);
+                FUN_000df460((long)auStack_50);
+            }
+            bVar2 = FUN_000db488((long)param_1);
+            if (!bVar2) {
+                if (0 < *(int *)((long)param_1 + 0x1c4)) {
+                    *(int *)((long)param_1 + 0x1c4) = *(int *)((long)param_1 + 0x1c4) + -1;
+                    param_1[0x39] = param_1[0x38];
+                    lVar6 = FUN_000dc844((long)param_1);
+                    FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
+                    return 1;
+                }
+                if ((int)param_1[0x38] < 1) {
+                    return 1;
+                }
+                lVar6 = FUN_000e1c10((long)param_1);
+                uVar7 = FUN_000d878c(lVar6);
+                *(int *)((long)param_1 + 0x1c4) = (int)uVar7;
+                lVar6 = param_1[0x38];
+                iVar1 = (int)lVar6 + -1;
+                *(int *)(param_1 + 0x38) = iVar1;
+                param_1[0x39] = param_1[0x38];
+                FUN_000e1c4c((long)param_1,iVar1,(int)lVar6);
+                return 1;
+            }
     }
-  uint uVar1;
-  uint uVar2;
-  uint uVar3;
-  ushort *puVar4;
-  long lVar5;
-  uint uVar6;
-  ulong uVar7;
-  ushort *puVar8;
-  int iVar9;
-  ulong uVar10;
-
-  uVar1 = *param_1;
-  uVar2 = *param_2;
-  uVar3 = *param_3;
-  puVar4 = param_1;
-  lVar5 = param_2;
-  uVar6 = *param_4;
-  uVar7 = *param_5;
-
-  if (uVar2 != 0) {
-    (*(code *)*param_1)(puVar4,8,uVar10,param_2);
-    lVar5 = FUN_00289c8c(param_3,iVar9 + param_5);
-    puVar8 = puVar4;
-    if (3 < (int)param_4) {
-      iVar9 = 0;
-      do {
-        (*(code *)*param_1)(puVar4,8,uVar10,param_2);
-        puVar8 = puVar4 + 4;
-        lVar5 = lVar5 + 0x10;
-        iVar9 = iVar9 + 4;
-      } while (iVar9 < (int)param_4);
-    }
-    if (uVar1 != 0) {
-      (*(code *)*param_1)(puVar4,8,uVar10,param_2);
-    }
-  }
-
-  operator_delete__(puVar4);
-
-  return;
-}
 ```
+Notes:
+- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
+- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
-void FUN_00289680(undefined8 *param_1,undefined8 param_2,long *param_3,uint param_4,uint param_5,
-                 int param_6)
+undefined1 FUN_000df460(long *param_1,long param_2,undefined1 param_3)
 
 {
-  uint uVar1;
-  uint uVar2;
-  uint uVar3;
-  ushort *puVar4;
-  long lVar5;
-  uint uVar6;
-  ulong uVar7;
-  ushort *puVar8;
-  int iVar9;
-  ulong uVar10;
-  
-  uVar1 = param_4 + 6;
-  if (-1 < (int)(param_4 + 3)) {
-    uVar1 = param_4 + 3;
-  }
-  uVar10 = (ulong)(uint)((int)uVar1 >> 2);
-  uVar7 = -(ulong)((uint)((int)uVar1 >> 2) >> 0x1f) & 0xfffffff800000000 | uVar10 << 3;
-  if ((ulong)((long)((ulong)uVar1 << 0x20) >> 0x22) >> 0x3d != 0) {
-    uVar7 = 0xffffffffffffffff;
-  }
-  puVar4 = operator_new__(uVar7);
-  uVar1 = param_4 & 3;
-  uVar2 = param_5 & 3;
-  if ((int)param_5 < 4) {
-    iVar9 = -1;
-  }
-  else {
-    uVar3 = 0;
-    do {
-      uVar6 = uVar3;
-      (*(code *)*param_1)(puVar4,8,uVar10,param_2);
-      lVar5 = FUN_00285274(param_3,~uVar6 + param_5);
-      puVar8 = puVar4;
-      if (3 < (int)param_4) {
-        iVar9 = 0;
-        do {
-          FUN_00289c8c(lVar5,puVar8,(long)param_6,4,4);
-          puVar8 = puVar8 + 4;
-          lVar5 = lVar5 + 0x10;
-          iVar9 = iVar9 + 4;
-        } while (iVar9 < (int)param_4);
-      }
-      if (uVar1 != 0) {
-        FUN_00289c8c(lVar5,puVar8,(long)param_6,uVar1,4);
-      }
-      uVar3 = uVar6 + 4;
-    } while ((int)(uVar6 + 4) < (int)param_5);
-    iVar9 = -5 - uVar6;
-  }
-  if (uVar2 != 0) {
-    (*(code *)*param_1)(puVar4,8,uVar10,param_2);
-    lVar5 = FUN_00285274(param_3,iVar9 + param_5);
-    puVar8 = puVar4;
-    if (3 < (int)param_4) {
-      iVar9 = 0;
-      do {
-        FUN_00289c8c(lVar5,puVar8,(long)param_6,4,uVar2);
-        puVar8 = puVar8 + 4;
-        lVar5 = lVar5 + 0x10;
-        iVar9 = iVar9 + 4;
-      } while (iVar9 < (int)param_4);
-    }
-    if (uVar1 != 0) {
-      FUN_00289c8c(lVar5,puVar8,(long)param_6,uVar1,uVar2);
-    }
-  }
-  operator_delete__(puVar4);
-  return;
-}
-```
-
-#### FUN_002c4a78 — funcs/__Z12FUN_002c4a78lmmm.cpp, Ghidra ?, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002c4a78lmmm.cpp:25:15: error: incompatible integer to pointer conversion assigning to 'byte *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
-   25 |     pbVar10 = local_1e8;
-      |               ^~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002c4a78lmmm.cpp:29:13: error: assigning to 'uint' (aka 'unsigned int') from incompatible type 'void'
-   29 |     uVar4 = FUN_002c4bc4(param_1, uVar1, uVar2, uVar3, (long)auStack_168);
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002c4a78lmmm.cpp:30:5: error: no matching function for call to 'FUN_002c4db4'
-   30 |     FUN_002c4db4(param_1, uVar1, uVar2, uVar3, uVar4, (long)auStack_168, local_1e8);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:49673:6: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint8_t *' (aka 'unsigned char *') for 7th argument
- 49673 | void FUN_002c4db4(long, int, int, int, uint, long, uint8_t *);
-       |      ^                                             ~~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_002c4a78(long param_1, ulong param_2, ulong param_3, ulong param_4) {
-    uint64_t PTR____stack_chk_guard_004241e8 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t local_68 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t local_1e8 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t auStack_168 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint uVar1;
-    uint uVar2;
-    uint uVar3;
-    uint uVar4;
-    long lVar5;
-    long lVar6;
-    long lVar7;
-    long lVar8;
-    long lVar9;
-    byte *pbVar10;
-
-    local_68 = *(long *)PTR____stack_chk_guard_004241e8;
-    lVar9 = *(long *)(*(long *)(param_1 + 600) + 0x30);
-    pbVar10 = local_1e8;
-    uVar1 = (int)(param_2 >> 2) << 5 | 4;
-    uVar2 = (int)(param_3 >> 3) << 5 | 2;
-    uVar3 = (int)(param_4 >> 2) << 5 | 4;
-    uVar4 = FUN_002c4bc4(param_1, uVar1, uVar2, uVar3, (long)auStack_168);
-    FUN_002c4db4(param_1, uVar1, uVar2, uVar3, uVar4, (long)auStack_168, local_1e8);
-    lVar5 = 0;
-    do {
-        lVar6 = 0;
-        lVar7 = *(long *)(lVar9 + (lVar5 + (int)((uint)param_2 & 0xfffffffc)) * 8) +
-            ((long)(int)param_3 & 0xfffffffffffffff8U) * 0x40 +
-            ((long)(int)param_4 & 0xfffffffffffffffcU) * 2;
-        do {
-            *(ushort *)(lVar7 + lVar8 * 2) = pbVar10[lVar8] + 1;
-            lVar8 = lVar8 + 1;
-        } while (lVar8 != 4);
-        lVar6 = lVar6 + 1;
-        lVar7 = lVar7 + 0x40;
-        pbVar10 = pbVar10 + 4;
-    } while (lVar6 != 8);
-    lVar5 = lVar5 + 1;
-  }
-```
-Ghidra's pseudocode:
-```c
-void FUN_002c4a78(long param_1,ulong param_2,ulong param_3,ulong param_4)
-
-{
-  uint uVar1;
-  uint uVar2;
-  uint uVar3;
-  uint uVar4;
-  long lVar5;
+  int iVar1;
+  bool bVar2;
+  ushort uVar3;
+  undefined4 uVar4;
+  int iVar5;
   long lVar6;
-  long lVar7;
-  long lVar8;
-  long lVar9;
-  byte *pbVar10;
-  byte local_1e8 [128];
-  undefined1 auStack_168 [256];
-  long local_68;
+  undefined8 uVar7;
+  long alStack_b0 [2];
+  long alStack_a0 [2];
+  undefined8 auStack_90 [2];
+  long alStack_80 [2];
+  long alStack_70 [2];
+  int local_60;
+  undefined8 auStack_50 [2];
+  undefined1 local_39;
+  long local_38;
+  long *plStack_30;
+  undefined1 local_21;
   
-  local_68 = *(long *)PTR____stack_chk_guard_004241e8;
-  lVar9 = *(long *)(*(long *)(param_1 + 600) + 0x30);
-  pbVar10 = local_1e8;
-  uVar1 = (int)(param_2 >> 2) << 5 | 4;
-  uVar2 = (int)(param_3 >> 3) << 5 | 2;
-  uVar3 = (int)(param_4 >> 2) << 5 | 4;
-  uVar4 = FUN_002c4bc4(param_1,uVar1,uVar2,uVar3,(long)auStack_168);
-  FUN_002c4db4(param_1,uVar1,uVar2,uVar3,uVar4,(long)auStack_168,local_1e8);
-  lVar5 = 0;
-  do {
-    lVar6 = 0;
-    lVar7 = *(long *)(lVar9 + (lVar5 + (int)((uint)param_2 & 0xfffffffc)) * 8) +
-            ((long)(int)param_3 & 0xfffffffffffffff8U) * 0x40 +
-            ((long)(int)param_4 & 0xfffffffffffffffcU) * 2;
-    do {
-      lVar8 = 0;
-      do {
-        *(ushort *)(lVar7 + lVar8 * 2) = pbVar10[lVar8] + 1;
-        lVar8 = lVar8 + 1;
-      } while (lVar8 != 4);
-      lVar6 = lVar6 + 1;
-      lVar7 = lVar7 + 0x40;
-      pbVar10 = pbVar10 + 4;
-    } while (lVar6 != 8);
-    lVar5 = lVar5 + 1;
-  } while (lVar5 != 4);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == local_68) {
-    return;
+  local_39 = param_3;
+  local_38 = param_2;
+  plStack_30 = param_1;
+  uVar4 = FUN_001aa7b0(param_2);
+  switch(uVar4) {
+  case 0x47:
+  case 0x68:
+    local_60 = 0;
+    lVar6 = FUN_000dc844((long)param_1);
+    FUN_000d86b0(auStack_50,lVar6);
+    while ((iVar1 = local_60, iVar5 = FUN_0021b59c(auStack_50), iVar1 < iVar5 &&
+           (local_60 < *(int *)((long)param_1 + 0x1c4)))) {
+      uVar3 = FUN_0021c89c(auStack_50,local_60);
+      bVar2 = FUN_0021ab5c((uint)uVar3);
+      if (!bVar2) break;
+      local_60 = local_60 + 1;
+    }
+    bVar2 = FUN_000db488((long)param_1);
+    if (bVar2) {
+      FUN_000dc720((long)param_1);
+    }
+    lVar6 = FUN_000db3a4(param_1 + 0x2e);
+    bVar2 = FUN_000d9984(lVar6);
+    if (bVar2) {
+      lVar6 = FUN_000db3a4(param_1 + 0x2e);
+      FUN_0021a214(alStack_70);
+      FUN_000d9a08(lVar6,alStack_70);
+      FUN_000031f4((long)alStack_70);
+    }
+    if (*(int *)((long)param_1 + 0x1c4) == 0) {
+      lVar6 = FUN_000db3a4(param_1 + 0x2e);
+      FUN_0021a214(alStack_70);
+      FUN_000d9a48(lVar6,alStack_70,(int)param_1[0x38]);
+      FUN_000031f4((long)alStack_70);
+      *(int *)(param_1 + 0x38) = (int)param_1[0x38] + 1;
+    }
+    else {
+      iVar1 = *(int *)((long)param_1 + 0x1c4);
+      iVar5 = FUN_0021b59c(auStack_50);
+      if (iVar1 != iVar5) {
+        lVar6 = FUN_000dc844((long)param_1);
+        FUN_000d86b0(alStack_80,lVar6);
+        FUN_0021b828(alStack_70,alStack_80,0,*(int *)((long)param_1 + 0x1c4));
+        FUN_000031f4((long)alStack_80);
+        lVar6 = FUN_000dc844((long)param_1);
+        FUN_000d86b0(auStack_90,lVar6);
+        FUN_0021b828(alStack_80,auStack_90,*(int *)((long)param_1 + 0x1c4),-1);
+        FUN_000031f4((long)auStack_90);
+        lVar6 = FUN_000db3a4(param_1 + 0x2e);
+        FUN_0021a214(auStack_90);
+        FUN_000d9a48(lVar6,auStack_90,(int)param_1[0x38]);
+        FUN_000031f4((long)auStack_90);
+        lVar6 = FUN_000dc844((long)param_1);
+        FUN_000d86e8(lVar6,alStack_70);
+        lVar6 = FUN_000e1d08((long)param_1);
+        FUN_0021a1f4(alStack_b0," ");
+        FUN_0021e73c(alStack_a0,alStack_b0,local_60);
+        FUN_0021f558(auStack_90,alStack_a0,alStack_80);
+        FUN_000d86e8(lVar6,auStack_90);
+        FUN_000031f4((long)auStack_90);
+        FUN_000031f4((long)alStack_a0);
+        FUN_000031f4((long)alStack_b0);
+        *(int *)(param_1 + 0x38) = (int)param_1[0x38] + 1;
+        *(int *)((long)param_1 + 0x1c4) = local_60;
+        param_1[0x39] = param_1[0x38];
+        FUN_000031f4((long)alStack_80);
+        FUN_000031f4((long)alStack_70);
+        goto LAB_000df824;
+      }
+      lVar6 = FUN_000db3a4(param_1 + 0x2e);
+      FUN_0021a1f4(alStack_80," ");
+      FUN_0021e73c(alStack_70,alStack_80,local_60);
+      FUN_000d9a48(lVar6,alStack_70,(int)param_1[0x38] + 1);
+      FUN_000031f4((long)alStack_70);
+      FUN_000031f4((long)alStack_80);
+      *(int *)(param_1 + 0x38) = (int)param_1[0x38] + 1;
+      *(int *)((long)param_1 + 0x1c4) = local_60;
+    }
+    param_1[0x39] = param_1[0x38];
+LAB_000df824:
+    local_21 = 1;
+    FUN_000031f4((long)auStack_50);
+    return local_21;
+  default:
+    return 0;
+  case 0x5b:
+    FUN_000dafdc(param_1);
+    return 1;
+  case 0x66:
+    lVar6 = FUN_000db3a4(param_1 + 0x2e);
+    bVar2 = FUN_000d9984(lVar6);
+    if (bVar2) {
+      lVar6 = FUN_000db3a4(param_1 + 0x2e);
+      FUN_0021a214(auStack_50);
+      FUN_000d9a08(lVar6,auStack_50);
+      FUN_000031f4((long)auStack_50);
+    }
+    bVar2 = FUN_000db488((long)param_1);
+    if (!bVar2) {
+      iVar1 = *(int *)((long)param_1 + 0x1c4);
+      lVar6 = FUN_000dc844((long)param_1);
+      uVar7 = FUN_000d878c(lVar6);
+      if (iVar1 < (int)uVar7) {
+        lVar6 = FUN_000dc844((long)param_1);
+        FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
+        FUN_000db510((long)param_1);
+        return 1;
+      }
+      FUN_000e1c4c((long)param_1,(int)param_1[0x38],(int)param_1[0x38] + 1);
+      param_1[0x39] = param_1[0x38];
+      return 1;
+    }
+    break;
+  case 0x67:
+    lVar6 = FUN_000db3a4(param_1 + 0x2e);
+    bVar2 = FUN_000d9984(lVar6);
+    if (bVar2) {
+      lVar6 = FUN_000db3a4(param_1 + 0x2e);
+      FUN_0021a214(auStack_50);
+      FUN_000d9a08(lVar6,auStack_50);
+      FUN_000031f4((long)auStack_50);
+    }
+    bVar2 = FUN_000db488((long)param_1);
+    if (!bVar2) {
+      if (0 < *(int *)((long)param_1 + 0x1c4)) {
+        *(int *)((long)param_1 + 0x1c4) = *(int *)((long)param_1 + 0x1c4) + -1;
+        param_1[0x39] = param_1[0x38];
+        lVar6 = FUN_000dc844((long)param_1);
+        FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
+        return 1;
+      }
+      if ((int)param_1[0x38] < 1) {
+        return 1;
+      }
+      lVar6 = FUN_000e1c10((long)param_1);
+      uVar7 = FUN_000d878c(lVar6);
+      *(int *)((long)param_1 + 0x1c4) = (int)uVar7;
+      lVar6 = param_1[0x38];
+      iVar1 = (int)lVar6 + -1;
+      *(int *)(param_1 + 0x38) = iVar1;
+      param_1[0x39] = param_1[0x38];
+      FUN_000e1c4c((long)param_1,iVar1,(int)lVar6);
+      return 1;
+    }
   }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail();
+  FUN_000dc720((long)param_1);
+  return 1;
 }
 ```
 
-#### FUN_003644b4 — funcs/__Z12FUN_003644b4lPy.cpp, Ghidra 3644b4, 0 model attempt(s)
+#### FUN_000e7fb4 — funcs/FUN_000e7fb4.cpp, Ghidra e7fb4, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_003644b4lPy.cpp:8:33: error: incompatible integer to pointer conversion assigning to 'code *' (aka 'unsigned long long (*)(...)') from 'uint64_t' (aka 'unsigned long long')
-    8 |   *(code **)(param_1 + 0x3d0) = FUN_0036b344;
-      |                                 ^~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_003644b4(long param_1,uint64_t *param_2) {
-    uint64_t FUN_0036b344 = 0; // auto-declared (undeclared in the rewrite)
-
-  FUN_0036b920(param_1,0x2d41,(uint)*param_2);
-  *(undefined4 *)(param_1 + 0x238) = 7;
-  *(code **)(param_1 + 0x3d0) = FUN_0036b344;
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_003644b4(long param_1,undefined8 *param_2)
-
-{
-  FUN_0036b920(param_1,0x2d41,(uint)*param_2);
-  *(undefined4 *)(param_1 + 0x238) = 7;
-  *(code **)(param_1 + 0x3d0) = FUN_0036b344;
-  return;
-}
-```
-
-#### finishLaunching — funcs/finishLaunching.cpp, Ghidra 1676f4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/finishLaunching.cpp:19:18: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
-   19 |     puStack_28 = PTR_Glitch215vst3Application_00452e90;
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/finishLaunching.cpp:23:5: error: 'NSApplication' is not a class, namespace, or enumeration
-   23 |     NSApplication::finishLaunching((ID)&local_30, PTR_s_finishLaunching_00452448);
-      |     ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/finishLaunching.cpp:10:14: note: 'NSApplication' declared here
-   10 |     uint64_t NSApplication = 0; // auto-declared (undeclared in the rewrite)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/finishLaunching.cpp:23:36: error: no matching conversion for C-style cast from 'long *' to 'ID'
-   23 |     NSApplication::finishLaunching((ID)&local_30, PTR_s_finishLaunching_00452448);
-      |                                    ^~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'long *' to 'const ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'long *' to 'ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void finishLaunching(long param_1, undefined8 param_2) {
-    uint64_t _finishedLaunching = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t PTR_s_finishLaunching_00452448 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t PTR_Glitch215vst3Application_00452e90 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t NSApplication = 0; // auto-declared (undeclared in the rewrite)
-
-  long local_30;
-  undefined *puStack_28;
-  undefined8 local_20;
-  long local_18;
-
-  if ((*(byte *)(param_1 + _finishedLaunching) & 1) == 0) {
-    *(undefined1 *)(param_1 + _finishedLaunching) = 1;
-    puStack_28 = PTR_Glitch215vst3Application_00452e90;
-    local_30 = param_1;
-    local_20 = param_2;
-    local_18 = param_1;
-    NSApplication::finishLaunching((ID)&local_30, PTR_s_finishLaunching_00452448);
-  }
-}
-```
-Ghidra's pseudocode:
-```c
-/* Function Stack Size: 0x10 bytes */
-
-void Glitch215vst3Application::finishLaunching(long param_1,undefined8 param_2)
-
-{
-  long local_30;
-  undefined *puStack_28;
-  undefined8 local_20;
-  long local_18;
-  
-  if ((*(byte *)(param_1 + _finishedLaunching) & 1) == 0) {
-    *(undefined1 *)(param_1 + _finishedLaunching) = 1;
-    puStack_28 = PTR_Glitch215vst3Application_00452e90;
-    local_30 = param_1;
-    local_20 = param_2;
-    local_18 = param_1;
-    NSApplication::finishLaunching((ID)&local_30,PTR_s_finishLaunching_00452448);
-  }
-  return;
-}
-```
-
-#### alloc__168cf4 — funcs/alloc__168cf4.cpp, Ghidra 168cf4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:20:16: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
-   20 |   puStack_38 = PTR_Glitch215vst3Window_00452ea0;
-      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:24:14: error: 'NSWindow' is not a class, namespace, or enumeration
-   24 |   local_30 = NSWindow::alloc((ID)&local_40,PTR_s_alloc_00452138);
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:8:14: note: 'NSWindow' declared here
-    8 |     uint64_t NSWindow = 0; // auto-declared (undeclared in the rewrite)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:24:30: error: no matching conversion for C-style cast from 'undefined8 *' (aka 'unsigned long long *') to 'ID'
-   24 |   local_30 = NSWindow::alloc((ID)&local_40,PTR_s_alloc_00452138);
-      |                              ^~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'const ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:25:16: error: invalid operands to binary expression ('ID' and 'int')
-   25 |   if (local_30 == 0) {
-      |       ~~~~~~~~ ^  ~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:26:14: error: no viable overloaded '='
-   26 |     local_18 = 0;
-      |     ~~~~~~~~ ^ ~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate function (the implicit copy assignment operator) not viable: no known conversion from 'int' to 'const ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate function (the implicit move assignment operator) not viable: no known conversion from 'int' to 'ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:29:13: error: assigning to 'undefined4' (aka 'unsigned int') from incompatible type 'void'
-   29 |     uVar1 = FUN_0020237c();
-      |             ^~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:30:30: error: invalid operands to binary expression ('ID' and 'long')
-   30 |     *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
-      |                     ~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~
-7 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-ID alloc(uint64_t param_1,uint64_t param_2) {
-    uint64_t PTR_s_alloc_00452138 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t PTR_Glitch215vst3Window_00452ea0 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t NSWindow = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t mGlobalContextId = 0; // auto-declared (undeclared in the rewrite)
-
-undefined4 uVar1;
-  undefined8 local_40;
-  undefined *puStack_38;
-  ID local_30;
-  undefined8 local_28;
-  undefined8 uStack_20;
-  ID local_18;
-
-  puStack_38 = PTR_Glitch215vst3Window_00452ea0;
-  local_40 = param_1;
-  local_28 = param_2;
-  uStack_20 = param_1;
-  local_30 = NSWindow::alloc((ID)&local_40,PTR_s_alloc_00452138);
-  if (local_30 == 0) {
-    local_18 = 0;
-  }
-  else {
-    uVar1 = FUN_0020237c();
-    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
-    local_18 = local_30;
-  }
-  return local_18;
-}
-```
-Ghidra's pseudocode:
-```c
-/* WARNING: Removing unreachable block (ram,0x00168d70) */
-/* Function Stack Size: 0x10 bytes */
-
-ID Glitch215vst3Window::alloc(undefined8 param_1,undefined8 param_2)
-
-{
-  undefined4 uVar1;
-  undefined8 local_40;
-  undefined *puStack_38;
-  ID local_30;
-  undefined8 local_28;
-  undefined8 uStack_20;
-  ID local_18;
-  
-  puStack_38 = PTR_Glitch215vst3Window_00452ea0;
-  local_40 = param_1;
-  local_28 = param_2;
-  uStack_20 = param_1;
-  local_30 = NSWindow::alloc((ID)&local_40,PTR_s_alloc_00452138);
-  if (local_30 == 0) {
-    local_18 = 0;
-  }
-  else {
-    uVar1 = FUN_0020237c();
-    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
-    local_18 = local_30;
-  }
-  return local_18;
-}
-```
-
-#### alloc__16c4f4 — funcs/alloc__16c4f4.cpp, Ghidra 16c4f4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:20:16: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
-   20 |   puStack_38 = PTR_Glitch215vst3WindowView_00452eb0;
-      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:24:14: error: 'NSView' is not a class, namespace, or enumeration
-   24 |   local_30 = NSView::alloc((ID)&local_40,PTR_s_alloc_00452138);
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:8:14: note: 'NSView' declared here
-    8 |     uint64_t NSView = 0; // auto-declared (undeclared in the rewrite)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:24:28: error: no matching conversion for C-style cast from 'undefined8 *' (aka 'unsigned long long *') to 'ID'
-   24 |   local_30 = NSView::alloc((ID)&local_40,PTR_s_alloc_00452138);
-      |                            ^~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'const ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:25:16: error: invalid operands to binary expression ('ID' and 'int')
-   25 |   if (local_30 == 0) {
-      |       ~~~~~~~~ ^  ~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:26:14: error: no viable overloaded '='
-   26 |     local_18 = 0;
-      |     ~~~~~~~~ ^ ~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate function (the implicit copy assignment operator) not viable: no known conversion from 'int' to 'const ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate function (the implicit move assignment operator) not viable: no known conversion from 'int' to 'ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:29:13: error: assigning to 'undefined4' (aka 'unsigned int') from incompatible type 'void'
-   29 |     uVar1 = FUN_0020237c();
-      |             ^~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:30:30: error: invalid operands to binary expression ('ID' and 'long')
-   30 |     *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
-      |                     ~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~
-7 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-ID alloc(uint64_t param_1,uint64_t param_2) {
-    uint64_t PTR_s_alloc_00452138 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t PTR_Glitch215vst3WindowView_00452eb0 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t NSView = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t mGlobalContextId = 0; // auto-declared (undeclared in the rewrite)
-
-undefined4 uVar1;
-  undefined8 local_40;
-  undefined *puStack_38;
-  ID local_30;
-  undefined8 local_28;
-  undefined8 uStack_20;
-  ID local_18;
-
-  puStack_38 = PTR_Glitch215vst3WindowView_00452eb0;
-  local_40 = param_1;
-  local_28 = param_2;
-  uStack_20 = param_1;
-  local_30 = NSView::alloc((ID)&local_40,PTR_s_alloc_00452138);
-  if (local_30 == 0) {
-    local_18 = 0;
-  }
-  else {
-    uVar1 = FUN_0020237c();
-    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
-    local_18 = local_30;
-  }
-  return local_18;
-}
-```
-Ghidra's pseudocode:
-```c
-/* WARNING: Removing unreachable block (ram,0x0016c570) */
-/* Function Stack Size: 0x10 bytes */
-
-ID Glitch215vst3WindowView::alloc(undefined8 param_1,undefined8 param_2)
-
-{
-  undefined4 uVar1;
-  undefined8 local_40;
-  undefined *puStack_38;
-  ID local_30;
-  undefined8 local_28;
-  undefined8 uStack_20;
-  ID local_18;
-  
-  puStack_38 = PTR_Glitch215vst3WindowView_00452eb0;
-  local_40 = param_1;
-  local_28 = param_2;
-  uStack_20 = param_1;
-  local_30 = NSView::alloc((ID)&local_40,PTR_s_alloc_00452138);
-  if (local_30 == 0) {
-    local_18 = 0;
-  }
-  else {
-    uVar1 = FUN_0020237c();
-    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
-    local_18 = local_30;
-  }
-  return local_18;
-}
-```
-
-#### resignFirstResponder — funcs/resignFirstResponder.cpp, Ghidra 16c7e8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:21:18: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
-   21 |     puStack_28 = PTR_Glitch215vst3WindowView_00452eb8;
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:23:13: error: 'NSView' is not a class, namespace, or enumeration
-   23 |     IVar1 = NSView::resignFirstResponder((ID)&local_30, PTR_s_resignFirstResponder_00452820);
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:8:14: note: 'NSView' declared here
-    8 |     uint64_t NSView = 0; // auto-declared (undeclared in the rewrite)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:23:42: error: no matching conversion for C-style cast from 'undefined8 *' (aka 'unsigned long long *') to 'ID'
-   23 |     IVar1 = NSView::resignFirstResponder((ID)&local_30, PTR_s_resignFirstResponder_00452820);
-      |                                          ^~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'const ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:24:12: error: cannot convert 'ID' to 'bool' without a conversion operator
-   24 |     return (bool)IVar1;
-      |            ^~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000e7fb4.cpp:12:15: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
+   12 |       uVar3 = (uint64_t)FUN_000e8094();
+      |               ^~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000e7fb4.cpp:13:15: error: no matching function for call to 'FUN_000e8124'
+   13 |       bVar2 = FUN_000e8124(uVar3, local_40 + 4, param_2);
+      |               ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:18279:6: note: candidate function not viable: no known conversion from 'undefined8' (aka 'unsigned long long') to 'const std::vector<float>' for 1st argument
+ 18279 | bool FUN_000e8124(const std::vector<float> &, const std::vector<float> &, uint64_t *);
+       |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000e7fb4.cpp:18:15: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
+   18 |     param_4 = local_40;
+      |               ^~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000e7fb4.cpp:23:3: error: void function 'FUN_000e7fb4' should not return a value [-Wreturn-mismatch]
+   23 |   return local_28;
+      |   ^      ~~~~~~~~
 4 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-bool resignFirstResponder(undefined8 param_1, undefined8 param_2) {
-    uint64_t PTR_s_resignFirstResponder_00452820 = 0; // auto-declared (undeclared in the rewrite)
+void FUN_000e7fb4(long *plVar1, bool bVar2, long *local_40, undefined8 uVar3) {
+    uint64_t param_4 = 0; // auto-declared (undeclared in the rewrite)
 
-    uint64_t PTR_Glitch215vst3WindowView_00452eb8 = 0; // auto-declared (undeclared in the rewrite)
+    uint64_t param_2 = 0; // auto-declared (undeclared in the rewrite)
 
-    uint64_t NSView = 0; // auto-declared (undeclared in the rewrite)
+    uint64_t local_28 = 0; // auto-declared (undeclared in the rewrite)
 
-    ID IVar1;
-    undefined8 local_30;
-    undefined *puStack_28;
-    undefined8 local_20;
-    undefined8 local_18;
-
-    local_30 = param_2;
-    local_18 = param_1;
-
-    FUN_0016c82c();
-
-    puStack_28 = PTR_Glitch215vst3WindowView_00452eb8;
-
-    IVar1 = NSView::resignFirstResponder((ID)&local_30, PTR_s_resignFirstResponder_00452820);
-    return (bool)IVar1;
+  while (plVar1 != (long *)0x0 && local_40 != (long *)0x0) {
+    while( true ) {
+      uVar3 = (uint64_t)FUN_000e8094();
+      bVar2 = FUN_000e8124(uVar3, local_40 + 4, param_2);
+      if (!bVar2) break;
+      local_40 = (long *)local_40[1];
+      if (local_40 == (long *)0x0) goto LAB_000e8020;
+    }
+    param_4 = local_40;
+    plVar1 = (long *)*local_40;
+  }
+LAB_000e8020:
+  FUN_000e8168(&local_28, param_4);
+  return local_28;
 }
 ```
+Notes:
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 11:59 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
+- 10-21 11:59 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
-/* Function Stack Size: 0x10 bytes */
-
-bool Glitch215vst3WindowView::resignFirstResponder(undefined8 param_1,undefined8 param_2)
+undefined8 FUN_000e7fb4(undefined8 param_1,ulong *param_2,long param_3,long *param_4)
 
 {
-  ID IVar1;
-  undefined8 local_30;
-  undefined *puStack_28;
-  undefined8 local_20;
-  undefined8 local_18;
+  long *plVar1;
+  bool bVar2;
+  undefined8 uVar3;
+  long *local_40;
+  undefined8 local_28;
   
-  local_20 = param_2;
-  local_18 = param_1;
-  FUN_0016c82c();
-  local_30 = local_18;
-  puStack_28 = PTR_Glitch215vst3WindowView_00452eb8;
-  IVar1 = NSView::resignFirstResponder((ID)&local_30,PTR_s_resignFirstResponder_00452820);
-  return (bool)IVar1;
-}
-```
-
-#### FUN_001a1b50 — funcs/FUN_001a1b50.cpp, Ghidra 1a1b50, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:30:12: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
-   30 |   puVar1 = PTR__NSApp_00424000;
-      |            ^~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:33:19: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
-   33 |     local_58[0] = PTR_s_contextID_004522d0;
-      |                   ^~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:34:24: error: no member named 'respondsToSelector_' in 'objc_stub'
-   34 |     IVar5 = objc_stub::respondsToSelector_(*(undefined8 *)PTR__NSApp_00424000);
-      |                        ^~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:35:12: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
-   35 |     self = PTR__OBJC_CLASS___NSInvocation_00452e58;
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:36:9: error: cannot convert 'ID' to 'int' without a conversion operator
-   36 |     if ((int)IVar5 == 0) {
-      |         ^~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:40:26: error: no member named 'methodSignatureForSelector_' in 'objc_stub'
-   40 |       IVar5 = objc_stub::methodSignatureForSelector_(*(undefined8 *)puVar1,local_58[0]);
-      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:41:15: error: 'NSInvocation' is not a class, namespace, or enumeration
-   41 |       IVar5 = NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
-      |               ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:10:14: note: 'NSInvocation' declared here
-   10 |     uint64_t NSInvocation = 0; // auto-declared (undeclared in the rewrite)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:41:60: error: no matching conversion for C-style cast from 'undefined *' (aka 'unsigned char *') to 'ID'
-   41 |       IVar5 = NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
-      |                                                            ^~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'undefined *' (aka 'unsigned char *') to 'const ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'undefined *' (aka 'unsigned char *') to 'ID' for 1st argument
-  732 | struct ID {
-      |        ^~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:42:7: error: 'NSInvocation' is not a class, namespace, or enumeration
-   42 |       NSInvocation::setSelector_(IVar5,local_58
-...
-clared (undeclared in the rewrite)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:53:3: error: 'NSInvocation' is not a class, namespace, or enumeration
-   53 |   NSInvocation::getReturnValue_(IVar5,&local_48);
-      |   ^
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:10:14: note: 'NSInvocation' declared here
-   10 |     uint64_t NSInvocation = 0; // auto-declared (undeclared in the rewrite)
-      |              ^
-16 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-ID FUN_001a1b50(uint32_t *param_1) {
-    uint64_t PTR_s_contextID_004522d0 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t PTR__OBJC_CLASS___NSInvocation_00452e58 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t PTR__NSApp_00424000 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t NSInvocation = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t DAT_00453a50 = 0; // auto-declared (undeclared in the rewrite)
-
-  undefined *puVar1;
-  undefined *self;
-  long lVar2;
-  long lVar3;
-  int iVar4;
-  ID IVar5;
-  undefined8 uVar6;
-  undefined8 *puVar7;
-  undefined1 auVar8 [16];
-  int local_80;
-  int local_7c;
-  undefined *local_58 [2];
-  long local_48;
-  undefined4 *local_40;
-  ID local_38;
-
-  puVar1 = PTR__NSApp_00424000;
-  local_40 = param_1;
-  if (DAT_00453a50 == -1) {
-    local_58[0] = PTR_s_contextID_004522d0;
-    IVar5 = objc_stub::respondsToSelector_(*(undefined8 *)PTR__NSApp_00424000);
-    self = PTR__OBJC_CLASS___NSInvocation_00452e58;
-    if ((int)IVar5 == 0) {
-      DAT_00453a50 = 0;
+  plVar1 = (long *)param_3;
+  while (local_40 = plVar1, local_40 != (long *)0x0) {
+    while( true ) {
+      uVar3 = FUN_000e8094();
+      bVar2 = FUN_000e8124(uVar3,local_40 + 4,param_2);
+      if (!bVar2) break;
+      local_40 = (long *)local_40[1];
+      if (local_40 == (long *)0x0) goto LAB_000e8020;
     }
-    else {
-      IVar5 = objc_stub::methodSignatureForSelector_(*(undefined8 *)puVar1,local_58[0]);
-      IVar5 = NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
-      NSInvocation::setSelector_(IVar5,local_58[0]);
-      NSInvocation::invokeWithTarget_(IVar5,*(undefined8 *)puVar1);
-      local_48 = 0;
-      NSInvocation::getReturnValue_(IVar5,&local_48);
-      DAT_00453a50 = local_48;
-    }
+    param_4 = local_40;
+    plVar1 = (long *)*local_40;
   }
-  NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
-  NSInvocation::setSelector_(IVar5,local_58[0]);
-  NSInvocation::invokeWithTarget_(IVar5,*(undefined8 *)puVar1);
-  local_48 = 0;
-  NSInvocation::getReturnValue_(IVar5,&local_48);
-  DAT_00453a50 = local_48;
-}
-```
-Ghidra's pseudocode:
-```c
-ID FUN_001a1b50(undefined4 *param_1)
-
-{
-  undefined *puVar1;
-  undefined *self;
-  long lVar2;
-  long lVar3;
-  int iVar4;
-  ID IVar5;
-  undefined8 uVar6;
-  undefined8 *puVar7;
-  undefined1 auVar8 [16];
-  int local_80;
-  int local_7c;
-  undefined *local_58 [2];
-  long local_48;
-  undefined4 *local_40;
-  ID local_38;
-  
-  puVar1 = PTR__NSApp_00424000;
-  local_40 = param_1;
-  if (DAT_00453a50 == -1) {
-    local_58[0] = PTR_s_contextID_004522d0;
-    IVar5 = objc_stub::respondsToSelector_(*(undefined8 *)PTR__NSApp_00424000);
-    self = PTR__OBJC_CLASS___NSInvocation_00452e58;
-    if ((int)IVar5 == 0) {
-      DAT_00453a50 = 0;
-    }
-    else {
-      IVar5 = objc_stub::methodSignatureForSelector_(*(undefined8 *)puVar1,local_58[0]);
-      IVar5 = NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
-      NSInvocation::setSelector_(IVar5,local_58[0]);
-      NSInvocation::invokeWithTarget_(IVar5,*(undefined8 *)puVar1);
-      local_48 = 0;
-      NSInvocation::getReturnValue_(IVar5,&local_48);
-      DAT_00453a50 = local_48;
-    }
-  }
-  FUN_001a6d4c((long *)local_58,0);
-  _NSCountWindowsForContext(DAT_00453a50,&local_48);
-  FUN_001a6d70((long *)local_58,(int)local_48);
-  lVar3 = local_48;
-  lVar2 = DAT_00453a50;
-  uVar6 = FUN_001a6de8(local_58);
-  _NSWindowListForContext(lVar2,lVar3,uVar6);
-  auVar8 = FUN_00171c28(local_40,1);
-  local_7c = 0;
-  do {
-    iVar4 = FUN_001a6dfc((long)local_58);
-    if (iVar4 <= local_7c) {
-      local_80 = 2;
-LAB_001a1d00:
-      if (local_80 == 2) {
-        local_38 = 0;
-      }
-      FUN_001a6e2c((long *)local_58);
-      return local_38;
-    }
-    uVar6 = *(undefined8 *)puVar1;
-    puVar7 = (undefined8 *)FUN_001a6e10((long *)local_58,local_7c);
-    IVar5 = objc_stub::windowWithWindowNumber_(uVar6,*puVar7);
-    objc_stub::frame(IVar5);
-    auVar8._8_8_ = 0;
-    iVar4 = _NSMouseInRect(auVar8,0);
-    if (iVar4 != 0) {
-      local_80 = 1;
-      local_38 = IVar5;
-      goto LAB_001a1d00;
-    }
-    local_7c = local_7c + 1;
-  } while( true );
+LAB_000e8020:
+  FUN_000e8168(&local_28,param_4);
+  return local_28;
 }
 ```
 
@@ -102125,968 +101855,888 @@ void FUN_00137504(long param_1,ushort param_2,long param_3,int param_4)
 }
 ```
 
-### Not compiling yet — 20 × C-style cast from 'X' to 'X' (aka 'X') is not allowed
+### Not compiling yet — 21 × incompatible integer to pointer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')
 
-All: FUN_000a3db0 (a3db0), FUN_000b6238 (b6238), FUN_00290a28 (290a28), FUN_002cb90c (2cb90c), FUN_0006b980 (6b980), FUN_000793d4 (793d4), FUN_000df460 (df460), FUN_000e7fb4 (e7fb4), FUN_00163814 (163814), FUN_001676bc (1676bc), FUN_00172064 (172064), FUN_00182ea4 (182ea4), FUN_001f4b98 (1f4b98), FUN_001f880c (1f880c), FUN_001f9af8 (1f9af8), FUN_00206430 (206430), FUN_0022b430 (22b430), FUN_003084a0 (3084a0), FUN_0031fb00 (31fb00), FUN_003397f0 (3397f0)
+All: FUN_002c4a78 (?), FUN_003644b4 (3644b4), finishLaunching (1676f4), alloc__168cf4 (168cf4), alloc__16c4f4 (16c4f4), resignFirstResponder (16c7e8), FUN_001a1b50 (1a1b50), alloc__1a86b8 (1a86b8), layout (1a88bc), viewDidHide (1a8e8c), viewDidUnhide (1a90dc), FUN_002a61d4 (2a61d4), FUN_002a6c00 (2a6c00), FUN_002a8bbc (2a8bbc), FUN_002ae1ac (2ae1ac), FUN_002b1098 (2b1098), FUN_002b4a2c (2b4a2c), FUN_002e185c (2e185c), FUN_002e1910 (2e1910), FUN_0030bcbc (30bcbc), FUN_00334e78 (334e78)
 
-#### FUN_000a3db0 — funcs/__Z12FUN_000a3db0lylylyy.cpp, Ghidra a3db0, 1 model attempt(s)
+#### FUN_002c4a78 — funcs/__Z12FUN_002c4a78lmmm.cpp, Ghidra ?, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000a3db0lylylyy.cpp:8:11: error: C-style cast from 'void' to 'uint32_t' (aka 'unsigned int') is not allowed
-    8 |   uVar1 = (uint32_t)FUN_000a41bc(param_1,param_2,param_3,param_4,param_5,param_6,param_7);
-      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002c4a78lmmm.cpp:25:15: error: incompatible integer to pointer conversion assigning to 'byte *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
+   25 |     pbVar10 = local_1e8;
+      |               ^~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002c4a78lmmm.cpp:29:13: error: assigning to 'uint' (aka 'unsigned int') from incompatible type 'void'
+   29 |     uVar4 = FUN_002c4bc4(param_1, uVar1, uVar2, uVar3, (long)auStack_168);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002c4a78lmmm.cpp:30:5: error: no matching function for call to 'FUN_002c4db4'
+   30 |     FUN_002c4db4(param_1, uVar1, uVar2, uVar3, uVar4, (long)auStack_168, local_1e8);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:49673:6: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint8_t *' (aka 'unsigned char *') for 7th argument
+ 49673 | void FUN_002c4db4(long, int, int, int, uint, long, uint8_t *);
+       |      ^                                             ~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_002c4a78(long param_1, ulong param_2, ulong param_3, ulong param_4) {
+    uint64_t PTR____stack_chk_guard_004241e8 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t local_68 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t local_1e8 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t auStack_168 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint uVar1;
+    uint uVar2;
+    uint uVar3;
+    uint uVar4;
+    long lVar5;
+    long lVar6;
+    long lVar7;
+    long lVar8;
+    long lVar9;
+    byte *pbVar10;
+
+    local_68 = *(long *)PTR____stack_chk_guard_004241e8;
+    lVar9 = *(long *)(*(long *)(param_1 + 600) + 0x30);
+    pbVar10 = local_1e8;
+    uVar1 = (int)(param_2 >> 2) << 5 | 4;
+    uVar2 = (int)(param_3 >> 3) << 5 | 2;
+    uVar3 = (int)(param_4 >> 2) << 5 | 4;
+    uVar4 = FUN_002c4bc4(param_1, uVar1, uVar2, uVar3, (long)auStack_168);
+    FUN_002c4db4(param_1, uVar1, uVar2, uVar3, uVar4, (long)auStack_168, local_1e8);
+    lVar5 = 0;
+    do {
+        lVar6 = 0;
+        lVar7 = *(long *)(lVar9 + (lVar5 + (int)((uint)param_2 & 0xfffffffc)) * 8) +
+            ((long)(int)param_3 & 0xfffffffffffffff8U) * 0x40 +
+            ((long)(int)param_4 & 0xfffffffffffffffcU) * 2;
+        do {
+            *(ushort *)(lVar7 + lVar8 * 2) = pbVar10[lVar8] + 1;
+            lVar8 = lVar8 + 1;
+        } while (lVar8 != 4);
+        lVar6 = lVar6 + 1;
+        lVar7 = lVar7 + 0x40;
+        pbVar10 = pbVar10 + 4;
+    } while (lVar6 != 8);
+    lVar5 = lVar5 + 1;
+  }
+```
+Ghidra's pseudocode:
+```c
+void FUN_002c4a78(long param_1,ulong param_2,ulong param_3,ulong param_4)
+
+{
+  uint uVar1;
+  uint uVar2;
+  uint uVar3;
+  uint uVar4;
+  long lVar5;
+  long lVar6;
+  long lVar7;
+  long lVar8;
+  long lVar9;
+  byte *pbVar10;
+  byte local_1e8 [128];
+  undefined1 auStack_168 [256];
+  long local_68;
+  
+  local_68 = *(long *)PTR____stack_chk_guard_004241e8;
+  lVar9 = *(long *)(*(long *)(param_1 + 600) + 0x30);
+  pbVar10 = local_1e8;
+  uVar1 = (int)(param_2 >> 2) << 5 | 4;
+  uVar2 = (int)(param_3 >> 3) << 5 | 2;
+  uVar3 = (int)(param_4 >> 2) << 5 | 4;
+  uVar4 = FUN_002c4bc4(param_1,uVar1,uVar2,uVar3,(long)auStack_168);
+  FUN_002c4db4(param_1,uVar1,uVar2,uVar3,uVar4,(long)auStack_168,local_1e8);
+  lVar5 = 0;
+  do {
+    lVar6 = 0;
+    lVar7 = *(long *)(lVar9 + (lVar5 + (int)((uint)param_2 & 0xfffffffc)) * 8) +
+            ((long)(int)param_3 & 0xfffffffffffffff8U) * 0x40 +
+            ((long)(int)param_4 & 0xfffffffffffffffcU) * 2;
+    do {
+      lVar8 = 0;
+      do {
+        *(ushort *)(lVar7 + lVar8 * 2) = pbVar10[lVar8] + 1;
+        lVar8 = lVar8 + 1;
+      } while (lVar8 != 4);
+      lVar6 = lVar6 + 1;
+      lVar7 = lVar7 + 0x40;
+      pbVar10 = pbVar10 + 4;
+    } while (lVar6 != 8);
+    lVar5 = lVar5 + 1;
+  } while (lVar5 != 4);
+  if (*(long *)PTR____stack_chk_guard_004241e8 == local_68) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  ___stack_chk_fail();
+}
+```
+
+#### FUN_003644b4 — funcs/__Z12FUN_003644b4lPy.cpp, Ghidra 3644b4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_003644b4lPy.cpp:8:33: error: incompatible integer to pointer conversion assigning to 'code *' (aka 'unsigned long long (*)(...)') from 'uint64_t' (aka 'unsigned long long')
+    8 |   *(code **)(param_1 + 0x3d0) = FUN_0036b344;
+      |                                 ^~~~~~~~~~~~
 1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-uint32_t
-FUN_000a3db0(long param_1,uint64_t param_2,long param_3,uint64_t param_4,long param_5,
-            uint64_t param_6,uint64_t param_7) {
-  uint32_t uVar1;
+void FUN_003644b4(long param_1,uint64_t *param_2) {
+    uint64_t FUN_0036b344 = 0; // auto-declared (undeclared in the rewrite)
 
-  uVar1 = (uint32_t)FUN_000a41bc(param_1,param_2,param_3,param_4,param_5,param_6,param_7);
-  return uVar1;
+  FUN_0036b920(param_1,0x2d41,(uint)*param_2);
+  *(undefined4 *)(param_1 + 0x238) = 7;
+  *(code **)(param_1 + 0x3d0) = FUN_0036b344;
+  return;
 }
 ```
-Notes:
-- 10-21 10:55 [compile] assigning to 'uint32_t' (aka 'unsigned int') from incompatible type 'void' — plan: Change `uint32_t uVar1 = FUN_000a41bc(param_1,param_2,param_3,param_4,param_5,param_6,param_7);` to `uint32_t uVar1 = (uint32_t)FUN_000a41bc(param_1,param_2,par — still fails: C-style cast from 'void' to 'uint32_t' (aka 'unsigned int') is not allowed
 Ghidra's pseudocode:
 ```c
-undefined4
-FUN_000a3db0(long param_1,undefined8 param_2,long param_3,undefined8 param_4,long param_5,
-            undefined8 param_6,undefined8 param_7)
+void FUN_003644b4(long param_1,undefined8 *param_2)
+
+{
+  FUN_0036b920(param_1,0x2d41,(uint)*param_2);
+  *(undefined4 *)(param_1 + 0x238) = 7;
+  *(code **)(param_1 + 0x3d0) = FUN_0036b344;
+  return;
+}
+```
+
+#### finishLaunching — funcs/finishLaunching.cpp, Ghidra 1676f4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/finishLaunching.cpp:19:18: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
+   19 |     puStack_28 = PTR_Glitch215vst3Application_00452e90;
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/finishLaunching.cpp:23:5: error: 'NSApplication' is not a class, namespace, or enumeration
+   23 |     NSApplication::finishLaunching((ID)&local_30, PTR_s_finishLaunching_00452448);
+      |     ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/finishLaunching.cpp:10:14: note: 'NSApplication' declared here
+   10 |     uint64_t NSApplication = 0; // auto-declared (undeclared in the rewrite)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/finishLaunching.cpp:23:36: error: no matching conversion for C-style cast from 'long *' to 'ID'
+   23 |     NSApplication::finishLaunching((ID)&local_30, PTR_s_finishLaunching_00452448);
+      |                                    ^~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'long *' to 'const ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'long *' to 'ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void finishLaunching(long param_1, undefined8 param_2) {
+    uint64_t _finishedLaunching = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t PTR_s_finishLaunching_00452448 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t PTR_Glitch215vst3Application_00452e90 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t NSApplication = 0; // auto-declared (undeclared in the rewrite)
+
+  long local_30;
+  undefined *puStack_28;
+  undefined8 local_20;
+  long local_18;
+
+  if ((*(byte *)(param_1 + _finishedLaunching) & 1) == 0) {
+    *(undefined1 *)(param_1 + _finishedLaunching) = 1;
+    puStack_28 = PTR_Glitch215vst3Application_00452e90;
+    local_30 = param_1;
+    local_20 = param_2;
+    local_18 = param_1;
+    NSApplication::finishLaunching((ID)&local_30, PTR_s_finishLaunching_00452448);
+  }
+}
+```
+Ghidra's pseudocode:
+```c
+/* Function Stack Size: 0x10 bytes */
+
+void Glitch215vst3Application::finishLaunching(long param_1,undefined8 param_2)
+
+{
+  long local_30;
+  undefined *puStack_28;
+  undefined8 local_20;
+  long local_18;
+  
+  if ((*(byte *)(param_1 + _finishedLaunching) & 1) == 0) {
+    *(undefined1 *)(param_1 + _finishedLaunching) = 1;
+    puStack_28 = PTR_Glitch215vst3Application_00452e90;
+    local_30 = param_1;
+    local_20 = param_2;
+    local_18 = param_1;
+    NSApplication::finishLaunching((ID)&local_30,PTR_s_finishLaunching_00452448);
+  }
+  return;
+}
+```
+
+#### alloc__168cf4 — funcs/alloc__168cf4.cpp, Ghidra 168cf4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:20:16: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
+   20 |   puStack_38 = PTR_Glitch215vst3Window_00452ea0;
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:24:14: error: 'NSWindow' is not a class, namespace, or enumeration
+   24 |   local_30 = NSWindow::alloc((ID)&local_40,PTR_s_alloc_00452138);
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:8:14: note: 'NSWindow' declared here
+    8 |     uint64_t NSWindow = 0; // auto-declared (undeclared in the rewrite)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:24:30: error: no matching conversion for C-style cast from 'undefined8 *' (aka 'unsigned long long *') to 'ID'
+   24 |   local_30 = NSWindow::alloc((ID)&local_40,PTR_s_alloc_00452138);
+      |                              ^~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'const ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:25:16: error: invalid operands to binary expression ('ID' and 'int')
+   25 |   if (local_30 == 0) {
+      |       ~~~~~~~~ ^  ~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:26:14: error: no viable overloaded '='
+   26 |     local_18 = 0;
+      |     ~~~~~~~~ ^ ~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate function (the implicit copy assignment operator) not viable: no known conversion from 'int' to 'const ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate function (the implicit move assignment operator) not viable: no known conversion from 'int' to 'ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:29:13: error: assigning to 'undefined4' (aka 'unsigned int') from incompatible type 'void'
+   29 |     uVar1 = FUN_0020237c();
+      |             ^~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__168cf4.cpp:30:30: error: invalid operands to binary expression ('ID' and 'long')
+   30 |     *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
+      |                     ~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~
+7 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+ID alloc(uint64_t param_1,uint64_t param_2) {
+    uint64_t PTR_s_alloc_00452138 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t PTR_Glitch215vst3Window_00452ea0 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t NSWindow = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t mGlobalContextId = 0; // auto-declared (undeclared in the rewrite)
+
+undefined4 uVar1;
+  undefined8 local_40;
+  undefined *puStack_38;
+  ID local_30;
+  undefined8 local_28;
+  undefined8 uStack_20;
+  ID local_18;
+
+  puStack_38 = PTR_Glitch215vst3Window_00452ea0;
+  local_40 = param_1;
+  local_28 = param_2;
+  uStack_20 = param_1;
+  local_30 = NSWindow::alloc((ID)&local_40,PTR_s_alloc_00452138);
+  if (local_30 == 0) {
+    local_18 = 0;
+  }
+  else {
+    uVar1 = FUN_0020237c();
+    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
+    local_18 = local_30;
+  }
+  return local_18;
+}
+```
+Ghidra's pseudocode:
+```c
+/* WARNING: Removing unreachable block (ram,0x00168d70) */
+/* Function Stack Size: 0x10 bytes */
+
+ID Glitch215vst3Window::alloc(undefined8 param_1,undefined8 param_2)
 
 {
   undefined4 uVar1;
+  undefined8 local_40;
+  undefined *puStack_38;
+  ID local_30;
+  undefined8 local_28;
+  undefined8 uStack_20;
+  ID local_18;
   
-  uVar1 = FUN_000a41bc(param_1,param_2,param_3,param_4,param_5,param_6,param_7);
-  return uVar1;
-}
-```
-
-#### FUN_000b6238 — funcs/__Z12FUN_000b6238v.cpp, Ghidra b6238, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_000b6238v.cpp:9:20: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-    9 |     DAT_00453548 = (uint64_t)FUN_002023cc();
-      |                    ^~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b6238(void) {
-    uint64_t DAT_00453550 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t DAT_00453548 = 0; // auto-declared (undeclared in the rewrite)
-
-  if ((DAT_00453550 & 1) == 0) {
-    DAT_00453548 = (uint64_t)FUN_002023cc();
-    DAT_00453550 = 1;
-  }
-  return;
-}
-```
-Notes:
-- 10-21 10:04 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:04 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:04 [compile] assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000b6238(void)
-
-{
-  if ((DAT_00453550 & 1) == 0) {
-    DAT_00453548 = FUN_002023cc();
-    DAT_00453550 = 1;
-  }
-  return;
-}
-```
-
-#### FUN_00290a28 — funcs/__Z12FUN_00290a28PlPy.cpp, Ghidra 290a28, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00290a28PlPy.cpp:13:11: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-   13 |   uVar2 = (uint64_t)FUN_00290b30();
-      |           ^~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00290a28PlPy.cpp:18:12: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'undefined8 *' (aka 'unsigned long long *'); dereference with *
-   18 |   puVar1 = local_48;
-      |            ^~~~~~~~
-      |            *
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00290a28PlPy.cpp:21:3: error: no matching function for call to 'FUN_00290b1c'
-   21 |   FUN_00290b1c(puVar1,param_2);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:48089:6: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint64_t *' (aka 'unsigned long long *') for 1st argument; take the address of the argument with &
- 48089 | void FUN_00290b1c(uint64_t *, uint64_t *);
-       |      ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00290a28PlPy.cpp:23:3: error: no matching function for call to 'FUN_00290c5c'
-   23 |   FUN_00290c5c(param_1,alStack_58);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:48119:6: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 48119 | void FUN_00290c5c(uint64_t *, uint64_t *);
-       |      ^            ~~~~~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00290a28(long *param_1,uint64_t *param_2) {
-    uint64_t puVar1 = 0; // auto-declared (undeclared in the rewrite)
-
-  undefined8 uVar2;
-  undefined8 uVar4;
-  long lVar3;
-  ulong uVar5;
-  long alStack_58 [2];
-  undefined8 *local_48;
-
-  uVar2 = (uint64_t)FUN_00290b30();
-  lVar3 = FUN_00290c34(param_1);
-  uVar4 = FUN_00290bc4(param_1,lVar3 + 1);
-  lVar3 = FUN_00290c34(param_1);
-  FUN_00290c44(alStack_58,uVar4,lVar3,uVar2);
-  puVar1 = local_48;
-  FUN_00290b48();
-  FUN_00290c58();
-  FUN_00290b1c(puVar1,param_2);
-  local_48 = local_48 + 1;
-  FUN_00290c5c(param_1,alStack_58);
-  FUN_00290cdc(alStack_58);
-  return;
-}
-```
-Notes:
-- 10-21 10:06 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:06 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:06 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00290a28(long *param_1,undefined8 *param_2)
-
-{
-  undefined8 *puVar1;
-  undefined8 uVar2;
-  long lVar3;
-  ulong uVar4;
-  long alStack_58 [2];
-  undefined8 *local_48;
-  
-  uVar2 = FUN_00290b30();
-  lVar3 = FUN_00290c34(param_1);
-  uVar4 = FUN_00290bc4(param_1,lVar3 + 1);
-  lVar3 = FUN_00290c34(param_1);
-  FUN_00290c44(alStack_58,uVar4,lVar3,uVar2);
-  puVar1 = local_48;
-  FUN_00290b48();
-  FUN_00290c58();
-  FUN_00290b1c(puVar1,param_2);
-  local_48 = local_48 + 1;
-  FUN_00290c5c(param_1,alStack_58);
-  FUN_00290cdc(alStack_58);
-  return;
-}
-```
-
-#### FUN_002cb90c — funcs/__Z12FUN_002cb90cPi.cpp, Ghidra 2cb90c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002cb90cPi.cpp:38:38: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-   38 |                     uint64_t uVar2 = (uint64_t)FUN_002e2e60((long)param_1);
-      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002cb90cPi.cpp:51:5: error: void function 'FUN_002cb90c' should not return a value [-Wreturn-mismatch]
-   51 |     return uVar2;
-      |     ^      ~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_002cb90c(int *param_1) {
-    long lVar1;
-    undefined8 uVar2;
-    int iVar3;
-
-    param_1[0xe2] = 0;
-    param_1[0xe4] = 0;
-    iVar3 = param_1[6];
-    param_1[0xe3] = iVar3;
-    param_1[0xe5] = param_1[7];
-    param_1[0xde] = 0;
-    param_1[0xdf] = iVar3;
-    param_1[0xe0] = 0;
-    param_1[0xe1] = param_1[7];
-    *(undefined1 *)(param_1 + 0xc4) = 0xff;
-    param_1[0xc5] = 0;
-    param_1[0xc6] = 1;
-    param_1[199] = 0;
-    param_1[200] = 1;
-    param_1[0xc9] = iVar3;
-    param_1[0xcd] = iVar3 << 2;
-    *(undefined2 *)(param_1 + 0xdc) = 0x100;
-    FUN_002cb90c((int *)((long)param_1));
-    lVar1 = (**(code **)(param_1 + 0x2a))((long)param_1[0xcd]);
-    *(long *)(param_1 + 0xda) = lVar1;
-    if (lVar1 == 0) {
-        uVar2 = 1;
-        FUN_002cfdd8(param_1,1,0,0);
-    }
-    else {
-        iVar3 = param_1[0xe4];
-        if (iVar3 < param_1[0xe5]) {
-            do {
-                uVar2 = (**(code **)(param_1 + 0x130))(param_1);
-                if ((int)uVar2 == 0) {
-                    uint64_t uVar2 = (uint64_t)FUN_002e2e60((long)param_1);
-                }
-            } while (((int)uVar2 == 0) && (iVar3 = iVar3 + 1, iVar3 < param_1[0xe5]));
-        }
-        else {
-            uVar2 = 0;
-        }
-        if (*(long *)(param_1 + 0xda) != 0) {
-            (**(code **)(param_1 + 0x2c))(*(long *)(param_1 + 0xda),(long)param_1[0xcd]);
-            param_1[0xda] = 0;
-            param_1[0xdb] = 0;
-        }
-    }
-    return uVar2;
-}
-```
-Notes:
-- 10-21 10:07 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:07 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:07 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:07 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:08 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:08 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:08 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:08 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:08 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-undefined8 FUN_002cb90c(int *param_1)
-
-{
-  long lVar1;
-  undefined8 uVar2;
-  int iVar3;
-  
-  param_1[0xe2] = 0;
-  param_1[0xe4] = 0;
-  iVar3 = param_1[6];
-  param_1[0xe3] = iVar3;
-  param_1[0xe5] = param_1[7];
-  param_1[0xde] = 0;
-  param_1[0xdf] = iVar3;
-  param_1[0xe0] = 0;
-  param_1[0xe1] = param_1[7];
-  *(undefined1 *)(param_1 + 0xc4) = 0xff;
-  param_1[0xc5] = 0;
-  param_1[0xc6] = 1;
-  param_1[199] = 0;
-  param_1[200] = 1;
-  param_1[0xc9] = iVar3;
-  param_1[0xcd] = iVar3 << 2;
-  *(undefined2 *)(param_1 + 0xdc) = 0x100;
-  FUN_002caa84((long)param_1);
-  lVar1 = (**(code **)(param_1 + 0x2a))((long)param_1[0xcd]);
-  *(long *)(param_1 + 0xda) = lVar1;
-  if (lVar1 == 0) {
-    uVar2 = 1;
-    FUN_002cfdd8(param_1,1,0,0);
+  puStack_38 = PTR_Glitch215vst3Window_00452ea0;
+  local_40 = param_1;
+  local_28 = param_2;
+  uStack_20 = param_1;
+  local_30 = NSWindow::alloc((ID)&local_40,PTR_s_alloc_00452138);
+  if (local_30 == 0) {
+    local_18 = 0;
   }
   else {
-    iVar3 = param_1[0xe4];
-    if (iVar3 < param_1[0xe5]) {
-      do {
-        uVar2 = (**(code **)(param_1 + 0x130))(param_1);
-        if ((int)uVar2 == 0) {
-          uVar2 = FUN_002e2e60((long)param_1);
-        }
-      } while (((int)uVar2 == 0) && (iVar3 = iVar3 + 1, iVar3 < param_1[0xe5]));
-    }
-    else {
-      uVar2 = 0;
-    }
-    if (*(long *)(param_1 + 0xda) != 0) {
-      (**(code **)(param_1 + 0x2c))(*(long *)(param_1 + 0xda),(long)param_1[0xcd]);
-      param_1[0xda] = 0;
-      param_1[0xdb] = 0;
-    }
+    uVar1 = FUN_0020237c();
+    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
+    local_18 = local_30;
   }
-  return uVar2;
+  return local_18;
 }
 ```
 
-#### FUN_0006b980 — funcs/FUN_0006b980.cpp, Ghidra 6b980, 0 model attempt(s)
+#### alloc__16c4f4 — funcs/alloc__16c4f4.cpp, Ghidra 16c4f4, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0006b980.cpp:14:15: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-   14 |       uVar3 = (uint64_t)FUN_0006b2a4();
-      |               ^~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0006b980.cpp:15:15: error: no matching function for call to 'FUN_0006b310'
-   15 |       bVar2 = FUN_0006b310(uVar3,local_40 + 4,param_2);
-      |               ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:8657:6: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t' (aka 'unsigned long long') for 2nd argument; dereference the argument with *
- 8657 | bool FUN_0006b310(uint64_t, uint64_t, uint64_t *);
-      |      ^                      ~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0006b980.cpp:24:3: error: no matching function for call to 'FUN_0006ba84'
-   24 |   FUN_0006ba84(&local_28,param_4);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:8745:6: note: candidate function not viable: no known conversion from 'long *' to 'undefined8' (aka 'unsigned long long') for 2nd argument; dereference the argument with *
- 8745 | void FUN_0006ba84(undefined8 *, undefined8);
-      |      ^                          ~~~~~~~~~~
-3 errors generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:20:16: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
+   20 |   puStack_38 = PTR_Glitch215vst3WindowView_00452eb0;
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:24:14: error: 'NSView' is not a class, namespace, or enumeration
+   24 |   local_30 = NSView::alloc((ID)&local_40,PTR_s_alloc_00452138);
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:8:14: note: 'NSView' declared here
+    8 |     uint64_t NSView = 0; // auto-declared (undeclared in the rewrite)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:24:28: error: no matching conversion for C-style cast from 'undefined8 *' (aka 'unsigned long long *') to 'ID'
+   24 |   local_30 = NSView::alloc((ID)&local_40,PTR_s_alloc_00452138);
+      |                            ^~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'const ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:25:16: error: invalid operands to binary expression ('ID' and 'int')
+   25 |   if (local_30 == 0) {
+      |       ~~~~~~~~ ^  ~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:26:14: error: no viable overloaded '='
+   26 |     local_18 = 0;
+      |     ~~~~~~~~ ^ ~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate function (the implicit copy assignment operator) not viable: no known conversion from 'int' to 'const ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate function (the implicit move assignment operator) not viable: no known conversion from 'int' to 'ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:29:13: error: assigning to 'undefined4' (aka 'unsigned int') from incompatible type 'void'
+   29 |     uVar1 = FUN_0020237c();
+      |             ^~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__16c4f4.cpp:30:30: error: invalid operands to binary expression ('ID' and 'long')
+   30 |     *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
+      |                     ~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~
+7 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-uint64_t FUN_0006b980(uint64_t param_1,uint64_t *param_2,long param_3,long *param_4) {
-    uint64_t local_28 = 0; // auto-declared (undeclared in the rewrite)
+ID alloc(uint64_t param_1,uint64_t param_2) {
+    uint64_t PTR_s_alloc_00452138 = 0; // auto-declared (undeclared in the rewrite)
 
-  long *plVar1;
-  bool bVar2;
-  undefined8 uVar3;
-  long *local_40;
+    uint64_t PTR_Glitch215vst3WindowView_00452eb0 = 0; // auto-declared (undeclared in the rewrite)
 
-  plVar1 = (long *)param_3;
-  while (local_40 = plVar1, local_40 != (long *)0x0) {
-    while( true ) {
-      uVar3 = (uint64_t)FUN_0006b2a4();
-      bVar2 = FUN_0006b310(uVar3,local_40 + 4,param_2);
-      if (!bVar2) break;
-      local_40 = (long *)local_40[1];
-      if (local_40 == (long *)0x0) goto LAB_0006b9ec;
-    }
-    param_4 = local_40;
-    plVar1 = (long *)*local_40;
-  }
-LAB_0006b9ec:
-  FUN_0006ba84(&local_28,param_4);
-  return local_28;
-}
-```
-Notes:
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-undefined8 FUN_0006b980(undefined8 param_1,ulong *param_2,long param_3,long *param_4)
+    uint64_t NSView = 0; // auto-declared (undeclared in the rewrite)
 
-{
-  long *plVar1;
-  bool bVar2;
-  undefined8 uVar3;
-  long *local_40;
+    uint64_t mGlobalContextId = 0; // auto-declared (undeclared in the rewrite)
+
+undefined4 uVar1;
+  undefined8 local_40;
+  undefined *puStack_38;
+  ID local_30;
   undefined8 local_28;
-  
-  plVar1 = (long *)param_3;
-  while (local_40 = plVar1, local_40 != (long *)0x0) {
-    while( true ) {
-      uVar3 = FUN_0006b2a4();
-      bVar2 = FUN_0006b310(uVar3,local_40 + 4,param_2);
-      if (!bVar2) break;
-      local_40 = (long *)local_40[1];
-      if (local_40 == (long *)0x0) goto LAB_0006b9ec;
-    }
-    param_4 = local_40;
-    plVar1 = (long *)*local_40;
+  undefined8 uStack_20;
+  ID local_18;
+
+  puStack_38 = PTR_Glitch215vst3WindowView_00452eb0;
+  local_40 = param_1;
+  local_28 = param_2;
+  uStack_20 = param_1;
+  local_30 = NSView::alloc((ID)&local_40,PTR_s_alloc_00452138);
+  if (local_30 == 0) {
+    local_18 = 0;
   }
-LAB_0006b9ec:
-  FUN_0006ba84(&local_28,param_4);
-  return local_28;
+  else {
+    uVar1 = FUN_0020237c();
+    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
+    local_18 = local_30;
+  }
+  return local_18;
 }
 ```
-
-#### FUN_000793d4 — funcs/FUN_000793d4.cpp, Ghidra 793d4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000793d4.cpp:19:17: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-   19 |         uVar2 = (uint64_t)FUN_00079474();
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000793d4.cpp:20:18: error: cannot cast from type 'void' to pointer type 'undefined8 *' (aka 'unsigned long long *')
-   20 |         puVar3 = (undefined8 *)FUN_00079770();
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000793d4.cpp:21:9: error: no matching function for call to 'FUN_00079750'
-   21 |         FUN_00079750(uVar2, puVar3);
-      |         ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:10269:6: note: candidate function not viable: requires 3 arguments, but 2 were provided
- 10269 | void FUN_00079750(float *, float *, int);
-       |      ^            ~~~~~~~~~~~~~~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000793d4(long param_1, long param_2) {
-    uint64_t lStack_28 = 0; // auto-declared (undeclared in the rewrite)
-
-    long lVar1;
-    undefined8 uVar2;
-    undefined8 *puVar3;
-    long lStack_48;
-    long local_40;
-    long lStack_38;
-    long local_28;
-
-    local_40 = param_2;
-    lStack_28 = param_1;
-
-    FUN_0007972c(&lStack_48, param_1, param_2);
-    while (lVar1 = local_40, local_40 != lStack_38) {
-        uVar2 = (uint64_t)FUN_00079474();
-        puVar3 = (undefined8 *)FUN_00079770();
-        FUN_00079750(uVar2, puVar3);
-        local_40 = lVar1 + 8;
-    }
-    FUN_00079780(&lStack_48);
-    return;
-}
-```
-Notes:
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:10 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:10 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:11 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:11 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:11 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
-void FUN_000793d4(long param_1,long param_2)
+/* WARNING: Removing unreachable block (ram,0x0016c570) */
+/* Function Stack Size: 0x10 bytes */
+
+ID Glitch215vst3WindowView::alloc(undefined8 param_1,undefined8 param_2)
 
 {
-  long lVar1;
-  undefined8 uVar2;
-  undefined8 *puVar3;
-  long lStack_48;
-  long local_40;
-  long lStack_38;
-  long local_30;
-  long lStack_28;
+  undefined4 uVar1;
+  undefined8 local_40;
+  undefined *puStack_38;
+  ID local_30;
+  undefined8 local_28;
+  undefined8 uStack_20;
+  ID local_18;
   
-  local_30 = param_2;
-  lStack_28 = param_1;
-  FUN_0007972c(&lStack_48,param_1,param_2);
-  while (lVar1 = local_40, local_40 != lStack_38) {
-    uVar2 = FUN_00079474();
-    puVar3 = (undefined8 *)FUN_00079770();
-    FUN_00079750(uVar2,puVar3);
-    local_40 = lVar1 + 8;
+  puStack_38 = PTR_Glitch215vst3WindowView_00452eb0;
+  local_40 = param_1;
+  local_28 = param_2;
+  uStack_20 = param_1;
+  local_30 = NSView::alloc((ID)&local_40,PTR_s_alloc_00452138);
+  if (local_30 == 0) {
+    local_18 = 0;
   }
-  FUN_00079780(&lStack_48);
-  return;
+  else {
+    uVar1 = FUN_0020237c();
+    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
+    local_18 = local_30;
+  }
+  return local_18;
 }
 ```
 
-#### FUN_000df460 — funcs/FUN_000df460.cpp, Ghidra df460, 0 model attempt(s)
+#### resignFirstResponder — funcs/resignFirstResponder.cpp, Ghidra 16c7e8, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:24:34: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-   24 |                 uint64_t lVar6 = (uint64_t)FUN_000dc844((long)param_1);
-      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:25:17: error: no matching function for call to 'FUN_000d86b0'
-   25 |                 FUN_000d86b0(auStack_50,lVar6);
-      |                 ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:17439:6: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint64_t *' (aka 'unsigned long long *') for 1st argument; take the address of the argument with &
- 17439 | void FUN_000d86b0(uint64_t *, long);
-       |      ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:26:51: error: no matching function for call to 'FUN_0021b59c'
-   26 |                 while ((iVar1 = local_60, iVar5 = FUN_0021b59c(auStack_50), iVar1 < iVar5 &&
-      |                                                   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42375:5: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint64_t *' (aka 'unsigned long long *') for 1st argument; take the address of the argument with &
- 42375 | int FUN_0021b59c(uint64_t *);
-       |     ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:28:29: error: no matching function for call to 'FUN_0021c89c'
-   28 |                     uVar3 = FUN_0021c89c(auStack_50,local_60);
-      |                             ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:42423:10: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'uint64_t *' (aka 'unsigned long long *') for 1st argument; take the address of the argument with &
- 42423 | uint16_t FUN_0021c89c(uint64_t *, int);
-       |          ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:37:25: error: no matching function for call to 'FUN_000db3a4'
-   37 |                 lVar6 = FUN_000db3a4(param_1 + 0x2e);
-      |                         ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:17615:10: note: candidate function not viable: no known conversion from 'float *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 17615 | uint64_t FUN_000db3a4(uint64_t *);
-       |          ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:40:29: error: no matching function for call to 'FUN_000db3a4'
-   40 |                     lVar6 = FUN_000db3a4(param_1 + 0x2e);
-      |                             ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:17615:10: note: candidate function not viable: no known conversion from 'float *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 17615 | uint64_t FUN_000db3a4(uint64_t *);
-       |          ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:41:21: error: no matching function for call to 'FUN_0021a214'
-   41 |                     FUN_0021a214(alStack_70);
-      |                     ^~~~~~~~~~~~
-/U
-...
-uires 3 arguments, but 1 was provided
-    3 | void FUN_000df460(float *param_1, float param_2, float param_3) {
-      |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000df460.cpp:68:13: error: void function 'FUN_000df460' should not return a value [-Wreturn-mismatch]
-   68 |             return local_21;
-      |             ^      ~~~~~~~~
-fatal error: too many errors emitted, stopping now [-ferror-limit=]
-21 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000df460(float *param_1, float param_2, float param_3) {
-    uint64_t local_21 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t alStack_70 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t local_60 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t lVar6 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t iVar5 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t auStack_50 = 0; // auto-declared (undeclared in the rewrite)
-
-    int iVar1 = (int)(uintptr_t)param_1;
-    bool bVar2 = (bool)param_2;
-    ushort uVar3 = *(ushort *)param_1 + 0x18;
-    undefined4 uVar4 = FUN_001aa7b0(param_2);
-    switch(uVar4) {
-        case 0x47:
-            case 0x68:
-                local_60 = 0;
-                uint64_t lVar6 = (uint64_t)FUN_000dc844((long)param_1);
-                FUN_000d86b0(auStack_50,lVar6);
-                while ((iVar1 = local_60, iVar5 = FUN_0021b59c(auStack_50), iVar1 < iVar5 &&
-                       (local_60 < *(int *)((long)param_1 + 0x1c4)))) {
-                    uVar3 = FUN_0021c89c(auStack_50,local_60);
-                    bVar2 = FUN_0021ab5c((uint)uVar3);
-                    if (!bVar2) break;
-                    local_60 = local_60 + 1;
-                }
-                bVar2 = FUN_000db488((long)param_1);
-                if (bVar2) {
-                    FUN_000dc720((long)param_1);
-                }
-                lVar6 = FUN_000db3a4(param_1 + 0x2e);
-                bVar2 = FUN_000d9984(lVar6);
-                if (bVar2) {
-                    lVar6 = FUN_000db3a4(param_1 + 0x2e);
-                    FUN_0021a214(alStack_70);
-                    FUN_000d9a08(lVar6,alStack_70);
-                    FUN_000df460((long)alStack_70);
-                }
-                if (*(int *)((long)param_1 + 0x1c4) == 0) {
-                    lVar6 = FUN_000db3a4(param_1 + 0x2e);
-                    FUN_0021a214(alStack_70);
-                    FUN_000d9a48(lVar6,alStack_70,(int)param_1[0x38]);
-                    FUN_000df460((long)alStack_70);
-                    *(int *)(param_1 + 0x38) = (int)param_1[0x38] + 1;
-                }
-                else {
-                    iVar1 = *(int *)((long)param_1 + 0x1c4);
-                    iVar5 = FUN_0021b59c(auStack_50);
-                    if (iVar1 != iVar5) {
-                        lVar6 = FUN_000dc844((long)param_1);
-                        FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
-                        FUN_000db510((long)param_1);
-                        return 1;
-                    }
-                    FUN_000e1c4c((long)param_1,(int)param_1[0x38],(int)param_1[0x38] + 1);
-                    param_1[0x39] = param_1[0x38];
-                    return 1;
-                }
-            }
-            local_21 = 1;
-            FUN_000df460((long)auStack_50);
-            return local_21;
-        default:
-            return 0;
-        case 0x5b:
-            FUN_000dafdc(param_1);
-            return 1;
-        case 0x66:
-            lVar6 = FUN_000db3a4(param_1 + 0x2e);
-            bVar2 = FUN_000d9984(lVar6);
-            if (bVar2) {
-                lVar6 = FUN_000db3a4(param_1 + 0x2e);
-                FUN_0021a214(auStack_50);
-                FUN_000d9a08(lVar6,auStack_50);
-                FUN_000df460((long)auStack_50);
-            }
-            bVar2 = FUN_000db488((long)param_1);
-            if (!bVar2) {
-                iVar1 = *(int *)((long)param_1 + 0x1c4);
-                lVar6 = FUN_000dc844((long)param_1);
-                uVar7 = FUN_000d878c(lVar6);
-                if (iVar1 < (int)uVar7) {
-                    lVar6 = FUN_000dc844((long)param_1);
-                    FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
-                    FUN_000db510((long)param_1);
-                    return 1;
-                }
-                FUN_000e1c4c((long)param_1,(int)param_1[0x38],(int)param_1[0x38] + 1);
-                param_1[0x39] = param_1[0x38];
-                return 1;
-            }
-            break;
-        case 0x67:
-            lVar6 = FUN_000db3a4(param_1 + 0x2e);
-            bVar2 = FUN_000d9984(lVar6);
-            if (bVar2) {
-                lVar6 = FUN_000db3a4(param_1 + 0x2e);
-                FUN_0021a214(auStack_50);
-                FUN_000d9a08(lVar6,auStack_50);
-                FUN_000df460((long)auStack_50);
-            }
-            bVar2 = FUN_000db488((long)param_1);
-            if (!bVar2) {
-                if (0 < *(int *)((long)param_1 + 0x1c4)) {
-                    *(int *)((long)param_1 + 0x1c4) = *(int *)((long)param_1 + 0x1c4) + -1;
-                    param_1[0x39] = param_1[0x38];
-                    lVar6 = FUN_000dc844((long)param_1);
-                    FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
-                    return 1;
-                }
-                if ((int)param_1[0x38] < 1) {
-                    return 1;
-                }
-                lVar6 = FUN_000e1c10((long)param_1);
-                uVar7 = FUN_000d878c(lVar6);
-                *(int *)((long)param_1 + 0x1c4) = (int)uVar7;
-                lVar6 = param_1[0x38];
-                iVar1 = (int)lVar6 + -1;
-                *(int *)(param_1 + 0x38) = iVar1;
-                param_1[0x39] = param_1[0x38];
-                FUN_000e1c4c((long)param_1,iVar1,(int)lVar6);
-                return 1;
-            }
-    }
-```
-Notes:
-- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-- 10-21 10:14 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:14 [compile] cannot initialize a variable of type 'uint64_t' (aka 'unsigned long long') with an rvalue of type 'v — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-undefined1 FUN_000df460(long *param_1,long param_2,undefined1 param_3)
-
-{
-  int iVar1;
-  bool bVar2;
-  ushort uVar3;
-  undefined4 uVar4;
-  int iVar5;
-  long lVar6;
-  undefined8 uVar7;
-  long alStack_b0 [2];
-  long alStack_a0 [2];
-  undefined8 auStack_90 [2];
-  long alStack_80 [2];
-  long alStack_70 [2];
-  int local_60;
-  undefined8 auStack_50 [2];
-  undefined1 local_39;
-  long local_38;
-  long *plStack_30;
-  undefined1 local_21;
-  
-  local_39 = param_3;
-  local_38 = param_2;
-  plStack_30 = param_1;
-  uVar4 = FUN_001aa7b0(param_2);
-  switch(uVar4) {
-  case 0x47:
-  case 0x68:
-    local_60 = 0;
-    lVar6 = FUN_000dc844((long)param_1);
-    FUN_000d86b0(auStack_50,lVar6);
-    while ((iVar1 = local_60, iVar5 = FUN_0021b59c(auStack_50), iVar1 < iVar5 &&
-           (local_60 < *(int *)((long)param_1 + 0x1c4)))) {
-      uVar3 = FUN_0021c89c(auStack_50,local_60);
-      bVar2 = FUN_0021ab5c((uint)uVar3);
-      if (!bVar2) break;
-      local_60 = local_60 + 1;
-    }
-    bVar2 = FUN_000db488((long)param_1);
-    if (bVar2) {
-      FUN_000dc720((long)param_1);
-    }
-    lVar6 = FUN_000db3a4(param_1 + 0x2e);
-    bVar2 = FUN_000d9984(lVar6);
-    if (bVar2) {
-      lVar6 = FUN_000db3a4(param_1 + 0x2e);
-      FUN_0021a214(alStack_70);
-      FUN_000d9a08(lVar6,alStack_70);
-      FUN_000031f4((long)alStack_70);
-    }
-    if (*(int *)((long)param_1 + 0x1c4) == 0) {
-      lVar6 = FUN_000db3a4(param_1 + 0x2e);
-      FUN_0021a214(alStack_70);
-      FUN_000d9a48(lVar6,alStack_70,(int)param_1[0x38]);
-      FUN_000031f4((long)alStack_70);
-      *(int *)(param_1 + 0x38) = (int)param_1[0x38] + 1;
-    }
-    else {
-      iVar1 = *(int *)((long)param_1 + 0x1c4);
-      iVar5 = FUN_0021b59c(auStack_50);
-      if (iVar1 != iVar5) {
-        lVar6 = FUN_000dc844((long)param_1);
-        FUN_000d86b0(alStack_80,lVar6);
-        FUN_0021b828(alStack_70,alStack_80,0,*(int *)((long)param_1 + 0x1c4));
-        FUN_000031f4((long)alStack_80);
-        lVar6 = FUN_000dc844((long)param_1);
-        FUN_000d86b0(auStack_90,lVar6);
-        FUN_0021b828(alStack_80,auStack_90,*(int *)((long)param_1 + 0x1c4),-1);
-        FUN_000031f4((long)auStack_90);
-        lVar6 = FUN_000db3a4(param_1 + 0x2e);
-        FUN_0021a214(auStack_90);
-        FUN_000d9a48(lVar6,auStack_90,(int)param_1[0x38]);
-        FUN_000031f4((long)auStack_90);
-        lVar6 = FUN_000dc844((long)param_1);
-        FUN_000d86e8(lVar6,alStack_70);
-        lVar6 = FUN_000e1d08((long)param_1);
-        FUN_0021a1f4(alStack_b0," ");
-        FUN_0021e73c(alStack_a0,alStack_b0,local_60);
-        FUN_0021f558(auStack_90,alStack_a0,alStack_80);
-        FUN_000d86e8(lVar6,auStack_90);
-        FUN_000031f4((long)auStack_90);
-        FUN_000031f4((long)alStack_a0);
-        FUN_000031f4((long)alStack_b0);
-        *(int *)(param_1 + 0x38) = (int)param_1[0x38] + 1;
-        *(int *)((long)param_1 + 0x1c4) = local_60;
-        param_1[0x39] = param_1[0x38];
-        FUN_000031f4((long)alStack_80);
-        FUN_000031f4((long)alStack_70);
-        goto LAB_000df824;
-      }
-      lVar6 = FUN_000db3a4(param_1 + 0x2e);
-      FUN_0021a1f4(alStack_80," ");
-      FUN_0021e73c(alStack_70,alStack_80,local_60);
-      FUN_000d9a48(lVar6,alStack_70,(int)param_1[0x38] + 1);
-      FUN_000031f4((long)alStack_70);
-      FUN_000031f4((long)alStack_80);
-      *(int *)(param_1 + 0x38) = (int)param_1[0x38] + 1;
-      *(int *)((long)param_1 + 0x1c4) = local_60;
-    }
-    param_1[0x39] = param_1[0x38];
-LAB_000df824:
-    local_21 = 1;
-    FUN_000031f4((long)auStack_50);
-    return local_21;
-  default:
-    return 0;
-  case 0x5b:
-    FUN_000dafdc(param_1);
-    return 1;
-  case 0x66:
-    lVar6 = FUN_000db3a4(param_1 + 0x2e);
-    bVar2 = FUN_000d9984(lVar6);
-    if (bVar2) {
-      lVar6 = FUN_000db3a4(param_1 + 0x2e);
-      FUN_0021a214(auStack_50);
-      FUN_000d9a08(lVar6,auStack_50);
-      FUN_000031f4((long)auStack_50);
-    }
-    bVar2 = FUN_000db488((long)param_1);
-    if (!bVar2) {
-      iVar1 = *(int *)((long)param_1 + 0x1c4);
-      lVar6 = FUN_000dc844((long)param_1);
-      uVar7 = FUN_000d878c(lVar6);
-      if (iVar1 < (int)uVar7) {
-        lVar6 = FUN_000dc844((long)param_1);
-        FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
-        FUN_000db510((long)param_1);
-        return 1;
-      }
-      FUN_000e1c4c((long)param_1,(int)param_1[0x38],(int)param_1[0x38] + 1);
-      param_1[0x39] = param_1[0x38];
-      return 1;
-    }
-    break;
-  case 0x67:
-    lVar6 = FUN_000db3a4(param_1 + 0x2e);
-    bVar2 = FUN_000d9984(lVar6);
-    if (bVar2) {
-      lVar6 = FUN_000db3a4(param_1 + 0x2e);
-      FUN_0021a214(auStack_50);
-      FUN_000d9a08(lVar6,auStack_50);
-      FUN_000031f4((long)auStack_50);
-    }
-    bVar2 = FUN_000db488((long)param_1);
-    if (!bVar2) {
-      if (0 < *(int *)((long)param_1 + 0x1c4)) {
-        *(int *)((long)param_1 + 0x1c4) = *(int *)((long)param_1 + 0x1c4) + -1;
-        param_1[0x39] = param_1[0x38];
-        lVar6 = FUN_000dc844((long)param_1);
-        FUN_000d8f10(lVar6,*(int *)((long)param_1 + 0x1c4));
-        return 1;
-      }
-      if ((int)param_1[0x38] < 1) {
-        return 1;
-      }
-      lVar6 = FUN_000e1c10((long)param_1);
-      uVar7 = FUN_000d878c(lVar6);
-      *(int *)((long)param_1 + 0x1c4) = (int)uVar7;
-      lVar6 = param_1[0x38];
-      iVar1 = (int)lVar6 + -1;
-      *(int *)(param_1 + 0x38) = iVar1;
-      param_1[0x39] = param_1[0x38];
-      FUN_000e1c4c((long)param_1,iVar1,(int)lVar6);
-      return 1;
-    }
-  }
-  FUN_000dc720((long)param_1);
-  return 1;
-}
-```
-
-#### FUN_000e7fb4 — funcs/FUN_000e7fb4.cpp, Ghidra e7fb4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000e7fb4.cpp:12:15: error: C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed
-   12 |       uVar3 = (uint64_t)FUN_000e8094();
-      |               ^~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000e7fb4.cpp:13:15: error: no matching function for call to 'FUN_000e8124'
-   13 |       bVar2 = FUN_000e8124(uVar3, local_40 + 4, param_2);
-      |               ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:18279:6: note: candidate function not viable: no known conversion from 'undefined8' (aka 'unsigned long long') to 'const std::vector<float>' for 1st argument
- 18279 | bool FUN_000e8124(const std::vector<float> &, const std::vector<float> &, uint64_t *);
-       |      ^            ~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000e7fb4.cpp:18:15: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
-   18 |     param_4 = local_40;
-      |               ^~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_000e7fb4.cpp:23:3: error: void function 'FUN_000e7fb4' should not return a value [-Wreturn-mismatch]
-   23 |   return local_28;
-      |   ^      ~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:21:18: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
+   21 |     puStack_28 = PTR_Glitch215vst3WindowView_00452eb8;
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:23:13: error: 'NSView' is not a class, namespace, or enumeration
+   23 |     IVar1 = NSView::resignFirstResponder((ID)&local_30, PTR_s_resignFirstResponder_00452820);
+      |             ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:8:14: note: 'NSView' declared here
+    8 |     uint64_t NSView = 0; // auto-declared (undeclared in the rewrite)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:23:42: error: no matching conversion for C-style cast from 'undefined8 *' (aka 'unsigned long long *') to 'ID'
+   23 |     IVar1 = NSView::resignFirstResponder((ID)&local_30, PTR_s_resignFirstResponder_00452820);
+      |                                          ^~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'const ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'undefined8 *' (aka 'unsigned long long *') to 'ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/resignFirstResponder.cpp:24:12: error: cannot convert 'ID' to 'bool' without a conversion operator
+   24 |     return (bool)IVar1;
+      |            ^~~~~~~~~~~
 4 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000e7fb4(long *plVar1, bool bVar2, long *local_40, undefined8 uVar3) {
-    uint64_t param_4 = 0; // auto-declared (undeclared in the rewrite)
+bool resignFirstResponder(undefined8 param_1, undefined8 param_2) {
+    uint64_t PTR_s_resignFirstResponder_00452820 = 0; // auto-declared (undeclared in the rewrite)
 
-    uint64_t param_2 = 0; // auto-declared (undeclared in the rewrite)
+    uint64_t PTR_Glitch215vst3WindowView_00452eb8 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t NSView = 0; // auto-declared (undeclared in the rewrite)
+
+    ID IVar1;
+    undefined8 local_30;
+    undefined *puStack_28;
+    undefined8 local_20;
+    undefined8 local_18;
+
+    local_30 = param_2;
+    local_18 = param_1;
+
+    FUN_0016c82c();
+
+    puStack_28 = PTR_Glitch215vst3WindowView_00452eb8;
+
+    IVar1 = NSView::resignFirstResponder((ID)&local_30, PTR_s_resignFirstResponder_00452820);
+    return (bool)IVar1;
+}
+```
+Ghidra's pseudocode:
+```c
+/* Function Stack Size: 0x10 bytes */
+
+bool Glitch215vst3WindowView::resignFirstResponder(undefined8 param_1,undefined8 param_2)
+
+{
+  ID IVar1;
+  undefined8 local_30;
+  undefined *puStack_28;
+  undefined8 local_20;
+  undefined8 local_18;
+  
+  local_20 = param_2;
+  local_18 = param_1;
+  FUN_0016c82c();
+  local_30 = local_18;
+  puStack_28 = PTR_Glitch215vst3WindowView_00452eb8;
+  IVar1 = NSView::resignFirstResponder((ID)&local_30,PTR_s_resignFirstResponder_00452820);
+  return (bool)IVar1;
+}
+```
+
+#### FUN_001a1b50 — funcs/FUN_001a1b50.cpp, Ghidra 1a1b50, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:30:12: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
+   30 |   puVar1 = PTR__NSApp_00424000;
+      |            ^~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:33:19: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
+   33 |     local_58[0] = PTR_s_contextID_004522d0;
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:34:24: error: no member named 'respondsToSelector_' in 'objc_stub'
+   34 |     IVar5 = objc_stub::respondsToSelector_(*(undefined8 *)PTR__NSApp_00424000);
+      |                        ^~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:35:12: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
+   35 |     self = PTR__OBJC_CLASS___NSInvocation_00452e58;
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:36:9: error: cannot convert 'ID' to 'int' without a conversion operator
+   36 |     if ((int)IVar5 == 0) {
+      |         ^~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:40:26: error: no member named 'methodSignatureForSelector_' in 'objc_stub'
+   40 |       IVar5 = objc_stub::methodSignatureForSelector_(*(undefined8 *)puVar1,local_58[0]);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:41:15: error: 'NSInvocation' is not a class, namespace, or enumeration
+   41 |       IVar5 = NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
+      |               ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:10:14: note: 'NSInvocation' declared here
+   10 |     uint64_t NSInvocation = 0; // auto-declared (undeclared in the rewrite)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:41:60: error: no matching conversion for C-style cast from 'undefined *' (aka 'unsigned char *') to 'ID'
+   41 |       IVar5 = NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
+      |                                                            ^~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'undefined *' (aka 'unsigned char *') to 'const ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'undefined *' (aka 'unsigned char *') to 'ID' for 1st argument
+  732 | struct ID {
+      |        ^~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:732:8: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:42:7: error: 'NSInvocation' is not a class, namespace, or enumeration
+   42 |       NSInvocation::setSelector_(IVar5,local_58
+...
+clared (undeclared in the rewrite)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:53:3: error: 'NSInvocation' is not a class, namespace, or enumeration
+   53 |   NSInvocation::getReturnValue_(IVar5,&local_48);
+      |   ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001a1b50.cpp:10:14: note: 'NSInvocation' declared here
+   10 |     uint64_t NSInvocation = 0; // auto-declared (undeclared in the rewrite)
+      |              ^
+16 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+ID FUN_001a1b50(uint32_t *param_1) {
+    uint64_t PTR_s_contextID_004522d0 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t PTR__OBJC_CLASS___NSInvocation_00452e58 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t PTR__NSApp_00424000 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t NSInvocation = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t DAT_00453a50 = 0; // auto-declared (undeclared in the rewrite)
+
+  undefined *puVar1;
+  undefined *self;
+  long lVar2;
+  long lVar3;
+  int iVar4;
+  ID IVar5;
+  undefined8 uVar6;
+  undefined8 *puVar7;
+  undefined1 auVar8 [16];
+  int local_80;
+  int local_7c;
+  undefined *local_58 [2];
+  long local_48;
+  undefined4 *local_40;
+  ID local_38;
+
+  puVar1 = PTR__NSApp_00424000;
+  local_40 = param_1;
+  if (DAT_00453a50 == -1) {
+    local_58[0] = PTR_s_contextID_004522d0;
+    IVar5 = objc_stub::respondsToSelector_(*(undefined8 *)PTR__NSApp_00424000);
+    self = PTR__OBJC_CLASS___NSInvocation_00452e58;
+    if ((int)IVar5 == 0) {
+      DAT_00453a50 = 0;
+    }
+    else {
+      IVar5 = objc_stub::methodSignatureForSelector_(*(undefined8 *)puVar1,local_58[0]);
+      IVar5 = NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
+      NSInvocation::setSelector_(IVar5,local_58[0]);
+      NSInvocation::invokeWithTarget_(IVar5,*(undefined8 *)puVar1);
+      local_48 = 0;
+      NSInvocation::getReturnValue_(IVar5,&local_48);
+      DAT_00453a50 = local_48;
+    }
+  }
+  NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
+  NSInvocation::setSelector_(IVar5,local_58[0]);
+  NSInvocation::invokeWithTarget_(IVar5,*(undefined8 *)puVar1);
+  local_48 = 0;
+  NSInvocation::getReturnValue_(IVar5,&local_48);
+  DAT_00453a50 = local_48;
+}
+```
+Ghidra's pseudocode:
+```c
+ID FUN_001a1b50(undefined4 *param_1)
+
+{
+  undefined *puVar1;
+  undefined *self;
+  long lVar2;
+  long lVar3;
+  int iVar4;
+  ID IVar5;
+  undefined8 uVar6;
+  undefined8 *puVar7;
+  undefined1 auVar8 [16];
+  int local_80;
+  int local_7c;
+  undefined *local_58 [2];
+  long local_48;
+  undefined4 *local_40;
+  ID local_38;
+  
+  puVar1 = PTR__NSApp_00424000;
+  local_40 = param_1;
+  if (DAT_00453a50 == -1) {
+    local_58[0] = PTR_s_contextID_004522d0;
+    IVar5 = objc_stub::respondsToSelector_(*(undefined8 *)PTR__NSApp_00424000);
+    self = PTR__OBJC_CLASS___NSInvocation_00452e58;
+    if ((int)IVar5 == 0) {
+      DAT_00453a50 = 0;
+    }
+    else {
+      IVar5 = objc_stub::methodSignatureForSelector_(*(undefined8 *)puVar1,local_58[0]);
+      IVar5 = NSInvocation::invocationWithMethodSignature_((ID)self,IVar5);
+      NSInvocation::setSelector_(IVar5,local_58[0]);
+      NSInvocation::invokeWithTarget_(IVar5,*(undefined8 *)puVar1);
+      local_48 = 0;
+      NSInvocation::getReturnValue_(IVar5,&local_48);
+      DAT_00453a50 = local_48;
+    }
+  }
+  FUN_001a6d4c((long *)local_58,0);
+  _NSCountWindowsForContext(DAT_00453a50,&local_48);
+  FUN_001a6d70((long *)local_58,(int)local_48);
+  lVar3 = local_48;
+  lVar2 = DAT_00453a50;
+  uVar6 = FUN_001a6de8(local_58);
+  _NSWindowListForContext(lVar2,lVar3,uVar6);
+  auVar8 = FUN_00171c28(local_40,1);
+  local_7c = 0;
+  do {
+    iVar4 = FUN_001a6dfc((long)local_58);
+    if (iVar4 <= local_7c) {
+      local_80 = 2;
+LAB_001a1d00:
+      if (local_80 == 2) {
+        local_38 = 0;
+      }
+      FUN_001a6e2c((long *)local_58);
+      return local_38;
+    }
+    uVar6 = *(undefined8 *)puVar1;
+    puVar7 = (undefined8 *)FUN_001a6e10((long *)local_58,local_7c);
+    IVar5 = objc_stub::windowWithWindowNumber_(uVar6,*puVar7);
+    objc_stub::frame(IVar5);
+    auVar8._8_8_ = 0;
+    iVar4 = _NSMouseInRect(auVar8,0);
+    if (iVar4 != 0) {
+      local_80 = 1;
+      local_38 = IVar5;
+      goto LAB_001a1d00;
+    }
+    local_7c = local_7c + 1;
+  } while( true );
+}
+```
+
+#### alloc__1a86b8 — funcs/alloc__1a86b8.cpp, Ghidra 1a86b8, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:22:16: error: incompatible integer to pointer conversion assigning to 'undefined *' (aka 'unsigned char *') from 'uint64_t' (aka 'unsigned long long')
+   22 |   puStack_38 = PTR_Glitch215vst3WindowGlueView_00452ec0;
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:27:16: error: invalid operands to binary expression ('ID' and 'int')
+   27 |   if (local_30 == 0) {
+      |       ~~~~~~~~ ^  ~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:30:14: error: redefinition of 'uVar1'
+   30 |   undefined4 uVar1;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:16:12: note: previous definition is here
+   16 | undefined4 uVar1;
+      |            ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:31:14: error: redefinition of 'uVar2'
+   31 |   undefined8 uVar2;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:17:14: note: previous definition is here
+   17 |   undefined8 uVar2;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:32:14: error: redefinition of 'local_40'
+   32 |   undefined8 local_40;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:18:14: note: previous definition is here
+   18 |   undefined8 local_40;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:33:14: error: redefinition of 'puStack_38'
+   33 |   undefined *puStack_38;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:19:14: note: previous definition is here
+   19 |   undefined *puStack_38;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:34:6: error: redefinition of 'local_30'
+   34 |   ID local_30;
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:20:6: note: previous definition is here
+   20 |   ID local_30;
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:35:14: error: redefinition of 'local_28'
+   35 |   undefined8 local_28;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:12:14: note: previous definition is here
+   12 |     uint64_t local_28 = 0; // auto-declared (undeclared in the rewrite)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:36:14: error: redefinition of 'uStack_20'
+   36 |   undefined8 uStack_20;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:8:14: note: previous definition is here
+    8 |     uint64_t uStack_20 = 0; // auto-declared (undeclared in the rewrite)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:37:6: error: redefinition of 'local_18' with a different type: 'ID' vs 'uint64_t' (aka 'unsigned long long')
+   37 |   ID local_18;
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:14:14: note: previous definition is here
+   14 |     uint64_t local_18 = 0; // auto-declared (undeclared in the rewrite)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:39:16: error: incompatible integer to pointer co
+...
+5:6: note: candidate function not viable: no known conversion from 'const char[14]' to 'undefined8' (aka 'unsigned long long') for 2nd argument
+ 40805 | void FUN_00208454(undefined8, undefined8, char *);
+       |      ^                        ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/alloc__1a86b8.cpp:51:16: error: assigning to 'uint64_t' (aka 'unsigned long long') from incompatible type 'ID'
+   51 |     local_18 = local_30;
+      |                ^~~~~~~~
+17 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+ID alloc(uint64_t param_1,uint64_t param_2) {
+    uint64_t PTR_s_alloc_00452138 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t PTR_Glitch215vst3WindowGlueView_00452ec0 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t uStack_20 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t mGlobalContextId = 0; // auto-declared (undeclared in the rewrite)
 
     uint64_t local_28 = 0; // auto-declared (undeclared in the rewrite)
 
-  while (plVar1 != (long *)0x0 && local_40 != (long *)0x0) {
-    while( true ) {
-      uVar3 = (uint64_t)FUN_000e8094();
-      bVar2 = FUN_000e8124(uVar3, local_40 + 4, param_2);
-      if (!bVar2) break;
-      local_40 = (long *)local_40[1];
-      if (local_40 == (long *)0x0) goto LAB_000e8020;
-    }
-    param_4 = local_40;
-    plVar1 = (long *)*local_40;
+    uint64_t local_18 = 0; // auto-declared (undeclared in the rewrite)
+
+undefined4 uVar1;
+  undefined8 uVar2;
+  undefined8 local_40;
+  undefined *puStack_38;
+  ID local_30;
+
+  puStack_38 = PTR_Glitch215vst3WindowGlueView_00452ec0;
+  local_40 = param_1;
+  local_28 = param_2;
+  uStack_20 = PTR_s_alloc_00452138;
+
+  if (local_30 == 0) {
+    local_18 = 0;
   }
-LAB_000e8020:
-  FUN_000e8168(&local_28, param_4);
-  return local_28;
+  undefined4 uVar1;
+  undefined8 uVar2;
+  undefined8 local_40;
+  undefined *puStack_38;
+  ID local_30;
+  undefined8 local_28;
+  undefined8 uStack_20;
+  ID local_18;
+
+  puStack_38 = PTR_Glitch215vst3WindowGlueView_00452ec0;
+  local_40 = param_1;
+  local_28 = param_2;
+  uStack_20 = param_1;
+
+  if (local_30 == 0) {
+    local_18 = 0;
+  } else {
+    uVar1 = FUN_0020237c();
+    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
+    uVar2 = FUN_002066a0();
+    FUN_00208454(uVar2, "MacWindowGlue", "Constructing new glue...");
+    local_18 = local_30;
+  }
 }
 ```
-Notes:
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 10:03 [compile] C-style cast from 'void' to 'uint64_t' (aka 'unsigned long long') is not allowed — fixed with a learned rule.
-- 10-21 10:03 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
-undefined8 FUN_000e7fb4(undefined8 param_1,ulong *param_2,long param_3,long *param_4)
+/* WARNING: Removing unreachable block (ram,0x001a8750) */
+/* Function Stack Size: 0x10 bytes */
+
+ID Glitch215vst3WindowGlueView::alloc(undefined8 param_1,undefined8 param_2)
 
 {
-  long *plVar1;
-  bool bVar2;
-  undefined8 uVar3;
-  long *local_40;
+  undefined4 uVar1;
+  undefined8 uVar2;
+  undefined8 local_40;
+  undefined *puStack_38;
+  ID local_30;
   undefined8 local_28;
+  undefined8 uStack_20;
+  ID local_18;
   
-  plVar1 = (long *)param_3;
-  while (local_40 = plVar1, local_40 != (long *)0x0) {
-    while( true ) {
-      uVar3 = FUN_000e8094();
-      bVar2 = FUN_000e8124(uVar3,local_40 + 4,param_2);
-      if (!bVar2) break;
-      local_40 = (long *)local_40[1];
-      if (local_40 == (long *)0x0) goto LAB_000e8020;
-    }
-    param_4 = local_40;
-    plVar1 = (long *)*local_40;
+  puStack_38 = PTR_Glitch215vst3WindowGlueView_00452ec0;
+  local_40 = param_1;
+  local_28 = param_2;
+  uStack_20 = param_1;
+  local_30 = NSView::alloc((ID)&local_40,PTR_s_alloc_00452138);
+  if (local_30 == 0) {
+    local_18 = 0;
   }
-LAB_000e8020:
-  FUN_000e8168(&local_28,param_4);
-  return local_28;
+  else {
+    uVar1 = FUN_0020237c();
+    *(undefined4 *)(local_30 + (long)mGlobalContextId) = uVar1;
+    uVar2 = FUN_002066a0();
+    FUN_00208454(uVar2,"MacWindowGlue","Constructing new glue...");
+    local_18 = local_30;
+  }
+  return local_18;
 }
 ```
 
@@ -109147,9 +108797,9 @@ void FUN_00366af4(long param_1,long param_2,undefined8 param_3,ulong param_4)
 }
 ```
 
-### Not compiling yet — 16 × call to non-static member function without an object argument
+### Not compiling yet — 15 × call to non-static member function without an object argument
 
-All: FUN_00281198 (281198), FUN_00281dc4 (281dc4), FUN_0028a3b8 (28a3b8), FUN_0028a9e8 (28a9e8), FUN_0028ad84 (28ad84), FUN_0029f86c (29f86c), FUN_0029fbf4 (29fbf4), FUN_002a0590 (2a0590), FUN_002a06ec (2a06ec), FUN_002a1624 (2a1624), FUN_002a1f30 (2a1f30), FUN_00142778 (142778), FUN_0014399c (14399c), FUN_0014707c (14707c), FUN_001f8794 (1f8794), FUN_00325e78 (325e78)
+All: FUN_00281198 (281198), FUN_00281dc4 (281dc4), FUN_0028a9e8 (28a9e8), FUN_0028ad84 (28ad84), FUN_0029f86c (29f86c), FUN_0029fbf4 (29fbf4), FUN_002a0590 (2a0590), FUN_002a06ec (2a06ec), FUN_002a1624 (2a1624), FUN_002a1f30 (2a1f30), FUN_00142778 (142778), FUN_0014399c (14399c), FUN_0014707c (14707c), FUN_001f8794 (1f8794), FUN_00325e78 (325e78)
 
 #### FUN_00281198 — funcs/__Z12FUN_00281198PNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE.cpp, Ghidra 281198, 0 model attempt(s)
 
@@ -109208,70 +108858,6 @@ void FUN_00281dc4(string *param_1)
 {
   std::string::~string(param_1);
   return;
-}
-```
-
-#### FUN_0028a3b8 — funcs/__Z12FUN_0028a3b8l.cpp, Ghidra 28a3b8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0028a3b8l.cpp:20:18: error: call to non-static member function without an object argument
-   20 |     std::string::~string((std::string *)(lVar2 + 0x18));
-      |     ~~~~~~~~~~~~~^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0028a3b8(long param_1) {
-  void *pvVar1;
-  long lVar2;
-  long lVar3;
-
-  if (*(void **)(param_1 + 0x18040) != (void *)0x0) {
-    operator_delete__(*(void **)(param_1 + 0x18040));
-  }
-  pvVar1 = *(void **)(param_1 + 0x18038);
-  if (pvVar1 != (void *)0x0) {
-    operator_delete__(pvVar1);
-    *(undefined8 *)(param_1 + 0x18038) = 0;
-  }
-  lVar2 = param_1 + 0x18008;
-  lVar3 = 0x17fe8;
-
-  do {
-    std::string::~string((std::string *)(lVar2 + 0x18));
-    lVar2 = lVar2 + -0x18;
-    lVar3 = lVar3 + -0x18;
-  } while (lVar3 != -0x18);
-}
-```
-Ghidra's pseudocode:
-```c
-long FUN_0028a3b8(long param_1)
-
-{
-  void *pvVar1;
-  long lVar2;
-  long lVar3;
-  
-  if (*(void **)(param_1 + 0x18040) != (void *)0x0) {
-    operator_delete__(*(void **)(param_1 + 0x18040));
-  }
-  pvVar1 = *(void **)(param_1 + 0x18038);
-  if (pvVar1 != (void *)0x0) {
-    operator_delete__(pvVar1);
-    *(undefined8 *)(param_1 + 0x18038) = 0;
-  }
-  lVar2 = param_1 + 0x18008;
-  lVar3 = 0x17fe8;
-  do {
-    std::string::~string((string *)(lVar2 + 0x18));
-    lVar2 = lVar2 + -0x18;
-    lVar3 = lVar3 + -0x18;
-  } while (lVar3 != -0x18);
-  return param_1;
 }
 ```
 
@@ -109625,637 +109211,33 @@ void FUN_002a0590(string *param_1)
 }
 ```
 
-### Not compiling yet — 16 × incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')
-
-All: FUN_0028a2fc (28a2fc), FUN_00084418 (84418), FUN_00181910 (181910), FUN_00191250 (191250), FUN_001b9cac (1b9cac), FUN_00279a00 (279a00), FUN_00279f08 (279f08), FUN_00279ff4 (279ff4), FUN_0027a0e0 (27a0e0), FUN_0027a1cc (27a1cc), FUN_0027b064 (27b064), FUN_0027c308 (27c308), FUN_0027da90 (27da90), FUN_0032c6a4 (32c6a4), FUN_0037019c (37019c), FUN_003809c8 (3809c8)
-
-#### FUN_0028a2fc — funcs/__Z12FUN_0028a2fcl.cpp, Ghidra 28a2fc, 0 model attempt(s)
+#### FUN_002a06ec — funcs/__Z12FUN_002a06ecPNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE.cpp, Ghidra 2a06ec, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0028a2fcl.cpp:14:14: error: incompatible integer to pointer conversion assigning to 'void *' from 'uint64_t' (aka 'unsigned long long')
-   14 |     pvVar1 = operator_new__(0x400000);
-      |              ^~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0028a2fcl.cpp:16:5: error: void function 'FUN_0028a2fc' should not return a value [-Wreturn-mismatch]
-   16 |     return param_1;
-      |     ^      ~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0028a2fc(long param_1) {
-    void *pvVar1;
-    long lVar2;
-
-    lVar2 = 0;
-    do {
-        FUN_0028a390(param_1 + lVar2 + 0x38);
-        lVar2 = lVar2 + 0x18;
-    } while (lVar2 != 0x18000);
-    *(undefined8 *)(param_1 + 0x18040) = 0;
-    *(undefined4 *)(param_1 + 0x34) = 0;
-    pvVar1 = operator_new__(0x400000);
-    *(void **)(param_1 + 0x18038) = pvVar1;
-    return param_1;
-}
-```
-Ghidra's pseudocode:
-```c
-long FUN_0028a2fc(long param_1)
-
-{
-  void *pvVar1;
-  long lVar2;
-  
-  lVar2 = 0;
-  do {
-    FUN_0028a390(param_1 + lVar2 + 0x38);
-    lVar2 = lVar2 + 0x18;
-  } while (lVar2 != 0x18000);
-  *(undefined8 *)(param_1 + 0x18040) = 0;
-  *(undefined4 *)(param_1 + 0x34) = 0;
-  pvVar1 = operator_new__(0x400000);
-  *(void **)(param_1 + 0x18038) = pvVar1;
-  return param_1;
-}
-```
-
-#### FUN_00084418 — funcs/FUN_00084418.cpp, Ghidra 84418, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00084418.cpp:11:12: error: incompatible integer to pointer conversion assigning to 'void *' from 'uint64_t' (aka 'unsigned long long')
-   11 |   pvVar1 = operator_new__((long)(int)uVar2);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00084418.cpp:13:5: error: use of undeclared identifier '_bzero'; did you mean 'bzero'?
-   13 |     _bzero(pvVar1, (long)(int)uVar2);
-      |     ^~~~~~
-      |     bzero
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_strings.h:75:7: note: 'bzero' declared here
-   75 | void     bzero(void *_LIBC_SIZE(__n), size_t __n) __POSIX_C_DEPRECATED(200112L);
-      |          ^
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-bool FUN_00084418(uint64_t param_1,long *param_2,int param_3) {
-    uint64_t uVar2 = 0; // auto-declared (undeclared in the rewrite)
-
-  void *pvVar1;
-  if ((*param_2 != 0) && ((void *)*param_2 != (void *)0x0)) {
-    operator_delete__((void *)*param_2);
-  }
-  uVar2 = param_3 * 0x70 | 8;
-  pvVar1 = operator_new__((long)(int)uVar2);
-  if (pvVar1 != (void *)0x0) {
-    _bzero(pvVar1, (long)(int)uVar2);
-    *param_2 = (long)pvVar1;
-    *(int *)((long)pvVar1 + 4) = param_3;
-  }
-  return pvVar1 != (void *)0x0;
-}
-```
-Ghidra's pseudocode:
-```c
-bool FUN_00084418(undefined8 param_1,long *param_2,int param_3)
-
-{
-  void *pvVar1;
-  uint uVar2;
-  
-  if ((*param_2 != 0) && ((void *)*param_2 != (void *)0x0)) {
-    operator_delete__((void *)*param_2);
-  }
-  uVar2 = param_3 * 0x70 | 8;
-  pvVar1 = operator_new__((long)(int)uVar2);
-  if (pvVar1 != (void *)0x0) {
-    _bzero(pvVar1,(long)(int)uVar2);
-    *param_2 = (long)pvVar1;
-    *(int *)((long)pvVar1 + 4) = param_3;
-  }
-  return pvVar1 != (void *)0x0;
-}
-```
-
-#### FUN_00181910 — funcs/FUN_00181910.cpp, Ghidra 181910, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00181910.cpp:7:12: error: incompatible integer to pointer conversion assigning to 'void *' from 'uint64_t' (aka 'unsigned long long')
-    7 |   pvVar1 = operator_new__((ulong)param_1 * 4);
-      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_002a06ecPNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE.cpp:4:16: error: call to non-static member function without an object argument
+    4 |   std::string::~string(param_1);
+      |   ~~~~~~~~~~~~~^
 1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void * FUN_00181910(uint param_1) {
-  void *pvVar1;
-  long lVar2;
-
-  pvVar1 = operator_new__((ulong)param_1 * 4);
-  if (param_1 != 0) {
-    lVar2 = 0;
-    do {
-      FUN_00179a9c();
-      lVar2 = lVar2 + 4;
-    } while ((ulong)param_1 * 4 - lVar2 != 0);
-  }
-  return pvVar1;
-}
-```
-Ghidra's pseudocode:
-```c
-void * FUN_00181910(uint param_1)
-
-{
-  void *pvVar1;
-  long lVar2;
-  
-  pvVar1 = operator_new__((ulong)param_1 * 4);
-  if (param_1 != 0) {
-    lVar2 = 0;
-    do {
-      FUN_00179a9c();
-      lVar2 = lVar2 + 4;
-    } while ((ulong)param_1 * 4 - lVar2 != 0);
-  }
-  return pvVar1;
-}
-```
-
-#### FUN_00191250 — funcs/FUN_00191250.cpp, Ghidra 191250, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00191250.cpp:25:15: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
-   25 |     local48 = param_7;
-      |               ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00191250.cpp:26:19: error: assigning to 'float' from incompatible type 'float *'; dereference with *
-   26 |     pfStack[40] = param_6;
-      |                   ^~~~~~~
-      |                   *
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00191250.cpp:30:11: error: subscripted value is not an array, pointer, or vector
-   30 |     lStack[28] = param_4;
-      |     ~~~~~~^~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00191250(float param_1, float param_2, float param_3, long param_4, float * param_5, float * param_6, float * pfStack_40) {
-    uint64_t param_7 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t lStack = 0; // auto-declared (undeclared in the rewrite)
-
-    float local_38{};   // not passed (Ghidra's signature has 7 parameter(s))
-    float fStack_34{};   // not passed (Ghidra's signature has 7 parameter(s))
-    float * local_30{};   // not passed (Ghidra's signature has 7 parameter(s))
-    long lStack_28{};   // not passed (Ghidra's signature has 7 parameter(s))
-    double adStack[7];
-    float local4c;
-    long *local48;
-    float pfStack[6];
-    float local38;
-    float fStack[4];
-    float *local30;
-
-    std::cout << "Lowpass Filter applied with parameters: "
-              << param_1 << ", " << param_2 << ", " << param_3
-              << ", " << param_4 << std::endl;
-
-    local4c = param_3;
-    local48 = param_7;
-    pfStack[40] = param_6;
-    local38 = param_2;
-    fStack[34] = param_1;
-    local30 = param_5;
-    lStack[28] = param_4;
-
-    std::cout << "Executing lowpass filter with parameters: "
-              << param_1 << ", " << param_2 << ", " << param_3
-              << ", " << param_4 << std::endl;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_00191250(float param_1,float param_2,float param_3,long param_4,float *param_5,
-                 float *param_6,long *param_7)
-
-{
-  double adStack_88 [7];
-  float local_4c;
-  long *local_48;
-  float *pfStack_40;
-  float local_38;
-  float fStack_34;
-  float *local_30;
-  long lStack_28;
-  
-  local_4c = param_3;
-  local_48 = param_7;
-  pfStack_40 = param_6;
-  local_38 = param_2;
-  fStack_34 = param_1;
-  local_30 = param_5;
-  lStack_28 = param_4;
-  FUN_0017f170((double)*param_5,(double)param_5[1],(double)param_1,(double)param_2,adStack_88,0,0);
-  FUN_00194270(local_4c,param_4,adStack_88,pfStack_40,local_48);
+void FUN_002a06ec(std:: string*param_1){
+  std::string::~string(param_1);
   return;
 }
 ```
-
-#### FUN_001b9cac — funcs/FUN_001b9cac.cpp, Ghidra 1b9cac, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001b9cac.cpp:13:14: error: incompatible integer to pointer conversion assigning to 'short *' from 'uint64_t' (aka 'unsigned long long')
-   13 |     psVar1 = param_48;
-      |              ^~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001b9cac.cpp:15:13: error: no matching function for call to 'FUN_001b9e98'
-   15 |     bVar2 = FUN_001b9e98(psVar1, &local_50);
-      |             ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:33005:6: note: candidate function not viable: no known conversion from 'short *' to 'uintptr_t' (aka 'unsigned long') for 1st argument; dereference the argument with *
- 33005 | bool FUN_001b9e98(uintptr_t, short *);
-       |      ^            ~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001b9cac.cpp:17:7: error: void function 'FUN_001b9cac' should not return a value [-Wreturn-mismatch]
-   17 |       return local_50;
-      |       ^      ~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_001b9cac(uint64_t param_1_in, short * param_2) {
-    uint64_t param_48 = 0; // auto-declared (undeclared in the rewrite)
-
-    uint64_t local_50 = 0; // auto-declared (undeclared in the rewrite)
-
-    short * param_1 = (short *)param_1_in;   // Ghidra passes uint64_t
-  short *psVar1 = param_2;
-  bool bVar2 = false;
-
-  if (bVar2) {
-    psVar1 = param_48;
-    FUN_001b9ee0(&local_50);
-    bVar2 = FUN_001b9e98(psVar1, &local_50);
-    if (!bVar2) {
-      return local_50;
-    }
-  }
-
-}
-```
+Notes:
+- 10-21 10:08 [compile] unknown type name 'string' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
-undefined8 FUN_001b9cac(undefined8 param_1,short *param_2)
+void FUN_002a06ec(string *param_1)
 
 {
-  short *psVar1;
-  bool bVar2;
-  long lVar3;
-  long *plVar4;
-  undefined8 uVar5;
-  long local_58;
-  long local_50;
-  short *local_48;
-  undefined8 uStack_40;
-  
-  local_48 = param_2;
-  uStack_40 = param_1;
-  lVar3 = FUN_001b9a40();
-  plVar4 = (long *)FUN_001b9564();
-  local_50 = FUN_001b9d94(param_1,param_2,lVar3,plVar4);
-  local_58 = FUN_001b9e44();
-  bVar2 = FUN_001b9e20(&local_50,&local_58);
-  if (bVar2) {
-    uVar5 = FUN_001b9e74();
-    psVar1 = local_48;
-    FUN_001b9ee0(&local_50);
-    bVar2 = FUN_001b9e98(uVar5,psVar1);
-    if (!bVar2) {
-      return local_50;
-    }
-  }
-  uVar5 = FUN_001b9e44();
-  return uVar5;
-}
-```
-
-#### FUN_00279a00 — funcs/FUN_00279a00.cpp, Ghidra 279a00, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:8:21: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
-    8 |     while (plVar2 = plVar3, plVar2 != plVar1) {
-      |                     ^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:9:25: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
-    9 |         plVar3 = plVar2 + -1;
-      |                  ~~~~~~~^~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:10:21: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
-   10 |         if ((long *)*plVar3 != (long *)0x0) {
-      |                     ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:11:35: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
-   11 |             (**(code **)(*(long *)*plVar3 + 0x10))();
-      |                                   ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:17:14: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
-   17 |     plVar3 = *(long **)(param_1 + 0x138);
-      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:18:21: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
-   18 |     while (plVar2 = plVar3, plVar2 != plVar1) {
-      |                     ^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:19:25: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
-   19 |         plVar3 = plVar2 + -1;
-      |                  ~~~~~~~^~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:20:21: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
-   20 |         if ((long *)*plVar3 != (long *)0x0) {
-      |                     ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:21:35: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
-   21 |             (**(code **)(*(long *)*plVar3 + 0x10))();
-      |                                   ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:27:14: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
-   27 |     plVar3 = *(long **)(param_1 + 0x168);
-      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:28:21: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
-   28 |     while (plVar2 = plVar3, plVar2 != plVar1) {
-      |                     ^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:29:25: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
-   29 |         plVar3 = plVar2 + -1;
-      |                  ~~~~~~~^~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:30:21: error: indirection requires pointer operand ('uint64_t' (aka 'uns
-...
-00279a00.cpp:40:21: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
-   40 |         if ((long *)*plVar3 != (long *)0x0) {
-      |                     ^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:41:35: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
-   41 |             (**(code **)(*(long *)*plVar3 + 0x10))();
-      |                                   ^~~~~~~
-19 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00279a00(long param_1) {
-    uint64_t plVar3 = 0; // auto-declared (undeclared in the rewrite)
-
-    long *plVar1 = *(long **)(param_1 + 0x100);
-    long *plVar2 = *(long **)(param_1 + 0x108);
-    while (plVar2 = plVar3, plVar2 != plVar1) {
-        plVar3 = plVar2 + -1;
-        if ((long *)*plVar3 != (long *)0x0) {
-            (**(code **)(*(long *)*plVar3 + 0x10))();
-            plVar2[-1] = 0;
-        }
-    }
-    *(long **)(param_1 + 0x108) = plVar1;
-    plVar1 = *(long **)(param_1 + 0x130);
-    plVar3 = *(long **)(param_1 + 0x138);
-    while (plVar2 = plVar3, plVar2 != plVar1) {
-        plVar3 = plVar2 + -1;
-        if ((long *)*plVar3 != (long *)0x0) {
-            (**(code **)(*(long *)*plVar3 + 0x10))();
-            plVar2[-1] = 0;
-        }
-    }
-    *(long **)(param_1 + 0x138) = plVar1;
-    plVar1 = *(long **)(param_1 + 0x160);
-    plVar3 = *(long **)(param_1 + 0x168);
-    while (plVar2 = plVar3, plVar2 != plVar1) {
-        plVar3 = plVar2 + -1;
-        if ((long *)*plVar3 != (long *)0x0) {
-            (**(code **)(*(long *)*plVar3 + 0x10))();
-            plVar2[-1] = 0;
-        }
-    }
-    *(long **)(param_1 + 0x168) = plVar1;
-    plVar1 = *(long **)(param_1 + 400);
-    plVar3 = *(long **)(param_1 + 0x198);
-    while (plVar2 = plVar3, plVar2 != plVar1) {
-        plVar3 = plVar2 + -1;
-        if ((long *)*plVar3 != (long *)0x0) {
-            (**(code **)(*(long *)*plVar3 + 0x10))();
-            plVar2[-1] = 0;
-        }
-    }
-    *(long **)(param_1 + 0x198) = plVar1;
-}
-```
-Ghidra's pseudocode:
-```c
-undefined8 FUN_00279a00(long param_1)
-
-{
-  long *plVar1;
-  long *plVar2;
-  long *plVar3;
-  
-  plVar1 = *(long **)(param_1 + 0x100);
-  plVar3 = *(long **)(param_1 + 0x108);
-  while (plVar2 = plVar3, plVar2 != plVar1) {
-    plVar3 = plVar2 + -1;
-    if ((long *)*plVar3 != (long *)0x0) {
-      (**(code **)(*(long *)*plVar3 + 0x10))();
-      plVar2[-1] = 0;
-    }
-  }
-  *(long **)(param_1 + 0x108) = plVar1;
-  plVar1 = *(long **)(param_1 + 0x130);
-  plVar3 = *(long **)(param_1 + 0x138);
-  while (plVar2 = plVar3, plVar2 != plVar1) {
-    plVar3 = plVar2 + -1;
-    if ((long *)*plVar3 != (long *)0x0) {
-      (**(code **)(*(long *)*plVar3 + 0x10))();
-      plVar2[-1] = 0;
-    }
-  }
-  *(long **)(param_1 + 0x138) = plVar1;
-  plVar1 = *(long **)(param_1 + 0x160);
-  plVar3 = *(long **)(param_1 + 0x168);
-  while (plVar2 = plVar3, plVar2 != plVar1) {
-    plVar3 = plVar2 + -1;
-    if ((long *)*plVar3 != (long *)0x0) {
-      (**(code **)(*(long *)*plVar3 + 0x10))();
-      plVar2[-1] = 0;
-    }
-  }
-  *(long **)(param_1 + 0x168) = plVar1;
-  plVar1 = *(long **)(param_1 + 400);
-  plVar3 = *(long **)(param_1 + 0x198);
-  while (plVar2 = plVar3, plVar2 != plVar1) {
-    plVar3 = plVar2 + -1;
-    if ((long *)*plVar3 != (long *)0x0) {
-      (**(code **)(*(long *)*plVar3 + 0x10))();
-      plVar2[-1] = 0;
-    }
-  }
-  *(long **)(param_1 + 0x198) = plVar1;
-  return 0;
-}
-```
-
-#### FUN_00279f08 — funcs/FUN_00279f08.cpp, Ghidra 279f08, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279f08.cpp:8:12: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
-    8 |   plVar2 = operator_new(0x40);
-      |            ^~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279f08.cpp:9:3: error: no matching function for call to 'FUN_0027dd40'
-    9 |   FUN_0027dd40(plVar2, param_2, param_4, param_5, param_3);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46297:11: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 46297 | uint64_t *FUN_0027dd40(uint64_t *, void *, uint32_t, uint32_t, uint64_t);
-       |           ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279f08.cpp:13:15: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'long *'
-   13 |     *puVar1 = plVar2;
-      |               ^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279f08.cpp:18:5: error: no matching function for call to 'FUN_0027c308'
-   18 |     FUN_0027c308((long *)(param_1 + 0x100), &local_48);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46153:6: note: candidate function not viable: no known conversion from 'long **' to 'undefined8 *' (aka 'unsigned long long *') for 2nd argument
- 46153 | void FUN_0027c308(long *, undefined8 *);
-       |      ^                    ~~~~~~~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-long * FUN_00279f08(long param_1,void *param_2,uint64_t param_3,uint32_t param_4, uint32_t param_5) {
-  undefined8 *puVar1;
-  long *plVar2;
-  long *local_48;
-
-  plVar2 = operator_new(0x40);
-  FUN_0027dd40(plVar2, param_2, param_4, param_5, param_3);
-  puVar1 = *(undefined8 **)(param_1 + 0x108);
-  if (puVar1 < *(undefined8 **)(param_1 + 0x110)) {
-    local_48 = (long *)0x0;
-    *puVar1 = plVar2;
-    *(undefined8 **)(param_1 + 0x108) = puVar1 + 1;
-  }
-  else {
-    local_48 = plVar2;
-    FUN_0027c308((long *)(param_1 + 0x100), &local_48);
-  }
-  if (local_48 != (long *)0x0) {
-    (**(code **)(*local_48 + 0x10))();
-  }
-}
-```
-Ghidra's pseudocode:
-```c
-long * FUN_00279f08(long param_1,void *param_2,undefined8 param_3,undefined4 param_4,
-                   undefined4 param_5)
-
-{
-  undefined8 *puVar1;
-  long *plVar2;
-  long *local_48;
-  
-  plVar2 = operator_new(0x40);
-  FUN_0027dd40(plVar2,param_2,param_4,param_5,param_3);
-  puVar1 = *(undefined8 **)(param_1 + 0x108);
-  if (puVar1 < *(undefined8 **)(param_1 + 0x110)) {
-    local_48 = (long *)0x0;
-    *puVar1 = plVar2;
-    *(undefined8 **)(param_1 + 0x108) = puVar1 + 1;
-  }
-  else {
-    local_48 = plVar2;
-    FUN_0027c308((long *)(param_1 + 0x100),&local_48);
-  }
-  if (local_48 != (long *)0x0) {
-    (**(code **)(*local_48 + 0x10))();
-  }
-  return plVar2;
-}
-```
-
-#### FUN_00279ff4 — funcs/FUN_00279ff4.cpp, Ghidra 279ff4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279ff4.cpp:8:12: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
-    8 |   plVar2 = operator_new(0x40);
-      |            ^~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279ff4.cpp:9:3: error: no matching function for call to 'FUN_0027dd40'
-    9 |   FUN_0027dd40(plVar2, param_2, param_4, param_5, param_3);
-      |   ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46297:11: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
- 46297 | uint64_t *FUN_0027dd40(uint64_t *, void *, uint32_t, uint32_t, uint64_t);
-       |           ^            ~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279ff4.cpp:13:15: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'long *'
-   13 |     *puVar1 = plVar2;
-      |               ^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279ff4.cpp:18:5: error: no matching function for call to 'FUN_0027c308'
-   18 |     FUN_0027c308((long *)(param_1 + 0x130), &local_48);
-      |     ^~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46153:6: note: candidate function not viable: no known conversion from 'long **' to 'undefined8 *' (aka 'unsigned long long *') for 2nd argument
- 46153 | void FUN_0027c308(long *, undefined8 *);
-       |      ^                    ~~~~~~~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-long * FUN_00279ff4(long param_1,void *param_2,uint64_t param_3,uint32_t param_4, uint32_t param_5) {
-  undefined8 *puVar1;
-  long *plVar2;
-  long *local_48;
-
-  plVar2 = operator_new(0x40);
-  FUN_0027dd40(plVar2, param_2, param_4, param_5, param_3);
-  puVar1 = *(undefined8 **)(param_1 + 0x138);
-  if (puVar1 < *(undefined8 **)(param_1 + 0x140)) {
-    local_48 = (long *)0x0;
-    *puVar1 = plVar2;
-    *(undefined8 **)(param_1 + 0x138) = puVar1 + 1;
-  }
-  else {
-    local_48 = plVar2;
-    FUN_0027c308((long *)(param_1 + 0x130), &local_48);
-  }
-  if (local_48 != (long *)0x0) {
-    (**(code **)(*local_48 + 0x10))();
-  }
-}
-```
-Ghidra's pseudocode:
-```c
-long * FUN_00279ff4(long param_1,void *param_2,undefined8 param_3,undefined4 param_4,
-                   undefined4 param_5)
-
-{
-  undefined8 *puVar1;
-  long *plVar2;
-  long *local_48;
-  
-  plVar2 = operator_new(0x40);
-  FUN_0027dd40(plVar2,param_2,param_4,param_5,param_3);
-  puVar1 = *(undefined8 **)(param_1 + 0x138);
-  if (puVar1 < *(undefined8 **)(param_1 + 0x140)) {
-    local_48 = (long *)0x0;
-    *puVar1 = plVar2;
-    *(undefined8 **)(param_1 + 0x138) = puVar1 + 1;
-  }
-  else {
-    local_48 = plVar2;
-    FUN_0027c308((long *)(param_1 + 0x130),&local_48);
-  }
-  if (local_48 != (long *)0x0) {
-    (**(code **)(*local_48 + 0x10))();
-  }
-  return plVar2;
+  std::string::~string(param_1);
+  return;
 }
 ```
 
@@ -110932,6 +109914,661 @@ void FUN_001569b0(long *param_1,long *param_2)
 }
 ```
 
+### Not compiling yet — 15 × incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')
+
+All: FUN_00084418 (84418), FUN_00181910 (181910), FUN_00191250 (191250), FUN_001b9cac (1b9cac), FUN_00279a00 (279a00), FUN_00279f08 (279f08), FUN_00279ff4 (279ff4), FUN_0027a0e0 (27a0e0), FUN_0027a1cc (27a1cc), FUN_0027b064 (27b064), FUN_0027c308 (27c308), FUN_0027da90 (27da90), FUN_0032c6a4 (32c6a4), FUN_0037019c (37019c), FUN_003809c8 (3809c8)
+
+#### FUN_00084418 — funcs/FUN_00084418.cpp, Ghidra 84418, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00084418.cpp:11:12: error: incompatible integer to pointer conversion assigning to 'void *' from 'uint64_t' (aka 'unsigned long long')
+   11 |   pvVar1 = operator_new__((long)(int)uVar2);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00084418.cpp:13:5: error: use of undeclared identifier '_bzero'; did you mean 'bzero'?
+   13 |     _bzero(pvVar1, (long)(int)uVar2);
+      |     ^~~~~~
+      |     bzero
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_strings.h:75:7: note: 'bzero' declared here
+   75 | void     bzero(void *_LIBC_SIZE(__n), size_t __n) __POSIX_C_DEPRECATED(200112L);
+      |          ^
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+bool FUN_00084418(uint64_t param_1,long *param_2,int param_3) {
+    uint64_t uVar2 = 0; // auto-declared (undeclared in the rewrite)
+
+  void *pvVar1;
+  if ((*param_2 != 0) && ((void *)*param_2 != (void *)0x0)) {
+    operator_delete__((void *)*param_2);
+  }
+  uVar2 = param_3 * 0x70 | 8;
+  pvVar1 = operator_new__((long)(int)uVar2);
+  if (pvVar1 != (void *)0x0) {
+    _bzero(pvVar1, (long)(int)uVar2);
+    *param_2 = (long)pvVar1;
+    *(int *)((long)pvVar1 + 4) = param_3;
+  }
+  return pvVar1 != (void *)0x0;
+}
+```
+Ghidra's pseudocode:
+```c
+bool FUN_00084418(undefined8 param_1,long *param_2,int param_3)
+
+{
+  void *pvVar1;
+  uint uVar2;
+  
+  if ((*param_2 != 0) && ((void *)*param_2 != (void *)0x0)) {
+    operator_delete__((void *)*param_2);
+  }
+  uVar2 = param_3 * 0x70 | 8;
+  pvVar1 = operator_new__((long)(int)uVar2);
+  if (pvVar1 != (void *)0x0) {
+    _bzero(pvVar1,(long)(int)uVar2);
+    *param_2 = (long)pvVar1;
+    *(int *)((long)pvVar1 + 4) = param_3;
+  }
+  return pvVar1 != (void *)0x0;
+}
+```
+
+#### FUN_00181910 — funcs/FUN_00181910.cpp, Ghidra 181910, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00181910.cpp:7:12: error: incompatible integer to pointer conversion assigning to 'void *' from 'uint64_t' (aka 'unsigned long long')
+    7 |   pvVar1 = operator_new__((ulong)param_1 * 4);
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void * FUN_00181910(uint param_1) {
+  void *pvVar1;
+  long lVar2;
+
+  pvVar1 = operator_new__((ulong)param_1 * 4);
+  if (param_1 != 0) {
+    lVar2 = 0;
+    do {
+      FUN_00179a9c();
+      lVar2 = lVar2 + 4;
+    } while ((ulong)param_1 * 4 - lVar2 != 0);
+  }
+  return pvVar1;
+}
+```
+Ghidra's pseudocode:
+```c
+void * FUN_00181910(uint param_1)
+
+{
+  void *pvVar1;
+  long lVar2;
+  
+  pvVar1 = operator_new__((ulong)param_1 * 4);
+  if (param_1 != 0) {
+    lVar2 = 0;
+    do {
+      FUN_00179a9c();
+      lVar2 = lVar2 + 4;
+    } while ((ulong)param_1 * 4 - lVar2 != 0);
+  }
+  return pvVar1;
+}
+```
+
+#### FUN_00191250 — funcs/FUN_00191250.cpp, Ghidra 191250, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00191250.cpp:25:15: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
+   25 |     local48 = param_7;
+      |               ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00191250.cpp:26:19: error: assigning to 'float' from incompatible type 'float *'; dereference with *
+   26 |     pfStack[40] = param_6;
+      |                   ^~~~~~~
+      |                   *
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00191250.cpp:30:11: error: subscripted value is not an array, pointer, or vector
+   30 |     lStack[28] = param_4;
+      |     ~~~~~~^~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00191250(float param_1, float param_2, float param_3, long param_4, float * param_5, float * param_6, float * pfStack_40) {
+    uint64_t param_7 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t lStack = 0; // auto-declared (undeclared in the rewrite)
+
+    float local_38{};   // not passed (Ghidra's signature has 7 parameter(s))
+    float fStack_34{};   // not passed (Ghidra's signature has 7 parameter(s))
+    float * local_30{};   // not passed (Ghidra's signature has 7 parameter(s))
+    long lStack_28{};   // not passed (Ghidra's signature has 7 parameter(s))
+    double adStack[7];
+    float local4c;
+    long *local48;
+    float pfStack[6];
+    float local38;
+    float fStack[4];
+    float *local30;
+
+    std::cout << "Lowpass Filter applied with parameters: "
+              << param_1 << ", " << param_2 << ", " << param_3
+              << ", " << param_4 << std::endl;
+
+    local4c = param_3;
+    local48 = param_7;
+    pfStack[40] = param_6;
+    local38 = param_2;
+    fStack[34] = param_1;
+    local30 = param_5;
+    lStack[28] = param_4;
+
+    std::cout << "Executing lowpass filter with parameters: "
+              << param_1 << ", " << param_2 << ", " << param_3
+              << ", " << param_4 << std::endl;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_00191250(float param_1,float param_2,float param_3,long param_4,float *param_5,
+                 float *param_6,long *param_7)
+
+{
+  double adStack_88 [7];
+  float local_4c;
+  long *local_48;
+  float *pfStack_40;
+  float local_38;
+  float fStack_34;
+  float *local_30;
+  long lStack_28;
+  
+  local_4c = param_3;
+  local_48 = param_7;
+  pfStack_40 = param_6;
+  local_38 = param_2;
+  fStack_34 = param_1;
+  local_30 = param_5;
+  lStack_28 = param_4;
+  FUN_0017f170((double)*param_5,(double)param_5[1],(double)param_1,(double)param_2,adStack_88,0,0);
+  FUN_00194270(local_4c,param_4,adStack_88,pfStack_40,local_48);
+  return;
+}
+```
+
+#### FUN_001b9cac — funcs/FUN_001b9cac.cpp, Ghidra 1b9cac, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001b9cac.cpp:13:14: error: incompatible integer to pointer conversion assigning to 'short *' from 'uint64_t' (aka 'unsigned long long')
+   13 |     psVar1 = param_48;
+      |              ^~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001b9cac.cpp:15:13: error: no matching function for call to 'FUN_001b9e98'
+   15 |     bVar2 = FUN_001b9e98(psVar1, &local_50);
+      |             ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:33005:6: note: candidate function not viable: no known conversion from 'short *' to 'uintptr_t' (aka 'unsigned long') for 1st argument; dereference the argument with *
+ 33005 | bool FUN_001b9e98(uintptr_t, short *);
+       |      ^            ~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_001b9cac.cpp:17:7: error: void function 'FUN_001b9cac' should not return a value [-Wreturn-mismatch]
+   17 |       return local_50;
+      |       ^      ~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001b9cac(uint64_t param_1_in, short * param_2) {
+    uint64_t param_48 = 0; // auto-declared (undeclared in the rewrite)
+
+    uint64_t local_50 = 0; // auto-declared (undeclared in the rewrite)
+
+    short * param_1 = (short *)param_1_in;   // Ghidra passes uint64_t
+  short *psVar1 = param_2;
+  bool bVar2 = false;
+
+  if (bVar2) {
+    psVar1 = param_48;
+    FUN_001b9ee0(&local_50);
+    bVar2 = FUN_001b9e98(psVar1, &local_50);
+    if (!bVar2) {
+      return local_50;
+    }
+  }
+
+}
+```
+Ghidra's pseudocode:
+```c
+undefined8 FUN_001b9cac(undefined8 param_1,short *param_2)
+
+{
+  short *psVar1;
+  bool bVar2;
+  long lVar3;
+  long *plVar4;
+  undefined8 uVar5;
+  long local_58;
+  long local_50;
+  short *local_48;
+  undefined8 uStack_40;
+  
+  local_48 = param_2;
+  uStack_40 = param_1;
+  lVar3 = FUN_001b9a40();
+  plVar4 = (long *)FUN_001b9564();
+  local_50 = FUN_001b9d94(param_1,param_2,lVar3,plVar4);
+  local_58 = FUN_001b9e44();
+  bVar2 = FUN_001b9e20(&local_50,&local_58);
+  if (bVar2) {
+    uVar5 = FUN_001b9e74();
+    psVar1 = local_48;
+    FUN_001b9ee0(&local_50);
+    bVar2 = FUN_001b9e98(uVar5,psVar1);
+    if (!bVar2) {
+      return local_50;
+    }
+  }
+  uVar5 = FUN_001b9e44();
+  return uVar5;
+}
+```
+
+#### FUN_00279a00 — funcs/FUN_00279a00.cpp, Ghidra 279a00, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:8:21: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
+    8 |     while (plVar2 = plVar3, plVar2 != plVar1) {
+      |                     ^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:9:25: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
+    9 |         plVar3 = plVar2 + -1;
+      |                  ~~~~~~~^~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:10:21: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
+   10 |         if ((long *)*plVar3 != (long *)0x0) {
+      |                     ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:11:35: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
+   11 |             (**(code **)(*(long *)*plVar3 + 0x10))();
+      |                                   ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:17:14: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
+   17 |     plVar3 = *(long **)(param_1 + 0x138);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:18:21: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
+   18 |     while (plVar2 = plVar3, plVar2 != plVar1) {
+      |                     ^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:19:25: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
+   19 |         plVar3 = plVar2 + -1;
+      |                  ~~~~~~~^~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:20:21: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
+   20 |         if ((long *)*plVar3 != (long *)0x0) {
+      |                     ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:21:35: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
+   21 |             (**(code **)(*(long *)*plVar3 + 0x10))();
+      |                                   ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:27:14: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
+   27 |     plVar3 = *(long **)(param_1 + 0x168);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:28:21: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
+   28 |     while (plVar2 = plVar3, plVar2 != plVar1) {
+      |                     ^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:29:25: error: incompatible pointer to integer conversion assigning to 'uint64_t' (aka 'unsigned long long') from 'long *'
+   29 |         plVar3 = plVar2 + -1;
+      |                  ~~~~~~~^~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:30:21: error: indirection requires pointer operand ('uint64_t' (aka 'uns
+...
+00279a00.cpp:40:21: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
+   40 |         if ((long *)*plVar3 != (long *)0x0) {
+      |                     ^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279a00.cpp:41:35: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
+   41 |             (**(code **)(*(long *)*plVar3 + 0x10))();
+      |                                   ^~~~~~~
+19 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00279a00(long param_1) {
+    uint64_t plVar3 = 0; // auto-declared (undeclared in the rewrite)
+
+    long *plVar1 = *(long **)(param_1 + 0x100);
+    long *plVar2 = *(long **)(param_1 + 0x108);
+    while (plVar2 = plVar3, plVar2 != plVar1) {
+        plVar3 = plVar2 + -1;
+        if ((long *)*plVar3 != (long *)0x0) {
+            (**(code **)(*(long *)*plVar3 + 0x10))();
+            plVar2[-1] = 0;
+        }
+    }
+    *(long **)(param_1 + 0x108) = plVar1;
+    plVar1 = *(long **)(param_1 + 0x130);
+    plVar3 = *(long **)(param_1 + 0x138);
+    while (plVar2 = plVar3, plVar2 != plVar1) {
+        plVar3 = plVar2 + -1;
+        if ((long *)*plVar3 != (long *)0x0) {
+            (**(code **)(*(long *)*plVar3 + 0x10))();
+            plVar2[-1] = 0;
+        }
+    }
+    *(long **)(param_1 + 0x138) = plVar1;
+    plVar1 = *(long **)(param_1 + 0x160);
+    plVar3 = *(long **)(param_1 + 0x168);
+    while (plVar2 = plVar3, plVar2 != plVar1) {
+        plVar3 = plVar2 + -1;
+        if ((long *)*plVar3 != (long *)0x0) {
+            (**(code **)(*(long *)*plVar3 + 0x10))();
+            plVar2[-1] = 0;
+        }
+    }
+    *(long **)(param_1 + 0x168) = plVar1;
+    plVar1 = *(long **)(param_1 + 400);
+    plVar3 = *(long **)(param_1 + 0x198);
+    while (plVar2 = plVar3, plVar2 != plVar1) {
+        plVar3 = plVar2 + -1;
+        if ((long *)*plVar3 != (long *)0x0) {
+            (**(code **)(*(long *)*plVar3 + 0x10))();
+            plVar2[-1] = 0;
+        }
+    }
+    *(long **)(param_1 + 0x198) = plVar1;
+}
+```
+Ghidra's pseudocode:
+```c
+undefined8 FUN_00279a00(long param_1)
+
+{
+  long *plVar1;
+  long *plVar2;
+  long *plVar3;
+  
+  plVar1 = *(long **)(param_1 + 0x100);
+  plVar3 = *(long **)(param_1 + 0x108);
+  while (plVar2 = plVar3, plVar2 != plVar1) {
+    plVar3 = plVar2 + -1;
+    if ((long *)*plVar3 != (long *)0x0) {
+      (**(code **)(*(long *)*plVar3 + 0x10))();
+      plVar2[-1] = 0;
+    }
+  }
+  *(long **)(param_1 + 0x108) = plVar1;
+  plVar1 = *(long **)(param_1 + 0x130);
+  plVar3 = *(long **)(param_1 + 0x138);
+  while (plVar2 = plVar3, plVar2 != plVar1) {
+    plVar3 = plVar2 + -1;
+    if ((long *)*plVar3 != (long *)0x0) {
+      (**(code **)(*(long *)*plVar3 + 0x10))();
+      plVar2[-1] = 0;
+    }
+  }
+  *(long **)(param_1 + 0x138) = plVar1;
+  plVar1 = *(long **)(param_1 + 0x160);
+  plVar3 = *(long **)(param_1 + 0x168);
+  while (plVar2 = plVar3, plVar2 != plVar1) {
+    plVar3 = plVar2 + -1;
+    if ((long *)*plVar3 != (long *)0x0) {
+      (**(code **)(*(long *)*plVar3 + 0x10))();
+      plVar2[-1] = 0;
+    }
+  }
+  *(long **)(param_1 + 0x168) = plVar1;
+  plVar1 = *(long **)(param_1 + 400);
+  plVar3 = *(long **)(param_1 + 0x198);
+  while (plVar2 = plVar3, plVar2 != plVar1) {
+    plVar3 = plVar2 + -1;
+    if ((long *)*plVar3 != (long *)0x0) {
+      (**(code **)(*(long *)*plVar3 + 0x10))();
+      plVar2[-1] = 0;
+    }
+  }
+  *(long **)(param_1 + 0x198) = plVar1;
+  return 0;
+}
+```
+
+#### FUN_00279f08 — funcs/FUN_00279f08.cpp, Ghidra 279f08, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279f08.cpp:8:12: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
+    8 |   plVar2 = operator_new(0x40);
+      |            ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279f08.cpp:9:3: error: no matching function for call to 'FUN_0027dd40'
+    9 |   FUN_0027dd40(plVar2, param_2, param_4, param_5, param_3);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46297:11: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
+ 46297 | uint64_t *FUN_0027dd40(uint64_t *, void *, uint32_t, uint32_t, uint64_t);
+       |           ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279f08.cpp:13:15: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'long *'
+   13 |     *puVar1 = plVar2;
+      |               ^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279f08.cpp:18:5: error: no matching function for call to 'FUN_0027c308'
+   18 |     FUN_0027c308((long *)(param_1 + 0x100), &local_48);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46153:6: note: candidate function not viable: no known conversion from 'long **' to 'undefined8 *' (aka 'unsigned long long *') for 2nd argument
+ 46153 | void FUN_0027c308(long *, undefined8 *);
+       |      ^                    ~~~~~~~~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+long * FUN_00279f08(long param_1,void *param_2,uint64_t param_3,uint32_t param_4, uint32_t param_5) {
+  undefined8 *puVar1;
+  long *plVar2;
+  long *local_48;
+
+  plVar2 = operator_new(0x40);
+  FUN_0027dd40(plVar2, param_2, param_4, param_5, param_3);
+  puVar1 = *(undefined8 **)(param_1 + 0x108);
+  if (puVar1 < *(undefined8 **)(param_1 + 0x110)) {
+    local_48 = (long *)0x0;
+    *puVar1 = plVar2;
+    *(undefined8 **)(param_1 + 0x108) = puVar1 + 1;
+  }
+  else {
+    local_48 = plVar2;
+    FUN_0027c308((long *)(param_1 + 0x100), &local_48);
+  }
+  if (local_48 != (long *)0x0) {
+    (**(code **)(*local_48 + 0x10))();
+  }
+}
+```
+Ghidra's pseudocode:
+```c
+long * FUN_00279f08(long param_1,void *param_2,undefined8 param_3,undefined4 param_4,
+                   undefined4 param_5)
+
+{
+  undefined8 *puVar1;
+  long *plVar2;
+  long *local_48;
+  
+  plVar2 = operator_new(0x40);
+  FUN_0027dd40(plVar2,param_2,param_4,param_5,param_3);
+  puVar1 = *(undefined8 **)(param_1 + 0x108);
+  if (puVar1 < *(undefined8 **)(param_1 + 0x110)) {
+    local_48 = (long *)0x0;
+    *puVar1 = plVar2;
+    *(undefined8 **)(param_1 + 0x108) = puVar1 + 1;
+  }
+  else {
+    local_48 = plVar2;
+    FUN_0027c308((long *)(param_1 + 0x100),&local_48);
+  }
+  if (local_48 != (long *)0x0) {
+    (**(code **)(*local_48 + 0x10))();
+  }
+  return plVar2;
+}
+```
+
+#### FUN_00279ff4 — funcs/FUN_00279ff4.cpp, Ghidra 279ff4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279ff4.cpp:8:12: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
+    8 |   plVar2 = operator_new(0x40);
+      |            ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279ff4.cpp:9:3: error: no matching function for call to 'FUN_0027dd40'
+    9 |   FUN_0027dd40(plVar2, param_2, param_4, param_5, param_3);
+      |   ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46297:11: note: candidate function not viable: no known conversion from 'long *' to 'uint64_t *' (aka 'unsigned long long *') for 1st argument
+ 46297 | uint64_t *FUN_0027dd40(uint64_t *, void *, uint32_t, uint32_t, uint64_t);
+       |           ^            ~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279ff4.cpp:13:15: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'long *'
+   13 |     *puVar1 = plVar2;
+      |               ^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00279ff4.cpp:18:5: error: no matching function for call to 'FUN_0027c308'
+   18 |     FUN_0027c308((long *)(param_1 + 0x130), &local_48);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46153:6: note: candidate function not viable: no known conversion from 'long **' to 'undefined8 *' (aka 'unsigned long long *') for 2nd argument
+ 46153 | void FUN_0027c308(long *, undefined8 *);
+       |      ^                    ~~~~~~~~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+long * FUN_00279ff4(long param_1,void *param_2,uint64_t param_3,uint32_t param_4, uint32_t param_5) {
+  undefined8 *puVar1;
+  long *plVar2;
+  long *local_48;
+
+  plVar2 = operator_new(0x40);
+  FUN_0027dd40(plVar2, param_2, param_4, param_5, param_3);
+  puVar1 = *(undefined8 **)(param_1 + 0x138);
+  if (puVar1 < *(undefined8 **)(param_1 + 0x140)) {
+    local_48 = (long *)0x0;
+    *puVar1 = plVar2;
+    *(undefined8 **)(param_1 + 0x138) = puVar1 + 1;
+  }
+  else {
+    local_48 = plVar2;
+    FUN_0027c308((long *)(param_1 + 0x130), &local_48);
+  }
+  if (local_48 != (long *)0x0) {
+    (**(code **)(*local_48 + 0x10))();
+  }
+}
+```
+Ghidra's pseudocode:
+```c
+long * FUN_00279ff4(long param_1,void *param_2,undefined8 param_3,undefined4 param_4,
+                   undefined4 param_5)
+
+{
+  undefined8 *puVar1;
+  long *plVar2;
+  long *local_48;
+  
+  plVar2 = operator_new(0x40);
+  FUN_0027dd40(plVar2,param_2,param_4,param_5,param_3);
+  puVar1 = *(undefined8 **)(param_1 + 0x138);
+  if (puVar1 < *(undefined8 **)(param_1 + 0x140)) {
+    local_48 = (long *)0x0;
+    *puVar1 = plVar2;
+    *(undefined8 **)(param_1 + 0x138) = puVar1 + 1;
+  }
+  else {
+    local_48 = plVar2;
+    FUN_0027c308((long *)(param_1 + 0x130),&local_48);
+  }
+  if (local_48 != (long *)0x0) {
+    (**(code **)(*local_48 + 0x10))();
+  }
+  return plVar2;
+}
+```
+
+#### FUN_0027a0e0 — funcs/FUN_0027a0e0.cpp, Ghidra 27a0e0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a0e0.cpp:9:12: error: incompatible integer to pointer conversion assigning to 'long *' from 'uint64_t' (aka 'unsigned long long')
+    9 |   plVar2 = operator_new(0x38);
+      |            ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a0e0.cpp:14:15: error: incompatible pointer to integer conversion assigning to 'undefined8' (aka 'unsigned long long') from 'long *'
+   14 |     *puVar1 = plVar2;
+      |               ^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_0027a0e0.cpp:19:5: error: no matching function for call to 'FUN_0027c308'
+   19 |     FUN_0027c308((long *)(param_1 + 0x160), &local_48);
+      |     ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46153:6: note: candidate function not viable: no known conversion from 'long **' to 'undefined8 *' (aka 'unsigned long long *') for 2nd argument
+ 46153 | void FUN_0027c308(long *, undefined8 *);
+       |      ^                    ~~~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0027a0e0(long param_1, void *param_2, undefined4 param_3, undefined4 param_4,
+                   undefined4 param_5) {
+  undefined8 *puVar1;
+  long *plVar2;
+  long *local_48;
+
+  plVar2 = operator_new(0x38);
+  FUN_0027dc88(plVar2, param_2, param_4, param_5, param_3);
+  puVar1 = *(undefined8 **)(param_1 + 0x168);
+  if (puVar1 < *(undefined8 **)(param_1 + 0x170)) {
+    local_48 = (long *)0x0;
+    *puVar1 = plVar2;
+    *(undefined8 **)(param_1 + 0x168) = puVar1 + 1;
+  }
+  else {
+    local_48 = plVar2;
+    FUN_0027c308((long *)(param_1 + 0x160), &local_48);
+  }
+  if (local_48 != (long *)0x0) {
+    (**(code **)(*local_48 + 0x10))();
+  }
+}
+```
+Ghidra's pseudocode:
+```c
+long * FUN_0027a0e0(long param_1,void *param_2,undefined4 param_3,undefined4 param_4,
+                   undefined4 param_5)
+
+{
+  undefined8 *puVar1;
+  long *plVar2;
+  long *local_48;
+  
+  plVar2 = operator_new(0x38);
+  FUN_0027dc88(plVar2,param_2,param_4,param_5,param_3);
+  puVar1 = *(undefined8 **)(param_1 + 0x168);
+  if (puVar1 < *(undefined8 **)(param_1 + 0x170)) {
+    local_48 = (long *)0x0;
+    *puVar1 = plVar2;
+    *(undefined8 **)(param_1 + 0x168) = puVar1 + 1;
+  }
+  else {
+    local_48 = plVar2;
+    FUN_0027c308((long *)(param_1 + 0x160),&local_48);
+  }
+  if (local_48 != (long *)0x0) {
+    (**(code **)(*local_48 + 0x10))();
+  }
+  return plVar2;
+}
+```
+
 ### Not compiling yet — 14 × functions that differ only in their return type cannot be overloaded
 
 All: FUN_0007ad44 (7ad44), FUN_00088584 (88584), thunk_FUN_0000397c (11b338), thunk_FUN_0000397c__131adc (131adc), thunk_FUN_0000397c__1c223c (1c223c), thunk_FUN_0000397c__1e9500 (1e9500), thunk_FUN_0000397c__1f1d58 (1f1d58), thunk_FUN_0000397c__1f4790 (1f4790), thunk_FUN_0000397c__27959c (27959c), thunk_FUN_0000397c__2799fc (2799fc), thunk_FUN_0000397c__27a91c (27a91c), thunk_FUN_0000397c__27b0dc (27b0dc), thunk_FUN_0000397c__27b158 (27b158), thunk_FUN_0000397c__27d60c (27d60c)
@@ -111244,12 +110881,12 @@ Compiler output:
  53409 | void FUN_00324c28(uint8_t *);
        |      ^ 
 ...
-ion not viable: requires 3 arguments, but 2 were provided
+80494iPlPcS_.cpp:66:16: error: no matching function for call to 'FUN_002807dc'
+   66 |     local_68 = FUN_002807dc(pvVar12, local_60);
+      |                ^~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build/shared.h:46549:6: note: candidate function not viable: requires 3 arguments, but 2 were provided
  46549 | void FUN_002807dc(float *, float *, int);
        |      ^            ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_00280494iPlPcS_.cpp:66:16: error: assigning to 'long' from incompatible type 'void'
-   66 |     local_68 = FUN_002807dc(pvVar12, local_60);
-      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 fatal error: too many errors emitted, stopping now [-ferror-limit=]
 21 errors generated.
 ```
@@ -139837,7 +139474,10 @@ Compiler output:
 /Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027e190Pv.cpp:11:29: error: indirection requires pointer operand ('uint64_t' (aka 'unsigned long long') invalid)
    11 |       (**(code **)(*(long *)*plVar3 + 0x10))();
       |                             ^~~~~~~
-4 errors generated.
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/__Z12FUN_0027e190Pv.cpp:16:3: error: use of undeclared identifier 'operator_delete'
+   16 |   operator_delete(param_1);
+      |   ^~~~~~~~~~~~~~~
+5 errors generated.
 ```
 Code:
 ```cpp
@@ -148074,6 +147714,102 @@ void FUN_003224f4(long param_1,long param_2,undefined8 param_3)
   }
   FUN_00322638(&local_40);
   return;
+}
+```
+
+### Not compiling yet — 1 × extern declaration of 'X' follows non-extern declaration
+
+All: FUN_00326994 (326994)
+
+#### FUN_00326994 — funcs/FUN_00326994.cpp, Ghidra 326994, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00326994.cpp:10:19: error: extern declaration of 'unaff_x21' follows non-extern declaration
+   10 |   extern uint64_t unaff_x21;
+      |                   ^
+/Users/admin/glitchdecomp/fastpass 3/build/funcs/FUN_00326994.cpp:4:14: note: previous definition is here
+    4 |     uint64_t unaff_x21 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+ulong FUN_00326994(undefined8 param_1, undefined4 param_2, char *param_3) {
+    uint64_t unaff_x21 = 0; // TODO: phantom var (incomplete lift)
+
+  bool bVar1;
+  int iVar2;
+  long *plVar3;
+  long lVar4;
+  extern uint64_t unaff_x21;
+  ushort *puVar5;
+  long local_40;
+  long local_38;
+
+  std::cout << "Placeholder for FUN_00326994" << std::endl;
+  return 0xffffffff;
+}
+```
+Notes:
+- 10-21 12:02 [compile] extern declaration of 'unaff_x21' follows non-extern declaration — fixed with a learned rule.
+- 10-21 12:02 [compile] redeclaration of 'unaff_x21' with a different type: 'uint64_t *' (aka 'unsigned long long *') vs 'ui — fixed with a learned rule.
+- 10-21 12:02 [compile] extern declaration of 'unaff_x21' follows non-extern declaration — fixed with a learned rule.
+- 10-21 12:02 [compile] redeclaration of 'unaff_x21' with a different type: 'uint64_t *' (aka 'unsigned long long *') vs 'ui — fixed with a learned rule.
+- 10-21 12:02 [compile] extern declaration of 'unaff_x21' follows non-extern declaration — fixed with a learned rule.
+- 10-21 12:02 [compile] redeclaration of 'unaff_x21' with a different type: 'uint64_t *' (aka 'unsigned long long *') vs 'ui — fixed with a learned rule.
+- 10-21 12:02 [compile] extern declaration of 'unaff_x21' follows non-extern declaration — fixed with a learned rule.
+- 10-21 12:02 [compile] redeclaration of 'unaff_x21' with a different type: 'uint64_t *' (aka 'unsigned long long *') vs 'ui — fixed with a learned rule.
+- 10-21 12:02 [compile] extern declaration of 'unaff_x21' follows non-extern declaration — fixed with a learned rule.
+- 10-21 12:02 [compile] redeclaration of 'unaff_x21' with a different type: 'uint64_t *' (aka 'unsigned long long *') vs 'ui — fixed with a learned rule.
+- 10-21 12:02 [compile] extern declaration of 'unaff_x21' follows non-extern declaration — fixed with a learned rule.
+- 10-21 12:02 [compile] redeclaration of 'unaff_x21' with a different type: 'uint64_t *' (aka 'unsigned long long *') vs 'ui — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+ulong FUN_00326994(undefined8 param_1,undefined4 param_2,char *param_3)
+
+{
+  bool bVar1;
+  int iVar2;
+  long *plVar3;
+  long lVar4;
+  ulong unaff_x21;
+  ushort *puVar5;
+  long local_40;
+  long local_38;
+  
+  local_38 = CONCAT44(local_38._4_4_,param_2);
+  plVar3 = (long *)FUN_00326584(param_1,(int *)&local_38);
+  if (*plVar3 != 0) {
+    local_38 = FUN_00326a80();
+    local_40 = FUN_00326ac0();
+    bVar1 = FUN_00326aac(&local_38,&local_40);
+    if (bVar1) {
+      do {
+        lVar4 = FUN_00326aec(&local_38);
+        puVar5 = *(ushort **)(lVar4 + 8);
+        if ((puVar5 != (ushort *)0x0) &&
+           (iVar2 = _strcmp(*(char **)(puVar5 + 4),param_3), iVar2 == 0)) {
+          unaff_x21 = (ulong)*puVar5;
+          iVar2 = 1;
+          goto LAB_00326a4c;
+        }
+        FUN_00326b04(&local_38);
+        local_40 = FUN_00326ac0();
+        bVar1 = FUN_00326aac(&local_38,&local_40);
+      } while (bVar1);
+    }
+    else {
+      iVar2 = 2;
+LAB_00326a4c:
+      if (iVar2 != 2) {
+        return unaff_x21;
+      }
+    }
+  }
+  return 0xffffffff;
 }
 ```
 
@@ -255675,99 +255411,20 @@ disabled global lVar10   <- a type specifier is required for all declarations
 ## Build log of this run (build/worklist.log)
 
 ```
-[11:19:32]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[11:19:32]   pseudocode recovery: 3065 quarantined, 3065 have pseudocode to rebuild from
-[11:19:34]     [2/3065] FUN_0000315c -> re-derived (faithful-pseudocode)
-[11:19:35]     [13/3065] checkStackGuard -> re-derived (faithful-pseudocode)
-[11:21:59]     [1/3065] FUN_00001a3c -> still quarantined
-[11:22:54]     [12/3065] FUN_000037b8 -> still quarantined
-[11:23:08]     [3/3065] processAndFilterInput -> still quarantined
-[11:23:09]     [7/3065] FUN_000034cc -> re-derived (rewrite)
-[11:23:15]     [11/3065] processAudioData8 -> still quarantined
-[11:23:15]     [19/3065] FUN_00003cfc -> re-derived (faithful-pseudocode)
-[11:23:16]     [14/3065] processInputData -> still quarantined
-[11:23:17]     [21/3065] checkStatus -> re-derived (faithful-pseudocode)
-[11:23:20]     [8/3065] FUN_00003594 -> still quarantined
-[11:23:20]     [23/3065] FUN_00003fd4 -> re-derived (faithful-pseudocode)
-[11:23:20]     [24/3065] FUN_0000408c -> re-derived (faithful-pseudocode)
-[11:23:21]     [5/3065] FUN_0000340c -> still quarantined
-[11:23:22]     [26/3065] FUN_000041a8 -> re-derived (faithful-pseudocode)
-[11:23:23]     [9/3065] FUN_000035c8 -> still quarantined
-[11:23:25]     [6/3065] processAndPrintData -> still quarantined
-[11:23:27]     [4/3065] checkDataValue -> still quarantined
-[11:23:27]     [30/3065] FUN_00004520 -> re-derived (faithful-pseudocode)
-[11:23:28]     [10/3065] FUN_000035f4 -> still quarantined
-[11:23:29]     [32/3065] initializeAndFilter -> re-derived (faithful-pseudocode)
-[11:24:58]     [15/3065] processValue -> still quarantined
-[11:24:58]     [34/3065] FUN_000048f8 -> re-derived (faithful-pseudocode)
-[11:24:59]     [35/3065] FUN_0000492c -> re-derived (faithful-pseudocode)
-[11:25:44]     [28/3065] processBuffer4 -> still quarantined
-[11:25:51]     [16/3065] isConditionMet -> still quarantined
-[11:25:56]     [17/3065] initializeAndApplyFilters -> still quarantined
-[11:25:56]     [39/3065] calculateVector -> re-derived (faithful-pseudocode)
-[11:25:56]     [40/3065] main5 -> re-derived (faithful-pseudocode)
-[11:25:57]     [18/3065] processAndWriteData -> still quarantined
-[11:25:59]     [22/3065] FUN_00003ea4 -> still quarantined
-[11:26:03]     [25/3065] FUN_00004130 -> still quarantined
-[11:26:05]     [27/3065] processAndFree -> still quarantined
-[11:26:05]     [45/3065] FUN_000050e8 -> re-derived (faithful-pseudocode)
-[11:26:06]     [29/3065] FUN_00004424 -> still quarantined
-[11:26:07]     [47/3065] callFunction -> re-derived (faithful-pseudocode)
-[11:26:08]     [20/3065] FUN_00003d30 -> still quarantined
-[11:26:12]     [31/3065] FUN_0000461c -> still quarantined
-[11:26:14]     [33/3065] rotateVector2 -> still quarantined
-[11:26:41]     [51/3065] processFilterData -> re-derived (window-patch)
-[11:28:47]     [36/3065] FUN_00004ce8 -> still quarantined
-[11:28:48]     [44/3065] FUN_00005090 -> re-derived (window-patch)
-[11:28:49]     [54/3065] FUN_000059a8 -> re-derived (faithful-pseudocode)
-[11:30:33]     [49/3065] FUN_00005398 -> still quarantined
-[11:30:36]     [38/3065] processVector -> still quarantined
-[11:30:46]     [37/3065] processValues -> still quarantined
-[11:30:46]     [58/3065] callFunction2 -> re-derived (faithful-pseudocode)
-[11:30:47]     [59/3065] FUN_00006038 -> re-derived (faithful-pseudocode)
-[11:30:54]     [41/3065] FUN_00004f0c -> still quarantined
-[11:30:58]     [42/3065] FUN_00004f64 -> still quarantined
-[11:30:59]     [62/3065] FUN_0000638c -> re-derived (faithful-pseudocode)
-[11:30:59]     [63/3065] FUN_0000640c -> re-derived (faithful-pseudocode)
-[11:31:31]     [55/3065] handleSwitch -> still quarantined
-[11:31:32]     [43/3065] FUN_00005000 -> still quarantined
-[11:31:37]     [46/3065] FUN_000050fc -> still quarantined
-[11:31:57]     [48/3065] FUN_00005230 -> still quarantined
-[11:31:59]     [50/3065] FUN_00005414 -> re-derived (rewrite)
-[11:31:59]     [69/3065] FUN_000069dc -> re-derived (faithful-pseudocode)
-[11:32:14]     [52/3065] FUN_00005810 -> still quarantined
-[11:33:12]     [56/3065] FUN_00005eb0 -> still quarantined
-[11:33:13]     [72/3065] calculateSineCosine -> re-derived (faithful-pseudocode)
-[11:34:24]     [53/3065] FUN_000058ac -> still quarantined
-[11:34:52]     [73/3065] FUN_00006ac8 -> still quarantined
-[11:36:09]     [57/3065] FUN_00005fc0 -> still quarantined
-[11:36:10]     [76/3065] FUN_00006e48 -> re-derived (faithful-pseudocode)
-[11:36:10]     [77/3065] FUN_00006f14 -> re-derived (faithful-pseudocode)
-[11:36:11]     [61/3065] processAndExecuteData -> still quarantined
-[11:36:11]     [78/3065] FUN_00006ff8 -> re-derived (faithful-pseudocode)
-[11:36:11]     [79/3065] FUN_00007044 -> re-derived (faithful-pseudocode)
-[11:36:11]     [80/3065] FUN_00007104 -> re-derived (faithful-pseudocode)
-[11:36:14]     [60/3065] FUN_000060a8 -> still quarantined
-[11:36:32]     [64/3065] FUN_000064d4 -> still quarantined
-[11:36:32]     [84/3065] FUN_00007240 -> re-derived (faithful-pseudocode)
-[11:36:33]     [85/3065] FUN_0000727c -> re-derived (faithful-pseudocode)
-[11:36:43]     [67/3065] processInputAndApplyFilter -> still quarantined
-[11:36:44]     [87/3065] processAndWriteData4 -> re-derived (faithful-pseudocode)
-[11:36:44]     [88/3065] _VSTPluginMain -> re-derived (faithful-pseudocode)
-[11:36:46]     [65/3065] FUN_0000671c -> still quarantined
-[11:36:50]     [66/3065] FUN_000067a8 -> still quarantined
-[11:36:54]     [68/3065] FUN_000069bc -> still quarantined
-[11:36:55]     [92/3065] FUN_00007e54 -> re-derived (faithful-pseudocode)
-[11:36:55]     [93/3065] FUN_00007ecc -> re-derived (faithful-pseudocode)
-[11:36:59]     [70/3065] FUN_00006a1c -> still quarantined
-[11:37:09]     [71/3065] processValues12 -> still quarantined
-[11:39:12]     [89/3065] FUN_000076a4 -> still quarantined
-[11:39:22]     [74/3065] FUN_00006cd0 -> still quarantined
-[11:39:22]     [98/3065] FUN_0000809c -> re-derived (faithful-pseudocode)
-[11:39:23]     [99/3065] FUN_0000813c -> re-derived (faithful-pseudocode)
-[11:39:23]     [100/3065] processList -> re-derived (faithful-pseudocode)
-[11:39:50]     [75/3065] FUN_00006d64 -> still quarantined
-[11:39:50]     [102/3065] FUN_00008440 -> re-derived (faithful-pseudocode)
+[11:56:07] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/rewritten.cpp
+[11:56:08] Resume check (30464 functions in manifest):
+[11:56:08]   [ok]   split + header are current
+[11:56:08]   [ok]   header compiles
+[11:56:08]   [ok]   compile sweep done
+[11:56:08]   status: 20284 compile, 7156 still to fix, 3024 quarantined
+[11:58:43]   declared 2 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 27 function(s) that use them again
+[11:58:44]   compiling with 11 parallel worker(s)
+[11:58:44]   isolated compile: 26/27 TUs pass, 1 need repair (1s)
+[11:58:45]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
+[11:58:45]   » dependency order + fixer loop
+[11:58:45]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
+[11:58:46]   callgraph: 12 callee name(s) not in our TU set (external/library calls) — ignored for ordering
+[11:58:46]   callgraph: exact deps for 21995/30464 functions
 ```
 
 ## pipeline_state.json
@@ -255777,31 +255434,31 @@ disabled global lVar10   <- a type specifier is required for all declarations
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-21 09:58:15",
-      "at": "2026-10-21 09:58:22",
+      "started": "2026-10-21 11:55:29",
+      "at": "2026-10-21 11:55:37",
       "seconds": 7,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-21 09:58:22",
-      "at": "2026-10-21 09:58:52",
-      "seconds": 30,
+      "started": "2026-10-21 11:55:37",
+      "at": "2026-10-21 11:56:07",
+      "seconds": 31,
       "model": "",
       "note": "30489/30489 rewritten",
       "model_busy": 12
     },
     "split": {
       "done": true,
-      "started": "2026-10-21 09:58:52",
-      "at": "2026-10-21 09:58:53",
+      "started": "2026-10-21 11:56:07",
+      "at": "2026-10-21 11:56:08",
       "seconds": 1,
-      "note": "20052/30464 compile after the sweep"
+      "note": "20284/30464 compile after the sweep"
     },
     "fix": {
       "done": false,
-      "started": "2026-10-21 09:58:53",
-      "at": "2026-10-21 09:58:53",
+      "started": "2026-10-21 11:56:08",
+      "at": "2026-10-21 11:56:08",
       "seconds": 86,
       "model": "qwen2.5-coder-0.5b-instruct-mlx"
     },
@@ -255817,77 +255474,6 @@ disabled global lVar10   <- a type specifier is required for all declarations
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-21 00:30:22",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: no matching function for call to 'X'": 75,
-        "fix|quarantined: cannot cast from type 'X' to pointer type 'X'": 31,
-        "fix|quarantined: no member named 'X' in 'X'": 16,
-        "fix|quarantined: C-style cast from 'X' to 'X' is not allowed": 15,
-        "fix|quarantined: redefinition of 'X'": 13,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 11,
-        "fix|quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')": 11,
-        "fix|quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed": 11,
-        "fix|quarantined: assignment to cast is illegal, lvalue casts are not supported": 10,
-        "fix|quarantined: use of undeclared identifier 'X'": 9,
-        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 9,
-        "fix|quarantined: expected 'X' after top level declarator": 8,
-        "fix|quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'": 7,
-        "fix|quarantined: subscripted value is not an array, pointer, or vector": 6,
-        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 6,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X'": 4,
-        "fix|quarantined: unknown type name 'X'": 3,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 3,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 3,
-        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 3,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'": 3,
-        "fix|quarantined: variable has incomplete type 'X'": 2,
-        "fix|quarantined: use of undeclared identifier 'X'; did you mean 'X'?": 2,
-        "fix|quarantined: no matching conversion for C-style cast from 'X' to 'X'": 2,
-        "fix|quarantined: must use 'X' tag to refer to type 'X' in this scope": 2,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *": 2,
-        "fix|quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')": 2,
-        "fix|quarantined: function definition is not allowed here": 2,
-        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an lvalue of type 'X'": 2,
-        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 2,
-        "fix|quarantined: type 'X' does not provide a subscript operator": 1,
-        "fix|quarantined: too few arguments to function call, expected N, have N": 1,
-        "fix|quarantined: subscript of pointer to incomplete type 'X'": 1,
-        "fix|quarantined: static_cast from 'X' to 'X' is not allowed": 1,
-        "fix|quarantined: non-const lvalue reference to type 'X' cannot bind to an initializer list temporary": 1,
-        "fix|quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'": 1,
-        "fix|quarantined: no viable conversion from 'X' to 'X'": 1,
-        "fix|quarantined: no matching conversion for C-style cast from 'X' (aka 'X') to 'X'": 1,
-        "fix|quarantined: member reference base type 'X' is not a structure or union": 1,
-        "fix|quarantined: invalid range expression of type 'X'; no viable 'X' function available": 1,
-        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 1,
-        "fix|quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))": 1,
-        "fix|quarantined: indirection requires pointer operand ('X' invalid)": 1,
-        "fix|quarantined: incompatible pointer types assigning to 'X' from 'X' (aka 'X')": 1,
-        "fix|quarantined: functions that differ only in their return type cannot be overloaded": 1,
-        "fix|quarantined: expected variable name or 'X' in lambda capture list": 1,
-        "fix|quarantined: expected unqualified-id": 1,
-        "fix|quarantined: expected expression": 1,
-        "fix|quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'": 1,
-        "fix|quarantined: cannot initialize a parameter of type 'X' with an rvalue of type 'X' (aka 'X')": 1,
-        "fix|quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X' (aka 'X')": 1,
-        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'": 1,
-        "fix|quarantined: cannot convert 'X' to 'X' (aka 'X') without a conversion operator": 1,
-        "fix|quarantined: cannot assign to return value because function 'X' returns a const value": 1,
-        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 1,
-        "fix|quarantined: brackets are not allowed here; to declare an array, place the brackets after the name": 1,
-        "fix|quarantined: arithmetic on a pointer to void": 1,
-        "fix|quarantined: 'X' does not refer to a value": 1,
-        "fix|quarantined: 'X' does not name a template but is followed by template arguments; did you mean 'X'?": 1,
-        "fix|not compiling yet (not reached before the run ended)": 10702,
-        "rewrite|drafts whose function had a different name than the one its callers use (renamed)": 4710,
-        "rewrite|drafts whose parameters were changed to Ghidra's signature (so callers and callee agree)": 2978,
-        "rewrite|drafts calling functions by made-up names (the real names put back)": 901,
-        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 1892,
-        "fix|the model repeated an edit that had already failed (skipped)": 301
-      }
-    },
     {
       "at": "2026-10-21 09:45:38",
       "keys": {
@@ -256500,16 +256086,161 @@ disabled global lVar10   <- a type specifier is required for all declarations
         "recover|Ghidra's pseudocode still doesn't compile: no viable overloaded 'X'": 1,
         "recover|Ghidra's pseudocode still doesn't compile: array type 'X' (aka 'X') is not assignable": 1
       }
+    },
+    {
+      "at": "2026-10-21 12:03:40",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "fix|quarantined: no matching function for call to 'X'": 679,
+        "fix|quarantined: cannot cast from type 'X' to pointer type 'X'": 233,
+        "fix|quarantined: C-style cast from 'X' to 'X' is not allowed": 213,
+        "fix|quarantined: use of undeclared identifier 'X'": 162,
+        "fix|quarantined: no member named 'X' in 'X'": 150,
+        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 117,
+        "fix|quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed": 107,
+        "fix|quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')": 104,
+        "fix|quarantined: redefinition of 'X'": 103,
+        "fix|quarantined: subscripted value is not an array, pointer, or vector": 100,
+        "fix|quarantined: assignment to cast is illegal, lvalue casts are not supported": 72,
+        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 68,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 64,
+        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 52,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X'": 47,
+        "fix|quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'": 47,
+        "fix|quarantined: expected 'X' after top level declarator": 34,
+        "fix|quarantined: indirection requires pointer operand ('X' invalid)": 28,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'": 28,
+        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 27,
+        "fix|quarantined: unknown type name 'X'": 26,
+        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 25,
+        "fix|quarantined: must use 'X' tag to refer to type 'X' in this scope": 23,
+        "fix|quarantined: use of undeclared identifier 'X'; did you mean 'X'?": 18,
+        "fix|quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'": 18,
+        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 17,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *": 17,
+        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 17,
+        "fix|quarantined: reinterpret_cast from 'X' to 'X' is not allowed": 16,
+        "fix|quarantined: brackets are not allowed here; to declare an array, place the brackets after the name": 15,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 14,
+        "fix|quarantined: no matching constructor for initialization of 'X'": 14,
+        "fix|quarantined: member reference base type 'X' is not a structure or union": 13,
+        "fix|quarantined: expected expression": 13,
+        "fix|quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]": 13,
+        "fix|quarantined: called object type 'X' is not a function or function pointer": 12,
+        "fix|quarantined: function definition is not allowed here": 11,
+        "fix|quarantined: expected unqualified-id": 11,
+        "fix|quarantined: excess elements in struct initializer": 10,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 9,
+        "fix|quarantined: redeclaration of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 9,
+        "fix|quarantined: extern declaration of 'X' follows non-extern declaration": 9,
+        "fix|quarantined: no viable conversion from 'X' to 'X'": 8,
+        "fix|quarantined: no matching conversion for C-style cast from 'X' to 'X'": 8,
+        "fix|quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')": 8,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')": 8,
+        "fix|quarantined: void function 'X' should not return a value [-Wreturn-mismatch]": 7,
+        "fix|quarantined: expected 'X'": 7,
+        "fix|quarantined: arithmetic on a pointer to void": 7,
+        "fix|quarantined: unknown type name 'X'; did you mean 'X'?": 6,
+        "fix|quarantined: reference to type 'X' could not bind to an lvalue of type 'X' (aka 'X')": 6,
+        "fix|quarantined: redeclaration of 'X' with a different type: 'X' vs 'X'": 6,
+        "fix|quarantined: incompatible pointer types assigning to 'X' from 'X' (aka 'X')": 6,
+        "fix|quarantined: unexpected type name 'X': expected expression": 5,
+        "fix|quarantined: non-const lvalue reference to type 'X' cannot bind to an initializer list temporary": 5,
+        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')": 5,
+        "fix|quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X'": 5,
+        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an lvalue of type 'X'": 5,
+        "fix|quarantined: 'X' statement not in loop statement": 5,
+        "fix|quarantined: static_cast from 'X' (aka 'X') to 'X' is not allowed": 4,
+        "fix|quarantined: invalid range expression of type 'X'; no viable 'X' function available": 4,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' from 'X'; dereference with *": 4,
+        "fix|quarantined: subscript of pointer to incomplete type 'X'": 3,
+        "fix|quarantined: static_cast from 'X' to 'X' is not allowed": 3,
+        "fix|quarantined: static_cast from 'X' to 'X' (aka 'X') is not allowed": 3,
+        "fix|quarantined: out-of-line definition of 'X' does not match any declaration in 'X'": 3,
+        "fix|quarantined: no member named 'X' in 'X'; did you mean 'X'?": 3,
+        "fix|quarantined: no matching conversion for functional-style cast from 'X' to 'X'": 3,
+        "fix|quarantined: invalid use of non-static data member 'X'": 3,
+        "fix|quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')": 3,
+        "fix|quarantined: extraneous 'X' before 'X'": 3,
+        "fix|quarantined: expected identifier": 3,
+        "fix|quarantined: expected 'X' for function-style cast or type construction": 3,
+        "fix|quarantined: duplicate case value 'X'": 3,
+        "fix|quarantined: cannot initialize a variable of type 'X' with an lvalue of type 'X'": 3,
+        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'": 3,
+        "fix|quarantined: cannot assign to return value because function 'X' returns a const value": 3,
+        "fix|quarantined: 'X' statement not in loop or switch statement": 3,
+        "fix|quarantined: variable has incomplete type 'X'": 2,
+        "fix|quarantined: too many arguments to function call, expected N, have N": 2,
+        "fix|quarantined: too few arguments to function call, expected N, have N": 2,
+        "fix|quarantined: reinterpret_cast from 'X' to 'X' (aka 'X') is not allowed": 2,
+        "fix|quarantined: redefinition of 'X' as different kind of symbol": 2,
+        "fix|quarantined: non-const lvalue reference to type 'X' cannot bind to a value of unrelated type 'X' (aka 'X')": 2,
+        "fix|quarantined: no viable overloaded 'X'": 2,
+        "fix|quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'": 2,
+        "fix|quarantined: no member named 'X' in namespace 'X'": 2,
+        "fix|quarantined: no matching conversion for C-style cast from 'X' (aka 'X') to 'X'": 2,
+        "fix|quarantined: no matching constructor for initialization of 'X' (aka 'X')": 2,
+        "fix|quarantined: member reference type 'X' is not a pointer; did you mean to use 'X'?": 2,
+        "fix|quarantined: member reference type 'X' (aka 'X') is not a pointer": 2,
+        "fix|quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))": 2,
+        "fix|quarantined: incompatible pointer types assigning to 'X' from 'X'": 2,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); remove &": 2,
+        "fix|quarantined: expression is not assignable": 2,
+        "fix|quarantined: expected 'X' at end of declaration": 2,
+        "fix|quarantined: expected 'X' after expression": 2,
+        "fix|quarantined: comparison between pointer and integer ('X' (aka 'X') and 'X')": 2,
+        "fix|quarantined: cannot use dynamic_cast to convert from 'X' to 'X'": 2,
+        "fix|quarantined: cannot initialize return object of type 'X' (aka 'X') with an lvalue of type 'X' (aka 'X')": 2,
+        "fix|quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X' (aka 'X')": 2,
+        "fix|quarantined: cannot convert 'X' to 'X' without a conversion operator": 2,
+        "fix|quarantined: arithmetic on a pointer to the function type 'X' (aka 'X')": 2,
+        "fix|quarantined: a type specifier is required for all declarations": 2,
+        "fix|quarantined: C-style cast from 'X' (aka 'X') to 'X' is not allowed": 2,
+        "fix|quarantined: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/vN/__locale:N:N: error: missing 'X' prior to depende": 2,
+        "fix|quarantined: 'X' (aka 'X') and 'X' are not pointers to compatible types": 2,
+        "fix|quarantined: use of undeclared label 'X'": 1,
+        "fix|quarantined: type 'X' does not provide a subscript operator": 1,
+        "fix|quarantined: statement requires expression of integer type ('X' invalid)": 1,
+        "fix|quarantined: reinterpret_cast from 'X' (aka 'X') to 'X' is not allowed": 1,
+        "fix|quarantined: reference to non-static member function must be called; did you mean to call it with no arguments?": 1,
+        "fix|quarantined: redefinition of parameter 'X'": 1,
+        "fix|quarantined: read-only variable is not assignable": 1,
+        "fix|quarantined: non-const lvalue reference to type 'X' cannot bind to a value of unrelated type 'X'": 1,
+        "fix|quarantined: no viable conversion from 'X' (aka 'X') to 'X'": 1,
+        "fix|quarantined: no matching conversion for functional-style cast from 'X' (aka 'X') to 'X'": 1,
+        "fix|quarantined: invalid range expression of type 'X' (aka 'X'); no viable 'X' function available": 1,
+        "fix|quarantined: invalid argument type 'X' (aka 'X') to unary expression": 1,
+        "fix|quarantined: invalid 'X' at end of declaration; did you mean 'X'?": 1,
+        "fix|quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X'": 1,
+        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' from 'X' (aka 'X')": 1,
+        "fix|quarantined: incompatible integer to pointer conversion assigning to 'X' (aka 'X') from 'X'": 1,
+        "fix|quarantined: expected variable name or 'X' in lambda capture list": 1,
+        "fix|quarantined: expected 'X' in do/while loop": 1,
+        "fix|quarantined: comparison of distinct pointer types ('X' (aka 'X') and 'X' (aka 'X'))": 1,
+        "fix|quarantined: comparison between pointer and integer ('X' and 'X')": 1,
+        "fix|quarantined: cast from pointer to smaller type 'X' loses information": 1,
+        "fix|quarantined: cannot initialize an array element of type 'X' with an lvalue of type 'X'": 1,
+        "fix|quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X' (aka 'X')": 1,
+        "fix|quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')": 1,
+        "fix|quarantined: cannot initialize a parameter of type 'X' with an rvalue of type 'X' (aka 'X')": 1,
+        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')": 1,
+        "fix|quarantined: cannot assign to variable 'X' with const-qualified type 'X'": 1,
+        "fix|quarantined: assigning to 'X' from incompatible type 'X'; dereference with *": 1,
+        "fix|quarantined: array type 'X' is not assignable": 1,
+        "fix|quarantined: arithmetic on a pointer to the function type 'X'": 1,
+        "fix|quarantined: C-style cast from 'X' (aka 'X') to 'X' (aka 'X') is not allowed": 1,
+        "fix|quarantined: 'X' does not refer to a value": 1,
+        "fix|quarantined: 'X' does not refer to a type name in pseudo-destructor expression; expected the name of type 'X' (aka 'X')": 1,
+        "fix|quarantined: 'X' declared as array of functions of type 'X' (aka 'X')": 1,
+        "fix|not compiling yet (not reached before the run ended)": 7130,
+        "rewrite|drafts whose function had a different name than the one its callers use (renamed)": 4710,
+        "rewrite|drafts whose parameters were changed to Ghidra's signature (so callers and callee agree)": 2978,
+        "rewrite|drafts calling functions by made-up names (the real names put back)": 901,
+        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 2
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-20 23:43",
-      "functions": 30464,
-      "compile_pct": 57.9,
-      "quarantined_pct": 0.5,
-      "to_fix": 12662
-    },
     {
       "at": "10-21 00:30",
       "functions": 30464,
@@ -256553,6 +256284,13 @@ disabled global lVar10   <- a type specifier is required for all declarations
       "compile_pct": 66.6,
       "quarantined_pct": 9.9,
       "to_fix": 7156
+    },
+    {
+      "at": "10-21 12:03",
+      "functions": 30464,
+      "compile_pct": 66.7,
+      "quarantined_pct": 9.9,
+      "to_fix": 7130
     }
   ]
 }
@@ -256562,7 +256300,7 @@ disabled global lVar10   <- a type specifier is required for all declarations
 
 ```json
 {
-  "generated": "2026-10-21 10:55:32",
+  "generated": "2026-10-21 11:40:07",
   "pipeline_version": "2026-10-18.1",
   "workdir": "/Users/admin/glitchdecomp/fastpass 3",
   "export": {
@@ -256597,11 +256335,15 @@ disabled global lVar10   <- a type specifier is required for all declarations
   },
   "build": {
     "functions": 30464,
-    "compile": 20243,
-    "quarantined": 3065,
+    "compile": 20284,
+    "quarantined": 3024,
     "fixed_by_model": 730,
-    "rederived": 0,
-    "rederived_by": {}
+    "rederived": 41,
+    "rederived_by": {
+      "faithful-pseudocode": 37,
+      "rewrite": 2,
+      "window-patch": 2
+    }
   },
   "link": {
     "ok": null,
@@ -256647,8 +256389,8 @@ disabled global lVar10   <- a type specifier is required for all declarations
     },
     "recover": {
       "done": false,
-      "started": "2026-10-20 07:04:55",
-      "at": "2026-10-20 07:04:55"
+      "started": "2026-10-21 11:19:31",
+      "at": "2026-10-21 11:19:31"
     }
   }
 }
