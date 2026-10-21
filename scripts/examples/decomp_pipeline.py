@@ -285,10 +285,15 @@ def plog(P: Paths, msg: str, show: bool = False) -> None:
 
 
 def write_atomic(path: Path, text: str) -> None:
-    """Write via a temporary file, so an interrupted write never leaves half a file."""
-    tmp = path.with_name(path.name + ".tmp")
-    tmp.write_text(text)
-    tmp.replace(path)
+    """Write via a temporary file, so an interrupted write never leaves half a file.
+    Each thread has its own temporary file: two threads saving the same file at
+    once (workers and the checkpoint) each replace it whole, never clash."""
+    tmp = path.with_name(f"{path.name}.{os.getpid()}-{threading.get_ident()}.tmp")
+    try:
+        tmp.write_text(text)
+        tmp.replace(path)
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 def set_aside(path: Path, why: str) -> Path:
@@ -8528,9 +8533,7 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
 
 def save_manifest(cfg: Config, records: dict[str, FuncRecord]) -> None:
     data = {m: asdict(r) for m, r in records.items()}
-    tmp = cfg.manifest_path.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(data, indent=2))
-    tmp.replace(cfg.manifest_path)      # never leave a half-written manifest
+    write_atomic(cfg.manifest_path, json.dumps(data, indent=2))   # never half-written
 
 
 def load_manifest(cfg: Config) -> dict[str, FuncRecord]:
