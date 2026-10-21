@@ -1090,13 +1090,22 @@ def test_made_up_callee_names_are_matched_to_the_original(tmp_path, model):
 
 
 def test_definitions_take_ghidra_parameter_types(tmp_path, model):
-    # the draft takes "Pair *" where Ghidra says "int *": the definition takes
-    # Ghidra's type and converts it on its first line, so every caller agrees
+    # Ghidra says squareIt takes an int and bumpCounter nothing; the drafts take a
+    # pointer and an extra parameter. The definitions take Ghidra's parameters and
+    # convert on their first lines, so every caller agrees. A "Pair *" where Ghidra
+    # says "int *" is kept: it says more.
+    model.rewrite_override["FUN_00001040"] = (
+        "int squareIt(long *n) {\n    return (int)(*n * *n);\n}", "squareIt")
+    model.rewrite_override["FUN_00001060"] = (
+        "int g_counter = 0;\n\nvoid bumpCounter(int amount) {\n    g_counter += amount;\n}",
+        "bumpCounter")
     write_export(tmp_path)
     assert run(tmp_path, model, "--to", "split") == 0
     cpp = (tmp_path / "rewrite" / "rewritten.cpp").read_text()
-    assert "int pairSum(int * p_in)" in cpp and "Pair * p = (Pair *)p_in;" in cpp
-    assert by_name(tmp_path)["pairSum"]["compiles"]
+    assert "int squareIt(int n_in)" in cpp and "long * n = (long *)n_in;" in cpp
+    assert "void bumpCounter() {" in cpp and "int amount{};" in cpp
+    assert "int pairSum(Pair *p)" in cpp
+    assert by_name(tmp_path)["bumpCounter"]["compiles"]
     assert dp.ghidra_param_types("undefined8 FUN_1(undefined8 param_1,float f,Foo *p)\n{") == \
         ["uint64_t", "float", "void *"]
 

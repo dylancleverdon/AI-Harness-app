@@ -2611,6 +2611,13 @@ def ghidra_param_types(pseudo: str) -> Optional[list[str]]:
     return out
 
 
+def _same_kind(t: str, g: str) -> bool:
+    """Both pointers, or both not: the draft's type is kept (a 'Pair *' says more
+    than Ghidra's 'int *', numbers convert by themselves, and a caller passing
+    another pointer type gets a cast in the fix stage)."""
+    return ("*" in t) == ("*" in g)
+
+
 def adopt_signature(code: str, name: str, gtypes: Optional[list[str]]) -> tuple[str, bool]:
     """Give the draft's function Ghidra's parameter types (keeping its names and
     return type). Parameters whose type changes are converted back to the type
@@ -2629,15 +2636,17 @@ def adopt_signature(code: str, name: str, gtypes: Optional[list[str]]) -> tuple[
         if parts is None:
             return code, False
         mine = [_param(p) for p in parts]
-        if len(mine) == len(gtypes) and all(_norm_type(t) == g for (t, _), g in zip(mine, gtypes)):
-            return code, False                        # already Ghidra's
+        if len(mine) == len(gtypes) and all(_same_kind(t, g) for (t, _), g in zip(mine, gtypes)):
+            return code, False                        # agrees with Ghidra's
         params, prelude = [], []
         for k, g in enumerate(gtypes):
             if k < len(mine) and mine[k][1]:
                 t, n = mine[k]
-                if _norm_type(t) == g:
-                    params.append(f"{g} {n}")
+                if _same_kind(t, g):
+                    params.append(f"{t} {n}")         # the draft's (more telling) type
                     continue
+                if re.search(r"\b(float|double)\b", t + " " + g):
+                    return code, False                # a pointer can't become a float
                 words = re.findall(r"[A-Za-z_]\w*", t)
                 if "*" not in t and not all(w in SIG_BASE_TYPES or w == "const" for w in words):
                     return code, False                # a struct by value: can't convert
