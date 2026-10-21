@@ -198,6 +198,12 @@ STAGE_INFO = {
                 "anything identifying, and written to final/ as a project that builds",
 }
 
+# what a stage does in C mode (--lang c), where it differs
+STAGE_INFO_C = {
+    "rewrite": "Ghidra's pseudocode is written out as one C file, with the program's data "
+               "(no model: the code is what Ghidra decompiled)",
+}
+
 
 def say(text: str) -> None:
     """Print a line — above the live progress bar when one is showing."""
@@ -12776,7 +12782,8 @@ def run_pipeline(args) -> int:
                 _pause_for_model(P, client, stage)
             n = STAGES.index(stage) + 1
             BAR["stage"] = f"[{n}/{len(STAGES)} {stage}]"
-            plog(P, f"━━━━ Stage {n}/{len(STAGES)} · {stage} ━━━━ {STAGE_INFO[stage]}")
+            about = (STAGE_INFO_C.get(stage) if args.lang == "c" else None) or STAGE_INFO[stage]
+            plog(P, f"━━━━ Stage {n}/{len(STAGES)} · {stage} ━━━━ {about}")
             t0 = time.time()
             use = ModelUse()
             calls0 = client.calls
