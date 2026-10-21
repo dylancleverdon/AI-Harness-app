@@ -2394,6 +2394,30 @@ def clean_for_monolith(code: str, name: str = None) -> str:
     return code
 
 
+def name_definition(code: str, expected: str) -> str:
+    """The function a draft defines must have the name its callers use. A draft
+    that defines theFunctionName, main or another copied name (or a name the
+    rewrite refused) gets its definition renamed; copied names are renamed
+    everywhere in the draft (recursive calls too)."""
+    items = split_items(code)
+    for i, it in enumerate(items):
+        if not (it.rstrip().endswith("}") and _func_name(it)) or re.match(
+                r"\s*(template\s*<[^>]*>\s*)?(struct|class|union|enum|namespace)\b", it):
+            continue
+        got = _func_name(it)
+        if got == expected or not expected:
+            return code
+        struggle("rewrite", "drafts whose function had a different name than the one "
+                 "its callers use (renamed)", got, handled=True)
+        if BAD_NAME.match(got) or got == "main" or PLACEHOLDER.match(got):
+            return re.sub(rf"\b{re.escape(got)}\b", expected, code)
+        head, brace, body = it.partition("{")
+        head = re.sub(rf"\b{re.escape(got)}(?=\s*\()", expected, head, count=1)
+        items[i] = head + brace + body
+        return "\n\n".join(items)
+    return code
+
+
 def write_outputs(P: Paths, progress, order, keep_comments):
     """rewritten.cpp from every finished function (including ones waiting to be
     rewritten again: their current version stays until the new one replaces it)."""
@@ -2410,6 +2434,7 @@ def write_outputs(P: Paths, progress, order, keep_comments):
                 code, _ = keep_one_function(code if keep_comments else strip_comments(code),
                                             {e.get("name"), e.get("ghidra")})
                 code = clean_for_monolith(code, names.get(e["ghidra"]))
+                code = name_definition(code, names.get(e["ghidra"], e["ghidra"]))
                 # apply names FIRST, then add the marker, so the marker's literal
                 # Ghidra name/address are never rewritten by apply_names
                 code = mark_function(apply_names(code, names), e["ghidra"], key)
@@ -4207,8 +4232,8 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
         neutralized.append(inc)
         return m.group(1) + b"//nclude" + m.group(0)[len(m.group(1)) + len(b"#include"):]
 
-    parse_raw = re.sub(rb'(?m)^([ \t]*)#include[ \t]*"([^"\n]+)"', _fix_inc, raw)
-    parse_raw = re.sub(rb'(?m)^([ \t]*)#include[ \t]*<([^>\n]+)>', _fix_sys_inc, parse_raw)
+    parse_raw = re.sub(rb'(?m)^([ \t]*)#[ \t]*include[ \t]*"([^"\n]+)"', _fix_inc, raw)
+    parse_raw = re.sub(rb'(?m)^([ \t]*)#[ \t]*include[ \t]*<([^>\n]+)>', _fix_sys_inc, parse_raw)
     assert len(parse_raw) == len(raw)
     if neutralized:
         log(cfg, f"  ignored {len(neutralized)} #include line(s) for files that don't "
@@ -4229,6 +4254,30 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
     opts1 = (cx.TranslationUnit.PARSE_INCOMPLETE
              | cx.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
     tu1 = idx.parse(parse_path, args=args, options=opts1)
+    # A missing header is a FATAL error: libclang stops reporting (and resolving)
+    # everything after it. Blank out each such line (same length, so offsets stay
+    # valid) and parse again.
+    for _ in range(20):
+        missing = [d for d in tu1.diagnostics if "file not found" in d.spelling
+                   and d.location.file is not None and d.location.file.name == parse_path]
+        if not missing:
+            break
+        lines = parse_bytes.split(b"\n")
+        for d in missing:
+            ln = d.location.line - 1
+            if 0 <= ln < len(lines):
+                where = ln + 1 - prefix.count(b"\n")
+                log(cfg, f"  !! {cfg.input_file.name} line {where}: "
+                         f"{lines[ln].decode('utf-8', 'replace').strip()[:100]} — not on this "
+                         f"machine; ignored so libclang can read the rest")
+                struggle("split", "#include lines for headers this machine doesn't have",
+                         f"line {where}: {lines[ln].decode('utf-8', 'replace').strip()[:60]}",
+                         handled=True)
+                lines[ln] = b" " * len(lines[ln])
+        parse_bytes = b"\n".join(lines)
+        _RAW_BYTES = parse_bytes
+        Path(parse_path).write_bytes(parse_bytes)
+        tu1 = idx.parse(parse_path, args=args, options=opts1)
     err = _ErrIndex(tu1, parse_path)
 
     # Show what libclang itself couldn't understand — this is where silent
@@ -4494,6 +4543,17 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
             inner = bisect.bisect_left(marker_offs, e0) - k
             swallowers.append((name0, s0, marker_offs[k], inner))
             clean_spans[idx] = (s0, marker_offs[k], name0, mangled0)
+    # file names differing only in upper/lower case are the SAME file on macOS
+    used_lower: set[str] = set()
+
+    def file_name(safe: str) -> str:
+        fname, k = f"{safe}.cpp", 1
+        while fname.lower() in used_lower:
+            k += 1
+            fname = f"{safe}__{k}.cpp"
+        used_lower.add(fname.lower())
+        return fname
+
     prev_end = 0
     for (s, e, name, mangled) in clean_spans:
         body = raw[s:e].decode("utf-8", "replace").rstrip()
@@ -4504,7 +4564,7 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
             body = re.sub(rf"\b{re.escape(m_dup.group(1))}\b(?=\s*\()", name, body, count=1)
         body = _strip_leading_static(body, name)
         safe = re.sub(r"[^A-Za-z0-9_]", "_", mangled)[:120]
-        fname = f"{safe}.cpp"
+        fname = file_name(safe)
         (tu_dir / fname).write_text(include_line + body + "\n")
         i = bisect.bisect_left(marker_offs, s) - 1   # nearest marker before this func
         # only this function's own marker counts: it must sit between the previous
@@ -4551,10 +4611,10 @@ def split_monolith(cfg: Config, tu_dir: Optional[Path] = None) -> dict[str, Func
         carved[why] = carved.get(why, 0) + 1
         base = re.sub(r"\W", "_", _func_name(body_txt) or f"func_{addr}")
         name = base if base not in records else f"{base}__{addr}"
-        safe = re.sub(r"[^A-Za-z0-9_]", "_", name)[:120]
-        (tu_dir / f"{safe}.cpp").write_text(include_line + body_txt + "\n")
+        fname = file_name(re.sub(r"[^A-Za-z0-9_]", "_", name)[:120])
+        (tu_dir / fname).write_text(include_line + body_txt + "\n")
         records[name] = FuncRecord(
-            name=name, mangled=name, file=f"funcs/{safe}.cpp", start=pos, end=end,
+            name=name, mangled=name, file=f"funcs/{fname}", start=pos, end=end,
             ghidra_addr=addr, src_sha=hashlib.sha1(raw[pos:end]).hexdigest()[:16])
         have.add(addr)
     if carved:
@@ -9202,8 +9262,8 @@ def run_organize(P: "Paths", cfg: "Config", records: dict, args) -> dict:
 def _set_aside_unused(cfg: Config, records: dict[str, FuncRecord]) -> None:
     """Function files left over from an earlier split that no function uses any
     more: moved out of funcs/ (into the snapshot, or funcs_unused/), never deleted."""
-    used = {Path(r.file).name for r in records.values()}
-    extra = [p for p in cfg.funcs_dir.glob("*.cpp") if p.name not in used]
+    used = {Path(r.file).name.lower() for r in records.values()}   # macOS: case-blind
+    extra = [p for p in cfg.funcs_dir.glob("*.cpp") if p.name.lower() not in used]
     if not extra:
         return
     dest = (cfg.snapshot_dir() or cfg.workdir / "funcs_unused") / "build" / "funcs_unused"
@@ -9290,7 +9350,31 @@ def build_split(cfg: Config, redo_split: bool) -> dict[str, FuncRecord]:
     return records
 
 
+def restore_missing_files(cfg: Config, records: dict[str, FuncRecord]) -> int:
+    """A function whose file has gone missing gets it back from rewritten.cpp
+    (its fixes are lost, so the fixer sees it again) instead of stopping the run."""
+    missing = [r for r in records.values() if not (cfg.workdir / r.file).exists()]
+    if not missing:
+        return 0
+    raw = cfg.input_file.read_bytes() if cfg.input_file.exists() else b""
+    for r in missing:
+        body = raw[r.start:r.end].decode("utf-8", "replace").strip() if raw else ""
+        if not body.startswith("//@ghidra") and "{" not in body:
+            body = f"// {r.name}: its file went missing and rewritten.cpp no longer has it"
+        path = cfg.workdir / r.file
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f'{INCLUDE_LINE}\n\n{body}\n')
+        r.compiles = False
+        struggle("split", "function files that had gone missing (rebuilt from the rewrite)",
+                 r.name, hint="send me the log: something moved or deleted them")
+    log(cfg, f"  !! {len(missing)} function file(s) were missing (e.g. {missing[0].file}); "
+             f"rebuilt them from rewritten.cpp")
+    save_manifest(cfg, records)
+    return len(missing)
+
+
 def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
+    restore_missing_files(cfg, records)
     n_failing = sum(1 for r in records.values() if not r.compiles and not r.quarantined)
     if not n_failing:
         log(cfg, show=True, msg="  nothing to fix")

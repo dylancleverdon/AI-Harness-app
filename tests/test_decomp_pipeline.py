@@ -961,3 +961,29 @@ def test_compile_results_are_remembered(tmp_path, model):
     log = (tmp_path / "build" / "worklist.log").read_text()
     assert "7 function(s) unchanged since their last compile" in log
     assert {r["name"]: r["compiles"] for r in manifest(tmp_path).values()} == before
+
+
+def test_draft_defining_a_copied_name_is_renamed(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    draft = tmp_path / "rewrite" / ".rewritten" / "1020.cpp"
+    draft.write_text("unsigned int theFunctionName(unsigned int v) {\n    return v * 3;\n}\n")
+    assert run(tmp_path, model, "--to", "split", "--redo", "rewrite", "--functions", "FUN_00001040") == 0
+    cpp = (tmp_path / "rewrite" / "rewritten.cpp").read_text()
+    assert "theFunctionName" not in cpp and "tripleValue(unsigned int v)" in cpp
+
+
+def test_missing_header_doesnt_blind_libclang_and_lost_files_come_back(tmp_path, model):
+    write_export(tmp_path)
+    assert run(tmp_path, model, "--to", "rewrite") == 0
+    cpp = tmp_path / "rewrite" / "rewritten.cpp"
+    cpp.write_text("#include_next <no_such_header.h>\n" + cpp.read_text())   # gets past the include filter
+    assert run(tmp_path, model, "--from", "split", "--to", "split") == 0
+    log = (tmp_path / "build" / "worklist.log").read_text()
+    assert "line 1: #include_next <no_such_header.h>" in log
+    assert len(manifest(tmp_path)) == 7
+    gone = tmp_path / "build" / next(iter(manifest(tmp_path).values()))["file"]
+    gone.unlink()
+    assert run(tmp_path, model, "--from", "fix", "--to", "fix") == 0
+    assert gone.exists()
+    assert "function file(s) were missing" in (tmp_path / "build" / "worklist.log").read_text()
