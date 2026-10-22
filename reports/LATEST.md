@@ -1,18 +1,18 @@
-# Diagnostics — fastpass 3 — 2026-10-21 19:30:02
+# Diagnostics — fastpass 3 — 2026-10-21 19:37:25
 
 
 ## Run
 
 ```
 script: decomp_pipeline 2026-10-21.1 (build 2026-10-18.1)
-command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from fix --to organize --headless-export --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
+command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from recover --to organize --headless-export --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
 python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
 compile flags: -Wno-c++11-narrowing
 --ctx 8192, chars per token 2.06
 model: qwen2.5-coder-3b-instruct-mlx
 model requests turned down this run: 0, thinking-only answers: 0
-fix stage model edits: {'calls': 210, 'no_answer': 26, 'rejected': 0}
+fix stage model edits: {'calls': 36, 'no_answer': 3, 'rejected': 0}
 ```
 
 ## What the script struggled with
@@ -23,111 +23,110 @@ fix stage model edits: {'calls': 210, 'no_answer': 26, 'rejected': 0}
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %        test pass %
-  10-21 11:40                66.6                9.9               7156                  -                  -                  -                  -                  -
   10-21 12:03                66.7                9.9               7130                  -                  -                  -                  -                  -
   10-21 16:02                90.4                1.2               2541                457               19.3                172                6.0                  -
   10-21 19:14                90.7                1.1               2482                368                9.0                153                2.7                  -
   10-21 19:30                90.9                1.6               2269                201               19.9                986                  -                  -
+  10-21 19:37                90.9                1.7               2233                  -                  -                  -                  -                  -
 couldn't handle:
-  fix        2269 × not compiling yet (not reached before the run ended)   e.g. FUN_0000cbac, FUN_0000e054, FUN_0000e748   [also in the last 5 run(s)]
-  fix         132 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_00003cb4, FUN_00003d30, FUN_00004478   [also in the last 2 run(s)]
-  fix          60 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_0000340c, FUN_00003468, FUN_00003568   [also in the last 5 run(s)]
-  fix          57 × quarantined: redefinition of 'X'   e.g. FUN_00003780, FUN_00004f0c, FUN_000076a4   [also in the last 5 run(s)]
-  fix          41 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00004130, FUN_00008858, FUN_000092c8   [also in the last 5 run(s)]
-  fix          28 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00008040, FUN_00012e5c, FUN_00012f88   [also in the last 5 run(s)]
-  fix          28 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier   e.g. FUN_000037b8, FUN_00004574, FUN_0000cae4   [also in the last 2 run(s)]
+  fix        2233 × not compiling yet (not reached before the run ended)   e.g. FUN_0001b2dc, FUN_0001bcf8, FUN_0001bd40   [also in the last 5 run(s)]
+  fix         136 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_00003cb4, FUN_00003d30, FUN_00004478   [also in the last 3 run(s)]
+  fix          78 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_0000340c, FUN_00003468, FUN_00003568   [also in the last 5 run(s)]
+  fix          61 × quarantined: redefinition of 'X'   e.g. FUN_00003780, FUN_00004f0c, FUN_000076a4   [also in the last 5 run(s)]
+  fix          42 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00004130, FUN_00008858, FUN_000092c8   [also in the last 5 run(s)]
+  fix          30 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00008040, FUN_0000e748, FUN_0000f8d8   [also in the last 5 run(s)]
+  fix          29 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier   e.g. FUN_000037b8, FUN_00004574, FUN_0000cae4   [also in the last 3 run(s)]
   fix          27 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_0000cac4, FUN_0000cb3c, FUN_0000f9b4   [also in the last 5 run(s)]
   fix          22 × quarantined: expected 'X'   e.g. FUN_00001a3c, FUN_0000365c, FUN_00003a04   [also in the last 5 run(s)]
   fix          18 × quarantined: expected 'X' after expression   e.g. FUN_000776ac, FUN_0013ec40, FUN_0013ed94   [also in the last 5 run(s)]
   fix          15 × quarantined: expected 'X' after top level declarator   e.g. bundlePath, context, isExcludedFromWindowsMenu   [also in the last 5 run(s)]
-  fix           9 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_00007d70, FUN_00014888, FUN_00014ab0   [also in the last 5 run(s)]
+  fix          12 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_00007d70, FUN_00014888, FUN_00014ab0   [also in the last 5 run(s)]
+  fix           9 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00018538, FUN_00036688, FUN_000c457c   [also in the last 5 run(s)]
   fix           8 × quarantined: use of undeclared identifier 'X'   e.g. FUN_000514b0, FUN_001f3cd0, FUN_00208bd4   [also in the last 5 run(s)]
-  fix           8 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00036688, FUN_000c457c, FUN_00119298   [also in the last 5 run(s)]
   fix           6 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_00075e7c, FUN_0007ebe0, FUN_0022ee6c   [also in the last 5 run(s)]
+  fix           4 × quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'   e.g. FUN_0000c9c8, FUN_0000e054, FUN_00022800   [also in the last 1 run(s)]
   fix           3 × quarantined: variable has incomplete type 'X'   e.g. logic_error, locale, terminate_385f60   [also in the last 5 run(s)]
-  fix           3 × quarantined: redefinition of 'X' as different kind of symbol   e.g. bad_array_new_length, sentry, streambuf   [also in the last 1 run(s)]
-  fix           3 × quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'   e.g. FUN_0000c9c8, FUN_00022800, FUN_000b6044
-  fix           2 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_0020aaac, FUN_00267a58
+  fix           3 × quarantined: redefinition of 'X' as different kind of symbol   e.g. bad_array_new_length, sentry, streambuf   [also in the last 2 run(s)]
+  fix           2 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_0020aaac, FUN_00267a58   [also in the last 1 run(s)]
   fix           2 × quarantined: no member named 'X' in 'X'   e.g. FUN_001f9bc4, FUN_001f9dec   [also in the last 5 run(s)]
-  fix           2 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_00037ecc, FUN_00038b64   [also in the last 1 run(s)]
-  fix           2 × quarantined: expression is not assignable   e.g. FUN_00003c10, FUN_0011c380   [also in the last 1 run(s)]
-  fix           2 × quarantined: expected identifier or 'X'   e.g. FUN_00211db8, FUN_00219580
-  fix           2 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_0024d608, FUN_0026cc10   [also in the last 1 run(s)]
-  fix           2 × quarantined: array type 'X' is not assignable   e.g. FUN_00084694, FUN_0025355c   [also in the last 1 run(s)]
+  fix           2 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_00037ecc, FUN_00038b64   [also in the last 2 run(s)]
+  fix           2 × quarantined: expression is not assignable   e.g. FUN_00003c10, FUN_0011c380   [also in the last 2 run(s)]
+  fix           2 × quarantined: expected identifier or 'X'   e.g. FUN_00211db8, FUN_00219580   [also in the last 1 run(s)]
+  fix           2 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_0024d608, FUN_0026cc10   [also in the last 2 run(s)]
+  fix           2 × quarantined: array type 'X' is not assignable   e.g. FUN_00084694, FUN_0025355c   [also in the last 2 run(s)]
   fix           1 × quarantined: unknown type name 'X'   e.g. FUN_0013fcf8   [also in the last 5 run(s)]
-  fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_00208d74   [also in the last 1 run(s)]
-  fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00219428
-  fix           1 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_001f2970
-  fix           1 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_0013cf80   [also in the last 2 run(s)]
-  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_0011d17c   [also in the last 1 run(s)]
-  fix           1 × quarantined: initializing 'X' with an expression of incompatible type 'X'   e.g. FUN_000b60c0
-  fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0021195c
-  fix           1 × quarantined: expected expression   e.g. FUN_0000ca40
-  fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00219124
+  fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_00208d74   [also in the last 2 run(s)]
+  fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00219428   [also in the last 1 run(s)]
+  fix           1 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_001f2970   [also in the last 1 run(s)]
+  fix           1 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_0013cf80   [also in the last 3 run(s)]
+  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_0011d17c   [also in the last 2 run(s)]
+  fix           1 × quarantined: initializing 'X' with an expression of incompatible type 'X'   e.g. FUN_000b60c0   [also in the last 1 run(s)]
+  fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0021195c   [also in the last 1 run(s)]
+  fix           1 × quarantined: expected expression   e.g. FUN_0000ca40   [also in the last 1 run(s)]
+  fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00219124   [also in the last 1 run(s)]
   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
                     → tried again next run
 worked around (cost time, nothing lost):
-  fix          40 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. _DAT_003b938e   [also in the last 3 run(s)]
-  fix          13 × the model repeated an edit that had already failed (skipped)   e.g. FUN_00022800, FUN_0026cc10, FUN_000076a4   [also in the last 2 run(s)]
+  fix           3 × the model repeated an edit that had already failed (skipped)   e.g. FUN_00016c90, FUN_00018538, FUN_00019460   [also in the last 3 run(s)]
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[19:14:27] decomp_pipeline 2026-10-21.1: /Users/admin/glitchdecomp/fastpass 3 — stages fix → organize
-[19:14:27]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[19:14:27] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
-[19:30:02] 
-[19:30:02] ━━━━ what the script struggled with this run ━━━━
-[19:30:02] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[19:30:02] rates (this run last; earlier runs above it):
-[19:30:02]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %        test pass %
-[19:30:02]   10-21 11:40                66.6                9.9               7156                  -                  -                  -                  -                  -
-[19:30:02]   10-21 12:03                66.7                9.9               7130                  -                  -                  -                  -                  -
-[19:30:02]   10-21 16:02                90.4                1.2               2541                457               19.3                172                6.0                  -
-[19:30:02]   10-21 19:14                90.7                1.1               2482                368                9.0                153                2.7                  -
-[19:30:02]   10-21 19:30                90.9                1.6               2269                201               19.9                986                  -                  -
-[19:30:02] couldn't handle:
-[19:30:02]   fix        2269 × not compiling yet (not reached before the run ended)   e.g. FUN_0000cbac, FUN_0000e054, FUN_0000e748   [also in the last 5 run(s)]
-[19:30:02]   fix         132 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_00003cb4, FUN_00003d30, FUN_00004478   [also in the last 2 run(s)]
-[19:30:02]   fix          60 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_0000340c, FUN_00003468, FUN_00003568   [also in the last 5 run(s)]
-[19:30:02]   fix          57 × quarantined: redefinition of 'X'   e.g. FUN_00003780, FUN_00004f0c, FUN_000076a4   [also in the last 5 run(s)]
-[19:30:02]   fix          41 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00004130, FUN_00008858, FUN_000092c8   [also in the last 5 run(s)]
-[19:30:02]   fix          28 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00008040, FUN_00012e5c, FUN_00012f88   [also in the last 5 run(s)]
-[19:30:02]   fix          28 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier   e.g. FUN_000037b8, FUN_00004574, FUN_0000cae4   [also in the last 2 run(s)]
-[19:30:02]   fix          27 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_0000cac4, FUN_0000cb3c, FUN_0000f9b4   [also in the last 5 run(s)]
-[19:30:02]   fix          22 × quarantined: expected 'X'   e.g. FUN_00001a3c, FUN_0000365c, FUN_00003a04   [also in the last 5 run(s)]
-[19:30:02]   fix          18 × quarantined: expected 'X' after expression   e.g. FUN_000776ac, FUN_0013ec40, FUN_0013ed94   [also in the last 5 run(s)]
-[19:30:02]   fix          15 × quarantined: expected 'X' after top level declarator   e.g. bundlePath, context, isExcludedFromWindowsMenu   [also in the last 5 run(s)]
-[19:30:02]   fix           9 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_00007d70, FUN_00014888, FUN_00014ab0   [also in the last 5 run(s)]
-[19:30:02]   fix           8 × quarantined: use of undeclared identifier 'X'   e.g. FUN_000514b0, FUN_001f3cd0, FUN_00208bd4   [also in the last 5 run(s)]
-[19:30:02]   fix           8 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00036688, FUN_000c457c, FUN_00119298   [also in the last 5 run(s)]
-[19:30:02]   fix           6 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_00075e7c, FUN_0007ebe0, FUN_0022ee6c   [also in the last 5 run(s)]
-[19:30:02]   fix           3 × quarantined: variable has incomplete type 'X'   e.g. logic_error, locale, terminate_385f60   [also in the last 5 run(s)]
-[19:30:02]   fix           3 × quarantined: redefinition of 'X' as different kind of symbol   e.g. bad_array_new_length, sentry, streambuf   [also in the last 1 run(s)]
-[19:30:02]   fix           3 × quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'   e.g. FUN_0000c9c8, FUN_00022800, FUN_000b6044
-[19:30:02]   fix           2 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_0020aaac, FUN_00267a58
-[19:30:02]   fix           2 × quarantined: no member named 'X' in 'X'   e.g. FUN_001f9bc4, FUN_001f9dec   [also in the last 5 run(s)]
-[19:30:02]   fix           2 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_00037ecc, FUN_00038b64   [also in the last 1 run(s)]
-[19:30:02]   fix           2 × quarantined: expression is not assignable   e.g. FUN_00003c10, FUN_0011c380   [also in the last 1 run(s)]
-[19:30:02]   fix           2 × quarantined: expected identifier or 'X'   e.g. FUN_00211db8, FUN_00219580
-[19:30:02]   fix           2 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_0024d608, FUN_0026cc10   [also in the last 1 run(s)]
-[19:30:02]   fix           2 × quarantined: array type 'X' is not assignable   e.g. FUN_00084694, FUN_0025355c   [also in the last 1 run(s)]
-[19:30:02]   fix           1 × quarantined: unknown type name 'X'   e.g. FUN_0013fcf8   [also in the last 5 run(s)]
-[19:30:02]   fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_00208d74   [also in the last 1 run(s)]
-[19:30:02]   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00219428
-[19:30:02]   fix           1 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_001f2970
-[19:30:02]   fix           1 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_0013cf80   [also in the last 2 run(s)]
-[19:30:02]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_0011d17c   [also in the last 1 run(s)]
-[19:30:02]   fix           1 × quarantined: initializing 'X' with an expression of incompatible type 'X'   e.g. FUN_000b60c0
-[19:30:02]   fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0021195c
-[19:30:02]   fix           1 × quarantined: expected expression   e.g. FUN_0000ca40
-[19:30:02]   fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00219124
-[19:30:02]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
-[19:30:02]                     → tried again next run
-[19:30:02] worked around (cost time, nothing lost):
-[19:30:02]   fix          40 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. _DAT_003b938e   [also in the last 3 run(s)]
-[19:30:02]   fix          13 × the model repeated an edit that had already failed (skipped)   e.g. FUN_00022800, FUN_0026cc10, FUN_000076a4   [also in the last 2 run(s)]
+[19:30:13] decomp_pipeline 2026-10-21.1: /Users/admin/glitchdecomp/fastpass 3 — stages recover → organize
+[19:30:13]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[19:30:13] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
+[19:30:13] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
+[19:37:25] 
+[19:37:25] ━━━━ what the script struggled with this run ━━━━
+[19:37:25] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[19:37:25] rates (this run last; earlier runs above it):
+[19:37:25]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %        test pass %
+[19:37:25]   10-21 12:03                66.7                9.9               7130                  -                  -                  -                  -                  -
+[19:37:25]   10-21 16:02                90.4                1.2               2541                457               19.3                172                6.0                  -
+[19:37:25]   10-21 19:14                90.7                1.1               2482                368                9.0                153                2.7                  -
+[19:37:25]   10-21 19:30                90.9                1.6               2269                201               19.9                986                  -                  -
+[19:37:25]   10-21 19:37                90.9                1.7               2233                  -                  -                  -                  -                  -
+[19:37:25] couldn't handle:
+[19:37:25]   fix        2233 × not compiling yet (not reached before the run ended)   e.g. FUN_0001b2dc, FUN_0001bcf8, FUN_0001bd40   [also in the last 5 run(s)]
+[19:37:25]   fix         136 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_00003cb4, FUN_00003d30, FUN_00004478   [also in the last 3 run(s)]
+[19:37:25]   fix          78 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_0000340c, FUN_00003468, FUN_00003568   [also in the last 5 run(s)]
+[19:37:25]   fix          61 × quarantined: redefinition of 'X'   e.g. FUN_00003780, FUN_00004f0c, FUN_000076a4   [also in the last 5 run(s)]
+[19:37:25]   fix          42 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00004130, FUN_00008858, FUN_000092c8   [also in the last 5 run(s)]
+[19:37:25]   fix          30 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00008040, FUN_0000e748, FUN_0000f8d8   [also in the last 5 run(s)]
+[19:37:25]   fix          29 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier   e.g. FUN_000037b8, FUN_00004574, FUN_0000cae4   [also in the last 3 run(s)]
+[19:37:25]   fix          27 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_0000cac4, FUN_0000cb3c, FUN_0000f9b4   [also in the last 5 run(s)]
+[19:37:25]   fix          22 × quarantined: expected 'X'   e.g. FUN_00001a3c, FUN_0000365c, FUN_00003a04   [also in the last 5 run(s)]
+[19:37:25]   fix          18 × quarantined: expected 'X' after expression   e.g. FUN_000776ac, FUN_0013ec40, FUN_0013ed94   [also in the last 5 run(s)]
+[19:37:25]   fix          15 × quarantined: expected 'X' after top level declarator   e.g. bundlePath, context, isExcludedFromWindowsMenu   [also in the last 5 run(s)]
+[19:37:25]   fix          12 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_00007d70, FUN_00014888, FUN_00014ab0   [also in the last 5 run(s)]
+[19:37:25]   fix           9 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00018538, FUN_00036688, FUN_000c457c   [also in the last 5 run(s)]
+[19:37:25]   fix           8 × quarantined: use of undeclared identifier 'X'   e.g. FUN_000514b0, FUN_001f3cd0, FUN_00208bd4   [also in the last 5 run(s)]
+[19:37:25]   fix           6 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_00075e7c, FUN_0007ebe0, FUN_0022ee6c   [also in the last 5 run(s)]
+[19:37:25]   fix           4 × quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'   e.g. FUN_0000c9c8, FUN_0000e054, FUN_00022800   [also in the last 1 run(s)]
+[19:37:25]   fix           3 × quarantined: variable has incomplete type 'X'   e.g. logic_error, locale, terminate_385f60   [also in the last 5 run(s)]
+[19:37:25]   fix           3 × quarantined: redefinition of 'X' as different kind of symbol   e.g. bad_array_new_length, sentry, streambuf   [also in the last 2 run(s)]
+[19:37:25]   fix           2 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_0020aaac, FUN_00267a58   [also in the last 1 run(s)]
+[19:37:25]   fix           2 × quarantined: no member named 'X' in 'X'   e.g. FUN_001f9bc4, FUN_001f9dec   [also in the last 5 run(s)]
+[19:37:25]   fix           2 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_00037ecc, FUN_00038b64   [also in the last 2 run(s)]
+[19:37:25]   fix           2 × quarantined: expression is not assignable   e.g. FUN_00003c10, FUN_0011c380   [also in the last 2 run(s)]
+[19:37:25]   fix           2 × quarantined: expected identifier or 'X'   e.g. FUN_00211db8, FUN_00219580   [also in the last 1 run(s)]
+[19:37:25]   fix           2 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_0024d608, FUN_0026cc10   [also in the last 2 run(s)]
+[19:37:25]   fix           2 × quarantined: array type 'X' is not assignable   e.g. FUN_00084694, FUN_0025355c   [also in the last 2 run(s)]
+[19:37:25]   fix           1 × quarantined: unknown type name 'X'   e.g. FUN_0013fcf8   [also in the last 5 run(s)]
+[19:37:25]   fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_00208d74   [also in the last 2 run(s)]
+[19:37:25]   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00219428   [also in the last 1 run(s)]
+[19:37:25]   fix           1 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_001f2970   [also in the last 1 run(s)]
+[19:37:25]   fix           1 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_0013cf80   [also in the last 3 run(s)]
+[19:37:25]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_0011d17c   [also in the last 2 run(s)]
+[19:37:25]   fix           1 × quarantined: initializing 'X' with an expression of incompatible type 'X'   e.g. FUN_000b60c0   [also in the last 1 run(s)]
+[19:37:25]   fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0021195c   [also in the last 1 run(s)]
+[19:37:25]   fix           1 × quarantined: expected expression   e.g. FUN_0000ca40   [also in the last 1 run(s)]
+[19:37:25]   fix           1 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00219124   [also in the last 1 run(s)]
+[19:37:25]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
+[19:37:25]                     → tried again next run
+[19:37:25] worked around (cost time, nothing lost):
+[19:37:25]   fix           3 × the model repeated an edit that had already failed (skipped)   e.g. FUN_00016c90, FUN_00018538, FUN_00019460   [also in the last 3 run(s)]
 ```
 
 ## Build status
@@ -135,29 +134,29 @@ worked around (cost time, nothing lost):
 ```
 {
  "functions": 30176,
- "compile": 27415,
- "quarantined": 492,
- "to fix": 2269
+ "compile": 27416,
+ "quarantined": 527,
+ "to fix": 2233
 }
 ```
 
-## Quarantined: 492 function(s), by first error
+## Quarantined: 527 function(s), by first error
 
--    132 × operand of type 'X' where arithmetic or pointer type is required
--     60 × assigning to 'X' from incompatible type 'X'
--     57 × redefinition of 'X'
--     41 × assigning to 'X' (aka 'X') from incompatible type 'X'
--     28 × brackets are not allowed here; to declare an array, place the brackets after the identifier
--     28 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
+-    136 × operand of type 'X' where arithmetic or pointer type is required
+-     78 × assigning to 'X' from incompatible type 'X'
+-     61 × redefinition of 'X'
+-     42 × assigning to 'X' (aka 'X') from incompatible type 'X'
+-     30 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
+-     29 × brackets are not allowed here; to declare an array, place the brackets after the identifier
 -     27 × member reference base type 'X' (aka 'X') is not a structure or union
 -     22 × expected 'X'
 -     18 × expected 'X' after expression
 -     15 × expected 'X' after top level declarator
--      9 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
--      8 × member reference base type 'X' is not a structure or union
+-     12 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+-      9 × member reference base type 'X' is not a structure or union
 -      8 × use of undeclared identifier 'X'
 -      6 × indirection requires pointer operand ('X' (aka 'X') invalid)
--      3 × initializing 'X' (aka 'X') with an expression of incompatible type 'X'
+-      4 × initializing 'X' (aka 'X') with an expression of incompatible type 'X'
 -      3 × variable has incomplete type 'X'
 -      3 × redefinition of 'X' as different kind of symbol
 -      2 × expression is not assignable
@@ -178,9 +177,9 @@ worked around (cost time, nothing lost):
 -      1 × array type 'X' (aka 'X') is not assignable
 -      1 × too many arguments to function call, expected N, have N
 
-### Quarantined — 132 × operand of type 'X' where arithmetic or pointer type is required
+### Quarantined — 136 × operand of type 'X' where arithmetic or pointer type is required
 
-All: FUN_00003cb4 (3cb4), FUN_00003d30 (3d30), FUN_00004478 (4478), FUN_000046ec (46ec), FUN_0000488c (488c), FUN_00004de8 (4de8), FUN_00005000 (5000), FUN_00005090 (5090), FUN_00005474 (5474), FUN_000058f8 (58f8), FUN_00006a1c (6a1c), FUN_00006d64 (6d64), FUN_00006d94 (6d94), FUN_00008f18 (8f18), FUN_00009448 (9448), FUN_000095cc (95cc), FUN_00009614 (9614), FUN_000097ec (97ec), FUN_0000bf64 (bf64), FUN_0000c2dc (c2dc), FUN_0000c3f8 (c3f8), FUN_0000cdcc (cdcc), FUN_0000e0ac (e0ac), FUN_0000f1d8 (f1d8), FUN_00011484 (11484), FUN_00011dfc (11dfc), FUN_00012390 (12390), FUN_0001332c (1332c), FUN_000134f8 (134f8), FUN_0001362c (1362c), FUN_000168d0 (168d0), FUN_00016d80 (16d80), FUN_00017938 (17938), FUN_00019554 (19554), FUN_00019d9c (19d9c), FUN_0001afa4 (1afa4), FUN_0001c554 (1c554), FUN_0001d988 (1d988), FUN_00021260 (21260), FUN_0002128c (2128c), FUN_00021600 (21600), FUN_0002162c (2162c), FUN_0002165c (2165c), FUN_00021688 (21688), FUN_00021f4c (21f4c), FUN_00023dfc (23dfc), FUN_0002b488 (2b488), FUN_0002d2f8 (2d2f8), FUN_0002ddc8 (2ddc8), FUN_000301c4 (301c4), FUN_0003455c (3455c), FUN_00035c30 (35c30), FUN_00035cbc (35cbc), FUN_00035ce8 (35ce8), FUN_000369e0 (369e0), FUN_00037fbc (37fbc), FUN_00037fe8 (37fe8), FUN_0003e984 (3e984), FUN_00040548 (40548), FUN_00044d18 (44d18), FUN_000588dc (588dc), FUN_0005bf20 (5bf20), FUN_000690b4 (690b4), FUN_00069494 (69494), FUN_0006a0b4 (6a0b4), FUN_00078d88 (78d88), FUN_00079078 (79078), FUN_0007bc74 (7bc74), FUN_0008888c (8888c), FUN_000b4568 (b4568), FUN_000bb158 (bb158), FUN_000c0558 (c0558), FUN_000c06fc (c06fc), FUN_000c09a8 (c09a8), FUN_000c09d8 (c09d8), FUN_000c4c68 (c4c68), FUN_000d119c (d119c), FUN_000d122c (d122c), FUN_000d13f4 (d13f4), FUN_000d17f4 (d17f4), FUN_000d5e60 (d5e60), FUN_000d5f14 (d5f14), FUN_000d89d0 (d89d0), FUN_000e3024 (e3024), FUN_000e3230 (e3230), FUN_000e3360 (e3360), FUN_000e3b14 (e3b14), FUN_000ec8a8 (ec8a8), FUN_000f3174 (f3174), FUN_000f31dc (f31dc), FUN_000f385c (f385c), FUN_000f38d8 (f38d8), FUN_0011878c (11878c), FUN_001187f4 (1187f4), FUN_0011885c (11885c), FUN_001188c4 (1188c4), FUN_0011a068 (11a068), FUN_0011a098 (11a098), FUN_00121954 (121954), FUN_00121a0c (121a0c), FUN_001273e4 (1273e4), FUN_001c1a6c (1c1a6c), FUN_001c5494 (1c5494), FUN_001ce4fc (1ce4fc), FUN_001d7ca4 (1d7ca4), FUN_001d860c (1d860c), FUN_001d88dc (1d88dc), FUN_001d8bd8 (1d8bd8), FUN_001da3a0 (1da3a0), FUN_001db910 (1db910), FUN_001dc730 (1dc730), FUN_001de95c (1de95c), FUN_001e2cac (1e2cac), FUN_001e8340 (1e8340), FUN_001ef594 (1ef594), FUN_001efadc (1efadc), FUN_001f184c (1f184c), FUN_001ffa5c (1ffa5c), FUN_001ffd14 (1ffd14), FUN_002135c0 (2135c0), FUN_00213964 (213964), FUN_00213fe4 (213fe4), FUN_00216d48 (216d48), FUN_00219fc8 (219fc8), FUN_0021d9d8 (21d9d8), FUN_0021e0a0 (21e0a0), FUN_0021ec68 (21ec68), FUN_0021f318 (21f318), FUN_0021f390 (21f390), FUN_0021f3c0 (21f3c0), FUN_0021fdfc (21fdfc), FUN_00220624 (220624)
+All: FUN_00003cb4 (3cb4), FUN_00003d30 (3d30), FUN_00004478 (4478), FUN_000046ec (46ec), FUN_0000488c (488c), FUN_00004de8 (4de8), FUN_00005000 (5000), FUN_00005090 (5090), FUN_00005474 (5474), FUN_000058f8 (58f8), FUN_00006a1c (6a1c), FUN_00006d64 (6d64), FUN_00006d94 (6d94), FUN_00008f18 (8f18), FUN_00009448 (9448), FUN_000095cc (95cc), FUN_00009614 (9614), FUN_000097ec (97ec), FUN_0000bf64 (bf64), FUN_0000c2dc (c2dc), FUN_0000c3f8 (c3f8), FUN_0000cdcc (cdcc), FUN_0000e0ac (e0ac), FUN_0000f1d8 (f1d8), FUN_00011484 (11484), FUN_00011dfc (11dfc), FUN_00012390 (12390), FUN_00012648 (12648), FUN_0001332c (1332c), FUN_000134f8 (134f8), FUN_0001362c (1362c), FUN_00014e50 (14e50), FUN_00016390 (16390), FUN_000168d0 (168d0), FUN_00016ce8 (16ce8), FUN_00016d80 (16d80), FUN_00017938 (17938), FUN_00019554 (19554), FUN_00019d9c (19d9c), FUN_0001afa4 (1afa4), FUN_0001c554 (1c554), FUN_0001d988 (1d988), FUN_00021260 (21260), FUN_0002128c (2128c), FUN_00021600 (21600), FUN_0002162c (2162c), FUN_0002165c (2165c), FUN_00021688 (21688), FUN_00021f4c (21f4c), FUN_00023dfc (23dfc), FUN_0002b488 (2b488), FUN_0002d2f8 (2d2f8), FUN_0002ddc8 (2ddc8), FUN_000301c4 (301c4), FUN_0003455c (3455c), FUN_00035c30 (35c30), FUN_00035cbc (35cbc), FUN_00035ce8 (35ce8), FUN_000369e0 (369e0), FUN_00037fbc (37fbc), FUN_00037fe8 (37fe8), FUN_0003e984 (3e984), FUN_00040548 (40548), FUN_00044d18 (44d18), FUN_000588dc (588dc), FUN_0005bf20 (5bf20), FUN_000690b4 (690b4), FUN_00069494 (69494), FUN_0006a0b4 (6a0b4), FUN_00078d88 (78d88), FUN_00079078 (79078), FUN_0007bc74 (7bc74), FUN_0008888c (8888c), FUN_000b4568 (b4568), FUN_000bb158 (bb158), FUN_000c0558 (c0558), FUN_000c06fc (c06fc), FUN_000c09a8 (c09a8), FUN_000c09d8 (c09d8), FUN_000c4c68 (c4c68), FUN_000d119c (d119c), FUN_000d122c (d122c), FUN_000d13f4 (d13f4), FUN_000d17f4 (d17f4), FUN_000d5e60 (d5e60), FUN_000d5f14 (d5f14), FUN_000d89d0 (d89d0), FUN_000e3024 (e3024), FUN_000e3230 (e3230), FUN_000e3360 (e3360), FUN_000e3b14 (e3b14), FUN_000ec8a8 (ec8a8), FUN_000f3174 (f3174), FUN_000f31dc (f31dc), FUN_000f385c (f385c), FUN_000f38d8 (f38d8), FUN_0011878c (11878c), FUN_001187f4 (1187f4), FUN_0011885c (11885c), FUN_001188c4 (1188c4), FUN_0011a068 (11a068), FUN_0011a098 (11a098), FUN_00121954 (121954), FUN_00121a0c (121a0c), FUN_001273e4 (1273e4), FUN_001c1a6c (1c1a6c), FUN_001c5494 (1c5494), FUN_001ce4fc (1ce4fc), FUN_001d7ca4 (1d7ca4), FUN_001d860c (1d860c), FUN_001d88dc (1d88dc), FUN_001d8bd8 (1d8bd8), FUN_001da3a0 (1da3a0), FUN_001db910 (1db910), FUN_001dc730 (1dc730), FUN_001de95c (1de95c), FUN_001e2cac (1e2cac), FUN_001e8340 (1e8340), FUN_001ef594 (1ef594), FUN_001efadc (1efadc), FUN_001f184c (1f184c), FUN_001ffa5c (1ffa5c), FUN_001ffd14 (1ffd14), FUN_002135c0 (2135c0), FUN_00213964 (213964), FUN_00213fe4 (213fe4), FUN_00216d48 (216d48), FUN_00219fc8 (219fc8), FUN_0021d9d8 (21d9d8), FUN_0021e0a0 (21e0a0), FUN_0021ec68 (21ec68), FUN_0021f318 (21f318), FUN_0021f390 (21f390), FUN_0021f3c0 (21f3c0), FUN_0021fdfc (21fdfc), FUN_00220624 (220624)
 
 #### FUN_00003cb4 — funcs/_FUN_00003cb4.cpp, Ghidra 3cb4, 0 model attempt(s)
 
@@ -566,9 +565,9 @@ void FUN_00005090(undefined8 *param_1)
 }
 ```
 
-### Quarantined — 60 × assigning to 'X' from incompatible type 'X'
+### Quarantined — 78 × assigning to 'X' from incompatible type 'X'
 
-All: FUN_0000340c (340c), FUN_00003468 (3468), FUN_00003568 (3568), FUN_00003594 (3594), FUN_000035c8 (35c8), FUN_000035f4 (35f4), FUN_000039d4 (39d4), FUN_00004d30 (4d30), FUN_00007120 (7120), FUN_00008a4c (8a4c), FUN_000099b4 (99b4), FUN_00009ec0 (9ec0), FUN_00009f10 (9f10), FUN_0000ab60 (ab60), FUN_0000b0a8 (b0a8), FUN_0000b154 (b154), FUN_0000b96c (b96c), FUN_0000bcec (bcec), FUN_0000c0a4 (c0a4), FUN_0000c1f4 (c1f4), FUN_0000ccd4 (ccd4), FUN_0000def4 (def4), FUN_0000ee9c (ee9c), FUN_0000f0f0 (f0f0), FUN_0000f1b4 (f1b4), FUN_0000f408 (f408), FUN_0000fb38 (fb38), FUN_00011f3c (11f3c), FUN_00011ff4 (11ff4), FUN_00012018 (12018), FUN_00012048 (12048), FUN_00012170 (12170), FUN_00012194 (12194), FUN_000121c4 (121c4), FUN_000122a0 (122a0), FUN_000122c4 (122c4), FUN_000122f4 (122f4), FUN_00012c80 (12c80), FUN_00012cc0 (12cc0), FUN_00013268 (13268), FUN_000132dc (132dc), FUN_00013388 (13388), FUN_00014174 (14174), FUN_00014c8c (14c8c), FUN_00015ed4 (15ed4), FUN_00015f58 (15f58), FUN_00016b10 (16b10), FUN_000192e4 (192e4), FUN_0001de40 (1de40), FUN_0001e534 (1e534), FUN_000377f0 (377f0), FUN_0003d74c (3d74c), FUN_000418a8 (418a8), FUN_00042434 (42434), FUN_00045320 (45320), FUN_0004ff54 (4ff54), FUN_000d5d58 (d5d58), FUN_0011cc6c (11cc6c), FUN_001c3084 (1c3084), FUN_0021c89c (21c89c)
+All: FUN_0000340c (340c), FUN_00003468 (3468), FUN_00003568 (3568), FUN_00003594 (3594), FUN_000035c8 (35c8), FUN_000035f4 (35f4), FUN_000039d4 (39d4), FUN_00004d30 (4d30), FUN_00007120 (7120), FUN_00008a4c (8a4c), FUN_000099b4 (99b4), FUN_00009ec0 (9ec0), FUN_00009f10 (9f10), FUN_0000ab60 (ab60), FUN_0000b0a8 (b0a8), FUN_0000b154 (b154), FUN_0000b96c (b96c), FUN_0000bcec (bcec), FUN_0000c0a4 (c0a4), FUN_0000c1f4 (c1f4), FUN_0000ccd4 (ccd4), FUN_0000def4 (def4), FUN_0000ee9c (ee9c), FUN_0000f0f0 (f0f0), FUN_0000f1b4 (f1b4), FUN_0000f408 (f408), FUN_0000fb38 (fb38), FUN_00011f3c (11f3c), FUN_00011ff4 (11ff4), FUN_00012018 (12018), FUN_00012048 (12048), FUN_00012170 (12170), FUN_00012194 (12194), FUN_000121c4 (121c4), FUN_000122a0 (122a0), FUN_000122c4 (122c4), FUN_000122f4 (122f4), FUN_00012c80 (12c80), FUN_00012cc0 (12cc0), FUN_00012ec0 (12ec0), FUN_00013268 (13268), FUN_000132dc (132dc), FUN_00013388 (13388), FUN_00014174 (14174), FUN_00014c8c (14c8c), FUN_00015dc0 (15dc0), FUN_00015e20 (15e20), FUN_00015ed4 (15ed4), FUN_00015f58 (15f58), FUN_000165b8 (165b8), FUN_00016620 (16620), FUN_00016688 (16688), FUN_000166f0 (166f0), FUN_00016b10 (16b10), FUN_00016bc8 (16bc8), FUN_00016e10 (16e10), FUN_000171d4 (171d4), FUN_00017968 (17968), FUN_00017f4c (17f4c), FUN_000192e4 (192e4), FUN_0001939c (1939c), FUN_000194b8 (194b8), FUN_000195e4 (195e4), FUN_00019b80 (19b80), FUN_00019dcc (19dcc), FUN_0001ae70 (1ae70), FUN_0001de40 (1de40), FUN_0001e534 (1e534), FUN_000377f0 (377f0), FUN_0003d74c (3d74c), FUN_000418a8 (418a8), FUN_00042434 (42434), FUN_00045320 (45320), FUN_0004ff54 (4ff54), FUN_000d5d58 (d5d58), FUN_0011cc6c (11cc6c), FUN_001c3084 (1c3084), FUN_0021c89c (21c89c)
 
 #### FUN_0000340c — funcs/_FUN_0000340c.cpp, Ghidra 340c, 0 model attempt(s)
 
@@ -991,9 +990,9 @@ undefined8 * FUN_00004d30(undefined8 *param_1,undefined8 param_2,undefined8 *par
 }
 ```
 
-### Quarantined — 57 × redefinition of 'X'
+### Quarantined — 61 × redefinition of 'X'
 
-All: FUN_00003780 (3780), FUN_00004f0c (4f0c), FUN_000076a4 (76a4), FUN_0001e5b0 (1e5b0), FUN_00035330 (35330), FUN_00038688 (38688), FUN_00084778 (84778), FUN_000b3be8 (b3be8), FUN_000be0c0 (be0c0), FUN_000c4d4c (c4d4c), FUN_000da2f8 (da2f8), FUN_000e9ac8 (e9ac8), FUN_000e9c60 (e9c60), FUN_000e9d54 (e9d54), FUN_001201fc (1201fc), FUN_0012db5c (12db5c), FUN_00141a84 (141a84), FUN_00156044 (156044), FUN_00156c2c (156c2c), FUN_001680c4 (1680c4), FUN_00173590 (173590), FUN_001736b4 (1736b4), FUN_001a1d80 (1a1d80), FUN_001a2588 (1a2588), FUN_001a314c (1a314c), FUN_001a3234 (1a3234), FUN_001a3394 (1a3394), FUN_001a3448 (1a3448), FUN_001a374c (1a374c), FUN_001a7e8c (1a7e8c), FUN_001c0928 (1c0928), FUN_001c1094 (1c1094), FUN_001c2514 (1c2514), FUN_001c256c (1c256c), FUN_001c25c4 (1c25c4), FUN_001c261c (1c261c), FUN_001c2674 (1c2674), FUN_001c26cc (1c26cc), FUN_001e57ac (1e57ac), FUN_001f1ea4 (1f1ea4), FUN_001ff470 (1ff470), FUN_002035bc (2035bc), FUN_00205704 (205704), FUN_00208454 (208454), FUN_0020d198 (20d198), FUN_0020f794 (20f794), FUN_002106a8 (2106a8), FUN_002113b4 (2113b4), FUN_002122a4 (2122a4), FUN_00213b7c (213b7c), FUN_00218ba8 (218ba8), FUN_002191f0 (2191f0), FUN_00219b04 (219b04), FUN_00219c4c (219c4c), FUN_00223970 (223970), FUN_00248060 (248060), FUN_00248330 (248330)
+All: FUN_00003780 (3780), FUN_00004f0c (4f0c), FUN_000076a4 (76a4), FUN_0000cbac (cbac), FUN_00017294 (17294), FUN_000173a0 (173a0), FUN_000177b4 (177b4), FUN_0001e5b0 (1e5b0), FUN_00035330 (35330), FUN_00038688 (38688), FUN_00084778 (84778), FUN_000b3be8 (b3be8), FUN_000be0c0 (be0c0), FUN_000c4d4c (c4d4c), FUN_000da2f8 (da2f8), FUN_000e9ac8 (e9ac8), FUN_000e9c60 (e9c60), FUN_000e9d54 (e9d54), FUN_001201fc (1201fc), FUN_0012db5c (12db5c), FUN_00141a84 (141a84), FUN_00156044 (156044), FUN_00156c2c (156c2c), FUN_001680c4 (1680c4), FUN_00173590 (173590), FUN_001736b4 (1736b4), FUN_001a1d80 (1a1d80), FUN_001a2588 (1a2588), FUN_001a314c (1a314c), FUN_001a3234 (1a3234), FUN_001a3394 (1a3394), FUN_001a3448 (1a3448), FUN_001a374c (1a374c), FUN_001a7e8c (1a7e8c), FUN_001c0928 (1c0928), FUN_001c1094 (1c1094), FUN_001c2514 (1c2514), FUN_001c256c (1c256c), FUN_001c25c4 (1c25c4), FUN_001c261c (1c261c), FUN_001c2674 (1c2674), FUN_001c26cc (1c26cc), FUN_001e57ac (1e57ac), FUN_001f1ea4 (1f1ea4), FUN_001ff470 (1ff470), FUN_002035bc (2035bc), FUN_00205704 (205704), FUN_00208454 (208454), FUN_0020d198 (20d198), FUN_0020f794 (20f794), FUN_002106a8 (2106a8), FUN_002113b4 (2113b4), FUN_002122a4 (2122a4), FUN_00213b7c (213b7c), FUN_00218ba8 (218ba8), FUN_002191f0 (2191f0), FUN_00219b04 (219b04), FUN_00219c4c (219c4c), FUN_00223970 (223970), FUN_00248060 (248060), FUN_00248330 (248330)
 
 #### FUN_00003780 — funcs/_FUN_00003780.cpp, Ghidra 3780, 1 model attempt(s)
 
@@ -1504,6 +1503,757 @@ LAB_00007a74:
 }
 ```
 
+#### FUN_0000cbac — funcs/_FUN_0000cbac.cpp, Ghidra cbac, 3 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:24:14: error: redefinition of 'auVar3'
+   24 |   undefined1 auVar3[16]; FUN_0000cae4(&local_58,&local_60);
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:7:14: note: previous definition is here
+    7 |   undefined1 auVar3 [16];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:25:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   25 |   local_50 = auVar3._0_8_;
+      |              ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:26:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+   26 |   auVar3 = FUN_0000cac4(&local_48,&local_50);
+      |   ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:27:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   27 |   local_48 = auVar3._0_8_;
+      |              ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:38:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+   38 |   auVar3 = FUN_0000cae4(&local_60,&local_70);
+      |   ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:39:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   39 |   local_58 = auVar3._0_8_;
+      |              ~~~~~~^~~~~~
+6 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0000cbac(double param_1,long param_2)
+{
+  int iVar1;
+  double *pdVar2;
+  undefined1 auVar3 [16];
+  double dVar4;
+  double dVar5;
+  double local_70;
+  int local_64;
+  double local_60;
+  double local_58;
+  double local_50;
+  double local_48;
+  double dStack_40;
+  long local_38;
+
+  local_48 = (double)(long)*(int *)(param_2 + 0x24);
+  local_58 = 0.0;
+  local_60 = param_1 * (double)(long)*(int *)(param_2 + 0x24);
+  dStack_40 = param_1;
+  local_38 = param_2;
+  unsigned char auVar3[16]; FUN_0000cae4(&local_58,&local_60);
+  local_50 = auVar3._0_8_;
+  auVar3 = FUN_0000cac4(&local_48,&local_50);
+  local_48 = auVar3._0_8_;
+  local_64 = FUN_00004560(local_48);
+  local_48 = local_48 - (double)local_64;
+  local_50 = 1.0;
+  local_60 = 0.0;
+  pdVar2 = (double *)FUN_0000cb90((long *)(param_2 + 0x10),local_64);
+  dVar4 = *pdVar2;
+  dVar5 = 1.0 - local_48;
+  iVar1 = FUN_0000cb20(*(int *)(param_2 + 0x24),local_64 + 1);
+  pdVar2 = (double *)FUN_0000cb90((long *)(param_2 + 0x10),iVar1);
+  local_70 = *pdVar2 * local_48 + dVar5 * dVar4;
+  auVar3 = FUN_0000cae4(&local_60,&local_70);
+  local_58 = auVar3._0_8_;
+  FUN_0000cac4(&local_50,&local_58);
+  return;
+}
+```
+Notes:
+- 10-21 19:29 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — plan: Change `unsigned char auVar3[16] = {0};` to `unsigned char auVar3[16];` — still fails: redefinition of 'auVar3'
+- 10-21 19:35 [compile] redefinition of 'auVar3' — plan: Change `unsigned char auVar3[16]; FUN_0000cae4(&local_58,&local_60);` to `undefined8 auVar3[16]; FUN_0000cae4(&local_58,&local_60);` — still fails: redefinition of 'auVar3' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs '
+- 10-21 19:35 [compile] redefinition of 'auVar3' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka — plan: Change `undefined8 auVar3[16]; FUN_0000cae4(&local_58,&local_60);` to `undefined1 auVar3[16]; FUN_0000cae4(&local_58,&local_60);` — still fails: redefinition of 'auVar3'
+Ghidra's pseudocode:
+```c
+void FUN_0000cbac(double param_1,long param_2)
+
+{
+  int iVar1;
+  double *pdVar2;
+  undefined1 auVar3 [16];
+  double dVar4;
+  double dVar5;
+  double local_70;
+  int local_64;
+  double local_60;
+  double local_58;
+  double local_50;
+  double local_48;
+  double dStack_40;
+  long local_38;
+  
+  local_48 = (double)(long)*(int *)(param_2 + 0x24);
+  local_58 = 0.0;
+  local_60 = param_1 * (double)(long)*(int *)(param_2 + 0x24);
+  dStack_40 = param_1;
+  local_38 = param_2;
+  auVar3 = FUN_0000cae4(&local_58,&local_60);
+  local_50 = auVar3._0_8_;
+  auVar3 = FUN_0000cac4(&local_48,&local_50);
+  local_48 = auVar3._0_8_;
+  local_64 = FUN_00004560(local_48);
+  local_48 = local_48 - (double)local_64;
+  local_50 = 1.0;
+  local_60 = 0.0;
+  pdVar2 = (double *)FUN_0000cb90((long *)(param_2 + 0x10),local_64);
+  dVar4 = *pdVar2;
+  dVar5 = 1.0 - local_48;
+  iVar1 = FUN_0000cb20(*(int *)(param_2 + 0x24),local_64 + 1);
+  pdVar2 = (double *)FUN_0000cb90((long *)(param_2 + 0x10),iVar1);
+  local_70 = *pdVar2 * local_48 + dVar5 * dVar4;
+  auVar3 = FUN_0000cae4(&local_60,&local_70);
+  local_58 = auVar3._0_8_;
+  FUN_0000cac4(&local_50,&local_58);
+  return;
+}
+```
+
+#### FUN_00017294 — funcs/_FUN_00017294.cpp, Ghidra 17294, 1 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00017294.cpp:14:12: error: redefinition of 'extraout_var'
+   14 |   uint64_t extraout_var;
+      |            ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00017294.cpp:6:14: note: previous definition is here
+    6 |     uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00017294.cpp:19:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   19 |   auVar1._4_12_ = extraout_var;
+      |   ~~~~~~^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00017294.cpp:20:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   20 |   auVar1._0_4_ = uVar6;
+      |   ~~~~~~^~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00017294(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
+                 long *param_5,undefined8 param_6,undefined8 param_7,uint param_8)
+{
+    uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
+
+  undefined1 auVar1 [16];
+  char cVar2;
+  long *plVar3;
+  undefined8 uVar4;
+  long lVar5;
+  undefined4 uVar6;
+  undefined1 extraout_var [12];
+
+  plVar3 = (long *)FUN_00017a40((long)(param_5 + 0x48));
+  uVar6 = FUN_00018bf8(plVar3);
+  *(undefined4 *)(param_5 + 0x4d) = uVar6;
+  auVar1._4_12_ = extraout_var;
+  auVar1._0_4_ = uVar6;
+  uVar4 = FUN_0011c60c(auVar1,param_2,param_3,param_4,(long)param_5);
+  *(undefined8 *)((long)param_5 + 0x274) = uVar4;
+  *(undefined2 *)((long)param_5 + 0x26c) = 0;
+  (**(code **)(*param_5 + 0x238))(param_5,param_8 >> 6 & 1);
+  lVar5 = FUN_000adbc4();
+  cVar2 = FUN_00018c24(lVar5 + 0x3b0);
+  if (cVar2 != '\0') {
+    uVar6 = FUN_0011d5cc((long)param_5);
+    *(undefined4 *)(param_5 + 0x4e) = uVar6;
+    FUN_0011d5e0(param_5,9);
+  }
+  return;
+}
+```
+Notes:
+- 10-21 19:36 [compile] redefinition of 'extraout_var' with a different type: 'undefined1[12]' (aka 'unsigned char[12]') vs 'uint64_t' (aka 'uns — plan: Change `undefined1 extraout_var [12];` to `uint64_t extraout_var;` — still fails: redefinition of 'extraout_var'
+- 10-21 19:36 [compile] redefinition of 'extraout_var' — fixed with a learned rule.
+- 10-21 19:36 [compile] redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned l — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_00017294(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
+                 long *param_5,undefined8 param_6,undefined8 param_7,uint param_8)
+
+{
+  undefined1 auVar1 [16];
+  char cVar2;
+  long *plVar3;
+  undefined8 uVar4;
+  long lVar5;
+  undefined4 uVar6;
+  undefined1 extraout_var [12];
+  
+  plVar3 = (long *)FUN_00017a40((long)(param_5 + 0x48));
+  uVar6 = FUN_00018bf8(plVar3);
+  *(undefined4 *)(param_5 + 0x4d) = uVar6;
+  auVar1._4_12_ = extraout_var;
+  auVar1._0_4_ = uVar6;
+  uVar4 = FUN_0011c60c(auVar1,param_2,param_3,param_4,(long)param_5);
+  *(undefined8 *)((long)param_5 + 0x274) = uVar4;
+  *(undefined2 *)((long)param_5 + 0x26c) = 0;
+  (**(code **)(*param_5 + 0x238))(param_5,param_8 >> 6 & 1);
+  lVar5 = FUN_000adbc4();
+  cVar2 = FUN_00018c24(lVar5 + 0x3b0);
+  if (cVar2 != '\0') {
+    uVar6 = FUN_0011d5cc((long)param_5);
+    *(undefined4 *)(param_5 + 0x4e) = uVar6;
+    FUN_0011d5e0(param_5,9);
+  }
+  return;
+}
+```
+
+#### FUN_000173a0 — funcs/_FUN_000173a0.cpp, Ghidra 173a0, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:25:12: error: redefinition of 'extraout_w0'
+   25 |   uint64_t extraout_w0 = 0;
+      |            ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:20:14: note: previous definition is here
+   20 |     uint64_t extraout_w0 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:30:14: error: redefinition of 'extraout_var' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
+   30 |   undefined4 extraout_var;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:11:14: note: previous definition is here
+   11 |     uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:38:14: error: redefinition of 'extraout_s0' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
+   38 |   undefined4 extraout_s0;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:7:14: note: previous definition is here
+    7 |     uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:39:14: error: redefinition of 'extraout_s0_00' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
+   39 |   undefined4 extraout_s0_00;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:8:14: note: previous definition is here
+    8 |     uint64_t extraout_s0_00 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:40:14: error: redefinition of 'extraout_s0_01' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
+   40 |   undefined4 extraout_s0_01;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:9:14: note: previous definition is here
+    9 |     uint64_t extraout_s0_01 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:41:14: error: redefinition of 'extraout_s0_02' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
+   41 |   undefined4 extraout_s0_02;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:10:14: note: previous definition is here
+   10 |     uint64_t extraout_s0_02 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:42:14: error: redefinition of 'extraout_var_00' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
+   42 |   undefined4 extraout_var_00;
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:12:14: note: previous definition is here
+   12 |     uint64_t extraout_var_00 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:43:14: error: redefinition of 'extraout_var_
+...
+9:11: error: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
+   79 |   local_70._4_4_ = extraout_var;
+      |   ~~~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:82:11: error: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
+   82 |   local_80._0_4_ = iVar4;
+      |   ~~~~~~~~^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+21 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+undefined8
+FUN_000173a0(undefined1 param_1 [16],double param_2,undefined1 param_3 [16],double param_4,
+            long *param_5,undefined4 param_6,float param_7,uint param_8)
+{
+    uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_s0_00 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_s0_01 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_s0_02 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var_00 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var_01 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var_02 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var_03 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var_04 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var_05 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var_06 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var_07 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_w0 = 0; // TODO: phantom var (incomplete lift)
+
+  undefined1 auVar1 [16];
+  undefined1 auVar2 [16];
+  char cVar3;
+  float extraout_w0;
+  int iVar4;
+  int iVar5;
+  int iVar6;
+  int iVar7;
+  undefined4 extraout_var;
+  ulong uVar8;
+  long *plVar9;
+  long lVar10;
+  undefined8 uVar11;
+  float fVar12;
+  float fVar13;
+  undefined4 uVar14;
+  undefined4 extraout_s0;
+  undefined4 extraout_s0_00;
+  undefined4 extraout_s0_01;
+  undefined4 extraout_s0_02;
+  undefined4 extraout_var_00;
+  undefined4 extraout_var_01;
+  undefined4 extraout_var_02;
+  undefined4 extraout_var_03;
+  undefined4 uVar15;
+  undefined8 extraout_var_04;
+  undefined8 extraout_var_05;
+  undefined8 extraout_var_06;
+  undefined8 extraout_var_07;
+  double dVar16;
+  undefined4 uVar17;
+  float local_90;
+  float local_8c;
+  float local_88;
+  int local_84;
+  undefined8 local_80;
+  byte local_71;
+  undefined8 local_70;
+  int local_68;
+  uint local_64;
+  float local_60;
+  undefined4 local_5c;
+  long *local_58;
+
+  fVar13 = param_3._0_4_;
+  uVar17 = param_3._4_4_;
+  local_64 = param_8;
+  local_60 = param_7;
+  local_5c = param_6;
+  local_58 = param_5;
+  local_70 = FUN_0011c60c(param_1,param_2,param_3._0_8_,param_4,(long)param_5);
+  local_68 = (int)param_5[0x4f] - (int)((ulong)local_70 >> 0x20);
+  *(undefined1 *)((long)param_5 + 0x26d) = 1;
+  local_71 = (byte)local_64 & 1;
+  local_80 = FUN_0013b090();
+  FUN_00018c38(2,&local_80);
+  local_70._0_4_ = extraout_w0;
+  local_70._4_4_ = extraout_var;
+  iVar4 = FUN_00018c74((int *)&local_70);
+  local_84 = 0xfa;
+  local_80._0_4_ = iVar4;
+  uVar8 = FUN_00017f18();
+  if ((uVar8 & 1) == 0) {
+    fVar12 = FUN_00012d30((float *)((long)param_5 + 0x25c));
+    if ((float)local_84 <= fVar12) goto LAB_00017470;
+    fVar12 = FUN_00012d30((float *)((long)param_5 + 0x25c));
+    local_84 = (int)fVar12;
+    if ((local_71 & 1) != 0) {
+      local_80._0_4_ = (int)local_80 << 3;
+    }
+  }
+  else {
+LAB_00017470:
+    if ((local_71 & 1) != 0) {
+      local_84 = local_84 * 0x19;
+    }
+  }
+  iVar4 = FUN_00018cac(local_68);
+  if (iVar4 < (int)local_80) {
+    return 1;
+  }
+  plVar9 = (long *)FUN_00018ccc(param_5 + 0x50);
+  iVar6 = local_68;
+  iVar4 = local_84;
+  FUN_00018ce0((undefined4 *)&local_70,(long)param_5);
+  FUN_00018d08((long)param_5);
+  local_88 = (float)(**(code **)(*plVar9 + 0x60))(plVar9,iVar6,iVar4,&local_70);
+  local_8c = (float)FUN_00018d08((long)param_5);
+  dVar16 = (double)(ulong)(uint)local_88;
+  local_8c = local_8c + local_88;
+  if (((*(byte *)((long)param_5 + 0x27d) & 1) == 0) && ((int)param_5[0x4b] != 1)) goto LAB_00017600;
+  plVar9 = (long *)FUN_00018ccc(param_5 + 0x50);
+  iVar4 = local_84;
+  FUN_00018ce0((undefined4 *)&local_70,(long)param_5);
+  FUN_00018d08((long)param_5);
+  local_70._0_4_ = (float)(**(code **)(*plVar9 + 0x60))(plVar9,1,iVar4,&local_70);
+  if ((*(byte *)((long)param_5 + 0x27d) & 1) == 0) {
+LAB_00017594:
+    if ((int)param_5[0x4b] != 1) goto LAB_00017600;
+    fVar12 = (float)FUN_00012d08((float *)((long)param_5 + 0x25c));
+    fVar13 = FUN_00012d30((float *)((long)param_5 + 0x25c));
+    fVar12 = fVar12 + fVar13 / 2.0;
+    dVar16 = (double)(ulong)(uint)local_8c;
+    uVar17 = 0;
+    fVar13 = (float)local_70;
+    local_90 = fVar12;
+    if (fVar12 + (float)local_70 <= local_8c) goto LAB_00017600;
+    uVar17 = 0;
+    dVar16 = (double)(ulong)(uint)(fVar12 - (float)local_70);
+    if (local_8c <= fVar12 - (float)local_70) goto LAB_00017600;
+  }
+  else {
+    uVar17 = 0;
+    fVar12 = *(float *)((long)param_5 + 0x264) + (float)local_70;
+    dVar16 = (double)(ulong)(uint)fVar12;
+    fVar13 = (float)local_70;
+    if (fVar12 <= local_8c) goto LAB_00017594;
+    uVar17 = 0;
+    fVar12 = *(float *)((long)param_5 + 0x264) - (float)local_70;
+    dVar16 = (double)(ulong)(uint)fVar12;
+    if (local_8c <= fVar12) goto LAB_00017594;
+    fVar12 = *(float *)((long)param_5 + 0x264);
+  }
+  uVar17 = 0;
+  fVar13 = (float)local_70;
+  local_8c = fVar12;
+LAB_00017600:
+  uVar14 = FUN_00012d08((undefined4 *)((long)param_5 + 0x25c));
+  local_70 = CONCAT44(local_70._4_4_,uVar14);
+  local_90 = (float)FUN_00012d1c((long)param_5 + 0x25c);
+  FUN_00018a10(&local_8c,(float *)&local_70,&local_90);
+  FUN_00018bac((long)param_5,&local_8c);
+  (**(code **)(*param_5 + 0x238))(param_5,local_64 >> 6 & 1);
+  lVar10 = FUN_000adbc4();
+  cVar3 = FUN_00018c24(lVar10 + 0x3b0);
+  uVar14 = extraout_s0;
+  uVar15 = extraout_var_00;
+  uVar11 = extraout_var_04;
+  if (cVar3 != '\0') {
+    iVar5 = FUN_00018d54((long)param_5);
+    fVar12 = local_60;
+    iVar6 = FUN_00018d54((long)param_5);
+    iVar4 = FUN_00003628((long)param_5);
+    iVar4 = ((int)fVar12 - iVar6) + iVar4;
+    iVar7 = FUN_00003628((long)param_5);
+    iVar6 = 0;
+    if (iVar7 != 0) {
+      iVar6 = iVar4 / iVar7;
+    }
+    local_90 = (float)(iVar5 + (iVar4 - iVar6 * iVar7));
+    uVar14 = extraout_s0_00;
+    uVar15 = extraout_var_01;
+    uVar11 = extraout_var_05;
+    if (local_90 != local_60) {
+      FUN_00014150((undefined4 *)&local_70,local_5c,local_90);
+      auVar1._4_4_ = extraout_var_02;
+      auVar1._0_4_ = extraout_s0_01;
+      auVar1._8_8_ = extraout_var_06;
+      FUN_0011d550(auVar1,dVar16,CONCAT44(uVar17,fVar13),param_4,(long)param_5,&local_70);
+      uVar14 = extraout_s0_02;
+      uVar15 = extraout_var_03;
+      uVar11 = extraout_var_07;
+    }
+  }
+  auVar2._4_4_ = uVar15;
+  auVar2._0_4_ = uVar14;
+  auVar2._8_8_ = uVar11;
+  uVar11 = FUN_0011c60c(auVar2,dVar16,CONCAT44(uVar17,fVar13),param_4,(long)param_5);
+  *(undefined8 *)((long)param_5 + 0x274) = uVar11;
+  return 1;
+}
+```
+Notes:
+- 10-21 19:36 [compile] redefinition of 'extraout_w0' with a different type: 'float' vs 'uint64_t' (aka 'unsigned long long') — plan: Change line 25 from `float extraout_w0;` to `uint64_t extraout_w0 = 0;`. — still fails: redefinition of 'extraout_w0'
+- 10-21 19:36 [compile] redefinition of 'extraout_w0' — plan: Change line 25 from `uint64_t extraout_w0 = 0;` to `undefined8 extraout_w0 = {0};`. — still fails: redefinition of 'extraout_w0'
+- 10-21 19:36 [compile] that edit didn't help — undone.
+Ghidra's pseudocode:
+```c
+undefined8
+FUN_000173a0(undefined1 param_1 [16],double param_2,undefined1 param_3 [16],double param_4,
+            long *param_5,undefined4 param_6,float param_7,uint param_8)
+
+{
+  undefined1 auVar1 [16];
+  undefined1 auVar2 [16];
+  char cVar3;
+  float extraout_w0;
+  int iVar4;
+  int iVar5;
+  int iVar6;
+  int iVar7;
+  undefined4 extraout_var;
+  ulong uVar8;
+  long *plVar9;
+  long lVar10;
+  undefined8 uVar11;
+  float fVar12;
+  float fVar13;
+  undefined4 uVar14;
+  undefined4 extraout_s0;
+  undefined4 extraout_s0_00;
+  undefined4 extraout_s0_01;
+  undefined4 extraout_s0_02;
+  undefined4 extraout_var_00;
+  undefined4 extraout_var_01;
+  undefined4 extraout_var_02;
+  undefined4 extraout_var_03;
+  undefined4 uVar15;
+  undefined8 extraout_var_04;
+  undefined8 extraout_var_05;
+  undefined8 extraout_var_06;
+  undefined8 extraout_var_07;
+  double dVar16;
+  undefined4 uVar17;
+  float local_90;
+  float local_8c;
+  float local_88;
+  int local_84;
+  undefined8 local_80;
+  byte local_71;
+  undefined8 local_70;
+  int local_68;
+  uint local_64;
+  float local_60;
+  undefined4 local_5c;
+  long *local_58;
+  
+  fVar13 = param_3._0_4_;
+  uVar17 = param_3._4_4_;
+  local_64 = param_8;
+  local_60 = param_7;
+  local_5c = param_6;
+  local_58 = param_5;
+  local_70 = FUN_0011c60c(param_1,param_2,param_3._0_8_,param_4,(long)param_5);
+  local_68 = (int)param_5[0x4f] - (int)((ulong)local_70 >> 0x20);
+  *(undefined1 *)((long)param_5 + 0x26d) = 1;
+  local_71 = (byte)local_64 & 1;
+  local_80 = FUN_0013b090();
+  FUN_00018c38(2,&local_80);
+  local_70._0_4_ = extraout_w0;
+  local_70._4_4_ = extraout_var;
+  iVar4 = FUN_00018c74((int *)&local_70);
+  local_84 = 0xfa;
+  local_80._0_4_ = iVar4;
+  uVar8 = FUN_00017f18();
+  if ((uVar8 & 1) == 0) {
+    fVar12 = FUN_00012d30((float *)((long)param_5 + 0x25c));
+    if ((float)local_84 <= fVar12) goto LAB_00017470;
+    fVar12 = FUN_00012d30((float *)((long)param_5 + 0x25c));
+    local_84 = (int)fVar12;
+    if ((local_71 & 1) != 0) {
+      local_80._0_4_ = (int)local_80 << 3;
+    }
+  }
+  else {
+LAB_00017470:
+    if ((local_71 & 1) != 0) {
+      local_84 = local_84 * 0x19;
+    }
+  }
+  iVar4 = FUN_00018cac(local_68);
+  if (iVar4 < (int)local_80) {
+    return 1;
+  }
+  plVar9 = (long *)FUN_00018ccc(param_5 + 0x50);
+  iVar6 = local_68;
+  iVar4 = local_84;
+  FUN_00018ce0((undefined4 *)&local_70,(long)param_5);
+  FUN_00018d08((long)param_5);
+  local_88 = (float)(**(code **)(*plVar9 + 0x60))(plVar9,iVar6,iVar4,&local_70);
+  local_8c = (float)FUN_00018d08((long)param_5);
+  dVar16 = (double)(ulong)(uint)local_88;
+  local_8c = local_8c + local_88;
+  if (((*(byte *)((long)param_5 + 0x27d) & 1) == 0) && ((int)param_5[0x4b] != 1)) goto LAB_00017600;
+  plVar9 = (long *)FUN_00018ccc(param_5 + 0x50);
+  iVar4 = local_84;
+  FUN_00018ce0((undefined4 *)&local_70,(long)param_5);
+  FUN_00018d08((long)param_5);
+  local_70._0_4_ = (float)(**(code **)(*plVar9 + 0x60))(plVar9,1,iVar4,&local_70);
+  if ((*(byte *)((long)param_5 + 0x27d) & 1) == 0) {
+LAB_00017594:
+    if ((int)param_5[0x4b] != 1) goto LAB_00017600;
+    fVar12 = (float)FUN_00012d08((float *)((long)param_5 + 0x25c));
+    fVar13 = FUN_00012d30((float *)((long)param_5 + 0x25c));
+    fVar12 = fVar12 + fVar13 / 2.0;
+    dVar16 = (double)(ulong)(uint)local_8c;
+    uVar17 = 0;
+    fVar13 = (float)local_70;
+    local_90 = fVar12;
+    if (fVar12 + (float)local_70 <= local_8c) goto LAB_00017600;
+    uVar17 = 0;
+    dVar16 = (double)(ulong)(uint)(fVar12 - (float)local_70);
+    if (local_8c <= fVar12 - (float)local_70) goto LAB_00017600;
+  }
+  else {
+    uVar17 = 0;
+    fVar12 = *(float *)((long)param_5 + 0x264) + (float)local_70;
+    dVar16 = (double)(ulong)(uint)fVar12;
+    fVar13 = (float)local_70;
+    if (fVar12 <= local_8c) goto LAB_00017594;
+    uVar17 = 0;
+    fVar12 = *(float *)((long)param_5 + 0x264) - (float)local_70;
+    dVar16 = (double)(ulong)(uint)fVar12;
+    if (local_8c <= fVar12) goto LAB_00017594;
+    fVar12 = *(float *)((long)param_5 + 0x264);
+  }
+  uVar17 = 0;
+  fVar13 = (float)local_70;
+  local_8c = fVar12;
+LAB_00017600:
+  uVar14 = FUN_00012d08((undefined4 *)((long)param_5 + 0x25c));
+  local_70 = CONCAT44(local_70._4_4_,uVar14);
+  local_90 = (float)FUN_00012d1c((long)param_5 + 0x25c);
+  FUN_00018a10(&local_8c,(float *)&local_70,&local_90);
+  FUN_00018bac((long)param_5,&local_8c);
+  (**(code **)(*param_5 + 0x238))(param_5,local_64 >> 6 & 1);
+  lVar10 = FUN_000adbc4();
+  cVar3 = FUN_00018c24(lVar10 + 0x3b0);
+  uVar14 = extraout_s0;
+  uVar15 = extraout_var_00;
+  uVar11 = extraout_var_04;
+  if (cVar3 != '\0') {
+    iVar5 = FUN_00018d54((long)param_5);
+    fVar12 = local_60;
+    iVar6 = FUN_00018d54((long)param_5);
+    iVar4 = FUN_00003628((long)param_5);
+    iVar4 = ((int)fVar12 - iVar6) + iVar4;
+    iVar7 = FUN_00003628((long)param_5);
+    iVar6 = 0;
+    if (iVar7 != 0) {
+      iVar6 = iVar4 / iVar7;
+    }
+    local_90 = (float)(iVar5 + (iVar4 - iVar6 * iVar7));
+    uVar14 = extraout_s0_00;
+    uVar15 = extraout_var_01;
+    uVar11 = extraout_var_05;
+    if (local_90 != local_60) {
+      FUN_00014150((undefined4 *)&local_70,local_5c,local_90);
+      auVar1._4_4_ = extraout_var_02;
+      auVar1._0_4_ = extraout_s0_01;
+      auVar1._8_8_ = extraout_var_06;
+      FUN_0011d550(auVar1,dVar16,CONCAT44(uVar17,fVar13),param_4,(long)param_5,&local_70);
+      uVar14 = extraout_s0_02;
+      uVar15 = extraout_var_03;
+      uVar11 = extraout_var_07;
+    }
+  }
+  auVar2._4_4_ = uVar15;
+  auVar2._0_4_ = uVar14;
+  auVar2._8_8_ = uVar11;
+  uVar11 = FUN_0011c60c(auVar2,dVar16,CONCAT44(uVar17,fVar13),param_4,(long)param_5);
+  *(undefined8 *)((long)param_5 + 0x274) = uVar11;
+  return 1;
+}
+```
+
+#### FUN_000177b4 — funcs/_FUN_000177b4.cpp, Ghidra 177b4, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000177b4.cpp:33:14: error: redefinition of 'local_68'
+   33 |   undefined1 local_68[16] = {0};FUN_00018d88(param_1);
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000177b4.cpp:13:14: note: previous definition is here
+   13 |   undefined1 local_68 [16];
+      |              ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000177b4(long param_1,undefined8 param_2)
+{
+  float *pfVar1;
+  undefined1 uVar2;
+  undefined8 uVar3;
+  byte bVar4;
+  long *plVar5;
+  float fVar6;
+  float fVar7;
+  float fVar8;
+  undefined1 local_68 [16];
+  double local_58;
+  undefined8 local_50;
+  long lStack_48;
+
+  pfVar1 = (float *)(param_1 + 0x25c);
+  local_50 = param_2;
+  lStack_48 = param_1;
+  fVar6 = FUN_00012d30(pfVar1);
+  if (fVar6 == 0.0) {
+    local_58 = 0.0;
+  }
+  else {
+    fVar6 = (float)FUN_00018d08(param_1);
+    fVar7 = (float)FUN_00012d08(pfVar1);
+    fVar8 = FUN_00012d30(pfVar1);
+    local_58 = ((double)fVar6 - (double)fVar7) / (double)fVar8;
+  }
+  plVar5 = (long *)FUN_001124d0();
+  uVar3 = local_50;
+  unsigned char local_68[16] = {0};FUN_00018d88(param_1);
+  fVar6 = (float)local_58;
+  uVar2 = *(undefined1 *)(param_1 + 0x27c);
+  bVar4 = FUN_000bb158(param_1);
+  (**(code **)(*plVar5 + 0x2e8))
+            (fVar6,plVar5,uVar3,local_68,uVar2,bVar4,*(undefined4 *)(param_1 + 600));
+  return;
+}
+```
+Notes:
+- 10-21 19:15 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
+- 10-21 19:36 [compile] redefinition of 'local_68' — plan: Change `unsigned char local_68[16] = {0};FUN_00018d88(param_1);` to `undefined8 local_68[16] = {0};FUN_00018d88(param_1);` — still fails: redefinition of 'local_68' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs
+- 10-21 19:36 [compile] redefinition of 'local_68' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (a — plan: Change `undefined8 local_68[16] = {0};FUN_00018d88(param_1);` to `undefined1 local_68[16] = {0};FUN_00018d88(param_1);` — still fails: redefinition of 'local_68'
+Ghidra's pseudocode:
+```c
+void FUN_000177b4(long param_1,undefined8 param_2)
+
+{
+  float *pfVar1;
+  undefined1 uVar2;
+  undefined8 uVar3;
+  byte bVar4;
+  long *plVar5;
+  float fVar6;
+  float fVar7;
+  float fVar8;
+  undefined1 local_68 [16];
+  double local_58;
+  undefined8 local_50;
+  long lStack_48;
+  
+  pfVar1 = (float *)(param_1 + 0x25c);
+  local_50 = param_2;
+  lStack_48 = param_1;
+  fVar6 = FUN_00012d30(pfVar1);
+  if (fVar6 == 0.0) {
+    local_58 = 0.0;
+  }
+  else {
+    fVar6 = (float)FUN_00018d08(param_1);
+    fVar7 = (float)FUN_00012d08(pfVar1);
+    fVar8 = FUN_00012d30(pfVar1);
+    local_58 = ((double)fVar6 - (double)fVar7) / (double)fVar8;
+  }
+  plVar5 = (long *)FUN_001124d0();
+  uVar3 = local_50;
+  local_68 = FUN_00018d88(param_1);
+  fVar6 = (float)local_58;
+  uVar2 = *(undefined1 *)(param_1 + 0x27c);
+  bVar4 = FUN_000bb158(param_1);
+  (**(code **)(*plVar5 + 0x2e8))
+            (fVar6,plVar5,uVar3,local_68,uVar2,bVar4,*(undefined4 *)(param_1 + 600));
+  return;
+}
+```
+
 #### FUN_0001e5b0 — funcs/_FUN_0001e5b0.cpp, Ghidra 1e5b0, 1 model attempt(s)
 
 Compiler output:
@@ -1645,828 +2395,9 @@ void FUN_0001e5b0(long param_1,byte param_2)
 }
 ```
 
-#### FUN_00035330 — funcs/_FUN_00035330.cpp, Ghidra 35330, 2 model attempt(s)
+### Quarantined — 42 × assigning to 'X' (aka 'X') from incompatible type 'X'
 
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00035330.cpp:7:10: error: redefinition of 'plVar1'
-    7 |   long * plVar1 = FUN_00035a20();
-      |          ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00035330.cpp:5:9: note: previous definition is here
-    5 |   long *plVar1;
-      |         ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00035330(void)
-{
-  long *plVar1;
-
-  plVar1 = (long *)FUN_00035a20();
-  if (plVar1 != (long *)0x0) {
-    (**(code **)(*plVar1 + 0x18))();
-    FUN_00035c30();
-  }
-  return;
-}
-```
-Notes:
-- 10-21 19:27 [compile] operand of type 'void' where arithmetic or pointer type is required — plan: Change `plVar1 = (long *)FUN_00035a20();` to `undefined8 lVar1 = FUN_00035a20();`. — still fails: initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void'
-- 10-21 19:27 [compile] initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void' — plan: Change `undefined8 lVar1 = FUN_00035a20();` to `long * plVar1 = FUN_00035a20();`. — still fails: redefinition of 'plVar1'
-Ghidra's pseudocode:
-```c
-void FUN_00035330(void)
-
-{
-  long *plVar1;
-  
-  plVar1 = (long *)FUN_00035a20();
-  if (plVar1 != (long *)0x0) {
-    (**(code **)(*plVar1 + 0x18))();
-    FUN_00035c30();
-  }
-  return;
-}
-```
-
-#### FUN_00038688 — funcs/_FUN_00038688.cpp, Ghidra 38688, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00038688.cpp:28:17: error: redefinition of 'auVar2'
-   28 |   unsigned char auVar2[16] = {0};FUN_000037b8();
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00038688.cpp:6:14: note: previous definition is here
-    6 |   undefined1 auVar2 [16];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00038688.cpp:29:33: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   29 |   local_48 = FUN_00003780(auVar2._0_8_ * 3.0);
-      |                           ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00038688.cpp:44:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   44 |       auVar2 = FUN_000037b8();
-      |       ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00038688.cpp:45:24: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   45 |       if (0.5 <= auVar2._0_8_) {
-      |                  ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00038688.cpp:46:17: error: member reference base type 'undefined2' (aka 'unsigned short') is not a structure or union
-   46 |         local_ac._1_1_ = 1;
-      |         ~~~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00038688.cpp:48:37: error: member reference base type 'undefined2' (aka 'unsigned short') is not a structure or union
-   48 |         local_ac = CONCAT11(local_ac._1_1_,1);
-      |                             ~~~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00038688.cpp:52:17: error: member reference base type 'undefined2' (aka 'unsigned short') is not a structure or union
-   52 |         local_aa._1_1_ = 1;
-      |         ~~~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00038688.cpp:54:37: error: member reference base type 'undefined2' (aka 'unsigned short') is not a structure or union
-   54 |         local_aa = CONCAT11(local_aa._1_1_,1);
-      |                             ~~~~~~~~^~~~~~
-8 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00038688(long *param_1,long param_2)
-{
-  long *plVar1;
-  undefined1 auVar2 [16];
-  long alStack_100 [2];
-  long alStack_f0 [2];
-  long alStack_e0 [2];
-  long alStack_d0 [2];
-  long alStack_c0 [2];
-  undefined2 local_ac;
-  undefined2 local_aa;
-  long alStack_a8 [2];
-  long alStack_98 [2];
-  long alStack_88 [2];
-  long alStack_78 [2];
-  long alStack_68 [4];
-  int local_48;
-  undefined1 local_41;
-  long local_40;
-  long *plStack_38;
-
-  local_41 = 0;
-  local_40 = param_2;
-  plStack_38 = param_1;
-  FUN_0021a1f4(param_1,"");
-  auVar2 = FUN_000037b8();
-  local_48 = FUN_00003780(auVar2._0_8_ * 3.0);
-  if (local_48 == 0) {
-    FUN_0021a1f4(alStack_78,"");
-    FUN_00038b64(alStack_68,param_2,param_2 + 0x10,alStack_78);
-    FUN_000031f4((long)alStack_78);
-    FUN_00038b64(alStack_78,param_2,param_2 + 0x20,alStack_68);
-    FUN_0021a1f4(alStack_a8," ");
-    FUN_0021f404(alStack_98,alStack_68,alStack_a8);
-    FUN_0021f558(alStack_88,alStack_98,alStack_78);
-    FUN_0021a8a0(param_1,alStack_88);
-  }
-  else {
-    if (local_48 != 1) {
-      local_aa = 0;
-      local_ac = 0;
-      auVar2 = FUN_000037b8();
-      if (0.5 <= auVar2._0_8_) {
-        local_ac._1_1_ = 1;
-        FUN_0021a1f4(alStack_78,"");
-        local_ac = CONCAT11(local_ac._1_1_,1);
-        FUN_00038b64(alStack_68,param_2,param_2 + 0x20,alStack_78);
-      }
-      else {
-        local_aa._1_1_ = 1;
-        FUN_0021a1f4(alStack_78,"");
-        local_aa = CONCAT11(local_aa._1_1_,1);
-        FUN_00038b64(alStack_68,param_2,param_2 + 0x10,alStack_78);
-      }
-      if ((char)local_ac == '\x01') {
-        FUN_000031f4((long)alStack_78);
-      }
-      if ((char)local_aa == '\x01') {
-        FUN_000031f4((long)alStack_78);
-      }
-      FUN_00038b64(alStack_88,param_2,param_2 + 0x20,alStack_68);
-      FUN_00038b64(alStack_98,param_2,param_2 + 0x30,alStack_88);
-      FUN_0021a1f4(alStack_f0," ");
-      FUN_0021f404(alStack_e0,alStack_68,alStack_f0);
-      FUN_0021f558(alStack_d0,alStack_e0,alStack_88);
-      FUN_0021a1f4(alStack_100," ");
-      FUN_0021f558(alStack_c0,alStack_d0,alStack_100);
-      FUN_0021f558(alStack_a8,alStack_c0,alStack_98);
-      FUN_0021a8a0(param_1,alStack_a8);
-      FUN_000031f4((long)alStack_a8);
-      FUN_000031f4((long)alStack_c0);
-      FUN_000031f4((long)alStack_100);
-      FUN_000031f4((long)alStack_d0);
-      FUN_000031f4((long)alStack_e0);
-      FUN_000031f4((long)alStack_f0);
-      FUN_000031f4((long)alStack_98);
-      plVar1 = alStack_88;
-      goto LAB_00038978;
-    }
-    FUN_0021a1f4(alStack_78,"");
-    FUN_00038b64(alStack_68,param_2,param_2 + 0x20,alStack_78);
-    FUN_000031f4((long)alStack_78);
-    FUN_00038b64(alStack_78,param_2,param_2 + 0x30,alStack_68);
-    FUN_0021a1f4(alStack_a8," ");
-    FUN_0021f404(alStack_98,alStack_68,alStack_a8);
-    FUN_0021f558(alStack_88,alStack_98,alStack_78);
-    FUN_0021a8a0(param_1,alStack_88);
-  }
-  FUN_000031f4((long)alStack_88);
-  FUN_000031f4((long)alStack_98);
-  FUN_000031f4((long)alStack_a8);
-  plVar1 = alStack_78;
-LAB_00038978:
-  FUN_000031f4((long)plVar1);
-  FUN_000031f4((long)alStack_68);
-  return;
-}
-```
-Notes:
-- 10-21 15:38 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — plan: Change `unsigned char auVar2[16] = {0};` to `unsigned char auVar2[16];` — still fails: expected expression
-- 10-21 15:40 [compile] expected expression — plan: Change `local_40 = param_2;` to `plStack_38 = param_1;` — still fails: redefinition of 'auVar2'
-- 10-21 15:40 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
-- 10-21 18:31 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
-- 10-21 18:32 [compile] redefinition of 'auVar2' — plan: Change `unsigned char auVar2[16] = {0};FUN_000037b8();` to `undefined8 auVar2[16];FUN_000037b8();` — still fails: redefinition of 'auVar2' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs '
-- 10-21 18:32 [compile] redefinition of 'auVar2' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs ' — fixed with a learned rule.
-- 10-21 18:32 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
-- 10-21 18:40 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-/* WARNING: Removing unreachable block (ram,0x00038990) */
-
-void FUN_00038688(long *param_1,long param_2)
-
-{
-  long *plVar1;
-  undefined1 auVar2 [16];
-  long alStack_100 [2];
-  long alStack_f0 [2];
-  long alStack_e0 [2];
-  long alStack_d0 [2];
-  long alStack_c0 [2];
-  undefined2 local_ac;
-  undefined2 local_aa;
-  long alStack_a8 [2];
-  long alStack_98 [2];
-  long alStack_88 [2];
-  long alStack_78 [2];
-  long alStack_68 [4];
-  int local_48;
-  undefined1 local_41;
-  long local_40;
-  long *plStack_38;
-  
-  local_41 = 0;
-  local_40 = param_2;
-  plStack_38 = param_1;
-  FUN_0021a1f4(param_1,"");
-  auVar2 = FUN_000037b8();
-  local_48 = FUN_00003780(auVar2._0_8_ * 3.0);
-  if (local_48 == 0) {
-    FUN_0021a1f4(alStack_78,"");
-    FUN_00038b64(alStack_68,param_2,param_2 + 0x10,alStack_78);
-    FUN_000031f4((long)alStack_78);
-    FUN_00038b64(alStack_78,param_2,param_2 + 0x20,alStack_68);
-    FUN_0021a1f4(alStack_a8," ");
-    FUN_0021f404(alStack_98,alStack_68,alStack_a8);
-    FUN_0021f558(alStack_88,alStack_98,alStack_78);
-    FUN_0021a8a0(param_1,alStack_88);
-  }
-  else {
-    if (local_48 != 1) {
-      local_aa = 0;
-      local_ac = 0;
-      auVar2 = FUN_000037b8();
-      if (0.5 <= auVar2._0_8_) {
-        local_ac._1_1_ = 1;
-        FUN_0021a1f4(alStack_78,"");
-        local_ac = CONCAT11(local_ac._1_1_,1);
-        FUN_00038b64(alStack_68,param_2,param_2 + 0x20,alStack_78);
-      }
-      else {
-        local_aa._1_1_ = 1;
-        FUN_0021a1f4(alStack_78,"");
-        local_aa = CONCAT11(local_aa._1_1_,1);
-        FUN_00038b64(alStack_68,param_2,param_2 + 0x10,alStack_78);
-      }
-      if ((char)local_ac == '\x01') {
-        FUN_000031f4((long)alStack_78);
-      }
-      if ((char)local_aa == '\x01') {
-        FUN_000031f4((long)alStack_78);
-      }
-      FUN_00038b64(alStack_88,param_2,param_2 + 0x20,alStack_68);
-      FUN_00038b64(alStack_98,param_2,param_2 + 0x30,alStack_88);
-      FUN_0021a1f4(alStack_f0," ");
-      FUN_0021f404(alStack_e0,alStack_68,alStack_f0);
-      FUN_0021f558(alStack_d0,alStack_e0,alStack_88);
-      FUN_0021a1f4(alStack_100," ");
-      FUN_0021f558(alStack_c0,alStack_d0,alStack_100);
-      FUN_0021f558(alStack_a8,alStack_c0,alStack_98);
-      FUN_0021a8a0(param_1,alStack_a8);
-      FUN_000031f4((long)alStack_a8);
-      FUN_000031f4((long)alStack_c0);
-      FUN_000031f4((long)alStack_100);
-      FUN_000031f4((long)alStack_d0);
-      FUN_000031f4((long)alStack_e0);
-      FUN_000031f4((long)alStack_f0);
-      FUN_000031f4((long)alStack_98);
-      plVar1 = alStack_88;
-      goto LAB_00038978;
-    }
-    FUN_0021a1f4(alStack_78,"");
-    FUN_00038b64(alStack_68,param_2,param_2 + 0x20,alStack_78);
-    FUN_000031f4((long)alStack_78);
-    FUN_00038b64(alStack_78,param_2,param_2 + 0x30,alStack_68);
-    FUN_0021a1f4(alStack_a8," ");
-    FUN_0021f404(alStack_98,alStack_68,alStack_a8);
-    FUN_0021f558(alStack_88,alStack_98,alStack_78);
-    FUN_0021a8a0(param_1,alStack_88);
-  }
-  FUN_000031f4((long)alStack_88);
-  FUN_000031f4((long)alStack_98);
-  FUN_000031f4((long)alStack_a8);
-  plVar1 = alStack_78;
-LAB_00038978:
-  FUN_000031f4((long)plVar1);
-  FUN_000031f4((long)alStack_68);
-  return;
-}
-```
-
-#### FUN_00084778 — funcs/FUN_00084778.cpp, Ghidra 84778, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:19:12: error: redefinition of 'extraout_x0'
-   19 |   uint64_t extraout_x0;
-      |            ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:12:14: note: previous definition is here
-   12 |     uint64_t extraout_x0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:22:14: error: redefinition of 'extraout_s0' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   22 |   undefined4 extraout_s0;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:6:14: note: previous definition is here
-    6 |     uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:23:14: error: redefinition of 'extraout_s0_00' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   23 |   undefined4 extraout_s0_00;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:7:14: note: previous definition is here
-    7 |     uint64_t extraout_s0_00 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:25:14: error: redefinition of 'extraout_var' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   25 |   undefined4 extraout_var;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:8:14: note: previous definition is here
-    8 |     uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:26:14: error: redefinition of 'extraout_var_00' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   26 |   undefined4 extraout_var_00;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:9:14: note: previous definition is here
-    9 |     uint64_t extraout_var_00 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:28:14: error: redefinition of 'extraout_var_01'
-   28 |   undefined8 extraout_var_01;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:10:14: note: previous definition is here
-   10 |     uint64_t extraout_var_01 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:29:14: error: redefinition of 'extraout_var_02'
-   29 |   undefined8 extraout_var_02;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:11:14: note: previous definition is here
-   11 |     uint64_t extraout_var_02 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:136:13: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-  136 |       auVar1._4_4_ = uVar9;
-      |       ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:137:13: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-  137 |       auVar1._0_4_ = uVar8;
-      |       ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00084778.cpp:138:13: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-  138 |       auVar1._8_8_ = uVar5;
-      |       ~~~~~~^~~~~~
-10 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00084778(undefined1 param_1 [16],undefined1 param_2 [16],undefined8 param_3,double param_4,
-                 undefined *param_5)
-{
-    uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_s0_00 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_00 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_01 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_02 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_x0 = 0; // TODO: phantom var (incomplete lift)
-
-  undefined1 auVar1 [16];
-  int iVar2;
-  int *piVar3;
-  long lVar4;
-  undefined8 uVar5;
-  uint64_t extraout_x0;
-  char *pcVar6;
-  undefined8 uVar7;
-  undefined4 extraout_s0;
-  undefined4 extraout_s0_00;
-  undefined4 uVar8;
-  undefined4 extraout_var;
-  undefined4 extraout_var_00;
-  undefined4 uVar9;
-  undefined8 extraout_var_01;
-  undefined8 extraout_var_02;
-  undefined8 local_e8;
-  char local_e0 [64];
-  ulong local_a0 [9];
-  long local_58;
-
-  local_58 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  piVar3 = (int *)FUN_001ff2d4();
-  iVar2 = sigsetjmp(piVar3,1);
-  if (iVar2 == 0) {
-    pcVar6 = (char *)0x0;
-    uVar7 = 0;
-    lVar4 = (*(code *)param_5)(0,0,1,0,0,0);
-    if (lVar4 != 0) {
-      uVar8 = extraout_s0;
-      uVar9 = extraout_var;
-      uVar5 = extraout_var_01;
-      if (GD_DAT_0045e340 == 1) {
-        local_a0[5] = 0;
-        local_a0[4] = 0;
-        local_a0[7] = 0;
-        local_a0[6] = 0;
-        local_a0[1] = 0;
-        local_a0[0] = 0;
-        local_a0[3] = 0;
-        local_a0[2] = 0;
-        (*(code *)param_5)(0,0,0x20,0,0,local_a0);
-        local_e0[0x28] = '\0';
-        local_e0[0x29] = '\0';
-        local_e0[0x2a] = '\0';
-        local_e0[0x2b] = '\0';
-        local_e0[0x2c] = '\0';
-        local_e0[0x2d] = '\0';
-        local_e0[0x2e] = '\0';
-        local_e0[0x2f] = '\0';
-        local_e0[0x20] = '\0';
-        local_e0[0x21] = '\0';
-        local_e0[0x22] = '\0';
-        local_e0[0x23] = '\0';
-        local_e0[0x24] = '\0';
-        local_e0[0x25] = '\0';
-        local_e0[0x26] = '\0';
-        local_e0[0x27] = '\0';
-        local_e0[0x38] = '\0';
-        local_e0[0x39] = '\0';
-        local_e0[0x3a] = '\0';
-        local_e0[0x3b] = '\0';
-        local_e0[0x3c] = '\0';
-        local_e0[0x3d] = '\0';
-        local_e0[0x3e] = '\0';
-        local_e0[0x3f] = '\0';
-        local_e0[0x30] = '\0';
-        local_e0[0x31] = '\0';
-        local_e0[0x32] = '\0';
-        local_e0[0x33] = '\0';
-        local_e0[0x34] = '\0';
-        local_e0[0x35] = '\0';
-        local_e0[0x36] = '\0';
-        local_e0[0x37] = '\0';
-        local_e0[8] = '\0';
-        local_e0[9] = '\0';
-        local_e0[10] = '\0';
-        local_e0[0xb] = '\0';
-        local_e0[0xc] = '\0';
-        local_e0[0xd] = '\0';
-        local_e0[0xe] = '\0';
-        local_e0[0xf] = '\0';
-        local_e0[0] = '\0';
-        local_e0[1] = '\0';
-        local_e0[2] = '\0';
-        local_e0[3] = '\0';
-        local_e0[4] = '\0';
-        local_e0[5] = '\0';
-        local_e0[6] = '\0';
-        local_e0[7] = '\0';
-        local_e0[0x18] = '\0';
-        local_e0[0x19] = '\0';
-        local_e0[0x1a] = '\0';
-        local_e0[0x1b] = '\0';
-        local_e0[0x1c] = '\0';
-        local_e0[0x1d] = '\0';
-        local_e0[0x1e] = '\0';
-        local_e0[0x1f] = '\0';
-        local_e0[0x10] = '\0';
-        local_e0[0x11] = '\0';
-        local_e0[0x12] = '\0';
-        local_e0[0x13] = '\0';
-        local_e0[0x14] = '\0';
-        local_e0[0x15] = '\0';
-        local_e0[0x16] = '\0';
-        local_e0[0x17] = '\0';
-        (*(code *)param_5)(0,0,0x21,0,0,local_e0);
-        uVar7 = 0;
-        (*(code *)param_5)(0,0,0x22,0,0,0);
-        iVar2 = strcmp(local_e0,(char *)local_a0);
-        uVar5 = FUN_002066a0();
-        if (iVar2 == 0) {
-          pcVar6 = "Running in \'%s %d\'";
-        }
-        else {
-          pcVar6 = "Running in \'%s %s %d\'";
-        }
-        FUN_00208454(uVar5,"VST Shell",pcVar6);
-        uVar8 = extraout_s0_00;
-        uVar9 = extraout_var_00;
-        uVar5 = extraout_var_02;
-      }
-      auVar1._4_4_ = uVar9;
-      auVar1._0_4_ = uVar8;
-      auVar1._8_8_ = uVar5;
-      FUN_000076a4(auVar1,param_2,param_3,param_4,0,(ulong)param_5,pcVar6,uVar7);
-      if (extraout_x0 != 0) {
-        local_a0[0] = extraout_x0;
-        lVar4 = FUN_00089f14();
-        local_e8 = (**(code **)(*(long *)(lVar4 + 0xa0) + 0xf8))();
-        goto LAB_000847d4;
-      }
-      local_a0[0] = 0;
-    }
-  }
-  else {
-    FUN_001ff470();
-  }
-  local_a0[0] = local_a0[0] & 0xffffffffffffff00;
-  FUN_001ff428();
-  local_e8 = 0;
-LAB_000847d4:
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 != local_58) {
-    _stack_chk_fail(local_e8);
-  }
-  return;
-}
-```
-Notes:
-- 10-21 16:47 [compile] redefinition of 'extraout_x0' with a different type: 'ulong' (aka 'unsigned long') vs 'uint64_t' (ak — fixed with a learned rule.
-- 10-21 19:22 [compile] redefinition of 'extraout_x0' — plan: Change `uint64_t extraout_x0` to `unsigned long extraout_x0`. — still fails: redefinition of 'extraout_x0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned lo
-- 10-21 19:22 [compile] redefinition of 'extraout_x0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long') — plan: Change `unsigned long extraout_x0` to `uint64_t extraout_x0`. — still fails: redefinition of 'extraout_x0'
-Ghidra's pseudocode:
-```c
-void FUN_00084778(undefined1 param_1 [16],undefined1 param_2 [16],undefined8 param_3,double param_4,
-                 undefined *param_5)
-
-{
-  undefined1 auVar1 [16];
-  int iVar2;
-  int *piVar3;
-  long lVar4;
-  undefined8 uVar5;
-  ulong extraout_x0;
-  char *pcVar6;
-  undefined8 uVar7;
-  undefined4 extraout_s0;
-  undefined4 extraout_s0_00;
-  undefined4 uVar8;
-  undefined4 extraout_var;
-  undefined4 extraout_var_00;
-  undefined4 uVar9;
-  undefined8 extraout_var_01;
-  undefined8 extraout_var_02;
-  undefined8 local_e8;
-  char local_e0 [64];
-  ulong local_a0 [9];
-  long local_58;
-  
-  local_58 = *(long *)PTR____stack_chk_guard_004241e8;
-  piVar3 = (int *)FUN_001ff2d4();
-  iVar2 = _sigsetjmp(piVar3,1);
-  if (iVar2 == 0) {
-    pcVar6 = (char *)0x0;
-    uVar7 = 0;
-    lVar4 = (*(code *)param_5)(0,0,1,0,0,0);
-    if (lVar4 != 0) {
-      uVar8 = extraout_s0;
-      uVar9 = extraout_var;
-      uVar5 = extraout_var_01;
-      if (DAT_0045e340 == 1) {
-        local_a0[5] = 0;
-        local_a0[4] = 0;
-        local_a0[7] = 0;
-        local_a0[6] = 0;
-        local_a0[1] = 0;
-        local_a0[0] = 0;
-        local_a0[3] = 0;
-        local_a0[2] = 0;
-        (*(code *)param_5)(0,0,0x20,0,0,local_a0);
-        local_e0[0x28] = '\0';
-        local_e0[0x29] = '\0';
-        local_e0[0x2a] = '\0';
-        local_e0[0x2b] = '\0';
-        local_e0[0x2c] = '\0';
-        local_e0[0x2d] = '\0';
-        local_e0[0x2e] = '\0';
-        local_e0[0x2f] = '\0';
-        local_e0[0x20] = '\0';
-        local_e0[0x21] = '\0';
-        local_e0[0x22] = '\0';
-        local_e0[0x23] = '\0';
-        local_e0[0x24] = '\0';
-        local_e0[0x25] = '\0';
-        local_e0[0x26] = '\0';
-        local_e0[0x27] = '\0';
-        local_e0[0x38] = '\0';
-        local_e0[0x39] = '\0';
-        local_e0[0x3a] = '\0';
-        local_e0[0x3b] = '\0';
-        local_e0[0x3c] = '\0';
-        local_e0[0x3d] = '\0';
-        local_e0[0x3e] = '\0';
-        local_e0[0x3f] = '\0';
-        local_e0[0x30] = '\0';
-        local_e0[0x31] = '\0';
-        local_e0[0x32] = '\0';
-        local_e0[0x33] = '\0';
-        local_e0[0x34] = '\0';
-        local_e0[0x35] = '\0';
-        local_e0[0x36] = '\0';
-        local_e0[0x37] = '\0';
-        local_e0[8] = '\0';
-        local_e0[9] = '\0';
-        local_e0[10] = '\0';
-        local_e0[0xb] = '\0';
-        local_e0[0xc] = '\0';
-        local_e0[0xd] = '\0';
-        local_e0[0xe] = '\0';
-        local_e0[0xf] = '\0';
-        local_e0[0] = '\0';
-        local_e0[1] = '\0';
-        local_e0[2] = '\0';
-        local_e0[3] = '\0';
-        local_e0[4] = '\0';
-        local_e0[5] = '\0';
-        local_e0[6] = '\0';
-        local_e0[7] = '\0';
-        local_e0[0x18] = '\0';
-        local_e0[0x19] = '\0';
-        local_e0[0x1a] = '\0';
-        local_e0[0x1b] = '\0';
-        local_e0[0x1c] = '\0';
-        local_e0[0x1d] = '\0';
-        local_e0[0x1e] = '\0';
-        local_e0[0x1f] = '\0';
-        local_e0[0x10] = '\0';
-        local_e0[0x11] = '\0';
-        local_e0[0x12] = '\0';
-        local_e0[0x13] = '\0';
-        local_e0[0x14] = '\0';
-        local_e0[0x15] = '\0';
-        local_e0[0x16] = '\0';
-        local_e0[0x17] = '\0';
-        (*(code *)param_5)(0,0,0x21,0,0,local_e0);
-        uVar7 = 0;
-        (*(code *)param_5)(0,0,0x22,0,0,0);
-        iVar2 = _strcmp(local_e0,(char *)local_a0);
-        uVar5 = FUN_002066a0();
-        if (iVar2 == 0) {
-          pcVar6 = "Running in \'%s %d\'";
-        }
-        else {
-          pcVar6 = "Running in \'%s %s %d\'";
-        }
-        FUN_00208454(uVar5,"VST Shell",pcVar6);
-        uVar8 = extraout_s0_00;
-        uVar9 = extraout_var_00;
-        uVar5 = extraout_var_02;
-      }
-      auVar1._4_4_ = uVar9;
-      auVar1._0_4_ = uVar8;
-      auVar1._8_8_ = uVar5;
-      FUN_000076a4(auVar1,param_2,param_3,param_4,0,(ulong)param_5,pcVar6,uVar7);
-      if (extraout_x0 != 0) {
-        local_a0[0] = extraout_x0;
-        lVar4 = FUN_00089f14();
-        local_e8 = (**(code **)(*(long *)(lVar4 + 0xa0) + 0xf8))();
-        goto LAB_000847d4;
-      }
-      local_a0[0] = 0;
-    }
-  }
-  else {
-    FUN_001ff470();
-  }
-  local_a0[0] = local_a0[0] & 0xffffffffffffff00;
-  FUN_001ff428();
-  local_e8 = 0;
-LAB_000847d4:
-  if (*(long *)PTR____stack_chk_guard_004241e8 != local_58) {
-                    /* WARNING: Subroutine does not return */
-    ___stack_chk_fail(local_e8);
-  }
-  return;
-}
-```
-
-#### FUN_000b3be8 — funcs/FUN_000b3be8.cpp, Ghidra b3be8, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b3be8.cpp:24:17: error: redefinition of 'auVar3'
-   24 |   unsigned char auVar3[16] = {0};FUN_000037fc(lVar2);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b3be8.cpp:7:14: note: previous definition is here
-    7 |   undefined1 auVar3 [16];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b3be8.cpp:25:21: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   25 |   uStack_30 = auVar3._8_8_;
-      |               ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b3be8.cpp:26:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   26 |   local_60 = auVar3._0_8_;
-      |              ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b3be8.cpp:27:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   27 |   local_58 = auVar3._8_4_;
-      |              ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b3be8.cpp:31:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   31 |   auVar3 = FUN_000037fc(lVar2);
-      |   ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b3be8.cpp:32:21: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   32 |   uStack_40 = auVar3._8_8_;
-      |               ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b3be8.cpp:33:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   33 |   local_70 = auVar3._0_8_;
-      |              ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b3be8.cpp:34:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   34 |   local_68 = auVar3._8_4_;
-      |              ~~~~~~^~~~~~
-8 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b3be8(long param_1)
-{
-  byte bVar1;
-  long lVar2;
-  undefined1 auVar3 [16];
-  undefined8 local_70;
-  undefined4 local_68;
-  undefined8 local_60;
-  undefined4 local_58;
-  long local_50;
-  undefined8 local_48;
-  undefined8 uStack_40;
-  undefined8 local_38;
-  undefined8 uStack_30;
-  long local_28;
-
-  local_28 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  local_50 = param_1;
-  FUN_0011e8c8();
-  lVar2 = FUN_0010a634();
-  lVar2 = FUN_0010eac0(lVar2,0x14);
-  auVar3 = FUN_000037fc(lVar2);
-  uStack_30 = auVar3._8_8_;
-  local_60 = auVar3._0_8_;
-  local_58 = auVar3._8_4_;
-  local_38 = local_60;
-  lVar2 = FUN_0010a634();
-  lVar2 = FUN_0010eac0(lVar2,0x16);
-  auVar3 = FUN_000037fc(lVar2);
-  uStack_40 = auVar3._8_8_;
-  local_70 = auVar3._0_8_;
-  local_68 = auVar3._8_4_;
-  local_48 = local_70;
-  bVar1 = FUN_000bb158(param_1);
-  if ((bVar1 & 1) == 0) {
-    FUN_0002e6ac(0.35,(int *)&local_70,(int *)&local_60);
-  }
-  lVar2 = FUN_000b3bc0((undefined8 *)(param_1 + 0x250));
-  FUN_000b19f8(lVar2,(int *)&local_70,(int *)&local_60);
-  lVar2 = FUN_000b3bc0((undefined8 *)(param_1 + 0x240));
-  FUN_000b19f8(lVar2,(int *)&local_70,(int *)&local_60);
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == local_28) {
-    return;
-  }
-  _stack_chk_fail();
-}
-```
-Notes:
-- 10-21 15:55 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — plan: Change `unsigned char auVar3[16];` to `unsigned char auVar3[16] = {0};` — still fails: redefinition of 'auVar3'
-- 10-21 15:57 [compile] redefinition of 'auVar3' — plan: Change `unsigned char auVar3[16] = {0};` to `undefined8 auVar3_00 [16]; FUN_000037fc(lVar2);` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-- 10-21 18:46 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
-- 10-21 18:47 [compile] redefinition of 'auVar3' — plan: Change `unsigned char auVar3[16] = {0};FUN_000037fc(lVar2);` to `undefined8 auVar3[16];FUN_000037fc(lVar2);` — still fails: redefinition of 'auVar3' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs '
-- 10-21 18:47 [compile] redefinition of 'auVar3' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs ' — fixed with a learned rule.
-- 10-21 18:47 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
-- 10-21 19:09 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000b3be8(long param_1)
-
-{
-  byte bVar1;
-  long lVar2;
-  undefined1 auVar3 [16];
-  undefined8 local_70;
-  undefined4 local_68;
-  undefined8 local_60;
-  undefined4 local_58;
-  long local_50;
-  undefined8 local_48;
-  undefined8 uStack_40;
-  undefined8 local_38;
-  undefined8 uStack_30;
-  long local_28;
-  
-  local_28 = *(long *)PTR____stack_chk_guard_004241e8;
-  local_50 = param_1;
-  FUN_0011e8c8();
-  lVar2 = FUN_0010a634();
-  lVar2 = FUN_0010eac0(lVar2,0x14);
-  auVar3 = FUN_000037fc(lVar2);
-  uStack_30 = auVar3._8_8_;
-  local_60 = auVar3._0_8_;
-  local_58 = auVar3._8_4_;
-  local_38 = local_60;
-  lVar2 = FUN_0010a634();
-  lVar2 = FUN_0010eac0(lVar2,0x16);
-  auVar3 = FUN_000037fc(lVar2);
-  uStack_40 = auVar3._8_8_;
-  local_70 = auVar3._0_8_;
-  local_68 = auVar3._8_4_;
-  local_48 = local_70;
-  bVar1 = FUN_000bb158(param_1);
-  if ((bVar1 & 1) == 0) {
-    FUN_0002e6ac(0.35,(int *)&local_70,(int *)&local_60);
-  }
-  lVar2 = FUN_000b3bc0((undefined8 *)(param_1 + 0x250));
-  FUN_000b19f8(lVar2,(int *)&local_70,(int *)&local_60);
-  lVar2 = FUN_000b3bc0((undefined8 *)(param_1 + 0x240));
-  FUN_000b19f8(lVar2,(int *)&local_70,(int *)&local_60);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == local_28) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail();
-}
-```
-
-### Quarantined — 41 × assigning to 'X' (aka 'X') from incompatible type 'X'
-
-All: FUN_00004130 (4130), FUN_00008858 (8858), FUN_000092c8 (92c8), FUN_0000bed0 (bed0), FUN_0000c050 (c050), FUN_0000c1c8 (c1c8), FUN_0000c288 (c288), FUN_0000c394 (c394), FUN_0000fae8 (fae8), FUN_00011a98 (11a98), FUN_0003292c (3292c), FUN_00042dc0 (42dc0), FUN_000445f4 (445f4), FUN_00057184 (57184), FUN_00057350 (57350), FUN_00077470 (77470), FUN_000b02b8 (b02b8), FUN_000b5834 (b5834), FUN_000c3a58 (c3a58), FUN_000d16bc (d16bc), FUN_000e3660 (e3660), FUN_000f3620 (f3620), FUN_0011f0c0 (11f0c0), FUN_00126d68 (126d68), FUN_001274c4 (1274c4), FUN_0012c7a0 (12c7a0), FUN_001c5d88 (1c5d88), FUN_001ce0f0 (1ce0f0), FUN_001ceec4 (1ceec4), FUN_001dc038 (1dc038), FUN_001dc350 (1dc350), FUN_001e48e8 (1e48e8), FUN_001e8ba8 (1e8ba8), FUN_001e9034 (1e9034), FUN_001ef934 (1ef934), FUN_001efe34 (1efe34), FUN_001f78c8 (1f78c8), FUN_0020afdc (20afdc), FUN_0022b04c (22b04c), FUN_0022d2bc (22d2bc), FUN_0022dbf4 (22dbf4)
+All: FUN_00004130 (4130), FUN_00008858 (8858), FUN_000092c8 (92c8), FUN_0000bed0 (bed0), FUN_0000c050 (c050), FUN_0000c1c8 (c1c8), FUN_0000c288 (c288), FUN_0000c394 (c394), FUN_0000fae8 (fae8), FUN_00011a98 (11a98), FUN_00019be8 (19be8), FUN_0003292c (3292c), FUN_00042dc0 (42dc0), FUN_000445f4 (445f4), FUN_00057184 (57184), FUN_00057350 (57350), FUN_00077470 (77470), FUN_000b02b8 (b02b8), FUN_000b5834 (b5834), FUN_000c3a58 (c3a58), FUN_000d16bc (d16bc), FUN_000e3660 (e3660), FUN_000f3620 (f3620), FUN_0011f0c0 (11f0c0), FUN_00126d68 (126d68), FUN_001274c4 (1274c4), FUN_0012c7a0 (12c7a0), FUN_001c5d88 (1c5d88), FUN_001ce0f0 (1ce0f0), FUN_001ceec4 (1ceec4), FUN_001dc038 (1dc038), FUN_001dc350 (1dc350), FUN_001e48e8 (1e48e8), FUN_001e8ba8 (1e8ba8), FUN_001e9034 (1e9034), FUN_001ef934 (1ef934), FUN_001efe34 (1efe34), FUN_001f78c8 (1f78c8), FUN_0020afdc (20afdc), FUN_0022b04c (22b04c), FUN_0022d2bc (22d2bc), FUN_0022dbf4 (22dbf4)
 
 #### FUN_00004130 — funcs/_FUN_00004130.cpp, Ghidra 4130, 2 model attempt(s)
 
@@ -2930,625 +2861,9 @@ void FUN_0000c394(undefined8 *param_1,undefined8 param_2,undefined4 param_3)
 }
 ```
 
-### Quarantined — 28 × brackets are not allowed here; to declare an array, place the brackets after the identifier
+### Quarantined — 30 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
 
-All: FUN_000037b8 (37b8), FUN_00004574 (4574), FUN_0000cae4 (cae4), FUN_00018d88 (18d88), FUN_00068504 (68504), FUN_000ea5e0 (ea5e0), FUN_0011c4f8 (11c4f8), FUN_0011c800 (11c800), FUN_0012c230 (12c230), FUN_00141960 (141960), FUN_00141d74 (141d74), FUN_001718c0 (1718c0), FUN_00171a30 (171a30), FUN_00171c28 (171c28), FUN_00173144 (173144), FUN_001a7d68 (1a7d68), FUN_001a821c (1a821c), FUN_001c0804 (1c0804), FUN_001c0cb8 (1c0cb8), FUN_001e188c (1e188c), FUN_002039cc (2039cc), FUN_002047f0 (2047f0), FUN_00205b14 (205b14), FUN_00211904 (211904), FUN_002126c0 (2126c0), FUN_002190cc (2190cc), FUN_002535b8 (2535b8), FUN_002535f4 (2535f4)
-
-#### FUN_000037b8 — funcs/_FUN_000037b8.cpp, Ghidra 37b8, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:4:36: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
-    4 | undefined1  [16] FUN_000037b8(void)
-      |             ~~~~                   ^
-      |                                    [16]
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:4:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
-    4 | undefined1  [16] FUN_000037b8(void)
-      |                              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:10:9: error: assigning to 'int' from incompatible type 'void'
-   10 |   iVar2 = FUN_00004594();
-      |         ^ ~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:11:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   11 |   auVar1._8_8_ = 0;
-      |   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:12:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   12 |   auVar1._0_8_ = (double)iVar2 * 4.656612875245797e-10;
-      |   ~~~~~~^~~~~~
-5 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined1  [16] FUN_000037b8(void)
-{
-  undefined1 auVar1 [16];
-  int iVar2;
-
-  iVar2 = FUN_00004594();
-  auVar1._8_8_ = 0;
-  auVar1._0_8_ = (double)iVar2 * 4.656612875245797e-10;
-  return auVar1;
-}
-```
-Notes:
-- 10-21 13:48 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_000037b8(void)` to `undefined1 auVar1[16]; FUN_000037b8(void)`. — still fails: assigning to 'int' from incompatible type 'void'
-- 10-21 13:49 [compile] assigning to 'int' from incompatible type 'void' — plan: Change line 8 from `iVar2 = FUN_00004594();` to `iVar2 = (int)FUN_00004594();`. — still fails: operand of type 'void' where arithmetic or pointer type is required
-- 10-21 17:09 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_000037b8(void)` to `undefined1 auVar1[16]; FUN_000037b8(void)`. — still fails: assigning to 'int' from incompatible type 'void'
-- 10-21 17:09 [compile] assigning to 'int' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 17:09 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-undefined1  [16] FUN_000037b8(void)
-
-{
-  undefined1 auVar1 [16];
-  int iVar2;
-  
-  iVar2 = FUN_00004594();
-  auVar1._8_8_ = 0;
-  auVar1._0_8_ = (double)iVar2 * 4.656612875245797e-10;
-  return auVar1;
-}
-```
-
-#### FUN_00004574 — funcs/_FUN_00004574.cpp, Ghidra 4574, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00004574.cpp:4:44: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
-    4 | undefined1  [16] FUN_00004574(long param_1)
-      |             ~~~~                           ^
-      |                                            [16]
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00004574.cpp:4:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
-    4 | undefined1  [16] FUN_00004574(long param_1)
-      |                              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00004574.cpp:9:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-    9 |   auVar1._8_8_ = 0;
-      |   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00004574.cpp:10:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   10 |   auVar1._0_8_ = (double)((param_1 >> 0x3f) << 1) + 1.0;
-      |   ~~~~~~^~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined1  [16] FUN_00004574(long param_1)
-{
-  undefined1 auVar1 [16];
-
-  auVar1._8_8_ = 0;
-  auVar1._0_8_ = (double)((param_1 >> 0x3f) << 1) + 1.0;
-  return auVar1;
-}
-```
-Notes:
-- 10-21 15:26 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change `undefined1 [16] FUN_00004574(long param_1)` to `undefined1 auVar1[16]; FUN_00004574(long param_1)` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-- 10-21 15:27 [compile] member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union — plan: Change `auVar1._8_8_ = 0;` to `auVar1[8] = 0;` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-- 10-21 18:23 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change `undefined1 [16] FUN_00004574(long param_1)` to `unsigned char auVar1[16]; FUN_00004574(long param_1)` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-- 10-21 18:23 [compile] member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-undefined1  [16] FUN_00004574(long param_1)
-
-{
-  undefined1 auVar1 [16];
-  
-  auVar1._8_8_ = 0;
-  auVar1._0_8_ = (double)((param_1 >> 0x3f) << 1) + 1.0;
-  return auVar1;
-}
-```
-
-#### FUN_0000cae4 — funcs/_FUN_0000cae4.cpp, Ghidra cae4, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cae4.cpp:4:63: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
-    4 | undefined1  [16] FUN_0000cae4(double *param_1,double *param_2)
-      |             ~~~~                                              ^
-      |                                                               [16]
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cae4.cpp:4:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
-    4 | undefined1  [16] FUN_0000cae4(double *param_1,double *param_2)
-      |                              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cae4.cpp:12:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   12 |   auVar1._8_8_ = 0;
-      |   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cae4.cpp:13:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   13 |   auVar1._0_8_ = *param_1;
-      |   ~~~~~~^~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined1  [16] FUN_0000cae4(double *param_1,double *param_2)
-{
-  undefined1 auVar1 [16];
-
-  if (*param_1 <= *param_2) {
-    param_1 = param_2;
-  }
-  auVar1._8_8_ = 0;
-  auVar1._0_8_ = *param_1;
-  return auVar1;
-}
-```
-Notes:
-- 10-21 15:04 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change `undefined1 [16] FUN_0000cae4(double *param_1,double *param_2)` to `undefined1 auVar1[16]; FUN_0000cae4(double *param_1,double *param_2)` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-- 10-21 15:04 [compile] member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union — plan: Change `auVar1._8_8_ = 0;` to `auVar1[8] = 0;` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-- 10-21 18:05 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change `undefined1 [16] FUN_0000cae4(double*param_1,double*param_2)` to `unsigned char auVar1[16]; FUN_0000cae4(double*param_1,double*param_2)` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-- 10-21 18:05 [compile] member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-undefined1  [16] FUN_0000cae4(double *param_1,double *param_2)
-
-{
-  undefined1 auVar1 [16];
-  
-  if (*param_1 <= *param_2) {
-    param_1 = param_2;
-  }
-  auVar1._8_8_ = 0;
-  auVar1._0_8_ = *param_1;
-  return auVar1;
-}
-```
-
-#### FUN_00018d88 — funcs/_FUN_00018d88.cpp, Ghidra 18d88, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018d88.cpp:4:50: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
-    4 | undefined1  [16] FUN_00018d88(undefined8 param_1)
-      |             ~~~~                                 ^
-      |                                                  [16]
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018d88.cpp:4:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
-    4 | undefined1  [16] FUN_00018d88(undefined8 param_1)
-      |                              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018d88.cpp:13:12: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-   13 |   local_40 = FUN_00018dd8();
-      |            ^ ~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018d88.cpp:14:12: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-   14 |   local_48 = FUN_0000392c();
-      |            ^ ~~~~~~~~~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined1  [16] FUN_00018d88(undefined8 param_1)
-{
-  undefined8 local_48;
-  undefined8 local_40;
-  undefined8 local_38;
-  undefined1 local_30 [16];
-
-  local_38 = param_1;
-  local_40 = FUN_00018dd8();
-  local_48 = FUN_0000392c();
-  FUN_00018dec((undefined4 *)local_30,(undefined4 *)&local_40,(undefined4 *)&local_48);
-  return local_30;
-}
-```
-Notes:
-- 10-21 13:46 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_00018d88(undefined8 param_1)` to `undefined1 local_40[16]; FUN_00018d88(undefined8 param_1);` — still fails: expected identifier or '('
-- 10-21 17:04 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_00018d88(undefined8 param_1)` to `undefined1 local_40[16]; FUN_00018d88(undefined8 param_1);` — still fails: expected identifier or '('
-Ghidra's pseudocode:
-```c
-undefined1  [16] FUN_00018d88(undefined8 param_1)
-
-{
-  undefined8 local_48;
-  undefined8 local_40;
-  undefined8 local_38;
-  undefined1 local_30 [16];
-  
-  local_38 = param_1;
-  local_40 = FUN_00018dd8();
-  local_48 = FUN_0000392c();
-  FUN_00018dec((undefined4 *)local_30,(undefined4 *)&local_40,(undefined4 *)&local_48);
-  return local_30;
-}
-```
-
-#### FUN_00068504 — funcs/FUN_00068504.cpp, Ghidra 68504, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00068504.cpp:5:32: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
-    3 | undefined1  [16]
-      |             ~~~~
-    4 | FUN_00068504(undefined8 param_1,ulong *param_2,undefined8 param_3,undefined8 *param_4,
-    5 |             undefined8 param_5)
-      |                                ^
-      |                                [16]
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00068504.cpp:4:13: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
-    4 | FUN_00068504(undefined8 param_1,ulong *param_2,undefined8 param_3,undefined8 *param_4,
-      |             ^
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined1  [16]
-FUN_00068504(undefined8 param_1,ulong *param_2,undefined8 param_3,undefined8 *param_4,
-            undefined8 param_5)
-{
-  long *plVar1;
-  undefined8 *puVar2;
-  undefined8 auStack_a0 [3];
-  undefined1 local_81;
-  long local_80;
-  long *local_78;
-  long lStack_70;
-  undefined8 local_68;
-  undefined8 *local_60;
-  undefined8 uStack_58;
-  ulong *local_50;
-  undefined8 uStack_48;
-  undefined1 local_40 [16];
-
-  local_68 = param_5;
-  local_60 = param_4;
-  uStack_58 = param_3;
-  local_50 = param_2;
-  uStack_48 = param_1;
-  local_78 = FUN_00068624(param_1,&lStack_70,param_2);
-  local_80 = *local_78;
-  local_81 = 0;
-  if (*local_78 == 0) {
-    FUN_00068734(auStack_a0,param_1,uStack_58,local_60,local_68);
-    plVar1 = local_78;
-    puVar2 = (undefined8 *)FUN_00068888();
-    FUN_000687f8(param_1,lStack_70,plVar1,puVar2);
-    local_80 = FUN_000688ac();
-    local_81 = 1;
-    FUN_000688f0(auStack_a0);
-  }
-  FUN_00068910(auStack_a0,local_80);
-  FUN_00068930((undefined8 *)local_40,auStack_a0,&local_81);
-  return local_40;
-}
-```
-Ghidra's pseudocode:
-```c
-undefined1  [16]
-FUN_00068504(undefined8 param_1,ulong *param_2,undefined8 param_3,undefined8 *param_4,
-            undefined8 param_5)
-
-{
-  long *plVar1;
-  undefined8 *puVar2;
-  undefined8 auStack_a0 [3];
-  undefined1 local_81;
-  long local_80;
-  long *local_78;
-  long lStack_70;
-  undefined8 local_68;
-  undefined8 *local_60;
-  undefined8 uStack_58;
-  ulong *local_50;
-  undefined8 uStack_48;
-  undefined1 local_40 [16];
-  
-  local_68 = param_5;
-  local_60 = param_4;
-  uStack_58 = param_3;
-  local_50 = param_2;
-  uStack_48 = param_1;
-  local_78 = FUN_00068624(param_1,&lStack_70,param_2);
-  local_80 = *local_78;
-  local_81 = 0;
-  if (*local_78 == 0) {
-    FUN_00068734(auStack_a0,param_1,uStack_58,local_60,local_68);
-    plVar1 = local_78;
-    puVar2 = (undefined8 *)FUN_00068888();
-    FUN_000687f8(param_1,lStack_70,plVar1,puVar2);
-    local_80 = FUN_000688ac();
-    local_81 = 1;
-    FUN_000688f0(auStack_a0);
-  }
-  FUN_00068910(auStack_a0,local_80);
-  FUN_00068930((undefined8 *)local_40,auStack_a0,&local_81);
-  return local_40;
-}
-```
-
-#### FUN_000ea5e0 — funcs/FUN_000ea5e0.cpp, Ghidra ea5e0, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ea5e0.cpp:6:26: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
-    4 | undefined1  [16]
-      |             ~~~~
-    5 | FUN_000ea5e0(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
-    6 |             uint param_6)
-      |                          ^
-      |                          [16]
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ea5e0.cpp:5:13: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
-    5 | FUN_000ea5e0(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ea5e0.cpp:12:14: error: redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsigned long long')
-   12 |   undefined1 extraout_q0 [16];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ea5e0.cpp:9:14: note: previous definition is here
-    9 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined1  [16]
-FUN_000ea5e0(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
-            uint param_6)
-{
-    uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
-
-  long *plVar1;
-  undefined1 extraout_q0 [16];
-
-  if (param_6 != *(byte *)(param_5 + 0x27c)) {
-    *(char *)(param_5 + 0x27c) = (char)param_6;
-    plVar1 = (long *)FUN_00029e8c((undefined8 *)(param_5 + 0x250));
-    FUN_0011c4f8(extraout_q0,param_2,param_3,param_4,plVar1,(uint)*(byte *)(param_5 + 0x27c));
-    param_1 = FUN_0011c2e0(param_5);
-  }
-  return param_1;
-}
-```
-Notes:
-- 10-21 18:58 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 5 from `uint param_6)` to `unsigned int param_6)`. — still fails: brackets are not allowed here; to declare an array, place the brackets after the identifier
-- 10-21 18:58 [compile] that edit didn't help — undone.
-- 10-21 19:00 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 5 from `uint param_6)` to `unsigned int param_6)`. — still fails: brackets are not allowed here; to declare an array, place the brackets after the identifier
-- 10-21 19:00 [compile] that edit didn't help — undone.
-Ghidra's pseudocode:
-```c
-undefined1  [16]
-FUN_000ea5e0(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
-            uint param_6)
-
-{
-  long *plVar1;
-  undefined1 extraout_q0 [16];
-  
-  if (param_6 != *(byte *)(param_5 + 0x27c)) {
-    *(char *)(param_5 + 0x27c) = (char)param_6;
-    plVar1 = (long *)FUN_00029e8c((undefined8 *)(param_5 + 0x250));
-    FUN_0011c4f8(extraout_q0,param_2,param_3,param_4,plVar1,(uint)*(byte *)(param_5 + 0x27c));
-    param_1 = FUN_0011c2e0(param_5);
-  }
-  return param_1;
-}
-```
-
-#### FUN_0011c4f8 — funcs/FUN_0011c4f8.cpp, Ghidra 11c4f8, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:6:26: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
-    4 | undefined1  [16]
-      |             ~~~~
-    5 | FUN_0011c4f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5,
-    6 |             uint param_6)
-      |                          ^
-      |                          [16]
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:5:13: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
-    5 | FUN_0011c4f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5,
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:15:14: error: redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsigned long long')
-   15 |   undefined1 extraout_q0 [16];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:9:14: note: previous definition is here
-    9 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:43:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   43 |     local_40 = FUN_00018d88(param_5);
-      |     ~~~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:61:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   61 |   auVar5 = FUN_0011c2e0((long)param_5);
-      |   ~~~~~~ ^
-5 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined1  [16]
-FUN_0011c4f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5,
-            uint param_6)
-{
-    uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
-
-  char cVar1;
-  bool bVar2;
-  long lVar3;
-  long *plVar4;
-  undefined1 extraout_q0 [16];
-  undefined1 auVar5 [16];
-  undefined8 local_48;
-  undefined1 local_40 [16];
-  undefined1 local_29;
-  long *local_28;
-
-  local_29 = (undefined1)param_6;
-  if (*(byte *)(param_5 + 0x1b) == param_6) {
-    return param_1;
-  }
-  local_28 = param_5;
-  FUN_0011c2e0((long)param_5);
-  *(undefined1 *)(param_5 + 0x1b) = local_29;
-  cVar1 = FUN_00115dc8((long)param_5);
-  if (cVar1 == '\0') {
-    *(undefined1 *)((long)param_5 + 0xda) = 0;
-    goto LAB_0011c5c4;
-  }
-  lVar3 = FUN_0011b8b4(param_5 + 0x1d);
-  if (lVar3 == 0) {
-LAB_0011c58c:
-    *(undefined1 *)((long)param_5 + 0xda) = 0;
-  }
-  else {
-    lVar3 = FUN_0011ba78(param_5 + 0x1d);
-    lVar3 = FUN_000cf5cc(lVar3);
-    if (lVar3 == 0) goto LAB_0011c58c;
-    local_40 = FUN_00018d88(param_5);
-    local_48 = FUN_0011c60c(extraout_q0,param_2,param_3,param_4,(long)param_5);
-    bVar2 = FUN_001181e4((int *)local_40,(int *)&local_48);
-    *(bool *)((long)param_5 + 0xda) = bVar2;
-  }
-  FUN_0011c19c(param_5);
-  lVar3 = FUN_0011b8b4(param_5 + 0x1d);
-  if (lVar3 != 0) {
-    lVar3 = FUN_0011ba78(param_5 + 0x1d);
-    (**(code **)(*param_5 + 0x38))(param_5,*(undefined4 *)(lVar3 + 0x74));
-  }
-LAB_0011c5c4:
-  lVar3 = FUN_00118644(param_5 + 0x1e);
-  if (lVar3 != 0) {
-    plVar4 = (long *)FUN_000c8128(param_5 + 0x1e);
-    (**(code **)(*plVar4 + 0x1f0))(plVar4,param_5);
-  }
-  FUN_0011c6a0(param_5);
-  auVar5 = FUN_0011c2e0((long)param_5);
-  return auVar5;
-}
-```
-Notes:
-- 10-21 13:58 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 5 from `uint param_6)` to `uint param_6[1]` — still fails: brackets are not allowed here; to declare an array, place the brackets after the identifier
-- 10-21 13:58 [compile] that edit didn't help — undone.
-- 10-21 13:59 [compile] the model suggested an edit that already failed — skipped.
-- 10-21 17:18 [compile] the model suggested an edit that already failed — skipped.
-- 10-21 17:18 [compile] the model suggested an edit that already failed — skipped.
-Ghidra's pseudocode:
-```c
-undefined1  [16]
-FUN_0011c4f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5,
-            uint param_6)
-
-{
-  char cVar1;
-  bool bVar2;
-  long lVar3;
-  long *plVar4;
-  undefined1 extraout_q0 [16];
-  undefined1 auVar5 [16];
-  undefined8 local_48;
-  undefined1 local_40 [16];
-  undefined1 local_29;
-  long *local_28;
-  
-  local_29 = (undefined1)param_6;
-  if (*(byte *)(param_5 + 0x1b) == param_6) {
-    return param_1;
-  }
-  local_28 = param_5;
-  FUN_0011c2e0((long)param_5);
-  *(undefined1 *)(param_5 + 0x1b) = local_29;
-  cVar1 = FUN_00115dc8((long)param_5);
-  if (cVar1 == '\0') {
-    *(undefined1 *)((long)param_5 + 0xda) = 0;
-    goto LAB_0011c5c4;
-  }
-  lVar3 = FUN_0011b8b4(param_5 + 0x1d);
-  if (lVar3 == 0) {
-LAB_0011c58c:
-    *(undefined1 *)((long)param_5 + 0xda) = 0;
-  }
-  else {
-    lVar3 = FUN_0011ba78(param_5 + 0x1d);
-    lVar3 = FUN_000cf5cc(lVar3);
-    if (lVar3 == 0) goto LAB_0011c58c;
-    local_40 = FUN_00018d88(param_5);
-    local_48 = FUN_0011c60c(extraout_q0,param_2,param_3,param_4,(long)param_5);
-    bVar2 = FUN_001181e4((int *)local_40,(int *)&local_48);
-    *(bool *)((long)param_5 + 0xda) = bVar2;
-  }
-  FUN_0011c19c(param_5);
-  lVar3 = FUN_0011b8b4(param_5 + 0x1d);
-  if (lVar3 != 0) {
-    lVar3 = FUN_0011ba78(param_5 + 0x1d);
-    (**(code **)(*param_5 + 0x38))(param_5,*(undefined4 *)(lVar3 + 0x74));
-  }
-LAB_0011c5c4:
-  lVar3 = FUN_00118644(param_5 + 0x1e);
-  if (lVar3 != 0) {
-    plVar4 = (long *)FUN_000c8128(param_5 + 0x1e);
-    (**(code **)(*plVar4 + 0x1f0))(plVar4,param_5);
-  }
-  FUN_0011c6a0(param_5);
-  auVar5 = FUN_0011c2e0((long)param_5);
-  return auVar5;
-}
-```
-
-#### FUN_0011c800 — funcs/FUN_0011c800.cpp, Ghidra 11c800, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c800.cpp:4:50: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
-    4 | undefined1  [16] FUN_0011c800(undefined8 param_1)
-      |             ~~~~                                 ^
-      |                                                  [16]
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c800.cpp:4:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
-    4 | undefined1  [16] FUN_0011c800(undefined8 param_1)
-      |                              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c800.cpp:14:12: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-   14 |   local_48 = FUN_0000392c();
-      |            ^ ~~~~~~~~~~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined1  [16] FUN_0011c800(undefined8 param_1)
-{
-  undefined8 local_48;
-  undefined8 local_40;
-  undefined8 local_38;
-  undefined1 local_30 [16];
-
-  local_38 = param_1;
-  local_40 = FUN_000b52f0();
-  local_48 = FUN_0000392c();
-  FUN_00018dec((undefined4 *)local_30,(undefined4 *)&local_40,(undefined4 *)&local_48);
-  return local_30;
-}
-```
-Notes:
-- 10-21 13:47 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_0011c800(undefined8 param_1)` to `undefined1 local_40[16]; FUN_0011c800(undefined8 param_1)` — still fails: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-- 10-21 13:47 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — plan: Change line 12 from `undefined8 local_48 = FUN_0000392c();` to `undefined1 local_48[16]; FUN_0000392c(local_48);` — still fails: redefinition of 'local_48' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'und
-- 10-21 17:09 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_0011c800(undefined8 param_1)` to `undefined1 local_40[16]; FUN_0011c800(undefined8 param_1)` — still fails: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-- 10-21 17:09 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-undefined1  [16] FUN_0011c800(undefined8 param_1)
-
-{
-  undefined8 local_48;
-  undefined8 local_40;
-  undefined8 local_38;
-  undefined1 local_30 [16];
-  
-  local_38 = param_1;
-  local_40 = FUN_000b52f0();
-  local_48 = FUN_0000392c();
-  FUN_00018dec((undefined4 *)local_30,(undefined4 *)&local_40,(undefined4 *)&local_48);
-  return local_30;
-}
-```
-
-### Quarantined — 28 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
-
-All: FUN_00008040 (8040), FUN_00012e5c (12e5c), FUN_00012f88 (12f88), FUN_00061330 (61330), FUN_000bca84 (bca84), FUN_000bd18c (bd18c), FUN_000be780 (be780), FUN_000da62c (da62c), FUN_000e3eb4 (e3eb4), FUN_000ea6d0 (ea6d0), FUN_000effac (effac), FUN_0011c60c (11c60c), FUN_00121fb4 (121fb4), FUN_00125678 (125678), FUN_001a353c (1a353c), FUN_001a3a5c (1a3a5c), FUN_001a40b8 (1a40b8), FUN_001a41f8 (1a41f8), FUN_001a46e0 (1a46e0), FUN_001bc954 (1bc954), FUN_001bcaec (1bcaec), FUN_001bcc84 (1bcc84), FUN_001bd9e8 (1bd9e8), FUN_001bdb68 (1bdb68), FUN_001be3c0 (1be3c0), FUN_001f934c (1f934c), FUN_002043e0 (2043e0), FUN_00211a28 (211a28)
+All: FUN_00008040 (8040), FUN_0000e748 (e748), FUN_0000f8d8 (f8d8), FUN_00012e5c (12e5c), FUN_00012f88 (12f88), FUN_00061330 (61330), FUN_000bca84 (bca84), FUN_000bd18c (bd18c), FUN_000be780 (be780), FUN_000da62c (da62c), FUN_000e3eb4 (e3eb4), FUN_000ea6d0 (ea6d0), FUN_000effac (effac), FUN_0011c60c (11c60c), FUN_00121fb4 (121fb4), FUN_00125678 (125678), FUN_001a353c (1a353c), FUN_001a3a5c (1a3a5c), FUN_001a40b8 (1a40b8), FUN_001a41f8 (1a41f8), FUN_001a46e0 (1a46e0), FUN_001bc954 (1bc954), FUN_001bcaec (1bcaec), FUN_001bcc84 (1bcc84), FUN_001bd9e8 (1bd9e8), FUN_001bdb68 (1bdb68), FUN_001be3c0 (1be3c0), FUN_001f934c (1f934c), FUN_002043e0 (2043e0), FUN_00211a28 (211a28)
 
 #### FUN_00008040 — funcs/_FUN_00008040.cpp, Ghidra 8040, 1 model attempt(s)
 
@@ -3629,6 +2944,114 @@ void FUN_00008040(undefined8 param_1,undefined8 param_2,long param_3,undefined8 
   auVar1 = FUN_000a5818();
   FUN_001f1ea4(auVar1._0_8_,auVar1._8_8_,param_3,param_4);
   FUN_0002eca8();
+  return;
+}
+```
+
+#### FUN_0000e748 — funcs/_FUN_0000e748.cpp, Ghidra e748, 3 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e748.cpp:7:14: error: redefinition of 'auVar1' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
+    7 |   undefined8 auVar1[16] = {0};FUN_0000f9b4(param_1, param_2, param_3);
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e748.cpp:5:14: note: previous definition is here
+    5 |   undefined1 auVar1 [16];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e748.cpp:8:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+    8 |   *param_1 = auVar1._0_8_;
+      |              ~~~~~~^~~~~~
+2 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0000e748(double *param_1,double *param_2,double *param_3)
+{
+  undefined1 auVar1 [16];
+
+  undefined8 auVar1[16] = {0};FUN_0000f9b4(param_1, param_2, param_3);
+  *param_1 = auVar1._0_8_;
+  return;
+}
+```
+Notes:
+- 10-21 16:47 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
+- 10-21 19:29 [compile] redefinition of 'auVar1' — plan: Change `undefined1 auVar1[16];` to `undefined8 auVar1[16];` — still fails: redefinition of 'auVar1' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs '
+- 10-21 19:35 [compile] redefinition of 'auVar1' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka — plan: Change `undefined8 auVar1[16] = {0};` to `undefined1 auVar1[16] = {0};` — still fails: redefinition of 'auVar1'
+- 10-21 19:35 [compile] redefinition of 'auVar1' — plan: Change `undefined1 auVar1[16] = {0};` to `undefined8 auVar1[16] = {0};` — still fails: redefinition of 'auVar1' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs '
+Ghidra's pseudocode:
+```c
+void FUN_0000e748(double *param_1,double *param_2,double *param_3)
+
+{
+  undefined1 auVar1 [16];
+  
+  auVar1 = FUN_0000f9b4(param_1,param_2,param_3);
+  *param_1 = auVar1._0_8_;
+  return;
+}
+```
+
+#### FUN_0000f8d8 — funcs/_FUN_0000f8d8.cpp, Ghidra f8d8, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000f8d8.cpp:17:14: error: redefinition of 'uVar2' with a different type: 'undefined8' (aka 'unsigned long long') vs 'ulong' (aka 'unsigned long')
+   17 |   undefined8 uVar2 = FUN_000041f4((long)ppuVar1);
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000f8d8.cpp:6:9: note: previous definition is here
+    6 |   ulong uVar2;
+      |         ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0000f8d8(long *param_1,long *param_2)
+{
+  undefined **ppuVar1;
+  ulong uVar2;
+
+  if (param_2 == (long *)0x0) {
+    ppuVar1 = &GD_PTR_vtable_00443028;
+  }
+  else {
+    if (param_2 == (long *)0x0) {
+      _cxa_bad_typeid();
+    }
+    ppuVar1 = *(undefined ***)(*param_2 + -8);
+  }
+  uintptr_t uVar2 = FUN_000041f4((long)ppuVar1);
+  FUN_001e3578(param_1,uVar2);
+  return;
+}
+```
+Notes:
+- 10-21 16:47 [compile] assigning to 'ulong' (aka 'unsigned long') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:35 [compile] redefinition of 'uVar2' — plan: Change `uintptr_t uVar2 = FUN_000041f4((long)ppuVar1);` to `undefined8 uVar2 = FUN_000041f4((long)ppuVar1);` — still fails: redefinition of 'uVar2' with a different type: 'undefined8' (aka 'unsigned long long') vs 'ulong' (a
+Ghidra's pseudocode:
+```c
+void FUN_0000f8d8(long *param_1,long *param_2)
+
+{
+  undefined **ppuVar1;
+  ulong uVar2;
+  
+  if (param_2 == (long *)0x0) {
+    ppuVar1 = &PTR_vtable_00443028;
+  }
+  else {
+    if (param_2 == (long *)0x0) {
+                    /* WARNING: Subroutine does not return */
+      ___cxa_bad_typeid();
+    }
+    ppuVar1 = *(undefined ***)(*param_2 + -8);
+  }
+  uVar2 = FUN_000041f4((long)ppuVar1);
+  FUN_001e3578(param_1,uVar2);
   return;
 }
 ```
@@ -4309,257 +3732,639 @@ FUN_000bd18c(undefined1 param_1 [16],double param_2,undefined8 param_3,double pa
 }
 ```
 
-#### FUN_000be780 — funcs/FUN_000be780.cpp, Ghidra be780, 1 model attempt(s)
+### Quarantined — 29 × brackets are not allowed here; to declare an array, place the brackets after the identifier
+
+All: FUN_000037b8 (37b8), FUN_00004574 (4574), FUN_0000cae4 (cae4), FUN_00014a48 (14a48), FUN_00018d88 (18d88), FUN_00068504 (68504), FUN_000ea5e0 (ea5e0), FUN_0011c4f8 (11c4f8), FUN_0011c800 (11c800), FUN_0012c230 (12c230), FUN_00141960 (141960), FUN_00141d74 (141d74), FUN_001718c0 (1718c0), FUN_00171a30 (171a30), FUN_00171c28 (171c28), FUN_00173144 (173144), FUN_001a7d68 (1a7d68), FUN_001a821c (1a821c), FUN_001c0804 (1c0804), FUN_001c0cb8 (1c0cb8), FUN_001e188c (1e188c), FUN_002039cc (2039cc), FUN_002047f0 (2047f0), FUN_00205b14 (205b14), FUN_00211904 (211904), FUN_002126c0 (2126c0), FUN_002190cc (2190cc), FUN_002535b8 (2535b8), FUN_002535f4 (2535f4)
+
+#### FUN_000037b8 — funcs/_FUN_000037b8.cpp, Ghidra 37b8, 1 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000be780.cpp:9:12: error: redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'unsigned long long')
-    9 |   uint64_t extraout_q0[16];
-      |            ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000be780.cpp:6:14: note: previous definition is here
-    6 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-1 error generated.
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:4:36: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
+    4 | undefined1  [16] FUN_000037b8(void)
+      |             ~~~~                   ^
+      |                                    [16]
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:4:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
+    4 | undefined1  [16] FUN_000037b8(void)
+      |                              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:10:9: error: assigning to 'int' from incompatible type 'void'
+   10 |   iVar2 = FUN_00004594();
+      |         ^ ~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:11:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   11 |   auVar1._8_8_ = 0;
+      |   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000037b8.cpp:12:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   12 |   auVar1._0_8_ = (double)iVar2 * 4.656612875245797e-10;
+      |   ~~~~~~^~~~~~
+5 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000be780(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long param_5,undefined8 *param_6,int *param_7)
+undefined1  [16] FUN_000037b8(void)
 {
-    uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+  undefined1 auVar1 [16];
+  int iVar2;
 
-  long *plVar1;
-  undefined1 extraout_q0 [16];
-
-  FUN_00120624(param_5);
-  plVar1 = (long *)FUN_000be770();
-  FUN_000bd18c(extraout_q0,param_2,param_3,param_4,plVar1,param_6,param_7);
-  return;
+  iVar2 = FUN_00004594();
+  auVar1._8_8_ = 0;
+  auVar1._0_8_ = (double)iVar2 * 4.656612875245797e-10;
+  return auVar1;
 }
 ```
 Notes:
-- 10-21 15:13 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 15:15 [compile] redefinition of 'extraout_q0' — plan: Change line 9 from `uint64_t extraout_q0;` to `undefined8 extraout_q0;`. — still fails: redefinition of 'extraout_q0'
-- 10-21 15:15 [compile] that edit didn't help — undone.
-- 10-21 15:15 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 18:12 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 18:13 [compile] redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'u — plan: Change line 9 from `uint64_t extraout_q0[16];` to `uint64_t extraout_q0;`. — still fails: redefinition of 'extraout_q0'
-- 10-21 18:13 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
-- 10-21 18:27 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 13:48 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_000037b8(void)` to `undefined1 auVar1[16]; FUN_000037b8(void)`. — still fails: assigning to 'int' from incompatible type 'void'
+- 10-21 13:49 [compile] assigning to 'int' from incompatible type 'void' — plan: Change line 8 from `iVar2 = FUN_00004594();` to `iVar2 = (int)FUN_00004594();`. — still fails: operand of type 'void' where arithmetic or pointer type is required
+- 10-21 17:09 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_000037b8(void)` to `undefined1 auVar1[16]; FUN_000037b8(void)`. — still fails: assigning to 'int' from incompatible type 'void'
+- 10-21 17:09 [compile] assigning to 'int' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 17:09 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
-void FUN_000be780(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long param_5,undefined8 *param_6,int *param_7)
+undefined1  [16] FUN_000037b8(void)
+
+{
+  undefined1 auVar1 [16];
+  int iVar2;
+  
+  iVar2 = FUN_00004594();
+  auVar1._8_8_ = 0;
+  auVar1._0_8_ = (double)iVar2 * 4.656612875245797e-10;
+  return auVar1;
+}
+```
+
+#### FUN_00004574 — funcs/_FUN_00004574.cpp, Ghidra 4574, 1 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00004574.cpp:4:44: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
+    4 | undefined1  [16] FUN_00004574(long param_1)
+      |             ~~~~                           ^
+      |                                            [16]
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00004574.cpp:4:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
+    4 | undefined1  [16] FUN_00004574(long param_1)
+      |                              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00004574.cpp:9:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+    9 |   auVar1._8_8_ = 0;
+      |   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00004574.cpp:10:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   10 |   auVar1._0_8_ = (double)((param_1 >> 0x3f) << 1) + 1.0;
+      |   ~~~~~~^~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+undefined1  [16] FUN_00004574(long param_1)
+{
+  undefined1 auVar1 [16];
+
+  auVar1._8_8_ = 0;
+  auVar1._0_8_ = (double)((param_1 >> 0x3f) << 1) + 1.0;
+  return auVar1;
+}
+```
+Notes:
+- 10-21 15:26 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change `undefined1 [16] FUN_00004574(long param_1)` to `undefined1 auVar1[16]; FUN_00004574(long param_1)` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+- 10-21 15:27 [compile] member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union — plan: Change `auVar1._8_8_ = 0;` to `auVar1[8] = 0;` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+- 10-21 18:23 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change `undefined1 [16] FUN_00004574(long param_1)` to `unsigned char auVar1[16]; FUN_00004574(long param_1)` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+- 10-21 18:23 [compile] member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+undefined1  [16] FUN_00004574(long param_1)
+
+{
+  undefined1 auVar1 [16];
+  
+  auVar1._8_8_ = 0;
+  auVar1._0_8_ = (double)((param_1 >> 0x3f) << 1) + 1.0;
+  return auVar1;
+}
+```
+
+#### FUN_0000cae4 — funcs/_FUN_0000cae4.cpp, Ghidra cae4, 1 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cae4.cpp:4:63: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
+    4 | undefined1  [16] FUN_0000cae4(double *param_1,double *param_2)
+      |             ~~~~                                              ^
+      |                                                               [16]
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cae4.cpp:4:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
+    4 | undefined1  [16] FUN_0000cae4(double *param_1,double *param_2)
+      |                              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cae4.cpp:12:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   12 |   auVar1._8_8_ = 0;
+      |   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cae4.cpp:13:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   13 |   auVar1._0_8_ = *param_1;
+      |   ~~~~~~^~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+undefined1  [16] FUN_0000cae4(double *param_1,double *param_2)
+{
+  undefined1 auVar1 [16];
+
+  if (*param_1 <= *param_2) {
+    param_1 = param_2;
+  }
+  auVar1._8_8_ = 0;
+  auVar1._0_8_ = *param_1;
+  return auVar1;
+}
+```
+Notes:
+- 10-21 15:04 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change `undefined1 [16] FUN_0000cae4(double *param_1,double *param_2)` to `undefined1 auVar1[16]; FUN_0000cae4(double *param_1,double *param_2)` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+- 10-21 15:04 [compile] member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union — plan: Change `auVar1._8_8_ = 0;` to `auVar1[8] = 0;` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+- 10-21 18:05 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change `undefined1 [16] FUN_0000cae4(double*param_1,double*param_2)` to `unsigned char auVar1[16]; FUN_0000cae4(double*param_1,double*param_2)` — still fails: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+- 10-21 18:05 [compile] member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+undefined1  [16] FUN_0000cae4(double *param_1,double *param_2)
+
+{
+  undefined1 auVar1 [16];
+  
+  if (*param_1 <= *param_2) {
+    param_1 = param_2;
+  }
+  auVar1._8_8_ = 0;
+  auVar1._0_8_ = *param_1;
+  return auVar1;
+}
+```
+
+#### FUN_00014a48 — funcs/_FUN_00014a48.cpp, Ghidra 14a48, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:5:64: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
+    3 | undefined1  [16]
+      |             ~~~~
+    4 | FUN_00014a48(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
+    5 |             undefined8 param_6,undefined8 param_7,uint param_8)
+      |                                                                ^
+      |                                                                [16]
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:4:13: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
+    4 | FUN_00014a48(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
+      |             ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:11:14: error: redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsigned long long')
+   11 |   undefined1 extraout_q0 [16];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:7:14: note: previous definition is here
+    7 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:12:14: error: redefinition of 'extraout_q0_00' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsigned long long')
+   12 |   undefined1 extraout_q0_00 [16];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:8:14: note: previous definition is here
+    8 |     uint64_t extraout_q0_00 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+undefined1  [16]
+FUN_00014a48(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
+            undefined8 param_6,undefined8 param_7,uint param_8)
+{
+    uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_q0_00 = 0; // TODO: phantom var (incomplete lift)
+
+  long *plVar1;
+  undefined1 extraout_q0 [16];
+  undefined1 extraout_q0_00 [16];
+
+  if ((param_8 & 0xf0) == 0) {
+    *(undefined1 *)(param_5 + 0x218) = 1;
+    plVar1 = (long *)FUN_00006780((undefined8 *)(param_5 + 0x170));
+    FUN_0011c4f8(extraout_q0,param_2,param_3,param_4,plVar1,0);
+    plVar1 = (long *)FUN_00013d9c((undefined8 *)(param_5 + 0x180));
+    FUN_0011c4f8(extraout_q0_00,param_2,param_3,param_4,plVar1,1);
+    param_1 = FUN_0011c2e0(param_5);
+  }
+  return param_1;
+}
+```
+Ghidra's pseudocode:
+```c
+undefined1  [16]
+FUN_00014a48(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
+            undefined8 param_6,undefined8 param_7,uint param_8)
 
 {
   long *plVar1;
   undefined1 extraout_q0 [16];
+  undefined1 extraout_q0_00 [16];
   
-  FUN_00120624(param_5);
-  plVar1 = (long *)FUN_000be770();
-  FUN_000bd18c(extraout_q0,param_2,param_3,param_4,plVar1,param_6,param_7);
-  return;
+  if ((param_8 & 0xf0) == 0) {
+    *(undefined1 *)(param_5 + 0x218) = 1;
+    plVar1 = (long *)FUN_00006780((undefined8 *)(param_5 + 0x170));
+    FUN_0011c4f8(extraout_q0,param_2,param_3,param_4,plVar1,0);
+    plVar1 = (long *)FUN_00013d9c((undefined8 *)(param_5 + 0x180));
+    FUN_0011c4f8(extraout_q0_00,param_2,param_3,param_4,plVar1,1);
+    param_1 = FUN_0011c2e0(param_5);
+  }
+  return param_1;
 }
 ```
 
-#### FUN_000da62c — funcs/FUN_000da62c.cpp, Ghidra da62c, 1 model attempt(s)
+#### FUN_00018d88 — funcs/_FUN_00018d88.cpp, Ghidra 18d88, 2 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000da62c.cpp:26:12: error: redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'unsigned long long')
-   26 |   uint64_t extraout_q0[16];
-      |            ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000da62c.cpp:18:14: note: previous definition is here
-   18 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000da62c.cpp:49:26: error: operand of type 'void' where arithmetic or pointer type is required
-   49 |   puVar1 = (undefined8 *)FUN_00015d94(0xd0);
-      |                          ^~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018d88.cpp:4:50: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
+    4 | undefined1  [16] FUN_00018d88(undefined8 param_1)
+      |             ~~~~                                 ^
+      |                                                  [16]
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018d88.cpp:4:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
+    4 | undefined1  [16] FUN_00018d88(undefined8 param_1)
+      |                              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018d88.cpp:13:12: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+   13 |   local_40 = FUN_00018dd8();
+      |            ^ ~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018d88.cpp:14:12: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+   14 |   local_48 = FUN_0000392c();
+      |            ^ ~~~~~~~~~~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+undefined1  [16] FUN_00018d88(undefined8 param_1)
+{
+  undefined8 local_48;
+  undefined8 local_40;
+  undefined8 local_38;
+  undefined1 local_30 [16];
+
+  local_38 = param_1;
+  local_40 = FUN_00018dd8();
+  local_48 = FUN_0000392c();
+  FUN_00018dec((undefined4 *)local_30,(undefined4 *)&local_40,(undefined4 *)&local_48);
+  return local_30;
+}
+```
+Notes:
+- 10-21 13:46 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_00018d88(undefined8 param_1)` to `undefined1 local_40[16]; FUN_00018d88(undefined8 param_1);` — still fails: expected identifier or '('
+- 10-21 17:04 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 3 from `undefined1 [16] FUN_00018d88(undefined8 param_1)` to `undefined1 local_40[16]; FUN_00018d88(undefined8 param_1);` — still fails: expected identifier or '('
+Ghidra's pseudocode:
+```c
+undefined1  [16] FUN_00018d88(undefined8 param_1)
+
+{
+  undefined8 local_48;
+  undefined8 local_40;
+  undefined8 local_38;
+  undefined1 local_30 [16];
+  
+  local_38 = param_1;
+  local_40 = FUN_00018dd8();
+  local_48 = FUN_0000392c();
+  FUN_00018dec((undefined4 *)local_30,(undefined4 *)&local_40,(undefined4 *)&local_48);
+  return local_30;
+}
+```
+
+#### FUN_00068504 — funcs/FUN_00068504.cpp, Ghidra 68504, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00068504.cpp:5:32: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
+    3 | undefined1  [16]
+      |             ~~~~
+    4 | FUN_00068504(undefined8 param_1,ulong *param_2,undefined8 param_3,undefined8 *param_4,
+    5 |             undefined8 param_5)
+      |                                ^
+      |                                [16]
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00068504.cpp:4:13: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
+    4 | FUN_00068504(undefined8 param_1,ulong *param_2,undefined8 param_3,undefined8 *param_4,
+      |             ^
 2 errors generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_000da62c(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long *param_5,long param_6)
+undefined1  [16]
+FUN_00068504(undefined8 param_1,ulong *param_2,undefined8 param_3,undefined8 *param_4,
+            undefined8 param_5)
 {
-    uint64_t FUN_000daebc = 0; // auto-declared (undeclared in the rewrite)
+  long *plVar1;
+  undefined8 *puVar2;
+  undefined8 auStack_a0 [3];
+  undefined1 local_81;
+  long local_80;
+  long *local_78;
+  long lStack_70;
+  undefined8 local_68;
+  undefined8 *local_60;
+  undefined8 uStack_58;
+  ulong *local_50;
+  undefined8 uStack_48;
+  undefined1 local_40 [16];
 
-    uint64_t FUN_000dacdc = 0; // auto-declared (undeclared in the rewrite)
+  local_68 = param_5;
+  local_60 = param_4;
+  uStack_58 = param_3;
+  local_50 = param_2;
+  uStack_48 = param_1;
+  local_78 = FUN_00068624(param_1,&lStack_70,param_2);
+  local_80 = *local_78;
+  local_81 = 0;
+  if (*local_78 == 0) {
+    FUN_00068734(auStack_a0,param_1,uStack_58,local_60,local_68);
+    plVar1 = local_78;
+    puVar2 = (undefined8 *)FUN_00068888();
+    FUN_000687f8(param_1,lStack_70,plVar1,puVar2);
+    local_80 = FUN_000688ac();
+    local_81 = 1;
+    FUN_000688f0(auStack_a0);
+  }
+  FUN_00068910(auStack_a0,local_80);
+  FUN_00068930((undefined8 *)local_40,auStack_a0,&local_81);
+  return local_40;
+}
+```
+Ghidra's pseudocode:
+```c
+undefined1  [16]
+FUN_00068504(undefined8 param_1,ulong *param_2,undefined8 param_3,undefined8 *param_4,
+            undefined8 param_5)
 
-    uint64_t FUN_000dabe4 = 0; // auto-declared (undeclared in the rewrite)
+{
+  long *plVar1;
+  undefined8 *puVar2;
+  undefined8 auStack_a0 [3];
+  undefined1 local_81;
+  long local_80;
+  long *local_78;
+  long lStack_70;
+  undefined8 local_68;
+  undefined8 *local_60;
+  undefined8 uStack_58;
+  ulong *local_50;
+  undefined8 uStack_48;
+  undefined1 local_40 [16];
+  
+  local_68 = param_5;
+  local_60 = param_4;
+  uStack_58 = param_3;
+  local_50 = param_2;
+  uStack_48 = param_1;
+  local_78 = FUN_00068624(param_1,&lStack_70,param_2);
+  local_80 = *local_78;
+  local_81 = 0;
+  if (*local_78 == 0) {
+    FUN_00068734(auStack_a0,param_1,uStack_58,local_60,local_68);
+    plVar1 = local_78;
+    puVar2 = (undefined8 *)FUN_00068888();
+    FUN_000687f8(param_1,lStack_70,plVar1,puVar2);
+    local_80 = FUN_000688ac();
+    local_81 = 1;
+    FUN_000688f0(auStack_a0);
+  }
+  FUN_00068910(auStack_a0,local_80);
+  FUN_00068930((undefined8 *)local_40,auStack_a0,&local_81);
+  return local_40;
+}
+```
 
-    uint64_t FUN_000dabd0 = 0; // auto-declared (undeclared in the rewrite)
+#### FUN_000ea5e0 — funcs/FUN_000ea5e0.cpp, Ghidra ea5e0, 2 model attempt(s)
 
-    uint64_t FUN_000da1fc = 0; // auto-declared (undeclared in the rewrite)
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ea5e0.cpp:6:26: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
+    4 | undefined1  [16]
+      |             ~~~~
+    5 | FUN_000ea5e0(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
+    6 |             uint param_6)
+      |                          ^
+      |                          [16]
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ea5e0.cpp:5:13: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
+    5 | FUN_000ea5e0(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
+      |             ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ea5e0.cpp:12:14: error: redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsigned long long')
+   12 |   undefined1 extraout_q0 [16];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ea5e0.cpp:9:14: note: previous definition is here
+    9 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
 
-    uint64_t FUN_000da090 = 0; // auto-declared (undeclared in the rewrite)
-
+undefined1  [16]
+FUN_000ea5e0(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
+            uint param_6)
+{
     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
 
-  undefined8 *puVar1;
-  long lVar2;
-  long *plVar3;
-  long *plVar4;
-  undefined8 *puVar5;
-  undefined8 *puVar6;
+  long *plVar1;
   undefined1 extraout_q0 [16];
-  undefined8 auStack_d8 [4];
-  undefined8 auStack_b8 [4];
-  undefined8 auStack_98 [4];
-  ulong auStack_78 [4];
-  long local_58;
 
-  local_58 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  FUN_000daaa8((ulong)(param_5 + 0x2b),param_6);
-  puVar1 = (undefined8 *)FUN_00219cd4(200);
-  FUN_000d9928(puVar1,(long)param_5,param_6);
-  FUN_000dab0c(param_5 + 0x2e,(long)puVar1);
-  FUN_0011e294((long)param_5,0);
-  FUN_000c46a8((long)param_5,1);
-  puVar1 = (undefined8 *)FUN_001da808(0x198);
-  FUN_000ac094(puVar1,3);
-  plVar3 = param_5 + 0x79;
-  FUN_00031460(plVar3,(long)puVar1);
-  lVar2 = FUN_000316d8(plVar3);
-  FUN_000ac50c(lVar2,2);
-  plVar3 = (long *)FUN_000314c4(plVar3);
-  FUN_0011c968(param_5,plVar3);
-  plVar4 = (long *)FUN_001da808(800);
-  puVar1 = (undefined8 *)FUN_00015d94(0xd0);
-  FUN_000dab70(auStack_78,param_5,FUN_000da1fc,0);
-  FUN_000daba0(auStack_98,param_5,FUN_000da090,0);
-  FUN_00015e88(puVar1,param_5,auStack_78,auStack_98);
-  puVar5 = (undefined8 *)FUN_000f5594(0xb0);
-  FUN_000dab70(auStack_b8,param_5,FUN_000dabd0,0);
-  FUN_000f55c0(puVar5,param_5,auStack_b8);
-  puVar6 = (undefined8 *)FUN_000f5594(0xb0);
-  FUN_000dab70(auStack_d8,param_5,FUN_000dabe4,0);
-  FUN_000f55c0(puVar6,param_5,auStack_d8);
-  FUN_000f0f14(plVar4,(long)puVar1,(long)puVar5,(long)puVar6,0,0);
-  plVar3 = param_5 + 0x7b;
-  FUN_000dac64(plVar3,(long)plVar4);
-  lVar2 = FUN_000dacc8(plVar3);
-  FUN_000eff84(extraout_q0,param_2,param_3,param_4,lVar2,1);
-  lVar2 = FUN_000dacc8(plVar3);
-  FUN_000dad1c(auStack_78,param_5,FUN_000dacdc,0);
-  FUN_000f0150(lVar2,auStack_78);
-  plVar3 = (long *)FUN_000dad4c(plVar3);
-  FUN_0011c968(param_5,plVar3);
-  FUN_000dad60(param_5,1);
-  FUN_000dadd0((long)param_5);
-  plVar3 = param_5 + 0x2b;
-  lVar2 = FUN_000d9478((long)plVar3);
-  plVar4 = (long *)FUN_001dd2e8(lVar2);
-  FUN_000daf4c(auStack_78,FUN_000daebc,0,param_5);
-  FUN_001db2fc(plVar4,auStack_78,0);
-  lVar2 = FUN_000d9478((long)plVar3);
-  plVar4 = (long *)FUN_001dd320(lVar2);
-  FUN_000daf4c(auStack_78,FUN_000daebc,0,param_5);
-  FUN_001db2fc(plVar4,auStack_78,0);
-  lVar2 = FUN_000d9478((long)plVar3);
-  plVar4 = (long *)FUN_001dd2b0(lVar2);
-  FUN_000daf4c(auStack_78,FUN_000daebc,0,param_5);
-  FUN_001db2fc(plVar4,auStack_78,0);
-  lVar2 = FUN_000d9478((long)plVar3);
-  plVar3 = (long *)FUN_001dd3fc(lVar2);
-  FUN_000daf4c(auStack_78,FUN_000daebc,0,param_5);
-  FUN_001db2fc(plVar3,auStack_78,0);
-  FUN_0011d17c(param_5,0x78,0x6c);
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == local_58) {
-    return;
+  if (param_6 != *(byte *)(param_5 + 0x27c)) {
+    *(char *)(param_5 + 0x27c) = (char)param_6;
+    plVar1 = (long *)FUN_00029e8c((undefined8 *)(param_5 + 0x250));
+    FUN_0011c4f8(extraout_q0,param_2,param_3,param_4,plVar1,(uint)*(byte *)(param_5 + 0x27c));
+    param_1 = FUN_0011c2e0(param_5);
   }
-  _stack_chk_fail();
+  return param_1;
 }
 ```
 Notes:
-- 10-21 14:01 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsi — plan: Change `undefined1 extraout_q0 [16]` to `uint extraout_q0;` — still fails: redefinition of 'extraout_q0' with a different type: 'uint' (aka 'unsigned int') vs 'uint64_t' (aka
-- 10-21 17:20 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsi — plan: Change `undefined1 extraout_q0 [16]` to `uint extraout_q0;` — still fails: redefinition of 'extraout_q0' with a different type: 'uint' (aka 'unsigned int') vs 'uint64_t' (aka
-- 10-21 17:20 [compile] redefinition of 'extraout_q0' with a different type: 'uint' (aka 'unsigned int') vs 'uint64_t' (aka — fixed with a learned rule.
-- 10-21 17:36 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+- 10-21 18:58 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 5 from `uint param_6)` to `unsigned int param_6)`. — still fails: brackets are not allowed here; to declare an array, place the brackets after the identifier
+- 10-21 18:58 [compile] that edit didn't help — undone.
+- 10-21 19:00 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 5 from `uint param_6)` to `unsigned int param_6)`. — still fails: brackets are not allowed here; to declare an array, place the brackets after the identifier
+- 10-21 19:00 [compile] that edit didn't help — undone.
 Ghidra's pseudocode:
 ```c
-void FUN_000da62c(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long *param_5,long param_6)
+undefined1  [16]
+FUN_000ea5e0(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
+            uint param_6)
 
 {
-  undefined8 *puVar1;
-  long lVar2;
-  long *plVar3;
-  long *plVar4;
-  undefined8 *puVar5;
-  undefined8 *puVar6;
+  long *plVar1;
   undefined1 extraout_q0 [16];
-  undefined8 auStack_d8 [4];
-  undefined8 auStack_b8 [4];
-  undefined8 auStack_98 [4];
-  ulong auStack_78 [4];
-  long local_58;
   
-  local_58 = *(long *)PTR____stack_chk_guard_004241e8;
-  FUN_000daaa8((ulong)(param_5 + 0x2b),param_6);
-  puVar1 = (undefined8 *)FUN_00219cd4(200);
-  FUN_000d9928(puVar1,(long)param_5,param_6);
-  FUN_000dab0c(param_5 + 0x2e,(long)puVar1);
-  FUN_0011e294((long)param_5,0);
-  FUN_000c46a8((long)param_5,1);
-  puVar1 = (undefined8 *)FUN_001da808(0x198);
-  FUN_000ac094(puVar1,3);
-  plVar3 = param_5 + 0x79;
-  FUN_00031460(plVar3,(long)puVar1);
-  lVar2 = FUN_000316d8(plVar3);
-  FUN_000ac50c(lVar2,2);
-  plVar3 = (long *)FUN_000314c4(plVar3);
-  FUN_0011c968(param_5,plVar3);
-  plVar4 = (long *)FUN_001da808(800);
-  puVar1 = (undefined8 *)FUN_00015d94(0xd0);
-  FUN_000dab70(auStack_78,param_5,FUN_000da1fc,0);
-  FUN_000daba0(auStack_98,param_5,FUN_000da090,0);
-  FUN_00015e88(puVar1,param_5,auStack_78,auStack_98);
-  puVar5 = (undefined8 *)FUN_000f5594(0xb0);
-  FUN_000dab70(auStack_b8,param_5,FUN_000dabd0,0);
-  FUN_000f55c0(puVar5,param_5,auStack_b8);
-  puVar6 = (undefined8 *)FUN_000f5594(0xb0);
-  FUN_000dab70(auStack_d8,param_5,FUN_000dabe4,0);
-  FUN_000f55c0(puVar6,param_5,auStack_d8);
-  FUN_000f0f14(plVar4,(long)puVar1,(long)puVar5,(long)puVar6,0,0);
-  plVar3 = param_5 + 0x7b;
-  FUN_000dac64(plVar3,(long)plVar4);
-  lVar2 = FUN_000dacc8(plVar3);
-  FUN_000eff84(extraout_q0,param_2,param_3,param_4,lVar2,1);
-  lVar2 = FUN_000dacc8(plVar3);
-  FUN_000dad1c(auStack_78,param_5,FUN_000dacdc,0);
-  FUN_000f0150(lVar2,auStack_78);
-  plVar3 = (long *)FUN_000dad4c(plVar3);
-  FUN_0011c968(param_5,plVar3);
-  FUN_000dad60(param_5,1);
-  FUN_000dadd0((long)param_5);
-  plVar3 = param_5 + 0x2b;
-  lVar2 = FUN_000d9478((long)plVar3);
-  plVar4 = (long *)FUN_001dd2e8(lVar2);
-  FUN_000daf4c(auStack_78,FUN_000daebc,0,param_5);
-  FUN_001db2fc(plVar4,auStack_78,0);
-  lVar2 = FUN_000d9478((long)plVar3);
-  plVar4 = (long *)FUN_001dd320(lVar2);
-  FUN_000daf4c(auStack_78,FUN_000daebc,0,param_5);
-  FUN_001db2fc(plVar4,auStack_78,0);
-  lVar2 = FUN_000d9478((long)plVar3);
-  plVar4 = (long *)FUN_001dd2b0(lVar2);
-  FUN_000daf4c(auStack_78,FUN_000daebc,0,param_5);
-  FUN_001db2fc(plVar4,auStack_78,0);
-  lVar2 = FUN_000d9478((long)plVar3);
-  plVar3 = (long *)FUN_001dd3fc(lVar2);
-  FUN_000daf4c(auStack_78,FUN_000daebc,0,param_5);
-  FUN_001db2fc(plVar3,auStack_78,0);
-  FUN_0011d17c(param_5,0x78,0x6c);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == local_58) {
-    return;
+  if (param_6 != *(byte *)(param_5 + 0x27c)) {
+    *(char *)(param_5 + 0x27c) = (char)param_6;
+    plVar1 = (long *)FUN_00029e8c((undefined8 *)(param_5 + 0x250));
+    FUN_0011c4f8(extraout_q0,param_2,param_3,param_4,plVar1,(uint)*(byte *)(param_5 + 0x27c));
+    param_1 = FUN_0011c2e0(param_5);
   }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail();
+  return param_1;
+}
+```
+
+#### FUN_0011c4f8 — funcs/FUN_0011c4f8.cpp, Ghidra 11c4f8, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:6:26: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
+    4 | undefined1  [16]
+      |             ~~~~
+    5 | FUN_0011c4f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5,
+    6 |             uint param_6)
+      |                          ^
+      |                          [16]
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:5:13: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
+    5 | FUN_0011c4f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5,
+      |             ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:15:14: error: redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsigned long long')
+   15 |   undefined1 extraout_q0 [16];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:9:14: note: previous definition is here
+    9 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:43:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+   43 |     local_40 = FUN_00018d88(param_5);
+      |     ~~~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011c4f8.cpp:61:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+   61 |   auVar5 = FUN_0011c2e0((long)param_5);
+      |   ~~~~~~ ^
+5 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+undefined1  [16]
+FUN_0011c4f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5,
+            uint param_6)
+{
+    uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+
+  char cVar1;
+  bool bVar2;
+  long lVar3;
+  long *plVar4;
+  undefined1 extraout_q0 [16];
+  undefined1 auVar5 [16];
+  undefined8 local_48;
+  undefined1 local_40 [16];
+  undefined1 local_29;
+  long *local_28;
+
+  local_29 = (undefined1)param_6;
+  if (*(byte *)(param_5 + 0x1b) == param_6) {
+    return param_1;
+  }
+  local_28 = param_5;
+  FUN_0011c2e0((long)param_5);
+  *(undefined1 *)(param_5 + 0x1b) = local_29;
+  cVar1 = FUN_00115dc8((long)param_5);
+  if (cVar1 == '\0') {
+    *(undefined1 *)((long)param_5 + 0xda) = 0;
+    goto LAB_0011c5c4;
+  }
+  lVar3 = FUN_0011b8b4(param_5 + 0x1d);
+  if (lVar3 == 0) {
+LAB_0011c58c:
+    *(undefined1 *)((long)param_5 + 0xda) = 0;
+  }
+  else {
+    lVar3 = FUN_0011ba78(param_5 + 0x1d);
+    lVar3 = FUN_000cf5cc(lVar3);
+    if (lVar3 == 0) goto LAB_0011c58c;
+    local_40 = FUN_00018d88(param_5);
+    local_48 = FUN_0011c60c(extraout_q0,param_2,param_3,param_4,(long)param_5);
+    bVar2 = FUN_001181e4((int *)local_40,(int *)&local_48);
+    *(bool *)((long)param_5 + 0xda) = bVar2;
+  }
+  FUN_0011c19c(param_5);
+  lVar3 = FUN_0011b8b4(param_5 + 0x1d);
+  if (lVar3 != 0) {
+    lVar3 = FUN_0011ba78(param_5 + 0x1d);
+    (**(code **)(*param_5 + 0x38))(param_5,*(undefined4 *)(lVar3 + 0x74));
+  }
+LAB_0011c5c4:
+  lVar3 = FUN_00118644(param_5 + 0x1e);
+  if (lVar3 != 0) {
+    plVar4 = (long *)FUN_000c8128(param_5 + 0x1e);
+    (**(code **)(*plVar4 + 0x1f0))(plVar4,param_5);
+  }
+  FUN_0011c6a0(param_5);
+  auVar5 = FUN_0011c2e0((long)param_5);
+  return auVar5;
+}
+```
+Notes:
+- 10-21 13:58 [compile] brackets are not allowed here; to declare an array, place the brackets after the identifier — plan: Change line 5 from `uint param_6)` to `uint param_6[1]` — still fails: brackets are not allowed here; to declare an array, place the brackets after the identifier
+- 10-21 13:58 [compile] that edit didn't help — undone.
+- 10-21 13:59 [compile] the model suggested an edit that already failed — skipped.
+- 10-21 17:18 [compile] the model suggested an edit that already failed — skipped.
+- 10-21 17:18 [compile] the model suggested an edit that already failed — skipped.
+Ghidra's pseudocode:
+```c
+undefined1  [16]
+FUN_0011c4f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long *param_5,
+            uint param_6)
+
+{
+  char cVar1;
+  bool bVar2;
+  long lVar3;
+  long *plVar4;
+  undefined1 extraout_q0 [16];
+  undefined1 auVar5 [16];
+  undefined8 local_48;
+  undefined1 local_40 [16];
+  undefined1 local_29;
+  long *local_28;
+  
+  local_29 = (undefined1)param_6;
+  if (*(byte *)(param_5 + 0x1b) == param_6) {
+    return param_1;
+  }
+  local_28 = param_5;
+  FUN_0011c2e0((long)param_5);
+  *(undefined1 *)(param_5 + 0x1b) = local_29;
+  cVar1 = FUN_00115dc8((long)param_5);
+  if (cVar1 == '\0') {
+    *(undefined1 *)((long)param_5 + 0xda) = 0;
+    goto LAB_0011c5c4;
+  }
+  lVar3 = FUN_0011b8b4(param_5 + 0x1d);
+  if (lVar3 == 0) {
+LAB_0011c58c:
+    *(undefined1 *)((long)param_5 + 0xda) = 0;
+  }
+  else {
+    lVar3 = FUN_0011ba78(param_5 + 0x1d);
+    lVar3 = FUN_000cf5cc(lVar3);
+    if (lVar3 == 0) goto LAB_0011c58c;
+    local_40 = FUN_00018d88(param_5);
+    local_48 = FUN_0011c60c(extraout_q0,param_2,param_3,param_4,(long)param_5);
+    bVar2 = FUN_001181e4((int *)local_40,(int *)&local_48);
+    *(bool *)((long)param_5 + 0xda) = bVar2;
+  }
+  FUN_0011c19c(param_5);
+  lVar3 = FUN_0011b8b4(param_5 + 0x1d);
+  if (lVar3 != 0) {
+    lVar3 = FUN_0011ba78(param_5 + 0x1d);
+    (**(code **)(*param_5 + 0x38))(param_5,*(undefined4 *)(lVar3 + 0x74));
+  }
+LAB_0011c5c4:
+  lVar3 = FUN_00118644(param_5 + 0x1e);
+  if (lVar3 != 0) {
+    plVar4 = (long *)FUN_000c8128(param_5 + 0x1e);
+    (**(code **)(*plVar4 + 0x1f0))(plVar4,param_5);
+  }
+  FUN_0011c6a0(param_5);
+  auVar5 = FUN_0011c2e0((long)param_5);
+  return auVar5;
 }
 ```
 
@@ -10172,9 +9977,9 @@ ID __objc_msgSend_stub objc_stub::level(undefined8 self,...)
 }
 ```
 
-### Quarantined — 9 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+### Quarantined — 12 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
 
-All: FUN_00007d70 (7d70), FUN_00014888 (14888), FUN_00014ab0 (14ab0), FUN_00016090 (16090), FUN_000b186c (b186c), FUN_001f9ca8 (1f9ca8), FUN_001f9e9c (1f9e9c), FUN_00217fcc (217fcc), FUN_002854b0 (2854b0)
+All: FUN_00007d70 (7d70), FUN_00014888 (14888), FUN_00014ab0 (14ab0), FUN_00016090 (16090), FUN_00016c90 (16c90), FUN_000171f8 (171f8), FUN_00019460 (19460), FUN_000b186c (b186c), FUN_001f9ca8 (1f9ca8), FUN_001f9e9c (1f9e9c), FUN_00217fcc (217fcc), FUN_002854b0 (2854b0)
 
 #### FUN_00007d70 — funcs/_FUN_00007d70.cpp, Ghidra 7d70, 0 model attempt(s)
 
@@ -10569,6 +10374,232 @@ long * FUN_00016090(long *param_1,long param_2,int param_3,int param_4)
 }
 ```
 
+#### FUN_00016c90 — funcs/_FUN_00016c90.cpp, Ghidra 16c90, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00016c90.cpp:9:17: error: redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int')
+    9 |   unsigned char uVar1 = FUN_00016dac((undefined8*)(param_1+0x88));
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00016c90.cpp:5:14: note: previous definition is here
+    5 |   undefined4 uVar1;
+      |              ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00016c90(long param_1)
+{
+  undefined4 uVar1;
+
+  FUN_001db0a0(param_1,2);
+  FUN_00016f6c((undefined8 *)(param_1 + 0xb0));
+  unsigned char uVar1 = FUN_00016dac((undefined8*)(param_1+0x88));
+  *(undefined4 *)(param_1 + 0xa8) = uVar1;
+  FUN_001db0a0(param_1,3);
+  return;
+}
+```
+Notes:
+- 10-21 16:47 [compile] assigning to 'undefined4' (aka 'unsigned int') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 16:47 [compile] redefinition of 'uVar1' with a different type: 'void *' vs 'undefined4' (aka 'unsigned int') — fixed with a learned rule.
+- 10-21 19:36 [compile] redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int') — plan: Change line 9 to: `unsigned char uVar1 = FUN_00016dac((undefined8*)(param_1+0x80));` — still fails: redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int')
+- 10-21 19:36 [compile] that edit didn't help — undone.
+- 10-21 19:36 [compile] the model suggested an edit that already failed — skipped.
+Ghidra's pseudocode:
+```c
+void FUN_00016c90(long param_1)
+
+{
+  undefined4 uVar1;
+  
+  FUN_001db0a0(param_1,2);
+  FUN_00016f6c((undefined8 *)(param_1 + 0xb0));
+  uVar1 = FUN_00016dac((undefined8 *)(param_1 + 0x88));
+  *(undefined4 *)(param_1 + 0xa8) = uVar1;
+  FUN_001db0a0(param_1,3);
+  return;
+}
+```
+
+#### FUN_000171f8 — funcs/_FUN_000171f8.cpp, Ghidra 171f8, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:14:17: error: redefinition of 'extraout_s0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
+   14 |   unsigned long extraout_s0;
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:6:14: note: previous definition is here
+    6 |     uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:16:14: error: redefinition of 'extraout_var' with a different type: 'undefined1[12]' (aka 'unsigned char[12]') vs 'uint64_t' (aka 'unsigned long long')
+   16 |   undefined1 extraout_var [12];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:7:14: note: previous definition is here
+    7 |     uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:32:14: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+   32 |     local_40 = FUN_00018b98();
+      |              ^ ~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:33:11: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   33 |     auVar1._4_12_ = extraout_var;
+      |     ~~~~~~^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:34:11: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   34 |     auVar1._0_4_ = extraout_s0;
+      |     ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:40:31: error: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
+   40 |   local_40 = CONCAT44(local_40._4_4_,uVar6);
+      |                       ~~~~~~~~^~~~~~
+6 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000171f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
+                 long *param_5,undefined4 param_6,undefined4 param_7,undefined4 param_8)
+{
+    uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
+    uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
+
+  undefined1 auVar1 [16];
+  undefined1 uVar2;
+  byte bVar3;
+  long lVar4;
+  long *plVar5;
+  uint64_t extraout_s0;
+  undefined4 uVar6;
+  undefined1 extraout_var [12];
+  undefined8 local_40;
+  undefined4 local_34;
+  undefined4 local_30;
+  undefined4 uStack_2c;
+  long *local_28;
+
+  local_34 = param_8;
+  local_30 = param_7;
+  uStack_2c = param_6;
+  local_28 = param_5;
+  uVar2 = FUN_0011c928(param_5);
+  *(undefined1 *)((long)param_5 + 0x27c) = uVar2;
+  lVar4 = FUN_000adbc4();
+  bVar3 = FUN_00018b60(lVar4 + 0x3b0,(byte *)((long)param_5 + 0x26d));
+  if ((bVar3 != 0) && ((*(byte *)((long)param_5 + 0x26c) & 1) == 0)) {
+    local_40 = FUN_00018b98();
+    auVar1._4_12_ = extraout_var;
+    auVar1._0_4_ = extraout_s0;
+    FUN_0011d550(auVar1,param_2,param_3,param_4,(long)param_5,&local_40);
+  }
+  FUN_0011d5e0(param_5,(int)param_5[0x4e]);
+  plVar5 = (long *)FUN_00017a40((long)(param_5 + 0x48));
+  uVar6 = FUN_00018bf8(plVar5);
+  local_40 = CONCAT44(local_40._4_4_,uVar6);
+  FUN_00018bac((long)param_5,(undefined4 *)&local_40);
+  FUN_0011c2e0((long)param_5);
+  return;
+}
+```
+Notes:
+- 10-21 16:47 [compile] redefinition of 'extraout_s0' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' — fixed with a learned rule.
+- 10-21 19:36 [compile] redefinition of 'extraout_s0' — fixed with a learned rule.
+- 10-21 19:36 [compile] redefinition of 'extraout_s0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned lo — fixed with a learned rule.
+- 10-21 19:36 [compile] redefinition of 'extraout_s0' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000171f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
+                 long *param_5,undefined4 param_6,undefined4 param_7,undefined4 param_8)
+
+{
+  undefined1 auVar1 [16];
+  undefined1 uVar2;
+  byte bVar3;
+  long lVar4;
+  long *plVar5;
+  undefined4 extraout_s0;
+  undefined4 uVar6;
+  undefined1 extraout_var [12];
+  undefined8 local_40;
+  undefined4 local_34;
+  undefined4 local_30;
+  undefined4 uStack_2c;
+  long *local_28;
+  
+  local_34 = param_8;
+  local_30 = param_7;
+  uStack_2c = param_6;
+  local_28 = param_5;
+  uVar2 = FUN_0011c928(param_5);
+  *(undefined1 *)((long)param_5 + 0x27c) = uVar2;
+  lVar4 = FUN_000adbc4();
+  bVar3 = FUN_00018b60(lVar4 + 0x3b0,(byte *)((long)param_5 + 0x26d));
+  if ((bVar3 != 0) && ((*(byte *)((long)param_5 + 0x26c) & 1) == 0)) {
+    local_40 = FUN_00018b98();
+    auVar1._4_12_ = extraout_var;
+    auVar1._0_4_ = extraout_s0;
+    FUN_0011d550(auVar1,param_2,param_3,param_4,(long)param_5,&local_40);
+  }
+  FUN_0011d5e0(param_5,(int)param_5[0x4e]);
+  plVar5 = (long *)FUN_00017a40((long)(param_5 + 0x48));
+  uVar6 = FUN_00018bf8(plVar5);
+  local_40 = CONCAT44(local_40._4_4_,uVar6);
+  FUN_00018bac((long)param_5,(undefined4 *)&local_40);
+  FUN_0011c2e0((long)param_5);
+  return;
+}
+```
+
+#### FUN_00019460 — funcs/_FUN_00019460.cpp, Ghidra 19460, 2 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00019460.cpp:9:17: error: redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int')
+    9 |   unsigned char uVar1 = FUN_00019580((undefined8*)(param_1+0x88));
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00019460.cpp:5:14: note: previous definition is here
+    5 |   undefined4 uVar1;
+      |              ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00019460(long param_1)
+{
+  undefined4 uVar1;
+
+  FUN_001db0a0(param_1,2);
+  FUN_0001975c((undefined8 *)(param_1 + 0xb0));
+  unsigned char uVar1 = FUN_00019580((undefined8*)(param_1+0x88));
+  *(undefined4 *)(param_1 + 0xa8) = uVar1;
+  FUN_001db0a0(param_1,3);
+  return;
+}
+```
+Notes:
+- 10-21 16:47 [compile] assigning to 'undefined4' (aka 'unsigned int') from incompatible type 'void' — fixed with a learned rule.
+- 10-21 16:47 [compile] redefinition of 'uVar1' with a different type: 'void *' vs 'undefined4' (aka 'unsigned int') — fixed with a learned rule.
+- 10-21 19:37 [compile] redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int') — plan: Change line 9 to: `unsigned char uVar1 = FUN_00019580((undefined8 *)(param_1 + 0x88));` — still fails: redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int')
+- 10-21 19:37 [compile] that edit didn't help — undone.
+- 10-21 19:37 [compile] the model suggested an edit that already failed — skipped.
+Ghidra's pseudocode:
+```c
+void FUN_00019460(long param_1)
+
+{
+  undefined4 uVar1;
+  
+  FUN_001db0a0(param_1,2);
+  FUN_0001975c((undefined8 *)(param_1 + 0xb0));
+  uVar1 = FUN_00019580((undefined8 *)(param_1 + 0x88));
+  *(undefined4 *)(param_1 + 0xa8) = uVar1;
+  FUN_001db0a0(param_1,3);
+  return;
+}
+```
+
 #### FUN_000b186c — funcs/FUN_000b186c.cpp, Ghidra b186c, 1 model attempt(s)
 
 Compiler output:
@@ -10672,237 +10703,104 @@ long * FUN_000b186c(long *param_1,long *param_2)
 }
 ```
 
-#### FUN_001f9ca8 — funcs/FUN_001f9ca8.cpp, Ghidra 1f9ca8, 2 model attempt(s)
+### Quarantined — 9 × member reference base type 'X' is not a structure or union
+
+All: FUN_00018538 (18538), FUN_00036688 (36688), FUN_000c457c (c457c), FUN_00119298 (119298), FUN_0013c364 (13c364), FUN_001442c0 (1442c0), FUN_00151ef4 (151ef4), FUN_001c4210 (1c4210), FUN_00200b9c (200b9c)
+
+#### FUN_00018538 — funcs/_FUN_00018538.cpp, Ghidra 18538, 2 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f9ca8.cpp:12:17: error: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-   12 |   unsigned char auVar3[16] = {0};FUN_001f9bc4(tVar1);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f9ca8.cpp:7:14: note: previous definition is here
-    7 |   undefined1 auVar3 [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f9ca8.cpp:16:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   16 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-      |                   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f9ca8.cpp:16:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   16 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-      |                                                   ~~~~~~^~~~~~
-3 errors generated.
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018538.cpp:19:39: error: member reference base type 'double' is not a structure or union
+   19 |   local_48 = (double)CONCAT44(local_48._4_4_,(float)param_3);
+      |                               ~~~~~~~~^~~~~~
+1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_001f9ca8(void)
+float FUN_00018538(float param_1,undefined8 param_2,int param_3,undefined4 *param_4)
 {
-  time_t tVar1;
-  long lVar2;
-  undefined1 auVar3 [12];
-  undefined4 uStack_2c;
-
-  lVar2 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  tVar1 = time((time_t *)0x0);
-  auVar3 = FUN_001f9bc4(tVar1);
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar2) {
-    return;
-  }
-  _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-}
-```
-Notes:
-- 10-21 13:27 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — plan: Change `auVar3 = FUN_001f9bc4(tVar1);` to `auVar3 = (unsigned char *)FUN_001f9bc4(tVar1);` — still fails: array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable
-- 10-21 13:27 [compile] that edit didn't help — undone.
-- 10-21 13:29 [compile] the model suggested an edit that already failed — skipped.
-- 10-21 16:52 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — plan: Change `auVar3 = FUN_001f9bc4(tVar1);` to `unsigned char auVar3[16] = {0}; FUN_001f9bc4(tVar1);` — still fails: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsign
-- 10-21 16:53 [compile] redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]') — plan: Change `auVar3 = FUN_001f9bc4(tVar1);` to `unsigned char auVar3[12] = {0}; FUN_001f9bc4(tVar1);` — still fails: redefinition of 'auVar3'
-- 10-21 16:53 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-- 10-21 16:57 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-- 10-21 17:39 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_001f9ca8(void)
-
-{
-  time_t tVar1;
-  long lVar2;
-  undefined1 auVar3 [12];
-  undefined4 uStack_2c;
-  
-  lVar2 = *(long *)PTR____stack_chk_guard_004241e8;
-  tVar1 = _time((time_t *)0x0);
-  auVar3 = FUN_001f9bc4(tVar1);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar2) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-}
-```
-
-#### FUN_001f9e9c — funcs/FUN_001f9e9c.cpp, Ghidra 1f9e9c, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f9e9c.cpp:12:17: error: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-   12 |   unsigned char auVar3[16] = {0};FUN_001f9dec(tVar1);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f9e9c.cpp:7:14: note: previous definition is here
-    7 |   undefined1 auVar3 [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f9e9c.cpp:16:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   16 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-      |                   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f9e9c.cpp:16:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   16 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-      |                                                   ~~~~~~^~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_001f9e9c(void)
-{
-  time_t tVar1;
-  long lVar2;
-  undefined1 auVar3 [12];
-  undefined4 uStack_2c;
-
-  lVar2 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  tVar1 = time((time_t *)0x0);
-  auVar3 = FUN_001f9dec(tVar1);
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar2) {
-    return;
-  }
-  _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-}
-```
-Notes:
-- 10-21 13:28 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — plan: Change `auVar3 = FUN_001f9dec(tVar1);` to `auVar3 = (unsigned char *)FUN_001f9dec(tVar1);` — still fails: array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable
-- 10-21 13:28 [compile] that edit didn't help — undone.
-- 10-21 13:29 [compile] the model suggested an edit that already failed — skipped.
-- 10-21 16:53 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — plan: Change `auVar3 = FUN_001f9dec(tVar1);` to `unsigned char auVar3[16] = {0}; FUN_001f9dec(tVar1);` — still fails: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsign
-- 10-21 16:54 [compile] redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]') — plan: Change `auVar3 = FUN_001f9dec(tVar1);` to `unsigned char auVar3[12] = {0}; FUN_001f9dec(tVar1);` — still fails: redefinition of 'auVar3'
-- 10-21 16:54 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-- 10-21 17:00 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-- 10-21 17:39 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_001f9e9c(void)
-
-{
-  time_t tVar1;
-  long lVar2;
-  undefined1 auVar3 [12];
-  undefined4 uStack_2c;
-  
-  lVar2 = *(long *)PTR____stack_chk_guard_004241e8;
-  tVar1 = _time((time_t *)0x0);
-  auVar3 = FUN_001f9dec(tVar1);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar2) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-}
-```
-
-#### FUN_00217fcc — funcs/FUN_00217fcc.cpp, Ghidra 217fcc, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00217fcc.cpp:11:17: error: redefinition of 'in_x2' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-   11 |   unsigned long in_x2;
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00217fcc.cpp:5:14: note: previous definition is here
-    5 |     uint64_t in_x2 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00217fcc.cpp:18:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   18 |   auVar5 = FUN_00219768();
-      |   ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00217fcc.cpp:19:18: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   19 |   plVar2 = auVar5._0_8_;
-      |            ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00217fcc.cpp:23:45: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   23 |     lVar4 = FUN_00219784((long)plVar2,auVar5._8_8_);
-      |                                       ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00217fcc.cpp:26:39: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   26 |     lVar4 = FUN_0021980c(plVar2,auVar5._8_8_,in_x2);
-      |                                 ~~~~~~^~~~~~
-5 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-long FUN_00217fcc(long *param_1,ulong param_2)
-{
-    uint64_t in_x2 = 0; // TODO: phantom var (incomplete lift)
-
-  ulong uVar1;
-  long *plVar2;
-  ulong *puVar3;
+  float fVar1;
+  float fVar2;
+  double dVar3;
   long lVar4;
-  uint64_t in_x2;
-  undefined1 auVar5 [16];
+  double local_58;
+  double local_50;
+  double local_48;
+  double local_40;
+  undefined4 *local_38;
+  int local_30;
+  float local_2c;
+  undefined8 local_28;
 
-  uVar1 = FUN_00217f88(param_1);
-  if (param_2 < uVar1) {
-    return *param_1 + param_2 * 0x10;
-  }
-  auVar5 = FUN_00219768();
-  plVar2 = auVar5._0_8_;
-  uVar1 = plVar2[1];
-  puVar3 = (ulong *)FUN_0021900c();
-  if (uVar1 < *puVar3) {
-    lVar4 = FUN_00219784((long)plVar2,auVar5._8_8_);
-  }
-  else {
-    lVar4 = FUN_0021980c(plVar2,auVar5._8_8_,in_x2);
-  }
-  return lVar4;
+  local_40 = (double)((ulong)local_40 & 0xffffffff00000000);
+  local_48 = (double)CONCAT44(local_48._4_4_,(float)param_3);
+  local_38 = param_4;
+  local_30 = param_3;
+  local_2c = param_1;
+  local_28 = param_2;
+  FUN_00018a10(&local_2c,(float *)&local_40,(float *)&local_48);
+  fVar1 = (float)FUN_00012d1c((long)local_38);
+  fVar2 = (float)FUN_00012d08(local_38);
+  local_40 = (double)fVar1 - (double)fVar2;
+  dVar3 = (double)local_2c * local_40;
+  lVar4 = (long)local_30;
+  fVar1 = (float)FUN_00012d08(local_38);
+  local_48 = dVar3 / (double)lVar4 + (double)fVar1;
+  fVar1 = (float)FUN_00012d08(local_38);
+  local_50 = (double)fVar1;
+  fVar1 = (float)FUN_00012d1c((long)local_38);
+  local_58 = (double)fVar1;
+  FUN_0000e748(&local_48,&local_50,&local_58);
+  return (float)local_48;
 }
 ```
 Notes:
-- 10-21 19:14 [compile] redefinition of 'in_x2' — fixed with a learned rule.
-- 10-21 19:14 [compile] redefinition of 'in_x2' with a different type: 'undefined8 *' (aka 'unsigned long long *') vs 'uint6 — fixed with a learned rule.
-- 10-21 19:23 [compile] redefinition of 'in_x2' — plan: Change line 11 to: ` uint64_t in_x2;` — still fails: redefinition of 'in_x2' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long lon
-- 10-21 19:23 [compile] redefinition of 'in_x2' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long') — plan: Change line 11 to: `uint64_t in_x2;` — still fails: redefinition of 'in_x2'
-- 10-21 19:23 [compile] redefinition of 'in_x2' — fixed with a learned rule.
+- 10-21 19:37 [compile] member reference base type 'double' is not a structure or union — plan: Change `local_48 = (double)CONCAT44(local_48._4_4_,(float)param_3);` to `local_48 = (double)CONCAT44(local_48._4_4_,param_3);` — still fails: member reference base type 'double' is not a structure or union
+- 10-21 19:37 [compile] that edit didn't help — undone.
+- 10-21 19:37 [compile] the model suggested an edit that already failed — skipped.
 Ghidra's pseudocode:
 ```c
-long FUN_00217fcc(long *param_1,ulong param_2)
+float FUN_00018538(float param_1,undefined8 param_2,int param_3,undefined4 *param_4)
 
 {
-  ulong uVar1;
-  long *plVar2;
-  ulong *puVar3;
+  float fVar1;
+  float fVar2;
+  double dVar3;
   long lVar4;
-  undefined8 in_x2;
-  undefined1 auVar5 [16];
+  double local_58;
+  double local_50;
+  double local_48;
+  double local_40;
+  undefined4 *local_38;
+  int local_30;
+  float local_2c;
+  undefined8 local_28;
   
-  uVar1 = FUN_00217f88(param_1);
-  if (param_2 < uVar1) {
-    return *param_1 + param_2 * 0x10;
-  }
-  auVar5 = FUN_00219768();
-  plVar2 = auVar5._0_8_;
-  uVar1 = plVar2[1];
-  puVar3 = (ulong *)FUN_0021900c();
-  if (uVar1 < *puVar3) {
-    lVar4 = FUN_00219784((long)plVar2,auVar5._8_8_);
-  }
-  else {
-    lVar4 = FUN_0021980c(plVar2,auVar5._8_8_,in_x2);
-  }
-  return lVar4;
+  local_40 = (double)((ulong)local_40 & 0xffffffff00000000);
+  local_48 = (double)CONCAT44(local_48._4_4_,(float)param_3);
+  local_38 = param_4;
+  local_30 = param_3;
+  local_2c = param_1;
+  local_28 = param_2;
+  FUN_00018a10(&local_2c,(float *)&local_40,(float *)&local_48);
+  fVar1 = (float)FUN_00012d1c((long)local_38);
+  fVar2 = (float)FUN_00012d08(local_38);
+  local_40 = (double)fVar1 - (double)fVar2;
+  dVar3 = (double)local_2c * local_40;
+  lVar4 = (long)local_30;
+  fVar1 = (float)FUN_00012d08(local_38);
+  local_48 = dVar3 / (double)lVar4 + (double)fVar1;
+  fVar1 = (float)FUN_00012d08(local_38);
+  local_50 = (double)fVar1;
+  fVar1 = (float)FUN_00012d1c((long)local_38);
+  local_58 = (double)fVar1;
+  FUN_0000e748(&local_48,&local_50,&local_58);
+  return (float)local_48;
 }
 ```
-
-### Quarantined — 8 × member reference base type 'X' is not a structure or union
-
-All: FUN_00036688 (36688), FUN_000c457c (c457c), FUN_00119298 (119298), FUN_0013c364 (13c364), FUN_001442c0 (1442c0), FUN_00151ef4 (151ef4), FUN_001c4210 (1c4210), FUN_00200b9c (200b9c)
 
 #### FUN_00036688 — funcs/_FUN_00036688.cpp, Ghidra 36688, 2 model attempt(s)
 
@@ -11996,102 +11894,6 @@ void FUN_001c4210(long *param_1,long *param_2,int param_3)
   FUN_000031f4((long)alStack_70);
   FUN_001c44e4((long)alStack_50);
   return;
-}
-```
-
-#### FUN_00200b9c — funcs/FUN_00200b9c.cpp, Ghidra 200b9c, 2 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00200b9c.cpp:29:41: error: member reference base type 'long' is not a structure or union
-   29 |       local_68[0] = CONCAT44(local_68[0]._4_4_,iVar2);
-      |                              ~~~~~~~~~~~^~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-long FUN_00200b9c(long *param_1)
-{
-  bool bVar1;
-  int iVar2;
-  long local_68 [2];
-  FILE *local_58 [4];
-  int local_34;
-  long *local_30;
-  long local_28;
-
-  local_30 = param_1;
-  bVar1 = FUN_00200914(param_1);
-  if (bVar1) {
-    local_58[0] = (FILE *)FUN_00200b48(param_1);
-    local_34 = fseeko((FILE *)*param_1,0,2);
-    local_68[0] = FUN_00200b48(param_1);
-    fseeko((FILE *)*param_1,(off_t)local_58[0],0);
-    local_28 = local_68[0];
-  }
-  else {
-    FUN_00200a20(local_68,(long)param_1);
-    FUN_002008a4(local_58,local_68,1);
-    FUN_000031f4((long)local_68);
-    bVar1 = FUN_00200acc((long *)local_58,0);
-    if (bVar1) {
-      iVar2 = fseeko(local_58[0],0,2);
-      local_68[0] = CONCAT44(local_68[0]._4_4_,iVar2);
-      local_28 = FUN_00200b48(local_58);
-    }
-    else {
-      local_28 = 0;
-    }
-    FUN_002009a0((long *)local_58);
-  }
-  return local_28;
-}
-```
-Notes:
-- 10-21 13:30 [compile] member reference base type 'long' is not a structure or union — plan: Change `iVar2` to `local_68[0]._4_4_` in line 29. — still fails: member reference base type 'long' is not a structure or union
-- 10-21 13:30 [compile] that edit didn't help — undone.
-- 10-21 16:54 [compile] the model suggested an edit that already failed — skipped.
-- 10-21 16:55 [compile] the model suggested an edit that already failed — skipped.
-Ghidra's pseudocode:
-```c
-long FUN_00200b9c(long *param_1)
-
-{
-  bool bVar1;
-  int iVar2;
-  long local_68 [2];
-  FILE *local_58 [4];
-  int local_34;
-  long *local_30;
-  long local_28;
-  
-  local_30 = param_1;
-  bVar1 = FUN_00200914(param_1);
-  if (bVar1) {
-    local_58[0] = (FILE *)FUN_00200b48(param_1);
-    local_34 = _fseeko((FILE *)*param_1,0,2);
-    local_68[0] = FUN_00200b48(param_1);
-    _fseeko((FILE *)*param_1,(off_t)local_58[0],0);
-    local_28 = local_68[0];
-  }
-  else {
-    FUN_00200a20(local_68,(long)param_1);
-    FUN_002008a4(local_58,local_68,1);
-    FUN_000031f4((long)local_68);
-    bVar1 = FUN_00200acc((long *)local_58,0);
-    if (bVar1) {
-      iVar2 = _fseeko(local_58[0],0,2);
-      local_68[0] = CONCAT44(local_68[0]._4_4_,iVar2);
-      local_28 = FUN_00200b48(local_58);
-    }
-    else {
-      local_28 = 0;
-    }
-    FUN_002009a0((long *)local_58);
-  }
-  return local_28;
 }
 ```
 
@@ -14561,9 +14363,9 @@ LAB_0023d2d0:
 }
 ```
 
-### Quarantined — 3 × initializing 'X' (aka 'X') with an expression of incompatible type 'X'
+### Quarantined — 4 × initializing 'X' (aka 'X') with an expression of incompatible type 'X'
 
-All: FUN_0000c9c8 (c9c8), FUN_00022800 (22800), FUN_000b6044 (b6044)
+All: FUN_0000c9c8 (c9c8), FUN_0000e054 (e054), FUN_00022800 (22800), FUN_000b6044 (b6044)
 
 #### FUN_0000c9c8 — funcs/_FUN_0000c9c8.cpp, Ghidra c9c8, 2 model attempt(s)
 
@@ -14625,6 +14427,64 @@ void FUN_0000c9c8(ulong *param_1,int param_2)
       *(int *)(param_1 + 1) = param_2;
     }
   }
+  return;
+}
+```
+
+#### FUN_0000e054 — funcs/_FUN_0000e054.cpp, Ghidra e054, 3 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e054.cpp:9:14: error: initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void'
+    9 |   undefined8 lVar1 = FUN_0000de1c(param_1);
+      |              ^       ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e054.cpp:10:18: error: operand of type 'void' where arithmetic or pointer type is required
+   10 |   fVar3 = (float)FUN_00012d48(plVar1);
+      |                  ^~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e054.cpp:11:9: error: assigning to 'long' from incompatible type 'void'
+   11 |   lVar2 = FUN_0000ddf8(param_1);
+      |         ^ ~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e054.cpp:12:9: error: assigning to 'long' from incompatible type 'void'
+   12 |   lVar2 = FUN_0001317c(lVar2);
+      |         ^ ~~~~~~~~~~~~~~~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0000e054(long param_1)
+{
+  long *plVar1;
+  long lVar2;
+  float fVar3;
+
+  undefined8 lVar1 = FUN_0000de1c(param_1);
+  fVar3 = (float)FUN_00012d48(plVar1);
+  lVar2 = FUN_0000ddf8(param_1);
+  lVar2 = FUN_0001317c(lVar2);
+  FUN_0005d694(lVar2,(int)fVar3 != 0);
+  return;
+}
+```
+Notes:
+- 10-21 19:29 [compile] operand of type 'void' where arithmetic or pointer type is required — plan: Change `plVar1 = (long *)FUN_0000de1c(param_1);` to `undefined8 lVar1 = FUN_0000de1c(param_1);` — still fails: initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void'
+- 10-21 19:35 [compile] initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void' — plan: Change `undefined8 lVar1 = FUN_0000de1c(param_1);` to `long plVar1 = FUN_0000de1c(param_1);` — still fails: redefinition of 'plVar1' with a different type: 'long' vs 'long *'
+- 10-21 19:35 [compile] redefinition of 'plVar1' with a different type: 'long' vs 'long *' — plan: Change `long plVar1 = FUN_0000de1c(param_1);` to `undefined8 lVar1 = FUN_0000de1c(param_1);` — still fails: initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void'
+Ghidra's pseudocode:
+```c
+void FUN_0000e054(long param_1)
+
+{
+  long *plVar1;
+  long lVar2;
+  float fVar3;
+  
+  plVar1 = (long *)FUN_0000de1c(param_1);
+  fVar3 = (float)FUN_00012d48(plVar1);
+  lVar2 = FUN_0000ddf8(param_1);
+  lVar2 = FUN_0001317c(lVar2);
+  FUN_0005d694(lVar2,(int)fVar3 != 0);
   return;
 }
 ```
@@ -18428,43 +18288,42 @@ undefined1  [16] FUN_00219428(undefined8 *param_1,undefined8 *param_2)
 }
 ```
 
-## Not compiling yet: 2269 function(s), by first error
+## Not compiling yet: 2233 function(s), by first error
 
 -    410 × expected 'X' after top level declarator
--    347 × redefinition of 'X'
+-    343 × redefinition of 'X'
 -    231 × array type 'X' (aka 'X') is not assignable
--    222 × operand of type 'X' where arithmetic or pointer type is required
--    210 × brackets are not allowed here; to declare an array, place the brackets after the identifier
--    160 × member reference base type 'X' (aka 'X') is not a structure or union
+-    209 × brackets are not allowed here; to declare an array, place the brackets after the identifier
+-    202 × operand of type 'X' where arithmetic or pointer type is required
+-    161 × member reference base type 'X' (aka 'X') is not a structure or union
 -    132 × unknown type name 'X'
--     89 × assigning to 'X' from incompatible type 'X'
+-     88 × assigning to 'X' from incompatible type 'X'
 -     63 × indirection requires pointer operand ('X' (aka 'X') invalid)
 -     60 × expected 'X' after expression
--     59 × assigning to 'X' (aka 'X') from incompatible type 'X'
+-     58 × assigning to 'X' (aka 'X') from incompatible type 'X'
 -     49 × variable has incomplete type 'X'
--     46 × member reference base type 'X' is not a structure or union
--     28 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+-     45 × member reference base type 'X' is not a structure or union
 -     25 × called object type 'X' (aka 'X') is not a function or function pointer
+-     25 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
 -     22 × use of undeclared identifier 'X'
--     21 × expression is not assignable
+-     20 × expression is not assignable
 -     11 × too few arguments to function call, expected N, have N
 -     11 × subscripted value is not an array, pointer, or vector
 -     10 × statement requires expression of integer type ('X' invalid)
 -      8 × too few arguments to function call, single argument 'X' was not specified
--      7 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
 -      7 × array type 'X' is not assignable
 -      7 × called object type 'X' is not a function or function pointer
 -      6 × expected 'X'
 -      5 × too many arguments to function call, expected N, have N
 -      4 × use of undeclared identifier 'X'; did you mean 'X'?
+-      4 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
 -      4 × unexpected type name 'X': expected expression
--      2 × initializing 'X' (aka 'X') with an expression of incompatible type 'X'
 -      2 × expected expression
 -      2 × pointer cannot be cast to type 'X'
 -      2 × unknown type name 'X'; did you mean 'X'?
 -      2 × redefinition of 'X' as different kind of symbol
--      1 × initializing 'X' with an expression of incompatible type 'X'
 -      1 × subscript of pointer to function type 'X'
+-      1 × initializing 'X' (aka 'X') with an expression of incompatible type 'X'
 -      1 × used type 'X' (aka 'X') where arithmetic or pointer type is required
 -      1 × passing 'X' (aka 'X') to parameter of incompatible type 'X'
 -      1 × conflicting types for 'X'
@@ -18745,412 +18604,9 @@ ID __objc_msgSend_stub objc_stub::addItem_(undefined8 self,...)
 }
 ```
 
-### Not compiling yet — 347 × redefinition of 'X'
+### Not compiling yet — 343 × redefinition of 'X'
 
-All: FUN_0000cbac (cbac), FUN_0000f8d8 (f8d8), FUN_000171f8 (171f8), FUN_000177b4 (177b4), FUN_0001fa08 (1fa08), FUN_0001fa58 (1fa58), FUN_0001fa9c (1fa9c), FUN_0001fad0 (1fad0), FUN_00020a60 (20a60), FUN_0002779c (2779c), FUN_00029120 (29120), FUN_0002afcc (2afcc), FUN_0002b04c (2b04c), FUN_0002b0e4 (2b0e4), FUN_0002b194 (2b194), FUN_0002b250 (2b250), FUN_0002b684 (2b684), FUN_0002bae0 (2bae0), FUN_00030060 (30060), FUN_00030924 (30924), FUN_00031734 (31734), FUN_000320c4 (320c4), FUN_000391e0 (391e0), FUN_0004301c (4301c), FUN_000461e4 (461e4), FUN_00048c10 (48c10), FUN_0004ab0c (4ab0c), FUN_0004e590 (4e590), FUN_000512ec (512ec), FUN_000519ec (519ec), FUN_00055f28 (55f28), FUN_00056690 (56690), FUN_0005af80 (5af80), FUN_0005b028 (5b028), FUN_0005db14 (5db14), FUN_00063944 (63944), FUN_0006a52c (6a52c), FUN_0006a594 (6a594), FUN_0006a6a8 (6a6a8), FUN_0006bd80 (6bd80), FUN_0006dbb8 (6dbb8), FUN_00074d18 (74d18), FUN_00075184 (75184), FUN_00075344 (75344), FUN_00075c7c (75c7c), FUN_000795e8 (795e8), FUN_0007a2ac (7a2ac), FUN_00087190 (87190), FUN_00088c34 (88c34), FUN_00088d48 (88d48), FUN_0008938c (8938c), FUN_0008954c (8954c), FUN_00091ecc (91ecc), FUN_00092704 (92704), FUN_00093bf0 (93bf0), FUN_000940bc (940bc), FUN_00094144 (94144), FUN_00095b64 (95b64), FUN_00095be4 (95be4), FUN_000a59c8 (a59c8), FUN_000a620c (a620c), FUN_000a63ac (a63ac), FUN_000a64d4 (a64d4), FUN_000a658c (a658c), FUN_000a6694 (a6694), FUN_000a890c (a890c), FUN_000ada60 (ada60), FUN_000adac4 (adac4), FUN_000af418 (af418), FUN_000b278c (b278c), FUN_000b6f14 (b6f14), FUN_000b7074 (b7074), FUN_000b755c (b755c), FUN_000b82e0 (b82e0), FUN_000b8888 (b8888), FUN_000b88f0 (b88f0), FUN_000b8ba8 (b8ba8), FUN_000b8f30 (b8f30), FUN_000b9510 (b9510), FUN_000b9730 (b9730), FUN_000bbafc (bbafc), FUN_000bc6c4 (bc6c4), FUN_000bc918 (bc918), FUN_000bdae4 (bdae4), FUN_000bdb6c (bdb6c), FUN_000be918 (be918), FUN_000bea80 (bea80), FUN_000beb14 (beb14), FUN_000beba8 (beba8), FUN_000bece4 (bece4), FUN_000bf950 (bf950), FUN_000bf988 (bf988), FUN_000c0cdc (c0cdc), FUN_000c12e0 (c12e0), FUN_000c240c (c240c), FUN_000c2480 (c2480), FUN_000c50e8 (c50e8), FUN_000c5e58 (c5e58), FUN_000c7158 (c7158), FUN_000c815c (c815c), FUN_000c9b88 (c9b88), FUN_000ca098 (ca098), FUN_000cab20 (cab20), FUN_000cb6b0 (cb6b0), FUN_000cba08 (cba08), FUN_000cc5d4 (cc5d4), FUN_000cc990 (cc990), FUN_000cef1c (cef1c), FUN_000cfa9c (cfa9c), FUN_000d0218 (d0218), FUN_000d0b00 (d0b00), FUN_000d0f70 (d0f70), FUN_000d3ac4 (d3ac4), FUN_000d3d20 (d3d20), FUN_000d4114 (d4114), FUN_000d44e8 (d44e8), FUN_000d4b48 (d4b48), FUN_000d4c88 (d4c88), FUN_000d5230 (d5230), FUN_000d5404 (d5404), FUN_000d54f0 (d54f0), FUN_000d56dc (d56dc), FUN_000d5810 (d5810), FUN_000d5af0 (d5af0), FUN_000d6bec (d6bec), FUN_000d70b4 (d70b4), FUN_000d70dc (d70dc), FUN_000d7104 (d7104), FUN_000d7304 (d7304), FUN_000de7e4 (de7e4), FUN_000e06ac (e06ac), FUN_000e0ec0 (e0ec0), FUN_000e53e0 (e53e0), FUN_000e8de8 (e8de8), FUN_000e9188 (e9188), FUN_000e94ac (e94ac), FUN_000e9844 (e9844), FUN_000e9950 (e9950), FUN_000ea3dc (ea3dc), FUN_000eaad8 (eaad8), FUN_000eacc4 (eacc4), FUN_000eaec8 (eaec8), FUN_000eb160 (eb160), FUN_000eb738 (eb738), FUN_000ebc24 (ebc24), FUN_000ed7a4 (ed7a4), FUN_000ed818 (ed818), FUN_000eed64 (eed64), FUN_000f49a0 (f49a0), FUN_000f5678 (f5678), FUN_000f59e8 (f59e8), FUN_000f5f74 (f5f74), FUN_000f6354 (f6354), FUN_000f660c (f660c), FUN_000f695c (f695c), FUN_000f6b3c (f6b3c), FUN_000feb20 (feb20), FUN_001027bc (1027bc), FUN_00105064 (105064), FUN_00109dd8 (109dd8), FUN_0010a09c (10a09c), FUN_0010ef3c (10ef3c), FUN_0010f14c (10f14c), FUN_0010f4ac (10f4ac), FUN_0010f698 (10f698), FUN_0010f838 (10f838), FUN_0010fa24 (10fa24), FUN_0010fc48 (10fc48), FUN_0010fdec (10fdec), FUN_00113540 (113540), FUN_00113bd0 (113bd0), FUN_00113c8c (113c8c), FUN_00113d5c (113d5c), FUN_00114908 (114908), FUN_00114b0c (114b0c), FUN_00117f18 (117f18), FUN_00117f98 (117f98), FUN_0011a6f4 (11a6f4), FUN_0011ab00 (11ab00), FUN_0011ad24 (11ad24), FUN_0011afa8 (11afa8), FUN_0011d550 (11d550), FUN_00120ae0 (120ae0), FUN_00120cdc (120cdc), FUN_00120e44 (120e44), FUN_00120f98 (120f98), FUN_00120ff0 (120ff0), FUN_00121148 (121148), FUN_00121198 (121198), FUN_00121204 (121204), FUN_0012136c (12136c), FUN_00121490 (121490), FUN_00121644 (121644), FUN_00121c74 (121c74), FUN_00121d3c (121d3c), FUN_00121dc8 (121dc8), FUN_00123078 (123078), FUN_001230a0 (1230a0), FUN_001230f0 (1230f0), FUN_00123694 (123694), FUN_00123e8c (123e8c), FUN_00124424 (124424), FUN_001258fc (1258fc), FUN_00125aa4 (125aa4), FUN_0012701c (12701c), FUN_00132b4c (132b4c), FUN_0013bf20 (13bf20), FUN_0013c0d0 (13c0d0), FUN_00155b50 (155b50), FUN_001561a8 (1561a8), FUN_001569b0 (1569b0), FUN_00158c0c (158c0c), FUN_0016f90c (16f90c), FUN_00171bd4 (171bd4), FUN_001722dc (1722dc), FUN_001723a0 (1723a0), FUN_001725c4 (1725c4), FUN_001728ac (1728ac), FUN_00178314 (178314), FUN_00187d88 (187d88), FUN_00190614 (190614), FUN_00198f50 (198f50), FUN_001a2e58 (1a2e58), FUN_001a2f38 (1a2f38), FUN_001a2f74 (1a2f74), FUN_001a305c (1a305c), FUN_001a32b0 (1a32b0), FUN_001a3658 (1a3658), FUN_001a3f28 (1a3f28), FUN_001a3fa8 (1a3fa8), FUN_001a406c (1a406c), FUN_001a43cc (1a43cc), FUN_001a54e0 (1a54e0), FUN_001a6a48 (1a6a48), FUN_001a6b04 (1a6b04), FUN_001a8954 (1a8954), FUN_001a8f80 (1a8f80), FUN_001a9258 (1a9258), FUN_001a9378 (1a9378), FUN_001a987c (1a987c), FUN_001a9970 (1a9970), FUN_001a9c4c (1a9c4c), FUN_001b35d4 (1b35d4), FUN_001b8320 (1b8320), FUN_001b8c8c (1b8c8c), FUN_001b9134 (1b9134), FUN_001b91bc (1b91bc), FUN_001b925c (1b925c), FUN_001bc310 (1bc310), FUN_001bde04 (1bde04), FUN_001be084 (1be084), FUN_001c28cc (1c28cc), FUN_001dfa30 (1dfa30), FUN_001f53e0 (1f53e0), FUN_0020134c (20134c), FUN_00201428 (201428), FUN_00201464 (201464), FUN_002014a0 (2014a0), FUN_00203dc8 (203dc8), FUN_00204bec (204bec), FUN_00205f70 (205f70), FUN_00206430 (206430), FUN_00212ad8 (212ad8), FUN_00215ea0 (215ea0), FUN_0024798c (24798c), FUN_00253b2c (253b2c), FUN_0025a3b4 (25a3b4), FUN_0025d944 (25d944), FUN_00263a34 (263a34), FUN_0026c4ac (26c4ac), FUN_0026f294 (26f294), FUN_00272dcc (272dcc), FUN_00277880 (277880), FUN_00277d6c (277d6c), FUN_0027ca0c (27ca0c), FUN_002817d0 (2817d0), FUN_00293eec (293eec), FUN_002a0054 (2a0054), FUN_002b4b14 (2b4b14), FUN_002b4ca0 (2b4ca0), FUN_002b50cc (2b50cc), FUN_002c9b94 (2c9b94), FUN_002ca1dc (2ca1dc), FUN_002cbf10 (2cbf10), FUN_002ccef8 (2ccef8), FUN_002d0088 (2d0088), FUN_002d101c (2d101c), FUN_002d1688 (2d1688), FUN_002d4c34 (2d4c34), FUN_002d4d24 (2d4d24), FUN_002d5934 (2d5934), FUN_002d5a24 (2d5a24), FUN_002e42d0 (2e42d0), FUN_002e43ac (2e43ac), FUN_002e44cc (2e44cc), FUN_002e479c (2e479c), FUN_002e65e4 (2e65e4), FUN_002e6724 (2e6724), FUN_002e6978 (2e6978), FUN_002e6e04 (2e6e04), FUN_002e853c (2e853c), FUN_00303980 (303980), FUN_003040e4 (3040e4), FUN_00304acc (304acc), FUN_00307860 (307860), FUN_0030798c (30798c), FUN_0030c560 (30c560), FUN_0030c740 (30c740), FUN_0030fafc (30fafc), FUN_0030fbc0 (30fbc0), FUN_0030fdf8 (30fdf8), FUN_003101d0 (3101d0), FUN_00310308 (310308), FUN_00310908 (310908), FUN_00310a38 (310a38), FUN_00310e30 (310e30), FUN_00311108 (311108), FUN_00311574 (311574), FUN_00312228 (312228), FUN_00312658 (312658), FUN_00315d38 (315d38), FUN_00315dfc (315dfc), FUN_00316d9c (316d9c), FUN_00316f00 (316f00), FUN_00317020 (317020), FUN_0031980c (31980c), FUN_0031a040 (31a040), FUN_0031a0b0 (31a0b0), FUN_0031a884 (31a884), FUN_0031a8fc (31a8fc), FUN_0031b70c (31b70c), FUN_0031b738 (31b738), FUN_0031b77c (31b77c), FUN_0031c07c (31c07c), FUN_0031d494 (31d494), FUN_0031d52c (31d52c), FUN_00324344 (324344), FUN_00324578 (324578), FUN_003247ac (3247ac), FUN_00326994 (326994), FUN_00349a38 (349a38), FUN_0034fb38 (34fb38), FUN_00354168 (354168), FUN_0035ecc4 (35ecc4), FUN_0036df48 (36df48), FUN_003709f8 (3709f8), FUN_0037868c (37868c)
-
-#### FUN_0000cbac — funcs/_FUN_0000cbac.cpp, Ghidra cbac, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:24:17: error: redefinition of 'auVar3'
-   24 |   unsigned char auVar3[16]; FUN_0000cae4(&local_58,&local_60);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:7:14: note: previous definition is here
-    7 |   undefined1 auVar3 [16];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:25:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   25 |   local_50 = auVar3._0_8_;
-      |              ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:26:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   26 |   auVar3 = FUN_0000cac4(&local_48,&local_50);
-      |   ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:27:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   27 |   local_48 = auVar3._0_8_;
-      |              ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:38:10: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   38 |   auVar3 = FUN_0000cae4(&local_60,&local_70);
-      |   ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000cbac.cpp:39:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   39 |   local_58 = auVar3._0_8_;
-      |              ~~~~~~^~~~~~
-6 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0000cbac(double param_1,long param_2)
-{
-  int iVar1;
-  double *pdVar2;
-  undefined1 auVar3 [16];
-  double dVar4;
-  double dVar5;
-  double local_70;
-  int local_64;
-  double local_60;
-  double local_58;
-  double local_50;
-  double local_48;
-  double dStack_40;
-  long local_38;
-
-  local_48 = (double)(long)*(int *)(param_2 + 0x24);
-  local_58 = 0.0;
-  local_60 = param_1 * (double)(long)*(int *)(param_2 + 0x24);
-  dStack_40 = param_1;
-  local_38 = param_2;
-  unsigned char auVar3[16]; FUN_0000cae4(&local_58,&local_60);
-  local_50 = auVar3._0_8_;
-  auVar3 = FUN_0000cac4(&local_48,&local_50);
-  local_48 = auVar3._0_8_;
-  local_64 = FUN_00004560(local_48);
-  local_48 = local_48 - (double)local_64;
-  local_50 = 1.0;
-  local_60 = 0.0;
-  pdVar2 = (double *)FUN_0000cb90((long *)(param_2 + 0x10),local_64);
-  dVar4 = *pdVar2;
-  dVar5 = 1.0 - local_48;
-  iVar1 = FUN_0000cb20(*(int *)(param_2 + 0x24),local_64 + 1);
-  pdVar2 = (double *)FUN_0000cb90((long *)(param_2 + 0x10),iVar1);
-  local_70 = *pdVar2 * local_48 + dVar5 * dVar4;
-  auVar3 = FUN_0000cae4(&local_60,&local_70);
-  local_58 = auVar3._0_8_;
-  FUN_0000cac4(&local_50,&local_58);
-  return;
-}
-```
-Notes:
-- 10-21 19:29 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — plan: Change `unsigned char auVar3[16] = {0};` to `unsigned char auVar3[16];` — still fails: redefinition of 'auVar3'
-Ghidra's pseudocode:
-```c
-void FUN_0000cbac(double param_1,long param_2)
-
-{
-  int iVar1;
-  double *pdVar2;
-  undefined1 auVar3 [16];
-  double dVar4;
-  double dVar5;
-  double local_70;
-  int local_64;
-  double local_60;
-  double local_58;
-  double local_50;
-  double local_48;
-  double dStack_40;
-  long local_38;
-  
-  local_48 = (double)(long)*(int *)(param_2 + 0x24);
-  local_58 = 0.0;
-  local_60 = param_1 * (double)(long)*(int *)(param_2 + 0x24);
-  dStack_40 = param_1;
-  local_38 = param_2;
-  auVar3 = FUN_0000cae4(&local_58,&local_60);
-  local_50 = auVar3._0_8_;
-  auVar3 = FUN_0000cac4(&local_48,&local_50);
-  local_48 = auVar3._0_8_;
-  local_64 = FUN_00004560(local_48);
-  local_48 = local_48 - (double)local_64;
-  local_50 = 1.0;
-  local_60 = 0.0;
-  pdVar2 = (double *)FUN_0000cb90((long *)(param_2 + 0x10),local_64);
-  dVar4 = *pdVar2;
-  dVar5 = 1.0 - local_48;
-  iVar1 = FUN_0000cb20(*(int *)(param_2 + 0x24),local_64 + 1);
-  pdVar2 = (double *)FUN_0000cb90((long *)(param_2 + 0x10),iVar1);
-  local_70 = *pdVar2 * local_48 + dVar5 * dVar4;
-  auVar3 = FUN_0000cae4(&local_60,&local_70);
-  local_58 = auVar3._0_8_;
-  FUN_0000cac4(&local_50,&local_58);
-  return;
-}
-```
-
-#### FUN_0000f8d8 — funcs/_FUN_0000f8d8.cpp, Ghidra f8d8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000f8d8.cpp:17:13: error: redefinition of 'uVar2'
-   17 |   uintptr_t uVar2 = FUN_000041f4((long)ppuVar1);
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000f8d8.cpp:6:9: note: previous definition is here
-    6 |   ulong uVar2;
-      |         ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0000f8d8(long *param_1,long *param_2)
-{
-  undefined **ppuVar1;
-  ulong uVar2;
-
-  if (param_2 == (long *)0x0) {
-    ppuVar1 = &GD_PTR_vtable_00443028;
-  }
-  else {
-    if (param_2 == (long *)0x0) {
-      _cxa_bad_typeid();
-    }
-    ppuVar1 = *(undefined ***)(*param_2 + -8);
-  }
-  uintptr_t uVar2 = FUN_000041f4((long)ppuVar1);
-  FUN_001e3578(param_1,uVar2);
-  return;
-}
-```
-Notes:
-- 10-21 16:47 [compile] assigning to 'ulong' (aka 'unsigned long') from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_0000f8d8(long *param_1,long *param_2)
-
-{
-  undefined **ppuVar1;
-  ulong uVar2;
-  
-  if (param_2 == (long *)0x0) {
-    ppuVar1 = &PTR_vtable_00443028;
-  }
-  else {
-    if (param_2 == (long *)0x0) {
-                    /* WARNING: Subroutine does not return */
-      ___cxa_bad_typeid();
-    }
-    ppuVar1 = *(undefined ***)(*param_2 + -8);
-  }
-  uVar2 = FUN_000041f4((long)ppuVar1);
-  FUN_001e3578(param_1,uVar2);
-  return;
-}
-```
-
-#### FUN_000171f8 — funcs/_FUN_000171f8.cpp, Ghidra 171f8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:14:12: error: redefinition of 'extraout_s0'
-   14 |   uint64_t extraout_s0;
-      |            ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:6:14: note: previous definition is here
-    6 |     uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:16:14: error: redefinition of 'extraout_var' with a different type: 'undefined1[12]' (aka 'unsigned char[12]') vs 'uint64_t' (aka 'unsigned long long')
-   16 |   undefined1 extraout_var [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:7:14: note: previous definition is here
-    7 |     uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:32:14: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-   32 |     local_40 = FUN_00018b98();
-      |              ^ ~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:33:11: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   33 |     auVar1._4_12_ = extraout_var;
-      |     ~~~~~~^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:34:11: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   34 |     auVar1._0_4_ = extraout_s0;
-      |     ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000171f8.cpp:40:31: error: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-   40 |   local_40 = CONCAT44(local_40._4_4_,uVar6);
-      |                       ~~~~~~~~^~~~~~
-6 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000171f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long *param_5,undefined4 param_6,undefined4 param_7,undefined4 param_8)
-{
-    uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-
-  undefined1 auVar1 [16];
-  undefined1 uVar2;
-  byte bVar3;
-  long lVar4;
-  long *plVar5;
-  uint64_t extraout_s0;
-  undefined4 uVar6;
-  undefined1 extraout_var [12];
-  undefined8 local_40;
-  undefined4 local_34;
-  undefined4 local_30;
-  undefined4 uStack_2c;
-  long *local_28;
-
-  local_34 = param_8;
-  local_30 = param_7;
-  uStack_2c = param_6;
-  local_28 = param_5;
-  uVar2 = FUN_0011c928(param_5);
-  *(undefined1 *)((long)param_5 + 0x27c) = uVar2;
-  lVar4 = FUN_000adbc4();
-  bVar3 = FUN_00018b60(lVar4 + 0x3b0,(byte *)((long)param_5 + 0x26d));
-  if ((bVar3 != 0) && ((*(byte *)((long)param_5 + 0x26c) & 1) == 0)) {
-    local_40 = FUN_00018b98();
-    auVar1._4_12_ = extraout_var;
-    auVar1._0_4_ = extraout_s0;
-    FUN_0011d550(auVar1,param_2,param_3,param_4,(long)param_5,&local_40);
-  }
-  FUN_0011d5e0(param_5,(int)param_5[0x4e]);
-  plVar5 = (long *)FUN_00017a40((long)(param_5 + 0x48));
-  uVar6 = FUN_00018bf8(plVar5);
-  local_40 = CONCAT44(local_40._4_4_,uVar6);
-  FUN_00018bac((long)param_5,(undefined4 *)&local_40);
-  FUN_0011c2e0((long)param_5);
-  return;
-}
-```
-Notes:
-- 10-21 16:47 [compile] redefinition of 'extraout_s0' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000171f8(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long *param_5,undefined4 param_6,undefined4 param_7,undefined4 param_8)
-
-{
-  undefined1 auVar1 [16];
-  undefined1 uVar2;
-  byte bVar3;
-  long lVar4;
-  long *plVar5;
-  undefined4 extraout_s0;
-  undefined4 uVar6;
-  undefined1 extraout_var [12];
-  undefined8 local_40;
-  undefined4 local_34;
-  undefined4 local_30;
-  undefined4 uStack_2c;
-  long *local_28;
-  
-  local_34 = param_8;
-  local_30 = param_7;
-  uStack_2c = param_6;
-  local_28 = param_5;
-  uVar2 = FUN_0011c928(param_5);
-  *(undefined1 *)((long)param_5 + 0x27c) = uVar2;
-  lVar4 = FUN_000adbc4();
-  bVar3 = FUN_00018b60(lVar4 + 0x3b0,(byte *)((long)param_5 + 0x26d));
-  if ((bVar3 != 0) && ((*(byte *)((long)param_5 + 0x26c) & 1) == 0)) {
-    local_40 = FUN_00018b98();
-    auVar1._4_12_ = extraout_var;
-    auVar1._0_4_ = extraout_s0;
-    FUN_0011d550(auVar1,param_2,param_3,param_4,(long)param_5,&local_40);
-  }
-  FUN_0011d5e0(param_5,(int)param_5[0x4e]);
-  plVar5 = (long *)FUN_00017a40((long)(param_5 + 0x48));
-  uVar6 = FUN_00018bf8(plVar5);
-  local_40 = CONCAT44(local_40._4_4_,uVar6);
-  FUN_00018bac((long)param_5,(undefined4 *)&local_40);
-  FUN_0011c2e0((long)param_5);
-  return;
-}
-```
-
-#### FUN_000177b4 — funcs/_FUN_000177b4.cpp, Ghidra 177b4, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000177b4.cpp:33:17: error: redefinition of 'local_68'
-   33 |   unsigned char local_68[16] = {0};FUN_00018d88(param_1);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000177b4.cpp:13:14: note: previous definition is here
-   13 |   undefined1 local_68 [16];
-      |              ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000177b4(long param_1,undefined8 param_2)
-{
-  float *pfVar1;
-  undefined1 uVar2;
-  undefined8 uVar3;
-  byte bVar4;
-  long *plVar5;
-  float fVar6;
-  float fVar7;
-  float fVar8;
-  undefined1 local_68 [16];
-  double local_58;
-  undefined8 local_50;
-  long lStack_48;
-
-  pfVar1 = (float *)(param_1 + 0x25c);
-  local_50 = param_2;
-  lStack_48 = param_1;
-  fVar6 = FUN_00012d30(pfVar1);
-  if (fVar6 == 0.0) {
-    local_58 = 0.0;
-  }
-  else {
-    fVar6 = (float)FUN_00018d08(param_1);
-    fVar7 = (float)FUN_00012d08(pfVar1);
-    fVar8 = FUN_00012d30(pfVar1);
-    local_58 = ((double)fVar6 - (double)fVar7) / (double)fVar8;
-  }
-  plVar5 = (long *)FUN_001124d0();
-  uVar3 = local_50;
-  unsigned char local_68[16] = {0};FUN_00018d88(param_1);
-  fVar6 = (float)local_58;
-  uVar2 = *(undefined1 *)(param_1 + 0x27c);
-  bVar4 = FUN_000bb158(param_1);
-  (**(code **)(*plVar5 + 0x2e8))
-            (fVar6,plVar5,uVar3,local_68,uVar2,bVar4,*(undefined4 *)(param_1 + 600));
-  return;
-}
-```
-Notes:
-- 10-21 19:15 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000177b4(long param_1,undefined8 param_2)
-
-{
-  float *pfVar1;
-  undefined1 uVar2;
-  undefined8 uVar3;
-  byte bVar4;
-  long *plVar5;
-  float fVar6;
-  float fVar7;
-  float fVar8;
-  undefined1 local_68 [16];
-  double local_58;
-  undefined8 local_50;
-  long lStack_48;
-  
-  pfVar1 = (float *)(param_1 + 0x25c);
-  local_50 = param_2;
-  lStack_48 = param_1;
-  fVar6 = FUN_00012d30(pfVar1);
-  if (fVar6 == 0.0) {
-    local_58 = 0.0;
-  }
-  else {
-    fVar6 = (float)FUN_00018d08(param_1);
-    fVar7 = (float)FUN_00012d08(pfVar1);
-    fVar8 = FUN_00012d30(pfVar1);
-    local_58 = ((double)fVar6 - (double)fVar7) / (double)fVar8;
-  }
-  plVar5 = (long *)FUN_001124d0();
-  uVar3 = local_50;
-  local_68 = FUN_00018d88(param_1);
-  fVar6 = (float)local_58;
-  uVar2 = *(undefined1 *)(param_1 + 0x27c);
-  bVar4 = FUN_000bb158(param_1);
-  (**(code **)(*plVar5 + 0x2e8))
-            (fVar6,plVar5,uVar3,local_68,uVar2,bVar4,*(undefined4 *)(param_1 + 600));
-  return;
-}
-```
+All: FUN_0001fa08 (1fa08), FUN_0001fa58 (1fa58), FUN_0001fa9c (1fa9c), FUN_0001fad0 (1fad0), FUN_00020a60 (20a60), FUN_0002779c (2779c), FUN_00029120 (29120), FUN_0002afcc (2afcc), FUN_0002b04c (2b04c), FUN_0002b0e4 (2b0e4), FUN_0002b194 (2b194), FUN_0002b250 (2b250), FUN_0002b684 (2b684), FUN_0002bae0 (2bae0), FUN_00030060 (30060), FUN_00030924 (30924), FUN_00031734 (31734), FUN_000320c4 (320c4), FUN_000391e0 (391e0), FUN_0004301c (4301c), FUN_000461e4 (461e4), FUN_00048c10 (48c10), FUN_0004ab0c (4ab0c), FUN_0004e590 (4e590), FUN_000512ec (512ec), FUN_000519ec (519ec), FUN_00055f28 (55f28), FUN_00056690 (56690), FUN_0005af80 (5af80), FUN_0005b028 (5b028), FUN_0005db14 (5db14), FUN_00063944 (63944), FUN_0006a52c (6a52c), FUN_0006a594 (6a594), FUN_0006a6a8 (6a6a8), FUN_0006bd80 (6bd80), FUN_0006dbb8 (6dbb8), FUN_00074d18 (74d18), FUN_00075184 (75184), FUN_00075344 (75344), FUN_00075c7c (75c7c), FUN_000795e8 (795e8), FUN_0007a2ac (7a2ac), FUN_00087190 (87190), FUN_00088c34 (88c34), FUN_00088d48 (88d48), FUN_0008938c (8938c), FUN_0008954c (8954c), FUN_00091ecc (91ecc), FUN_00092704 (92704), FUN_00093bf0 (93bf0), FUN_000940bc (940bc), FUN_00094144 (94144), FUN_00095b64 (95b64), FUN_00095be4 (95be4), FUN_000a59c8 (a59c8), FUN_000a620c (a620c), FUN_000a63ac (a63ac), FUN_000a64d4 (a64d4), FUN_000a658c (a658c), FUN_000a6694 (a6694), FUN_000a890c (a890c), FUN_000ada60 (ada60), FUN_000adac4 (adac4), FUN_000af418 (af418), FUN_000b278c (b278c), FUN_000b6f14 (b6f14), FUN_000b7074 (b7074), FUN_000b755c (b755c), FUN_000b82e0 (b82e0), FUN_000b8888 (b8888), FUN_000b88f0 (b88f0), FUN_000b8ba8 (b8ba8), FUN_000b8f30 (b8f30), FUN_000b9510 (b9510), FUN_000b9730 (b9730), FUN_000bbafc (bbafc), FUN_000bc6c4 (bc6c4), FUN_000bc918 (bc918), FUN_000bdae4 (bdae4), FUN_000bdb6c (bdb6c), FUN_000be918 (be918), FUN_000bea80 (bea80), FUN_000beb14 (beb14), FUN_000beba8 (beba8), FUN_000bece4 (bece4), FUN_000bf950 (bf950), FUN_000bf988 (bf988), FUN_000c0cdc (c0cdc), FUN_000c12e0 (c12e0), FUN_000c240c (c240c), FUN_000c2480 (c2480), FUN_000c50e8 (c50e8), FUN_000c5e58 (c5e58), FUN_000c7158 (c7158), FUN_000c815c (c815c), FUN_000c9b88 (c9b88), FUN_000ca098 (ca098), FUN_000cab20 (cab20), FUN_000cb6b0 (cb6b0), FUN_000cba08 (cba08), FUN_000cc5d4 (cc5d4), FUN_000cc990 (cc990), FUN_000cef1c (cef1c), FUN_000cfa9c (cfa9c), FUN_000d0218 (d0218), FUN_000d0b00 (d0b00), FUN_000d0f70 (d0f70), FUN_000d3ac4 (d3ac4), FUN_000d3d20 (d3d20), FUN_000d4114 (d4114), FUN_000d44e8 (d44e8), FUN_000d4b48 (d4b48), FUN_000d4c88 (d4c88), FUN_000d5230 (d5230), FUN_000d5404 (d5404), FUN_000d54f0 (d54f0), FUN_000d56dc (d56dc), FUN_000d5810 (d5810), FUN_000d5af0 (d5af0), FUN_000d6bec (d6bec), FUN_000d70b4 (d70b4), FUN_000d70dc (d70dc), FUN_000d7104 (d7104), FUN_000d7304 (d7304), FUN_000de7e4 (de7e4), FUN_000e06ac (e06ac), FUN_000e0ec0 (e0ec0), FUN_000e53e0 (e53e0), FUN_000e8de8 (e8de8), FUN_000e9188 (e9188), FUN_000e94ac (e94ac), FUN_000e9844 (e9844), FUN_000e9950 (e9950), FUN_000ea3dc (ea3dc), FUN_000eaad8 (eaad8), FUN_000eacc4 (eacc4), FUN_000eaec8 (eaec8), FUN_000eb160 (eb160), FUN_000eb738 (eb738), FUN_000ebc24 (ebc24), FUN_000ed7a4 (ed7a4), FUN_000ed818 (ed818), FUN_000eed64 (eed64), FUN_000f49a0 (f49a0), FUN_000f5678 (f5678), FUN_000f59e8 (f59e8), FUN_000f5f74 (f5f74), FUN_000f6354 (f6354), FUN_000f660c (f660c), FUN_000f695c (f695c), FUN_000f6b3c (f6b3c), FUN_000feb20 (feb20), FUN_001027bc (1027bc), FUN_00105064 (105064), FUN_00109dd8 (109dd8), FUN_0010a09c (10a09c), FUN_0010ef3c (10ef3c), FUN_0010f14c (10f14c), FUN_0010f4ac (10f4ac), FUN_0010f698 (10f698), FUN_0010f838 (10f838), FUN_0010fa24 (10fa24), FUN_0010fc48 (10fc48), FUN_0010fdec (10fdec), FUN_00113540 (113540), FUN_00113bd0 (113bd0), FUN_00113c8c (113c8c), FUN_00113d5c (113d5c), FUN_00114908 (114908), FUN_00114b0c (114b0c), FUN_00117f18 (117f18), FUN_00117f98 (117f98), FUN_0011a6f4 (11a6f4), FUN_0011ab00 (11ab00), FUN_0011ad24 (11ad24), FUN_0011afa8 (11afa8), FUN_0011d550 (11d550), FUN_00120ae0 (120ae0), FUN_00120cdc (120cdc), FUN_00120e44 (120e44), FUN_00120f98 (120f98), FUN_00120ff0 (120ff0), FUN_00121148 (121148), FUN_00121198 (121198), FUN_00121204 (121204), FUN_0012136c (12136c), FUN_00121490 (121490), FUN_00121644 (121644), FUN_00121c74 (121c74), FUN_00121d3c (121d3c), FUN_00121dc8 (121dc8), FUN_00123078 (123078), FUN_001230a0 (1230a0), FUN_001230f0 (1230f0), FUN_00123694 (123694), FUN_00123e8c (123e8c), FUN_00124424 (124424), FUN_001258fc (1258fc), FUN_00125aa4 (125aa4), FUN_0012701c (12701c), FUN_00132b4c (132b4c), FUN_0013bf20 (13bf20), FUN_0013c0d0 (13c0d0), FUN_00155b50 (155b50), FUN_001561a8 (1561a8), FUN_001569b0 (1569b0), FUN_00158c0c (158c0c), FUN_0016f90c (16f90c), FUN_00171bd4 (171bd4), FUN_001722dc (1722dc), FUN_001723a0 (1723a0), FUN_001725c4 (1725c4), FUN_001728ac (1728ac), FUN_00178314 (178314), FUN_00187d88 (187d88), FUN_00190614 (190614), FUN_00198f50 (198f50), FUN_001a2e58 (1a2e58), FUN_001a2f38 (1a2f38), FUN_001a2f74 (1a2f74), FUN_001a305c (1a305c), FUN_001a32b0 (1a32b0), FUN_001a3658 (1a3658), FUN_001a3f28 (1a3f28), FUN_001a3fa8 (1a3fa8), FUN_001a406c (1a406c), FUN_001a43cc (1a43cc), FUN_001a54e0 (1a54e0), FUN_001a6a48 (1a6a48), FUN_001a6b04 (1a6b04), FUN_001a8954 (1a8954), FUN_001a8f80 (1a8f80), FUN_001a9258 (1a9258), FUN_001a9378 (1a9378), FUN_001a987c (1a987c), FUN_001a9970 (1a9970), FUN_001a9c4c (1a9c4c), FUN_001b35d4 (1b35d4), FUN_001b8320 (1b8320), FUN_001b8c8c (1b8c8c), FUN_001b9134 (1b9134), FUN_001b91bc (1b91bc), FUN_001b925c (1b925c), FUN_001bc310 (1bc310), FUN_001bde04 (1bde04), FUN_001be084 (1be084), FUN_001c28cc (1c28cc), FUN_001dfa30 (1dfa30), FUN_001f53e0 (1f53e0), FUN_0020134c (20134c), FUN_00201428 (201428), FUN_00201464 (201464), FUN_002014a0 (2014a0), FUN_00203dc8 (203dc8), FUN_00204bec (204bec), FUN_00205f70 (205f70), FUN_00206430 (206430), FUN_00212ad8 (212ad8), FUN_00215ea0 (215ea0), FUN_0024798c (24798c), FUN_00253b2c (253b2c), FUN_0025a3b4 (25a3b4), FUN_0025d944 (25d944), FUN_00263a34 (263a34), FUN_0026c4ac (26c4ac), FUN_0026f294 (26f294), FUN_00272dcc (272dcc), FUN_00277880 (277880), FUN_00277d6c (277d6c), FUN_0027ca0c (27ca0c), FUN_002817d0 (2817d0), FUN_00293eec (293eec), FUN_002a0054 (2a0054), FUN_002b4b14 (2b4b14), FUN_002b4ca0 (2b4ca0), FUN_002b50cc (2b50cc), FUN_002c9b94 (2c9b94), FUN_002ca1dc (2ca1dc), FUN_002cbf10 (2cbf10), FUN_002ccef8 (2ccef8), FUN_002d0088 (2d0088), FUN_002d101c (2d101c), FUN_002d1688 (2d1688), FUN_002d4c34 (2d4c34), FUN_002d4d24 (2d4d24), FUN_002d5934 (2d5934), FUN_002d5a24 (2d5a24), FUN_002e42d0 (2e42d0), FUN_002e43ac (2e43ac), FUN_002e44cc (2e44cc), FUN_002e479c (2e479c), FUN_002e65e4 (2e65e4), FUN_002e6724 (2e6724), FUN_002e6978 (2e6978), FUN_002e6e04 (2e6e04), FUN_002e853c (2e853c), FUN_00303980 (303980), FUN_003040e4 (3040e4), FUN_00304acc (304acc), FUN_00307860 (307860), FUN_0030798c (30798c), FUN_0030c560 (30c560), FUN_0030c740 (30c740), FUN_0030fafc (30fafc), FUN_0030fbc0 (30fbc0), FUN_0030fdf8 (30fdf8), FUN_003101d0 (3101d0), FUN_00310308 (310308), FUN_00310908 (310908), FUN_00310a38 (310a38), FUN_00310e30 (310e30), FUN_00311108 (311108), FUN_00311574 (311574), FUN_00312228 (312228), FUN_00312658 (312658), FUN_00315d38 (315d38), FUN_00315dfc (315dfc), FUN_00316d9c (316d9c), FUN_00316f00 (316f00), FUN_00317020 (317020), FUN_0031980c (31980c), FUN_0031a040 (31a040), FUN_0031a0b0 (31a0b0), FUN_0031a884 (31a884), FUN_0031a8fc (31a8fc), FUN_0031b70c (31b70c), FUN_0031b738 (31b738), FUN_0031b77c (31b77c), FUN_0031c07c (31c07c), FUN_0031d494 (31d494), FUN_0031d52c (31d52c), FUN_00324344 (324344), FUN_00324578 (324578), FUN_003247ac (3247ac), FUN_00326994 (326994), FUN_00349a38 (349a38), FUN_0034fb38 (34fb38), FUN_00354168 (354168), FUN_0035ecc4 (35ecc4), FUN_0036df48 (36df48), FUN_003709f8 (3709f8), FUN_0037868c (37868c)
 
 #### FUN_0001fa08 — funcs/_FUN_0001fa08.cpp, Ghidra 1fa08, 0 model attempt(s)
 
@@ -19497,6 +18953,377 @@ switchD_0001fb5c_default:
   FUN_0021b3c4(param_1 + 2,plVar3);
   local_71 = 1;
   FUN_000031f4((long)alStack_48);
+  return;
+}
+```
+
+#### FUN_00020a60 — funcs/_FUN_00020a60.cpp, Ghidra 20a60, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00020a60.cpp:12:8: error: redefinition of 'lVar1'
+   12 |   long lVar1 = FUN_000100fc(param_1, param_2);
+      |        ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00020a60.cpp:5:8: note: previous definition is here
+    5 |   long lVar1;
+      |        ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00020a60.cpp:14:17: error: use of undeclared identifier 'DAT_000016b8'; did you mean 'FUN_000216b8'?
+   14 |   FUN_00020ae0(&DAT_000016b8 + lVar1,1);
+      |                 ^~~~~~~~~~~~
+      |                 FUN_000216b8
+/Users/admin/glitchdecomp/fastpass 3/build_c/shared.h:3535:6: note: 'FUN_000216b8' declared here
+ 3535 | void FUN_000216b8(undefined8 *);
+      |      ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00020a60.cpp:16:35: error: use of undeclared identifier 'DAT_000016c0'
+   16 |   FUN_0000a1d8(alStack_48,(long)(&DAT_000016c0 + lVar1));
+      |                                   ^~~~~~~~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+undefined8 * FUN_00020a60(undefined8 *param_1,long param_2)
+{
+  long lVar1;
+  long alStack_48 [3];
+  long local_30;
+  undefined8 *local_28;
+
+  local_30 = param_2;
+  local_28 = param_1;
+  long lVar1 = FUN_000100fc(param_1, param_2);
+  lVar1 = FUN_0001013c(lVar1);
+  FUN_00020ae0(&DAT_000016b8 + lVar1,1);
+  lVar1 = FUN_0001013c((long)param_1);
+  FUN_0000a1d8(alStack_48,(long)(&DAT_000016c0 + lVar1));
+  FUN_0000a284(alStack_48);
+  return param_1;
+}
+```
+Notes:
+- 10-21 16:47 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 16:47 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+undefined8 * FUN_00020a60(undefined8 *param_1,long param_2)
+
+{
+  long lVar1;
+  long alStack_48 [3];
+  long local_30;
+  undefined8 *local_28;
+  
+  local_30 = param_2;
+  local_28 = param_1;
+  lVar1 = FUN_000100fc(param_1,param_2);
+  lVar1 = FUN_0001013c(lVar1);
+  FUN_00020ae0(&DAT_000016b8 + lVar1,1);
+  lVar1 = FUN_0001013c((long)param_1);
+  FUN_0000a1d8(alStack_48,(long)(&DAT_000016c0 + lVar1));
+  FUN_0000a284(alStack_48);
+  return param_1;
+}
+```
+
+#### FUN_0002779c — funcs/_FUN_0002779c.cpp, Ghidra 2779c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0002779c.cpp:12:12: error: redefinition of 'extraout_q0'
+   12 |   uint64_t extraout_q0;
+      |            ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0002779c.cpp:6:14: note: previous definition is here
+    6 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+long * FUN_0002779c(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
+                   undefined8 param_5,long param_6,long *param_7)
+{
+    uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+
+  undefined4 uVar1;
+  long *plVar2;
+  long *plVar3;
+  long *plVar4;
+  uint64_t extraout_q0;
+  long *local_70;
+  long *local_68;
+  long *local_50;
+  long *local_48;
+  long local_40;
+  undefined8 local_38;
+
+  local_48 = param_7;
+  local_40 = param_6;
+  local_38 = param_5;
+  plVar2 = (long *)FUN_001da808(0x180);
+  FUN_000c3734(plVar2);
+  local_50 = plVar2;
+  FUN_000c18b8(plVar2,0);
+  FUN_000c1708(local_50,0);
+  FUN_000c15c0((long)local_50,5);
+  plVar2 = local_48;
+  plVar3 = (long *)FUN_000f8078(0x18);
+  uVar1 = FUN_000064c0((long)local_48);
+  FUN_000033bc(plVar3,uVar1);
+  plVar4 = (long *)FUN_000f8078(0x18);
+  uVar1 = FUN_00003628((long)local_48);
+  FUN_000033bc(plVar4,uVar1);
+  FUN_0011d4ec(plVar2,plVar3,plVar4);
+  FUN_0011c968(local_50,local_48);
+  plVar2 = local_50;
+  FUN_00014150((undefined4 *)&local_70,1,1);
+  plVar2 = FUN_0011f738(plVar2,(int *)&local_70);
+  local_68 = plVar2;
+  plVar3 = (long *)FUN_000f8078(0x18);
+  FUN_000f817c(plVar3,0,0xffffffff);
+  plVar4 = (long *)FUN_000f8078(0x18);
+  FUN_000f817c(plVar4,0,0xffffffff);
+  FUN_0011d4ec(plVar2,plVar3,plVar4);
+  plVar2 = (long *)FUN_001da808(0x160);
+  FUN_0001605c(extraout_q0,param_2,param_3,param_4,plVar2,local_40);
+  local_70 = plVar2;
+  plVar3 = (long *)FUN_000f8078(0x18);
+  uVar1 = FUN_000064c0((long)local_70);
+  FUN_000033bc(plVar3,uVar1);
+  plVar4 = (long *)FUN_000f8078(0x18);
+  uVar1 = FUN_00003628((long)local_70);
+  FUN_000033bc(plVar4,uVar1);
+  FUN_0011d4ec(plVar2,plVar3,plVar4);
+  FUN_0011c968(local_50,local_70);
+  return local_50;
+}
+```
+Notes:
+- 10-21 19:15 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+long * FUN_0002779c(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
+                   undefined8 param_5,long param_6,long *param_7)
+
+{
+  undefined4 uVar1;
+  long *plVar2;
+  long *plVar3;
+  long *plVar4;
+  undefined1 extraout_q0 [16];
+  long *local_70;
+  long *local_68;
+  long *local_50;
+  long *local_48;
+  long local_40;
+  undefined8 local_38;
+  
+  local_48 = param_7;
+  local_40 = param_6;
+  local_38 = param_5;
+  plVar2 = (long *)FUN_001da808(0x180);
+  FUN_000c3734(plVar2);
+  local_50 = plVar2;
+  FUN_000c18b8(plVar2,0);
+  FUN_000c1708(local_50,0);
+  FUN_000c15c0((long)local_50,5);
+  plVar2 = local_48;
+  plVar3 = (long *)FUN_000f8078(0x18);
+  uVar1 = FUN_000064c0((long)local_48);
+  FUN_000033bc(plVar3,uVar1);
+  plVar4 = (long *)FUN_000f8078(0x18);
+  uVar1 = FUN_00003628((long)local_48);
+  FUN_000033bc(plVar4,uVar1);
+  FUN_0011d4ec(plVar2,plVar3,plVar4);
+  FUN_0011c968(local_50,local_48);
+  plVar2 = local_50;
+  FUN_00014150((undefined4 *)&local_70,1,1);
+  plVar2 = FUN_0011f738(plVar2,(int *)&local_70);
+  local_68 = plVar2;
+  plVar3 = (long *)FUN_000f8078(0x18);
+  FUN_000f817c(plVar3,0,0xffffffff);
+  plVar4 = (long *)FUN_000f8078(0x18);
+  FUN_000f817c(plVar4,0,0xffffffff);
+  FUN_0011d4ec(plVar2,plVar3,plVar4);
+  plVar2 = (long *)FUN_001da808(0x160);
+  FUN_0001605c(extraout_q0,param_2,param_3,param_4,plVar2,local_40);
+  local_70 = plVar2;
+  plVar3 = (long *)FUN_000f8078(0x18);
+  uVar1 = FUN_000064c0((long)local_70);
+  FUN_000033bc(plVar3,uVar1);
+  plVar4 = (long *)FUN_000f8078(0x18);
+  uVar1 = FUN_00003628((long)local_70);
+  FUN_000033bc(plVar4,uVar1);
+  FUN_0011d4ec(plVar2,plVar3,plVar4);
+  FUN_0011c968(local_50,local_70);
+  return local_50;
+}
+```
+
+#### FUN_00029120 — funcs/_FUN_00029120.cpp, Ghidra 29120, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00029120.cpp:21:17: error: redefinition of 'local_70'
+   21 |   unsigned char local_70[16] = {0};FUN_00018d88(uVar4);
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00029120.cpp:12:14: note: previous definition is here
+   12 |   undefined1 local_70 [16];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00029120.cpp:22:26: error: operand of type 'void' where arithmetic or pointer type is required
+   22 |   puVar5 = (undefined8 *)FUN_0002c024((int *)local_70,1);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00029120.cpp:27:12: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+   27 |   local_70 = FUN_00018d88(param_1);
+      |   ~~~~~~~~ ^
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00029120(long param_1,undefined8 param_2)
+{
+  undefined4 uVar1;
+  undefined4 uVar2;
+  byte bVar3;
+  undefined8 uVar4;
+  undefined8 *puVar5;
+  long *plVar6;
+  undefined1 auStack_80 [16];
+  undefined1 local_70 [16];
+  undefined8 local_60;
+  undefined8 uStack_58;
+  undefined8 local_50;
+  long local_48;
+
+  local_50 = param_2;
+  local_48 = param_1;
+  uVar4 = FUN_00029dbc((undefined8 *)(param_1 + 0x250));
+  unsigned char local_70[16] = {0};FUN_00018d88(uVar4);
+  puVar5 = (undefined8 *)FUN_0002c024((int *)local_70,1);
+  uStack_58 = puVar5[1];
+  local_60 = *puVar5;
+  plVar6 = (long *)FUN_001124d0();
+  uVar4 = local_50;
+  local_70 = FUN_00018d88(param_1);
+  FUN_0002c04c(auStack_80,param_1);
+  uVar1 = *(undefined4 *)(param_1 + 0x298);
+  uVar2 = *(undefined4 *)(param_1 + 0x29c);
+  bVar3 = FUN_000bb158(param_1);
+  (**(code **)(*plVar6 + 0x200))(plVar6,uVar4,local_70,&local_60,auStack_80,uVar1,uVar2,bVar3);
+  FUN_000031f4((long)auStack_80);
+  return;
+}
+```
+Notes:
+- 10-21 19:15 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_00029120(long param_1,undefined8 param_2)
+
+{
+  undefined4 uVar1;
+  undefined4 uVar2;
+  byte bVar3;
+  undefined8 uVar4;
+  undefined8 *puVar5;
+  long *plVar6;
+  undefined1 auStack_80 [16];
+  undefined1 local_70 [16];
+  undefined8 local_60;
+  undefined8 uStack_58;
+  undefined8 local_50;
+  long local_48;
+  
+  local_50 = param_2;
+  local_48 = param_1;
+  uVar4 = FUN_00029dbc((undefined8 *)(param_1 + 0x250));
+  local_70 = FUN_00018d88(uVar4);
+  puVar5 = (undefined8 *)FUN_0002c024((int *)local_70,1);
+  uStack_58 = puVar5[1];
+  local_60 = *puVar5;
+  plVar6 = (long *)FUN_001124d0();
+  uVar4 = local_50;
+  local_70 = FUN_00018d88(param_1);
+  FUN_0002c04c(auStack_80,param_1);
+  uVar1 = *(undefined4 *)(param_1 + 0x298);
+  uVar2 = *(undefined4 *)(param_1 + 0x29c);
+  bVar3 = FUN_000bb158(param_1);
+  (**(code **)(*plVar6 + 0x200))(plVar6,uVar4,local_70,&local_60,auStack_80,uVar1,uVar2,bVar3);
+  FUN_000031f4((long)auStack_80);
+  return;
+}
+```
+
+#### FUN_0002afcc — funcs/_FUN_0002afcc.cpp, Ghidra 2afcc, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0002afcc.cpp:12:12: error: redefinition of 'extraout_q0'
+   12 |   uint64_t extraout_q0;
+      |            ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0002afcc.cpp:6:14: note: previous definition is here
+    6 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+      |              ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0002afcc(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
+                 long *param_5,undefined8 param_6,undefined8 param_7,uint param_8)
+{
+    uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
+
+  char cVar1;
+  int iVar2;
+  long *plVar3;
+  long lVar4;
+  uint64_t extraout_q0;
+
+  plVar3 = (long *)FUN_00019eb8((long)(param_5 + 0x48));
+  iVar2 = FUN_0001a438(plVar3);
+  FUN_0002b5e0((long)param_5,iVar2,(byte)(param_8 >> 6) & 1);
+  lVar4 = FUN_000adbc4();
+  cVar1 = FUN_00018c24(lVar4 + 0x3b0);
+  if (cVar1 != '\0') {
+    FUN_0011d550(extraout_q0,param_2,param_3,param_4,(long)param_5,
+                 (undefined8 *)((long)param_5 + 0x354));
+  }
+  FUN_0011d5e0(param_5,0xb);
+  FUN_0011c2e0((long)param_5);
+  return;
+}
+```
+Notes:
+- 10-21 19:15 [compile] redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs ' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_0002afcc(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
+                 long *param_5,undefined8 param_6,undefined8 param_7,uint param_8)
+
+{
+  char cVar1;
+  int iVar2;
+  long *plVar3;
+  long lVar4;
+  undefined1 extraout_q0 [16];
+  
+  plVar3 = (long *)FUN_00019eb8((long)(param_5 + 0x48));
+  iVar2 = FUN_0001a438(plVar3);
+  FUN_0002b5e0((long)param_5,iVar2,(byte)(param_8 >> 6) & 1);
+  lVar4 = FUN_000adbc4();
+  cVar1 = FUN_00018c24(lVar4 + 0x3b0);
+  if (cVar1 != '\0') {
+    FUN_0011d550(extraout_q0,param_2,param_3,param_4,(long)param_5,
+                 (undefined8 *)((long)param_5 + 0x354));
+  }
+  FUN_0011d5e0(param_5,0xb);
+  FUN_0011c2e0((long)param_5);
   return;
 }
 ```
@@ -21280,463 +21107,9 @@ void FUN_0003eea4(long param_1,long param_2,long param_3,int param_4)
 }
 ```
 
-### Not compiling yet — 222 × operand of type 'X' where arithmetic or pointer type is required
+### Not compiling yet — 209 × brackets are not allowed here; to declare an array, place the brackets after the identifier
 
-All: FUN_00012ec0 (12ec0), FUN_00015dc0 (15dc0), FUN_00015e20 (15e20), FUN_00016390 (16390), FUN_000165b8 (165b8), FUN_00016620 (16620), FUN_00016688 (16688), FUN_000166f0 (166f0), FUN_00016bc8 (16bc8), FUN_00016ce8 (16ce8), FUN_00016e10 (16e10), FUN_000171d4 (171d4), FUN_00017968 (17968), FUN_00017f4c (17f4c), FUN_0001939c (1939c), FUN_000195e4 (195e4), FUN_00019b80 (19b80), FUN_00019be8 (19be8), FUN_00019dcc (19dcc), FUN_0001ae70 (1ae70), FUN_0001bdbc (1bdbc), FUN_0001be24 (1be24), FUN_0001c478 (1c478), FUN_0001e40c (1e40c), FUN_0001f3d0 (1f3d0), FUN_0001f9b0 (1f9b0), FUN_0001f9d8 (1f9d8), FUN_000200a4 (200a4), FUN_00020b78 (20b78), FUN_000212c4 (212c4), FUN_000214b8 (214b8), FUN_000216b8 (216b8), FUN_000218ac (218ac), FUN_0002261c (2261c), FUN_0002269c (2269c), FUN_000231a4 (231a4), FUN_000231e0 (231e0), FUN_00028548 (28548), FUN_000290e0 (290e0), FUN_0002a1a8 (2a1a8), FUN_0002af34 (2af34), FUN_0002d2a0 (2d2a0), FUN_0002d6bc (2d6bc), FUN_0002db38 (2db38), FUN_0002dba0 (2dba0), FUN_0002dc24 (2dc24), FUN_0002e1dc (2e1dc), FUN_0002e28c (2e28c), FUN_0002eb98 (2eb98), FUN_0003016c (3016c), FUN_000309dc (309dc), FUN_00030a20 (30a20), FUN_00030a88 (30a88), FUN_00030b0c (30b0c), FUN_00031844 (31844), FUN_0003211c (3211c), FUN_00032314 (32314), FUN_000325b0 (325b0), FUN_0003275c (3275c), FUN_00032c6c (32c6c), FUN_00033098 (33098), FUN_00033100 (33100), FUN_00033530 (33530), FUN_00035050 (35050), FUN_000350b8 (350b8), FUN_00035910 (35910), FUN_00037124 (37124), FUN_000374fc (374fc), FUN_00037874 (37874), FUN_00038018 (38018), FUN_00038214 (38214), FUN_00038d10 (38d10), FUN_00039758 (39758), FUN_000397b8 (397b8), FUN_00039bd0 (39bd0), FUN_00039c30 (39c30), FUN_0003b5cc (3b5cc), FUN_0003b63c (3b63c), FUN_0003c584 (3c584), FUN_0003cc0c (3cc0c), FUN_0003cc38 (3cc38), FUN_0003ccd4 (3ccd4), FUN_0003cd3c (3cd3c), FUN_0003cda4 (3cda4), FUN_0003ce0c (3ce0c), FUN_0003d804 (3d804), FUN_0003da74 (3da74), FUN_0003e818 (3e818), FUN_0003e904 (3e904), FUN_0003f83c (3f83c), FUN_0003f8a4 (3f8a4), FUN_0003f928 (3f928), FUN_00040414 (40414), FUN_000404f0 (404f0), FUN_00040f24 (40f24), FUN_00040f8c (40f8c), FUN_00041010 (41010), FUN_00042754 (42754), FUN_00042a58 (42a58), FUN_00042c54 (42c54), FUN_00043670 (43670), FUN_0004449c (4449c), FUN_00044f04 (44f04), FUN_00045d4c (45d4c), FUN_00047f44 (47f44), FUN_00049720 (49720), FUN_00049b98 (49b98), FUN_00049e9c (49e9c), FUN_0004a648 (4a648), FUN_0004a6e8 (4a6e8), FUN_0004aee0 (4aee0), FUN_0004af8c (4af8c), FUN_0004b27c (4b27c), FUN_0004b2dc (4b2dc), FUN_0004e474 (4e474), FUN_0004e4d8 (4e4d8), FUN_0004ef7c (4ef7c), FUN_0004efb8 (4efb8), FUN_0004effc (4effc), FUN_0004f038 (4f038), FUN_0004f07c (4f07c), FUN_0004f0e8 (4f0e8), FUN_0004f99c (4f99c), FUN_0004fa04 (4fa04), FUN_000502e0 (502e0), FUN_00051444 (51444), FUN_00051e10 (51e10), FUN_00051e78 (51e78), FUN_00051efc (51efc), FUN_000521a8 (521a8), FUN_00053568 (53568), FUN_00053890 (53890), FUN_00054330 (54330), FUN_00054b48 (54b48), FUN_00054ff8 (54ff8), FUN_00056d04 (56d04), FUN_000571dc (571dc), FUN_0005739c (5739c), FUN_00059a04 (59a04), FUN_00059a6c (59a6c), FUN_0005b0ec (5b0ec), FUN_0005beb4 (5beb4), FUN_0005c368 (5c368), FUN_0005cebc (5cebc), FUN_0005cf24 (5cf24), FUN_0005cfa8 (5cfa8), FUN_0005efac (5efac), FUN_0005efd0 (5efd0), FUN_0005f014 (5f014), FUN_0005f058 (5f058), FUN_0005f07c (5f07c), FUN_0005f0c0 (5f0c0), FUN_0006e75c (6e75c), FUN_0007498c (7498c), FUN_00088a18 (88a18), FUN_0008a154 (8a154), FUN_00091b6c (91b6c), FUN_0009cd94 (9cd94), FUN_000aa088 (aa088), FUN_000b091c (b091c), FUN_000b0de4 (b0de4), FUN_000b3344 (b3344), FUN_000ba84c (ba84c), FUN_000ba958 (ba958), FUN_000baaf4 (baaf4), FUN_000c1470 (c1470), FUN_000c6a8c (c6a8c), FUN_000cbc3c (cbc3c), FUN_000d4824 (d4824), FUN_000ec674 (ec674), FUN_000ec7c8 (ec7c8), FUN_000f3954 (f3954), FUN_000f7a84 (f7a84), FUN_000fe2d8 (fe2d8), FUN_000fe714 (fe714), FUN_000feb74 (feb74), FUN_000ffa7c (ffa7c), FUN_00102234 (102234), FUN_0010265c (10265c), FUN_0010338c (10338c), FUN_001036c8 (1036c8), FUN_00108250 (108250), FUN_00108c1c (108c1c), FUN_001090f0 (1090f0), FUN_00109774 (109774), FUN_00118a80 (118a80), FUN_0011a188 (11a188), FUN_0011b230 (11b230), FUN_00120648 (120648), FUN_00121510 (121510), FUN_0012180c (12180c), FUN_001268a8 (1268a8), FUN_00126f9c (126f9c), FUN_00128d20 (128d20), FUN_00128e8c (128e8c), FUN_0012d368 (12d368), FUN_0012d49c (12d49c), FUN_00135198 (135198), FUN_001681ec (1681ec), FUN_001751cc (1751cc), FUN_001bace4 (1bace4), FUN_001c16a0 (1c16a0), FUN_001c3210 (1c3210), FUN_001ca2cc (1ca2cc), FUN_001ce830 (1ce830), FUN_001ce8cc (1ce8cc), FUN_001dc568 (1dc568), FUN_001dc75c (1dc75c), FUN_001e773c (1e773c), FUN_001f7414 (1f7414), FUN_001f74d8 (1f74d8), FUN_00213ec8 (213ec8), FUN_0021d844 (21d844), FUN_0021ecd0 (21ecd0), FUN_0021ed38 (21ed38), FUN_0021ed9c (21ed9c), FUN_0021ee34 (21ee34), FUN_0021f360 (21f360), FUN_00220068 (220068), FUN_0022031c (22031c), FUN_00220b10 (220b10), FUN_00220ee4 (220ee4)
-
-#### FUN_00012ec0 — funcs/_FUN_00012ec0.cpp, Ghidra 12ec0, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00012ec0.cpp:14:21: error: operand of type 'void' where arithmetic or pointer type is required
-   14 |   local_30 = (float)FUN_00012bb8(param_2);
-      |                     ^~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00012ec0(float param_1,long *param_2)
-{
-  float local_3c;
-  float local_38;
-  float local_34;
-  float local_30;
-  float local_2c;
-  long *local_28;
-
-  local_2c = param_1;
-  local_28 = param_2;
-  local_30 = (float)FUN_00012bb8(param_2);
-  local_34 = 0.0;
-  local_38 = local_30 - local_2c;
-  local_34 = FUN_00012f48(&local_34,&local_38);
-  local_38 = 1.0;
-  local_3c = local_30 + local_2c;
-  local_38 = FUN_00012f68(&local_38,&local_3c);
-  FUN_00012e5c(local_34,local_38,param_2);
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_00012ec0(float param_1,long *param_2)
-
-{
-  float local_3c;
-  float local_38;
-  float local_34;
-  float local_30;
-  float local_2c;
-  long *local_28;
-  
-  local_2c = param_1;
-  local_28 = param_2;
-  local_30 = (float)FUN_00012bb8(param_2);
-  local_34 = 0.0;
-  local_38 = local_30 - local_2c;
-  local_34 = FUN_00012f48(&local_34,&local_38);
-  local_38 = 1.0;
-  local_3c = local_30 + local_2c;
-  local_38 = FUN_00012f68(&local_38,&local_3c);
-  FUN_00012e5c(local_34,local_38,param_2);
-  return;
-}
-```
-
-#### FUN_00015dc0 — funcs/_FUN_00015dc0.cpp, Ghidra 15dc0, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00015dc0.cpp:10:20: error: operand of type 'void' where arithmetic or pointer type is required
-   10 |   plVar2 = (long *)FUN_00011bcc(lVar1);
-      |                    ^~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00015dc0.cpp:11:18: error: operand of type 'void' where arithmetic or pointer type is required
-   11 |   fVar3 = (float)FUN_00012d48(plVar2);
-      |                  ^~~~~~~~~~~~~~~~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-int FUN_00015dc0(long param_1)
-{
-  long lVar1;
-  long *plVar2;
-  float fVar3;
-
-  lVar1 = FUN_0001607c((undefined8 *)(param_1 + 0x150));
-  plVar2 = (long *)FUN_00011bcc(lVar1);
-  fVar3 = (float)FUN_00012d48(plVar2);
-  return (int)fVar3;
-}
-```
-Ghidra's pseudocode:
-```c
-int FUN_00015dc0(long param_1)
-
-{
-  long lVar1;
-  long *plVar2;
-  float fVar3;
-  
-  lVar1 = FUN_0001607c((undefined8 *)(param_1 + 0x150));
-  plVar2 = (long *)FUN_00011bcc(lVar1);
-  fVar3 = (float)FUN_00012d48(plVar2);
-  return (int)fVar3;
-}
-```
-
-#### FUN_00015e20 — funcs/_FUN_00015e20.cpp, Ghidra 15e20, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00015e20.cpp:9:20: error: operand of type 'void' where arithmetic or pointer type is required
-    9 |   plVar2 = (long *)FUN_00011bcc(lVar1);
-      |                    ^~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00015e20(long param_1,int param_2)
-{
-  long lVar1;
-  long *plVar2;
-
-  lVar1 = FUN_0001607c((undefined8 *)(param_1 + 0x150));
-  plVar2 = (long *)FUN_00011bcc(lVar1);
-  FUN_00012de4((float)param_2,plVar2);
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_00015e20(long param_1,int param_2)
-
-{
-  long lVar1;
-  long *plVar2;
-  
-  lVar1 = FUN_0001607c((undefined8 *)(param_1 + 0x150));
-  plVar2 = (long *)FUN_00011bcc(lVar1);
-  FUN_00012de4((float)param_2,plVar2);
-  return;
-}
-```
-
-#### FUN_00016390 — funcs/_FUN_00016390.cpp, Ghidra 16390, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00016390.cpp:9:18: error: operand of type 'void' where arithmetic or pointer type is required
-    9 |   fVar2 = (float)FUN_00012d48(plVar1);
-      |                  ^~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-int FUN_00016390(long param_1)
-{
-  long *plVar1;
-  float fVar2;
-
-  plVar1 = (long *)FUN_0000dc84((undefined8 *)(param_1 + 0x150));
-  fVar2 = (float)FUN_00012d48(plVar1);
-  return (int)fVar2;
-}
-```
-Ghidra's pseudocode:
-```c
-int FUN_00016390(long param_1)
-
-{
-  long *plVar1;
-  float fVar2;
-  
-  plVar1 = (long *)FUN_0000dc84((undefined8 *)(param_1 + 0x150));
-  fVar2 = (float)FUN_00012d48(plVar1);
-  return (int)fVar2;
-}
-```
-
-#### FUN_000165b8 — funcs/_FUN_000165b8.cpp, Ghidra 165b8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000165b8.cpp:7:18: error: operand of type 'void' where arithmetic or pointer type is required
-    7 |   pvVar1 = (long)FUN_00016598(param_1);
-      |                  ^~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000165b8(long *param_1)
-{
-  void *pvVar1;
-
-  pvVar1 = (long)FUN_00016598(param_1);
-  FUN_001da834(pvVar1);
-  return;
-}
-```
-Notes:
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000165b8(long *param_1)
-
-{
-  void *pvVar1;
-  
-  pvVar1 = (void *)FUN_00016598(param_1);
-  FUN_001da834(pvVar1);
-  return;
-}
-```
-
-#### FUN_00016620 — funcs/_FUN_00016620.cpp, Ghidra 16620, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00016620.cpp:7:18: error: operand of type 'void' where arithmetic or pointer type is required
-    7 |   pvVar1 = (long)FUN_00016600(param_1);
-      |                  ^~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00016620(long *param_1)
-{
-  void *pvVar1;
-
-  pvVar1 = (long)FUN_00016600(param_1);
-  FUN_001da834(pvVar1);
-  return;
-}
-```
-Notes:
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00016620(long *param_1)
-
-{
-  void *pvVar1;
-  
-  pvVar1 = (void *)FUN_00016600(param_1);
-  FUN_001da834(pvVar1);
-  return;
-}
-```
-
-#### FUN_00016688 — funcs/_FUN_00016688.cpp, Ghidra 16688, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00016688.cpp:7:18: error: operand of type 'void' where arithmetic or pointer type is required
-    7 |   pvVar1 = (long)FUN_00016668(param_1);
-      |                  ^~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00016688(long *param_1)
-{
-  void *pvVar1;
-
-  pvVar1 = (long)FUN_00016668(param_1);
-  FUN_001da834(pvVar1);
-  return;
-}
-```
-Notes:
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00016688(long *param_1)
-
-{
-  void *pvVar1;
-  
-  pvVar1 = (void *)FUN_00016668(param_1);
-  FUN_001da834(pvVar1);
-  return;
-}
-```
-
-#### FUN_000166f0 — funcs/_FUN_000166f0.cpp, Ghidra 166f0, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000166f0.cpp:7:18: error: operand of type 'void' where arithmetic or pointer type is required
-    7 |   pvVar1 = (long)FUN_000166d0(param_1);
-      |                  ^~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000166f0(long *param_1)
-{
-  void *pvVar1;
-
-  pvVar1 = (long)FUN_000166d0(param_1);
-  FUN_001da834(pvVar1);
-  return;
-}
-```
-Notes:
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000166f0(long *param_1)
-
-{
-  void *pvVar1;
-  
-  pvVar1 = (void *)FUN_000166d0(param_1);
-  FUN_001da834(pvVar1);
-  return;
-}
-```
-
-### Not compiling yet — 210 × brackets are not allowed here; to declare an array, place the brackets after the identifier
-
-All: FUN_00014a48 (14a48), FUN_0001bcf8 (1bcf8), FUN_0001bd40 (1bd40), FUN_00023214 (23214), FUN_00023338 (23338), FUN_0002345c (2345c), FUN_00023580 (23580), FUN_000236a4 (236a4), FUN_000237d0 (237d0), FUN_000238fc (238fc), FUN_00023a30 (23a30), FUN_0002806c (2806c), FUN_00028388 (28388), FUN_00030910 (30910), FUN_00032fbc (32fbc), FUN_00033124 (33124), FUN_00033140 (33140), FUN_0003c128 (3c128), FUN_00062258 (62258), FUN_00063798 (63798), FUN_00065024 (65024), FUN_0006a720 (6a720), FUN_0006a754 (6a754), FUN_0006ae98 (6ae98), FUN_0006be94 (6be94), FUN_0006bec8 (6bec8), FUN_0006c608 (6c608), FUN_00072030 (72030), FUN_000721c0 (721c0), FUN_0007234c (7234c), FUN_000731d0 (731d0), FUN_00079da0 (79da0), FUN_0007a35c (7a35c), FUN_0007ecf4 (7ecf4), FUN_00083774 (83774), FUN_0008989c (8989c), FUN_000899b0 (899b0), FUN_0008b23c (8b23c), FUN_0008fd60 (8fd60), FUN_0008fd90 (8fd90), FUN_000909e8 (909e8), FUN_00091188 (91188), FUN_0009175c (9175c), FUN_00093960 (93960), FUN_00093994 (93994), FUN_0009c908 (9c908), FUN_0009c9ec (9c9ec), FUN_0009d498 (9d498), FUN_0009d4cc (9d4cc), FUN_0009e1f0 (9e1f0), FUN_0009ec58 (9ec58), FUN_0009ec78 (9ec78), FUN_0009f24c (9f24c), FUN_0009f648 (9f648), FUN_000a0458 (a0458), FUN_000a0ca8 (a0ca8), FUN_000a127c (a127c), FUN_000a22fc (a22fc), FUN_000a2a9c (a2a9c), FUN_000a3070 (a3070), FUN_000a4078 (a4078), FUN_000a4818 (a4818), FUN_000a4dec (a4dec), FUN_000a94c4 (a94c4), FUN_000aa8a4 (aa8a4), FUN_000ab4ac (ab4ac), FUN_000b0c48 (b0c48), FUN_000b815c (b815c), FUN_000ca214 (ca214), FUN_000ca774 (ca774), FUN_000ca8cc (ca8cc), FUN_000cbd04 (cbd04), FUN_000ccfd4 (ccfd4), FUN_000cd004 (cd004), FUN_000cda14 (cda14), FUN_000cdc90 (cdc90), FUN_000ce59c (ce59c), FUN_000ce5bc (ce5bc), FUN_000ceb40 (ceb40), FUN_000cef04 (cef04), FUN_000cefc4 (cefc4), FUN_000ceff4 (ceff4), FUN_000cf088 (cf088), FUN_000d1964 (d1964), FUN_000d1994 (d1994), FUN_000d23d0 (d23d0), FUN_000d264c (d264c), FUN_000d2f58 (d2f58), FUN_000d2f78 (d2f78), FUN_000d3500 (d3500), FUN_000d38cc (d38cc), FUN_000db420 (db420), FUN_000dddac (dddac), FUN_000e77ac (e77ac), FUN_000e77e0 (e77e0), FUN_000e83bc (e83bc), FUN_000f1500 (f1500), FUN_000f3d58 (f3d58), FUN_000f3df4 (f3df4), FUN_001378b8 (1378b8), FUN_001379d0 (1379d0), FUN_00139cc0 (139cc0), FUN_0013a644 (13a644), FUN_00159238 (159238), FUN_00159268 (159268), FUN_00159cd8 (159cd8), FUN_00159f54 (159f54), FUN_0015a894 (15a894), FUN_0015a8b4 (15a8b4), FUN_0015ae38 (15ae38), FUN_0015b1fc (15b1fc), FUN_0016593c (16593c), FUN_00166470 (166470), FUN_0016d488 (16d488), FUN_0017b6a8 (17b6a8), FUN_0018411c (18411c), FUN_00184130 (184130), FUN_00184bb0 (184bb0), FUN_00184bc4 (184bc4), FUN_0018524c (18524c), FUN_00185260 (185260), FUN_00185cdc (185cdc), FUN_00185cf0 (185cf0), FUN_00186b14 (186b14), FUN_00186b28 (186b28), FUN_001878c4 (1878c4), FUN_001878d8 (1878d8), FUN_0018cb14 (18cb14), FUN_0018cb28 (18cb28), FUN_0018d504 (18d504), FUN_0018d518 (18d518), FUN_0018dba0 (18dba0), FUN_0018dbb4 (18dbb4), FUN_0018e600 (18e600), FUN_0018e614 (18e614), FUN_0018f3a0 (18f3a0), FUN_0018f3b4 (18f3b4), FUN_00190150 (190150), FUN_00190164 (190164), FUN_00195454 (195454), FUN_00195468 (195468), FUN_00195e50 (195e50), FUN_00195e64 (195e64), FUN_001964ec (1964ec), FUN_00196500 (196500), FUN_00196f4c (196f4c), FUN_00196f60 (196f60), FUN_00197ce8 (197ce8), FUN_00197cfc (197cfc), FUN_00198a90 (198a90), FUN_00198aa4 (198aa4), FUN_0019de6c (19de6c), FUN_0019de80 (19de80), FUN_0019e85c (19e85c), FUN_0019e870 (19e870), FUN_0019eef8 (19eef8), FUN_0019ef0c (19ef0c), FUN_0019f958 (19f958), FUN_0019f96c (19f96c), FUN_001a06e8 (1a06e8), FUN_001a06fc (1a06fc), FUN_001a1484 (1a1484), FUN_001a1498 (1a1498), FUN_001ab49c (1ab49c), FUN_001ae2fc (1ae2fc), FUN_001aec94 (1aec94), FUN_001b042c (1b042c), FUN_001b0670 (1b0670), FUN_001b09b8 (1b09b8), FUN_001b7c74 (1b7c74), FUN_001ba3fc (1ba3fc), FUN_001c4468 (1c4468), FUN_001d158c (1d158c), FUN_001d54e0 (1d54e0), FUN_00201400 (201400), FUN_00203e58 (203e58), FUN_00204c7c (204c7c), FUN_00206000 (206000), FUN_00212b68 (212b68), FUN_0021f9f0 (21f9f0), FUN_00223524 (223524), FUN_00253c50 (253c50), FUN_00255644 (255644), FUN_0025566c (25566c), FUN_002558dc (2558dc), FUN_00255938 (255938), FUN_002708a8 (2708a8), FUN_00278e20 (278e20), FUN_002790e0 (2790e0), FUN_0027ab18 (27ab18), FUN_0027ab5c (27ab5c), FUN_0027aba0 (27aba0), FUN_0027abe4 (27abe4), FUN_0027ac28 (27ac28), FUN_0027ac58 (27ac58), FUN_0027d42c (27d42c), FUN_0027d4d0 (27d4d0), FUN_0027da5c (27da5c), FUN_0027da6c (27da6c), FUN_00281810 (281810), FUN_00292da0 (292da0), FUN_002a0094 (2a0094), FUN_0030ebc8 (30ebc8), FUN_0030ee64 (30ee64), FUN_00320874 (320874), FUN_00321be8 (321be8), FUN_00322f08 (322f08), FUN_0032440c (32440c), FUN_00324640 (324640), FUN_00324874 (324874)
-
-#### FUN_00014a48 — funcs/_FUN_00014a48.cpp, Ghidra 14a48, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:5:64: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
-    3 | undefined1  [16]
-      |             ~~~~
-    4 | FUN_00014a48(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
-    5 |             undefined8 param_6,undefined8 param_7,uint param_8)
-      |                                                                ^
-      |                                                                [16]
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:4:13: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
-    4 | FUN_00014a48(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:11:14: error: redefinition of 'extraout_q0' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsigned long long')
-   11 |   undefined1 extraout_q0 [16];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:7:14: note: previous definition is here
-    7 |     uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:12:14: error: redefinition of 'extraout_q0_00' with a different type: 'undefined1[16]' (aka 'unsigned char[16]') vs 'uint64_t' (aka 'unsigned long long')
-   12 |   undefined1 extraout_q0_00 [16];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014a48.cpp:8:14: note: previous definition is here
-    8 |     uint64_t extraout_q0_00 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined1  [16]
-FUN_00014a48(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
-            undefined8 param_6,undefined8 param_7,uint param_8)
-{
-    uint64_t extraout_q0 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_q0_00 = 0; // TODO: phantom var (incomplete lift)
-
-  long *plVar1;
-  undefined1 extraout_q0 [16];
-  undefined1 extraout_q0_00 [16];
-
-  if ((param_8 & 0xf0) == 0) {
-    *(undefined1 *)(param_5 + 0x218) = 1;
-    plVar1 = (long *)FUN_00006780((undefined8 *)(param_5 + 0x170));
-    FUN_0011c4f8(extraout_q0,param_2,param_3,param_4,plVar1,0);
-    plVar1 = (long *)FUN_00013d9c((undefined8 *)(param_5 + 0x180));
-    FUN_0011c4f8(extraout_q0_00,param_2,param_3,param_4,plVar1,1);
-    param_1 = FUN_0011c2e0(param_5);
-  }
-  return param_1;
-}
-```
-Ghidra's pseudocode:
-```c
-undefined1  [16]
-FUN_00014a48(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,long param_5,
-            undefined8 param_6,undefined8 param_7,uint param_8)
-
-{
-  long *plVar1;
-  undefined1 extraout_q0 [16];
-  undefined1 extraout_q0_00 [16];
-  
-  if ((param_8 & 0xf0) == 0) {
-    *(undefined1 *)(param_5 + 0x218) = 1;
-    plVar1 = (long *)FUN_00006780((undefined8 *)(param_5 + 0x170));
-    FUN_0011c4f8(extraout_q0,param_2,param_3,param_4,plVar1,0);
-    plVar1 = (long *)FUN_00013d9c((undefined8 *)(param_5 + 0x180));
-    FUN_0011c4f8(extraout_q0_00,param_2,param_3,param_4,plVar1,1);
-    param_1 = FUN_0011c2e0(param_5);
-  }
-  return param_1;
-}
-```
+All: FUN_0001bcf8 (1bcf8), FUN_0001bd40 (1bd40), FUN_00023214 (23214), FUN_00023338 (23338), FUN_0002345c (2345c), FUN_00023580 (23580), FUN_000236a4 (236a4), FUN_000237d0 (237d0), FUN_000238fc (238fc), FUN_00023a30 (23a30), FUN_0002806c (2806c), FUN_00028388 (28388), FUN_00030910 (30910), FUN_00032fbc (32fbc), FUN_00033124 (33124), FUN_00033140 (33140), FUN_0003c128 (3c128), FUN_00062258 (62258), FUN_00063798 (63798), FUN_00065024 (65024), FUN_0006a720 (6a720), FUN_0006a754 (6a754), FUN_0006ae98 (6ae98), FUN_0006be94 (6be94), FUN_0006bec8 (6bec8), FUN_0006c608 (6c608), FUN_00072030 (72030), FUN_000721c0 (721c0), FUN_0007234c (7234c), FUN_000731d0 (731d0), FUN_00079da0 (79da0), FUN_0007a35c (7a35c), FUN_0007ecf4 (7ecf4), FUN_00083774 (83774), FUN_0008989c (8989c), FUN_000899b0 (899b0), FUN_0008b23c (8b23c), FUN_0008fd60 (8fd60), FUN_0008fd90 (8fd90), FUN_000909e8 (909e8), FUN_00091188 (91188), FUN_0009175c (9175c), FUN_00093960 (93960), FUN_00093994 (93994), FUN_0009c908 (9c908), FUN_0009c9ec (9c9ec), FUN_0009d498 (9d498), FUN_0009d4cc (9d4cc), FUN_0009e1f0 (9e1f0), FUN_0009ec58 (9ec58), FUN_0009ec78 (9ec78), FUN_0009f24c (9f24c), FUN_0009f648 (9f648), FUN_000a0458 (a0458), FUN_000a0ca8 (a0ca8), FUN_000a127c (a127c), FUN_000a22fc (a22fc), FUN_000a2a9c (a2a9c), FUN_000a3070 (a3070), FUN_000a4078 (a4078), FUN_000a4818 (a4818), FUN_000a4dec (a4dec), FUN_000a94c4 (a94c4), FUN_000aa8a4 (aa8a4), FUN_000ab4ac (ab4ac), FUN_000b0c48 (b0c48), FUN_000b815c (b815c), FUN_000ca214 (ca214), FUN_000ca774 (ca774), FUN_000ca8cc (ca8cc), FUN_000cbd04 (cbd04), FUN_000ccfd4 (ccfd4), FUN_000cd004 (cd004), FUN_000cda14 (cda14), FUN_000cdc90 (cdc90), FUN_000ce59c (ce59c), FUN_000ce5bc (ce5bc), FUN_000ceb40 (ceb40), FUN_000cef04 (cef04), FUN_000cefc4 (cefc4), FUN_000ceff4 (ceff4), FUN_000cf088 (cf088), FUN_000d1964 (d1964), FUN_000d1994 (d1994), FUN_000d23d0 (d23d0), FUN_000d264c (d264c), FUN_000d2f58 (d2f58), FUN_000d2f78 (d2f78), FUN_000d3500 (d3500), FUN_000d38cc (d38cc), FUN_000db420 (db420), FUN_000dddac (dddac), FUN_000e77ac (e77ac), FUN_000e77e0 (e77e0), FUN_000e83bc (e83bc), FUN_000f1500 (f1500), FUN_000f3d58 (f3d58), FUN_000f3df4 (f3df4), FUN_001378b8 (1378b8), FUN_001379d0 (1379d0), FUN_00139cc0 (139cc0), FUN_0013a644 (13a644), FUN_00159238 (159238), FUN_00159268 (159268), FUN_00159cd8 (159cd8), FUN_00159f54 (159f54), FUN_0015a894 (15a894), FUN_0015a8b4 (15a8b4), FUN_0015ae38 (15ae38), FUN_0015b1fc (15b1fc), FUN_0016593c (16593c), FUN_00166470 (166470), FUN_0016d488 (16d488), FUN_0017b6a8 (17b6a8), FUN_0018411c (18411c), FUN_00184130 (184130), FUN_00184bb0 (184bb0), FUN_00184bc4 (184bc4), FUN_0018524c (18524c), FUN_00185260 (185260), FUN_00185cdc (185cdc), FUN_00185cf0 (185cf0), FUN_00186b14 (186b14), FUN_00186b28 (186b28), FUN_001878c4 (1878c4), FUN_001878d8 (1878d8), FUN_0018cb14 (18cb14), FUN_0018cb28 (18cb28), FUN_0018d504 (18d504), FUN_0018d518 (18d518), FUN_0018dba0 (18dba0), FUN_0018dbb4 (18dbb4), FUN_0018e600 (18e600), FUN_0018e614 (18e614), FUN_0018f3a0 (18f3a0), FUN_0018f3b4 (18f3b4), FUN_00190150 (190150), FUN_00190164 (190164), FUN_00195454 (195454), FUN_00195468 (195468), FUN_00195e50 (195e50), FUN_00195e64 (195e64), FUN_001964ec (1964ec), FUN_00196500 (196500), FUN_00196f4c (196f4c), FUN_00196f60 (196f60), FUN_00197ce8 (197ce8), FUN_00197cfc (197cfc), FUN_00198a90 (198a90), FUN_00198aa4 (198aa4), FUN_0019de6c (19de6c), FUN_0019de80 (19de80), FUN_0019e85c (19e85c), FUN_0019e870 (19e870), FUN_0019eef8 (19eef8), FUN_0019ef0c (19ef0c), FUN_0019f958 (19f958), FUN_0019f96c (19f96c), FUN_001a06e8 (1a06e8), FUN_001a06fc (1a06fc), FUN_001a1484 (1a1484), FUN_001a1498 (1a1498), FUN_001ab49c (1ab49c), FUN_001ae2fc (1ae2fc), FUN_001aec94 (1aec94), FUN_001b042c (1b042c), FUN_001b0670 (1b0670), FUN_001b09b8 (1b09b8), FUN_001b7c74 (1b7c74), FUN_001ba3fc (1ba3fc), FUN_001c4468 (1c4468), FUN_001d158c (1d158c), FUN_001d54e0 (1d54e0), FUN_00201400 (201400), FUN_00203e58 (203e58), FUN_00204c7c (204c7c), FUN_00206000 (206000), FUN_00212b68 (212b68), FUN_0021f9f0 (21f9f0), FUN_00223524 (223524), FUN_00253c50 (253c50), FUN_00255644 (255644), FUN_0025566c (25566c), FUN_002558dc (2558dc), FUN_00255938 (255938), FUN_002708a8 (2708a8), FUN_00278e20 (278e20), FUN_002790e0 (2790e0), FUN_0027ab18 (27ab18), FUN_0027ab5c (27ab5c), FUN_0027aba0 (27aba0), FUN_0027abe4 (27abe4), FUN_0027ac28 (27ac28), FUN_0027ac58 (27ac58), FUN_0027d42c (27d42c), FUN_0027d4d0 (27d4d0), FUN_0027da5c (27da5c), FUN_0027da6c (27da6c), FUN_00281810 (281810), FUN_00292da0 (292da0), FUN_002a0094 (2a0094), FUN_0030ebc8 (30ebc8), FUN_0030ee64 (30ee64), FUN_00320874 (320874), FUN_00321be8 (321be8), FUN_00322f08 (322f08), FUN_0032440c (32440c), FUN_00324640 (324640), FUN_00324874 (324874)
 
 #### FUN_0001bcf8 — funcs/_FUN_0001bcf8.cpp, Ghidra 1bcf8, 0 model attempt(s)
 
@@ -22489,9 +21862,1071 @@ undefined1  [16] FUN_000236a4(double param_1,long param_2)
 }
 ```
 
-### Not compiling yet — 160 × member reference base type 'X' (aka 'X') is not a structure or union
+#### FUN_000237d0 — funcs/_FUN_000237d0.cpp, Ghidra 237d0, 0 model attempt(s)
 
-All: FUN_00046e1c (46e1c), FUN_0004743c (4743c), FUN_00049f3c (49f3c), FUN_00052cdc (52cdc), FUN_00052e68 (52e68), FUN_00054e3c (54e3c), FUN_000553f8 (553f8), FUN_000632ac (632ac), FUN_00063be8 (63be8), FUN_00070418 (70418), FUN_000711a0 (711a0), FUN_00079a58 (79a58), FUN_00082e48 (82e48), FUN_0008fdd0 (8fdd0), FUN_00098e14 (98e14), FUN_0009a3dc (9a3dc), FUN_0009d504 (9d504), FUN_0009f6fc (9f6fc), FUN_000a16d4 (a16d4), FUN_000a34a8 (a34a8), FUN_000a86d8 (a86d8), FUN_000a8d30 (a8d30), FUN_000adbec (adbec), FUN_000b4abc (b4abc), FUN_000bf520 (bf520), FUN_000c2530 (c2530), FUN_000c972c (c972c), FUN_000cd044 (cd044), FUN_000d19d4 (d19d4), FUN_000db014 (db014), FUN_000dec6c (dec6c), FUN_000e08f0 (e08f0), FUN_000e13a4 (e13a4), FUN_000e1468 (e1468), FUN_000e1520 (e1520), FUN_000e18ec (e18ec), FUN_000eee08 (eee08), FUN_000fc850 (fc850), FUN_000ff2a8 (ff2a8), FUN_001005f0 (1005f0), FUN_00100dec (100dec), FUN_00101194 (101194), FUN_00101b18 (101b18), FUN_00101c5c (101c5c), FUN_00103704 (103704), FUN_001039b8 (1039b8), FUN_00103c90 (103c90), FUN_00104074 (104074), FUN_00105a7c (105a7c), FUN_00106144 (106144), FUN_00107c48 (107c48), FUN_001084c4 (1084c4), FUN_0010879c (10879c), FUN_001095a0 (1095a0), FUN_001161d0 (1161d0), FUN_00117cf4 (117cf4), FUN_0011bcf4 (11bcf4), FUN_00124c90 (124c90), FUN_0012a348 (12a348), FUN_00130f74 (130f74), FUN_0013131c (13131c), FUN_00132d04 (132d04), FUN_00134180 (134180), FUN_00154a18 (154a18), FUN_001592a8 (1592a8), FUN_0017648c (17648c), FUN_001a4810 (1a4810), FUN_001ad0a4 (1ad0a4), FUN_001b0ad0 (1b0ad0), FUN_001b3f80 (1b3f80), FUN_001b414c (1b414c), FUN_001b432c (1b432c), FUN_001b4f7c (1b4f7c), FUN_00263d00 (263d00), FUN_00274120 (274120), FUN_002871bc (2871bc), FUN_002889d8 (2889d8), FUN_00289044 (289044), FUN_002892f0 (2892f0), FUN_002893d0 (2893d0), FUN_0028c70c (28c70c), FUN_0028f630 (28f630), FUN_002920e0 (2920e0), FUN_00293694 (293694), FUN_002937b4 (2937b4), FUN_00293900 (293900), FUN_00296530 (296530), FUN_00299954 (299954), FUN_0029eef4 (29eef4), FUN_002a96d8 (2a96d8), FUN_002c5234 (2c5234), FUN_002c61c4 (2c61c4), FUN_002c66c8 (2c66c8), FUN_002c6934 (2c6934), FUN_002c7c58 (2c7c58), FUN_002cb67c (2cb67c), FUN_002ccb78 (2ccb78), FUN_002cd704 (2cd704), FUN_002cd99c (2cd99c), FUN_002cf1ec (2cf1ec), FUN_002d0844 (2d0844), FUN_002d09e4 (2d09e4), FUN_002d1bcc (2d1bcc), FUN_002e8350 (2e8350), FUN_002e8a7c (2e8a7c), FUN_002f0ed4 (2f0ed4), FUN_002f8058 (2f8058), FUN_002fb9a8 (2fb9a8), FUN_00306ac0 (306ac0), FUN_00311a68 (311a68), FUN_0032eee4 (32eee4), FUN_00334fc4 (334fc4), FUN_0033697c (33697c), FUN_0033abf8 (33abf8), FUN_0033acac (33acac), FUN_0033adac (33adac), FUN_0033e848 (33e848), FUN_0033f7a0 (33f7a0), FUN_0033f824 (33f824), FUN_0033f848 (33f848), FUN_0033f86c (33f86c), FUN_0033f970 (33f970), FUN_0033fa68 (33fa68), FUN_0033fbf4 (33fbf4), FUN_0034894c (34894c), FUN_0034a8f0 (34a8f0), FUN_0034b23c (34b23c), FUN_0034b3e8 (34b3e8), FUN_0034ca1c (34ca1c), FUN_00359be4 (359be4), FUN_0035ada8 (35ada8), FUN_0035af74 (35af74), FUN_0035b0fc (35b0fc), FUN_0035b910 (35b910), FUN_0035bc44 (35bc44), FUN_0035c2b4 (35c2b4), FUN_0035c508 (35c508), FUN_0035d540 (35d540), FUN_0035dfe8 (35dfe8), FUN_0035f010 (35f010), FUN_00360c60 (360c60), FUN_00366e0c (366e0c), FUN_00369d6c (369d6c), FUN_0036a548 (36a548), FUN_0036baa0 (36baa0), FUN_0036dd84 (36dd84), FUN_0036f6ec (36f6ec), FUN_00370d2c (370d2c), FUN_0037189c (37189c), FUN_003734c4 (3734c4), FUN_00373bbc (373bbc), FUN_00374c74 (374c74), FUN_00375310 (375310), FUN_003764bc (3764bc), FUN_003791d0 (3791d0), FUN_00379ad0 (379ad0), FUN_0037cefc (37cefc), FUN_0037e498 (37e498), FUN_0037f914 (37f914), FUN_00383b10 (383b10)
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000237d0.cpp:3:59: error: brackets are not allowed here; to declare an array, place the brackets after the identifier
+    3 | undefined1  [16] FUN_000237d0(double param_1,long param_2)
+      |             ~~~~                                          ^
+      |                                                           [16]
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000237d0.cpp:3:30: error: function cannot return array type 'undefined1[16]' (aka 'unsigned char[16]')
+    3 | undefined1  [16] FUN_000237d0(double param_1,long param_2)
+      |                              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000237d0.cpp:45:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   45 |   auVar1._8_8_ = 0;
+      |   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000237d0.cpp:46:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+   46 |   auVar1._0_8_ = (*(double *)(param_2 + 0x88) - *(double *)(param_2 + 0x90)) * 3.1 * 524288.0;
+      |   ~~~~~~^~~~~~
+4 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+undefined1  [16] FUN_000237d0(double param_1,long param_2)
+{
+  undefined1 auVar1 [16];
+  double *pdVar2;
+  double local_78;
+  double local_70;
+  double local_68;
+  double local_60;
+  double dStack_58;
+  double local_50;
+  double dStack_48;
+  double local_40;
+  double local_38;
+  double dStack_30;
+  long local_28;
+
+  pdVar2 = (double *)(param_2 + 0x90);
+  local_38 = *(double *)(param_2 + 0x38) * *pdVar2;
+  local_40 = param_1 * 1.9073486328125e-06 - local_38;
+  dStack_48 = *(double *)(param_2 + 0x78);
+  *(double *)(param_2 + 0x78) =
+       (*(double *)(param_2 + 0x70) + local_40) * *(double *)(param_2 + 0x28) -
+       dStack_48 * *(double *)(param_2 + 0x30);
+  local_50 = *(double *)(param_2 + 0x80);
+  *(double *)(param_2 + 0x80) =
+       (*(double *)(param_2 + 0x78) + dStack_48) * *(double *)(param_2 + 0x28) -
+       local_50 * *(double *)(param_2 + 0x30);
+  dStack_58 = *(double *)(param_2 + 0x88);
+  *(double *)(param_2 + 0x88) =
+       (*(double *)(param_2 + 0x80) + local_50) * *(double *)(param_2 + 0x28) -
+       dStack_58 * *(double *)(param_2 + 0x30);
+  local_60 = *(double *)(param_2 + 0x90);
+  *pdVar2 = (*(double *)(param_2 + 0x88) + dStack_58) * *(double *)(param_2 + 0x28) -
+            local_60 * *(double *)(param_2 + 0x30);
+  local_68 = *pdVar2;
+  *pdVar2 = local_68 + local_68 * local_68 * local_68 * -0.16666666666666666;
+  local_70 = -6.249809265136719;
+  local_78 = 6.249809265136719;
+  dStack_30 = param_1;
+  local_28 = param_2;
+  FUN_0000e748(pdVar2,&local_70,&local_78);
+  *(double *)(param_2 + 0x70) = local_40;
+  auVar1._8_8_ = 0;
+  auVar1._0_8_ = (*(double *)(param_2 + 0x88) - *(double *)(param_2 + 0x90)) * 3.1 * 524288.0;
+  return auVar1;
+}
+```
+Ghidra's pseudocode:
+```c
+undefined1  [16] FUN_000237d0(double param_1,long param_2)
+
+{
+  undefined1 auVar1 [16];
+  double *pdVar2;
+  double local_78;
+  double local_70;
+  double local_68;
+  double local_60;
+  double dStack_58;
+  double local_50;
+  double dStack_48;
+  double local_40;
+  double local_38;
+  double dStack_30;
+  long local_28;
+  
+  pdVar2 = (double *)(param_2 + 0x90);
+  local_38 = *(double *)(param_2 + 0x38) * *pdVar2;
+  local_40 = param_1 * 1.9073486328125e-06 - local_38;
+  dStack_48 = *(double *)(param_2 + 0x78);
+  *(double *)(param_2 + 0x78) =
+       (*(double *)(param_2 + 0x70) + local_40) * *(double *)(param_2 + 0x28) -
+       dStack_48 * *(double *)(param_2 + 0x30);
+  local_50 = *(double *)(param_2 + 0x80);
+  *(double *)(param_2 + 0x80) =
+       (*(double *)(param_2 + 0x78) + dStack_48) * *(double *)(param_2 + 0x28) -
+       local_50 * *(double *)(param_2 + 0x30);
+  dStack_58 = *(double *)(param_2 + 0x88);
+  *(double *)(param_2 + 0x88) =
+       (*(double *)(param_2 + 0x80) + local_50) * *(double *)(param_2 + 0x28) -
+       dStack_58 * *(double *)(param_2 + 0x30);
+  local_60 = *(double *)(param_2 + 0x90);
+  *pdVar2 = (*(double *)(param_2 + 0x88) + dStack_58) * *(double *)(param_2 + 0x28) -
+            local_60 * *(double *)(param_2 + 0x30);
+  local_68 = *pdVar2;
+  *pdVar2 = local_68 + local_68 * local_68 * local_68 * -0.16666666666666666;
+  local_70 = -6.249809265136719;
+  local_78 = 6.249809265136719;
+  dStack_30 = param_1;
+  local_28 = param_2;
+  FUN_0000e748(pdVar2,&local_70,&local_78);
+  *(double *)(param_2 + 0x70) = local_40;
+  auVar1._8_8_ = 0;
+  auVar1._0_8_ = (*(double *)(param_2 + 0x88) - *(double *)(param_2 + 0x90)) * 3.1 * 524288.0;
+  return auVar1;
+}
+```
+
+### Not compiling yet — 202 × operand of type 'X' where arithmetic or pointer type is required
+
+All: FUN_0001bdbc (1bdbc), FUN_0001be24 (1be24), FUN_0001c478 (1c478), FUN_0001e40c (1e40c), FUN_0001f3d0 (1f3d0), FUN_0001f9b0 (1f9b0), FUN_0001f9d8 (1f9d8), FUN_000200a4 (200a4), FUN_00020b78 (20b78), FUN_000212c4 (212c4), FUN_000214b8 (214b8), FUN_000216b8 (216b8), FUN_000218ac (218ac), FUN_0002261c (2261c), FUN_0002269c (2269c), FUN_000231a4 (231a4), FUN_000231e0 (231e0), FUN_00028548 (28548), FUN_000290e0 (290e0), FUN_0002a1a8 (2a1a8), FUN_0002af34 (2af34), FUN_0002d2a0 (2d2a0), FUN_0002d6bc (2d6bc), FUN_0002db38 (2db38), FUN_0002dba0 (2dba0), FUN_0002dc24 (2dc24), FUN_0002e1dc (2e1dc), FUN_0002e28c (2e28c), FUN_0002eb98 (2eb98), FUN_0003016c (3016c), FUN_000309dc (309dc), FUN_00030a20 (30a20), FUN_00030a88 (30a88), FUN_00030b0c (30b0c), FUN_00031844 (31844), FUN_0003211c (3211c), FUN_00032314 (32314), FUN_000325b0 (325b0), FUN_0003275c (3275c), FUN_00032c6c (32c6c), FUN_00033098 (33098), FUN_00033100 (33100), FUN_00033530 (33530), FUN_00035050 (35050), FUN_000350b8 (350b8), FUN_00035910 (35910), FUN_00037124 (37124), FUN_000374fc (374fc), FUN_00037874 (37874), FUN_00038018 (38018), FUN_00038214 (38214), FUN_00038d10 (38d10), FUN_00039758 (39758), FUN_000397b8 (397b8), FUN_00039bd0 (39bd0), FUN_00039c30 (39c30), FUN_0003b5cc (3b5cc), FUN_0003b63c (3b63c), FUN_0003c584 (3c584), FUN_0003cc0c (3cc0c), FUN_0003cc38 (3cc38), FUN_0003ccd4 (3ccd4), FUN_0003cd3c (3cd3c), FUN_0003cda4 (3cda4), FUN_0003ce0c (3ce0c), FUN_0003d804 (3d804), FUN_0003da74 (3da74), FUN_0003e818 (3e818), FUN_0003e904 (3e904), FUN_0003f83c (3f83c), FUN_0003f8a4 (3f8a4), FUN_0003f928 (3f928), FUN_00040414 (40414), FUN_000404f0 (404f0), FUN_00040f24 (40f24), FUN_00040f8c (40f8c), FUN_00041010 (41010), FUN_00042754 (42754), FUN_00042a58 (42a58), FUN_00042c54 (42c54), FUN_00043670 (43670), FUN_0004449c (4449c), FUN_00044f04 (44f04), FUN_00045d4c (45d4c), FUN_00047f44 (47f44), FUN_00049720 (49720), FUN_00049b98 (49b98), FUN_00049e9c (49e9c), FUN_0004a648 (4a648), FUN_0004a6e8 (4a6e8), FUN_0004aee0 (4aee0), FUN_0004af8c (4af8c), FUN_0004b27c (4b27c), FUN_0004b2dc (4b2dc), FUN_0004e474 (4e474), FUN_0004e4d8 (4e4d8), FUN_0004ef7c (4ef7c), FUN_0004efb8 (4efb8), FUN_0004effc (4effc), FUN_0004f038 (4f038), FUN_0004f07c (4f07c), FUN_0004f0e8 (4f0e8), FUN_0004f99c (4f99c), FUN_0004fa04 (4fa04), FUN_000502e0 (502e0), FUN_00051444 (51444), FUN_00051e10 (51e10), FUN_00051e78 (51e78), FUN_00051efc (51efc), FUN_000521a8 (521a8), FUN_00053568 (53568), FUN_00053890 (53890), FUN_00054330 (54330), FUN_00054b48 (54b48), FUN_00054ff8 (54ff8), FUN_00056d04 (56d04), FUN_000571dc (571dc), FUN_0005739c (5739c), FUN_00059a04 (59a04), FUN_00059a6c (59a6c), FUN_0005b0ec (5b0ec), FUN_0005beb4 (5beb4), FUN_0005c368 (5c368), FUN_0005cebc (5cebc), FUN_0005cf24 (5cf24), FUN_0005cfa8 (5cfa8), FUN_0005efac (5efac), FUN_0005efd0 (5efd0), FUN_0005f014 (5f014), FUN_0005f058 (5f058), FUN_0005f07c (5f07c), FUN_0005f0c0 (5f0c0), FUN_0006e75c (6e75c), FUN_0007498c (7498c), FUN_00088a18 (88a18), FUN_0008a154 (8a154), FUN_00091b6c (91b6c), FUN_0009cd94 (9cd94), FUN_000aa088 (aa088), FUN_000b091c (b091c), FUN_000b0de4 (b0de4), FUN_000b3344 (b3344), FUN_000ba84c (ba84c), FUN_000ba958 (ba958), FUN_000baaf4 (baaf4), FUN_000c1470 (c1470), FUN_000c6a8c (c6a8c), FUN_000cbc3c (cbc3c), FUN_000d4824 (d4824), FUN_000ec674 (ec674), FUN_000ec7c8 (ec7c8), FUN_000f3954 (f3954), FUN_000f7a84 (f7a84), FUN_000fe2d8 (fe2d8), FUN_000fe714 (fe714), FUN_000feb74 (feb74), FUN_000ffa7c (ffa7c), FUN_00102234 (102234), FUN_0010265c (10265c), FUN_0010338c (10338c), FUN_001036c8 (1036c8), FUN_00108250 (108250), FUN_00108c1c (108c1c), FUN_001090f0 (1090f0), FUN_00109774 (109774), FUN_00118a80 (118a80), FUN_0011a188 (11a188), FUN_0011b230 (11b230), FUN_00120648 (120648), FUN_00121510 (121510), FUN_0012180c (12180c), FUN_001268a8 (1268a8), FUN_00126f9c (126f9c), FUN_00128d20 (128d20), FUN_00128e8c (128e8c), FUN_0012d368 (12d368), FUN_0012d49c (12d49c), FUN_00135198 (135198), FUN_001681ec (1681ec), FUN_001751cc (1751cc), FUN_001bace4 (1bace4), FUN_001c16a0 (1c16a0), FUN_001c3210 (1c3210), FUN_001ca2cc (1ca2cc), FUN_001ce830 (1ce830), FUN_001ce8cc (1ce8cc), FUN_001dc568 (1dc568), FUN_001dc75c (1dc75c), FUN_001e773c (1e773c), FUN_001f7414 (1f7414), FUN_001f74d8 (1f74d8), FUN_00213ec8 (213ec8), FUN_0021d844 (21d844), FUN_0021ecd0 (21ecd0), FUN_0021ed38 (21ed38), FUN_0021ed9c (21ed9c), FUN_0021ee34 (21ee34), FUN_0021f360 (21f360), FUN_00220068 (220068), FUN_0022031c (22031c), FUN_00220b10 (220b10), FUN_00220ee4 (220ee4)
+
+#### FUN_0001bdbc — funcs/_FUN_0001bdbc.cpp, Ghidra 1bdbc, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001bdbc.cpp:7:18: error: operand of type 'void' where arithmetic or pointer type is required
+    7 |   pvVar1 = (long)FUN_0001bd9c(param_1);
+      |                  ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001bdbc(undefined8 *param_1)
+{
+  void *pvVar1;
+
+  pvVar1 = (long)FUN_0001bd9c(param_1);
+  FUN_00219d00(pvVar1);
+  return;
+}
+```
+Notes:
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_0001bdbc(undefined8 *param_1)
+
+{
+  void *pvVar1;
+  
+  pvVar1 = (void *)FUN_0001bd9c(param_1);
+  FUN_00219d00(pvVar1);
+  return;
+}
+```
+
+#### FUN_0001be24 — funcs/_FUN_0001be24.cpp, Ghidra 1be24, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001be24.cpp:7:18: error: operand of type 'void' where arithmetic or pointer type is required
+    7 |   pvVar1 = (long)FUN_0001be04(param_1);
+      |                  ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001be24(undefined8 *param_1)
+{
+  void *pvVar1;
+
+  pvVar1 = (long)FUN_0001be04(param_1);
+  FUN_001f1d48(pvVar1);
+  return;
+}
+```
+Notes:
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'void *' from incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_0001be24(undefined8 *param_1)
+
+{
+  void *pvVar1;
+  
+  pvVar1 = (void *)FUN_0001be04(param_1);
+  FUN_001f1d48(pvVar1);
+  return;
+}
+```
+
+#### FUN_0001c478 — funcs/_FUN_0001c478.cpp, Ghidra 1c478, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001c478.cpp:24:24: error: operand of type 'void' where arithmetic or pointer type is required
+   24 |       int lVar2 = (int)FUN_0001c528(lVar1, local_2c);
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001c478(long param_1,int param_2)
+{
+  long lVar1;
+  long lVar2;
+  int local_2c;
+
+  lVar1 = 0;
+  if (param_1 != 0) {
+    lVar1 = _dynamic_cast(param_1,&GD_PTR_vtable_00443028,&GD_PTR_vtable_00427f88,0);
+  }
+  if (lVar1 == 0) {
+    lVar1 = 0;
+    if (param_1 != 0) {
+      lVar1 = _dynamic_cast(param_1,&GD_PTR_vtable_00443028,&GD_PTR_vtable_0042a818,0);
+    }
+    if (lVar1 != 0) {
+      FUN_00037124(lVar1,param_2);
+    }
+  }
+  else {
+    for (local_2c = 0; local_2c < 0x10; local_2c = local_2c + 1) {
+      int lVar2 = (int)FUN_0001c528(lVar1, local_2c);
+      FUN_00037124(lVar2,param_2);
+    }
+  }
+  return;
+}
+```
+Notes:
+- 10-21 16:47 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 16:47 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 16:47 [compile] initializing 'long' with an expression of incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_0001c478(long param_1,int param_2)
+
+{
+  long lVar1;
+  long lVar2;
+  int local_2c;
+  
+  lVar1 = 0;
+  if (param_1 != 0) {
+    lVar1 = ___dynamic_cast(param_1,&PTR_vtable_00443028,&PTR_vtable_00427f88,0);
+  }
+  if (lVar1 == 0) {
+    lVar1 = 0;
+    if (param_1 != 0) {
+      lVar1 = ___dynamic_cast(param_1,&PTR_vtable_00443028,&PTR_vtable_0042a818,0);
+    }
+    if (lVar1 != 0) {
+      FUN_00037124(lVar1,param_2);
+    }
+  }
+  else {
+    for (local_2c = 0; local_2c < 0x10; local_2c = local_2c + 1) {
+      lVar2 = FUN_0001c528(lVar1,local_2c);
+      FUN_00037124(lVar2,param_2);
+    }
+  }
+  return;
+}
+```
+
+#### FUN_0001e40c — funcs/_FUN_0001e40c.cpp, Ghidra 1e40c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001e40c.cpp:10:22: error: operand of type 'void' where arithmetic or pointer type is required
+   10 |     int lVar1 = (int)FUN_0001c528(param_1, local_2c);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001e40c(long param_1)
+{
+  long lVar1;
+  long *plVar2;
+  undefined4 local_2c;
+
+  for (local_2c = 0; local_2c < 0x10; local_2c = local_2c + 1) {
+    int lVar1 = (int)FUN_0001c528(param_1, local_2c);
+    FUN_00036688(lVar1,1);
+  }
+  plVar2 = (long *)FUN_0001e4b0(param_1);
+  FUN_0000b11c(plVar2);
+  FUN_0001e4c4(param_1);
+  FUN_001dc654(param_1 + 0x5c0);
+  FUN_001dc654(param_1 + 0x638);
+  FUN_001dc654(param_1 + 0x6b0);
+  FUN_0000b11c((long *)(param_1 + 0x7d8));
+  return;
+}
+```
+Notes:
+- 10-21 16:47 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 16:47 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 16:47 [compile] initializing 'long' with an expression of incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_0001e40c(long param_1)
+
+{
+  long lVar1;
+  long *plVar2;
+  undefined4 local_2c;
+  
+  for (local_2c = 0; local_2c < 0x10; local_2c = local_2c + 1) {
+    lVar1 = FUN_0001c528(param_1,local_2c);
+    FUN_00036688(lVar1,1);
+  }
+  plVar2 = (long *)FUN_0001e4b0(param_1);
+  FUN_0000b11c(plVar2);
+  FUN_0001e4c4(param_1);
+  FUN_001dc654(param_1 + 0x5c0);
+  FUN_001dc654(param_1 + 0x638);
+  FUN_001dc654(param_1 + 0x6b0);
+  FUN_0000b11c((long *)(param_1 + 0x7d8));
+  return;
+}
+```
+
+#### FUN_0001f3d0 — funcs/_FUN_0001f3d0.cpp, Ghidra 1f3d0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001f3d0.cpp:8:17: error: operand of type 'void' where arithmetic or pointer type is required
+    8 |   lVar1 = (long)FUN_00009cb0(lVar1);
+      |                 ^~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001f3d0(long param_1)
+{
+  long lVar1;
+
+  lVar1 = FUN_00009c44((undefined8 *)(param_1 + 0x538));
+  lVar1 = (long)FUN_00009cb0(lVar1);
+  FUN_00044c5c(lVar1);
+  FUN_001dc654(param_1 + 0x6b0);
+  return;
+}
+```
+Notes:
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_0001f3d0(long param_1)
+
+{
+  long lVar1;
+  
+  lVar1 = FUN_00009c44((undefined8 *)(param_1 + 0x538));
+  lVar1 = FUN_00009cb0(lVar1);
+  FUN_00044c5c(lVar1);
+  FUN_001dc654(param_1 + 0x6b0);
+  return;
+}
+```
+
+#### FUN_0001f9b0 — funcs/_FUN_0001f9b0.cpp, Ghidra 1f9b0, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001f9b0.cpp:7:20: error: operand of type 'void' where arithmetic or pointer type is required
+    7 |   plVar1 = (long *)FUN_0001f710(param_1,param_2);
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001f9b0(long param_1,int param_2)
+{
+  long *plVar1;
+
+  plVar1 = (long *)FUN_0001f710(param_1,param_2);
+  FUN_00012bb8(plVar1);
+  return;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_0001f9b0(long param_1,int param_2)
+
+{
+  long *plVar1;
+  
+  plVar1 = (long *)FUN_0001f710(param_1,param_2);
+  FUN_00012bb8(plVar1);
+  return;
+}
+```
+
+#### FUN_0001f9d8 — funcs/_FUN_0001f9d8.cpp, Ghidra 1f9d8, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001f9d8.cpp:7:20: error: operand of type 'void' where arithmetic or pointer type is required
+    7 |   plVar1 = (long *)FUN_0001f754(param_2,param_3);
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001f9d8(undefined4 param_1,long param_2,int param_3)
+{
+  long *plVar1;
+
+  plVar1 = (long *)FUN_0001f754(param_2,param_3);
+  FUN_00012be0(param_1,plVar1);
+  return;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_0001f9d8(undefined4 param_1,long param_2,int param_3)
+
+{
+  long *plVar1;
+  
+  plVar1 = (long *)FUN_0001f754(param_2,param_3);
+  FUN_00012be0(param_1,plVar1);
+  return;
+}
+```
+
+#### FUN_000200a4 — funcs/_FUN_000200a4.cpp, Ghidra 200a4, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000200a4.cpp:7:20: error: operand of type 'void' where arithmetic or pointer type is required
+    7 |   plVar1 = (long *)FUN_0001da00(param_1);
+      |                    ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000200a4(long param_1,long *param_2)
+{
+  long *plVar1;
+
+  plVar1 = (long *)FUN_0001da00(param_1);
+  FUN_001cb910(plVar1,param_2,1);
+  return;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_000200a4(long param_1,long *param_2)
+
+{
+  long *plVar1;
+  
+  plVar1 = (long *)FUN_0001da00(param_1);
+  FUN_001cb910(plVar1,param_2,1);
+  return;
+}
+```
+
+### Not compiling yet — 161 × member reference base type 'X' (aka 'X') is not a structure or union
+
+All: FUN_0001b2dc (1b2dc), FUN_00046e1c (46e1c), FUN_0004743c (4743c), FUN_00049f3c (49f3c), FUN_00052cdc (52cdc), FUN_00052e68 (52e68), FUN_00054e3c (54e3c), FUN_000553f8 (553f8), FUN_000632ac (632ac), FUN_00063be8 (63be8), FUN_00070418 (70418), FUN_000711a0 (711a0), FUN_00079a58 (79a58), FUN_00082e48 (82e48), FUN_0008fdd0 (8fdd0), FUN_00098e14 (98e14), FUN_0009a3dc (9a3dc), FUN_0009d504 (9d504), FUN_0009f6fc (9f6fc), FUN_000a16d4 (a16d4), FUN_000a34a8 (a34a8), FUN_000a86d8 (a86d8), FUN_000a8d30 (a8d30), FUN_000adbec (adbec), FUN_000b4abc (b4abc), FUN_000bf520 (bf520), FUN_000c2530 (c2530), FUN_000c972c (c972c), FUN_000cd044 (cd044), FUN_000d19d4 (d19d4), FUN_000db014 (db014), FUN_000dec6c (dec6c), FUN_000e08f0 (e08f0), FUN_000e13a4 (e13a4), FUN_000e1468 (e1468), FUN_000e1520 (e1520), FUN_000e18ec (e18ec), FUN_000eee08 (eee08), FUN_000fc850 (fc850), FUN_000ff2a8 (ff2a8), FUN_001005f0 (1005f0), FUN_00100dec (100dec), FUN_00101194 (101194), FUN_00101b18 (101b18), FUN_00101c5c (101c5c), FUN_00103704 (103704), FUN_001039b8 (1039b8), FUN_00103c90 (103c90), FUN_00104074 (104074), FUN_00105a7c (105a7c), FUN_00106144 (106144), FUN_00107c48 (107c48), FUN_001084c4 (1084c4), FUN_0010879c (10879c), FUN_001095a0 (1095a0), FUN_001161d0 (1161d0), FUN_00117cf4 (117cf4), FUN_0011bcf4 (11bcf4), FUN_00124c90 (124c90), FUN_0012a348 (12a348), FUN_00130f74 (130f74), FUN_0013131c (13131c), FUN_00132d04 (132d04), FUN_00134180 (134180), FUN_00154a18 (154a18), FUN_001592a8 (1592a8), FUN_0017648c (17648c), FUN_001a4810 (1a4810), FUN_001ad0a4 (1ad0a4), FUN_001b0ad0 (1b0ad0), FUN_001b3f80 (1b3f80), FUN_001b414c (1b414c), FUN_001b432c (1b432c), FUN_001b4f7c (1b4f7c), FUN_00263d00 (263d00), FUN_00274120 (274120), FUN_002871bc (2871bc), FUN_002889d8 (2889d8), FUN_00289044 (289044), FUN_002892f0 (2892f0), FUN_002893d0 (2893d0), FUN_0028c70c (28c70c), FUN_0028f630 (28f630), FUN_002920e0 (2920e0), FUN_00293694 (293694), FUN_002937b4 (2937b4), FUN_00293900 (293900), FUN_00296530 (296530), FUN_00299954 (299954), FUN_0029eef4 (29eef4), FUN_002a96d8 (2a96d8), FUN_002c5234 (2c5234), FUN_002c61c4 (2c61c4), FUN_002c66c8 (2c66c8), FUN_002c6934 (2c6934), FUN_002c7c58 (2c7c58), FUN_002cb67c (2cb67c), FUN_002ccb78 (2ccb78), FUN_002cd704 (2cd704), FUN_002cd99c (2cd99c), FUN_002cf1ec (2cf1ec), FUN_002d0844 (2d0844), FUN_002d09e4 (2d09e4), FUN_002d1bcc (2d1bcc), FUN_002e8350 (2e8350), FUN_002e8a7c (2e8a7c), FUN_002f0ed4 (2f0ed4), FUN_002f8058 (2f8058), FUN_002fb9a8 (2fb9a8), FUN_00306ac0 (306ac0), FUN_00311a68 (311a68), FUN_0032eee4 (32eee4), FUN_00334fc4 (334fc4), FUN_0033697c (33697c), FUN_0033abf8 (33abf8), FUN_0033acac (33acac), FUN_0033adac (33adac), FUN_0033e848 (33e848), FUN_0033f7a0 (33f7a0), FUN_0033f824 (33f824), FUN_0033f848 (33f848), FUN_0033f86c (33f86c), FUN_0033f970 (33f970), FUN_0033fa68 (33fa68), FUN_0033fbf4 (33fbf4), FUN_0034894c (34894c), FUN_0034a8f0 (34a8f0), FUN_0034b23c (34b23c), FUN_0034b3e8 (34b3e8), FUN_0034ca1c (34ca1c), FUN_00359be4 (359be4), FUN_0035ada8 (35ada8), FUN_0035af74 (35af74), FUN_0035b0fc (35b0fc), FUN_0035b910 (35b910), FUN_0035bc44 (35bc44), FUN_0035c2b4 (35c2b4), FUN_0035c508 (35c508), FUN_0035d540 (35d540), FUN_0035dfe8 (35dfe8), FUN_0035f010 (35f010), FUN_00360c60 (360c60), FUN_00366e0c (366e0c), FUN_00369d6c (369d6c), FUN_0036a548 (36a548), FUN_0036baa0 (36baa0), FUN_0036dd84 (36dd84), FUN_0036f6ec (36f6ec), FUN_00370d2c (370d2c), FUN_0037189c (37189c), FUN_003734c4 (3734c4), FUN_00373bbc (373bbc), FUN_00374c74 (374c74), FUN_00375310 (375310), FUN_003764bc (3764bc), FUN_003791d0 (3791d0), FUN_00379ad0 (379ad0), FUN_0037cefc (37cefc), FUN_0037e498 (37e498), FUN_0037f914 (37f914), FUN_00383b10 (383b10)
+
+#### FUN_0001b2dc — funcs/_FUN_0001b2dc.cpp, Ghidra 1b2dc, 0 model attempt(s)
+
+Compiler output:
+```
+array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+   98 |       auVar9 = FUN_0001bd40((double)(long)(int)local_d4,param_1 + 0x2b0);
+      |       ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:103:25: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+  103 |            (float)auVar9._0_8_ * local_bc * local_c8 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:137:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+  137 |       auVar9 = FUN_0001bcf8((double)local_d8,param_1 + 0x2b0);
+      |       ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:138:31: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+  138 |       local_d8 = (float)auVar9._0_8_;
+      |                         ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:139:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+  139 |       auVar9 = FUN_0001bd40((double)local_dc,param_1 + 0x2b0);
+      |       ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:144:25: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+  144 |            (float)auVar9._0_8_ * 32767.0 * local_bc * local_c8 +
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:158:15: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+  158 |         auVar9._0_4_ = FUN_00012f48(&local_b4,&local_d4);
+      |         ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:159:15: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+  159 |         auVar9._4_12_ = extraout_var;
+      |         ~~~~~~^~~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:160:26: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+  160 |         local_b8 = auVar9._0_4_;
+      |                    ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:161:29: error: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'float'
+  161 |         fVar7 = (float)powf(auVar9,0x3e4ccccd);
+      |                             ^~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/math.h:452:24: note: passing argument to parameter here
+  452 | extern float powf(float, float);
+      |                        ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:163:38: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+  163 |         local_c8 = (float)powf(auVar9._0_4_,0x40000000);
+      |                                ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:189:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+  189 |       auVar9 = FUN_0001bcf8((double)local_dc,param_1 + 0x2b0);
+      |       ~~~~~~ ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:190:31: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
+  190 |       local_dc = (float)auVar9._0_8_;
+      |                         ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:191:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
+  191 |       auVar9 = FUN_0001bd40((double)fVar7,param_1 + 0x2b0);
+      |       ~~~~~~ ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001b2dc(long param_1,long param_2,long param_3,int param_4)
+{
+    uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
+
+  int iVar1;
+  bool bVar2;
+  int iVar3;
+  long lVar4;
+  float fVar5;
+  float fVar6;
+  float fVar7;
+  double dVar8;
+  undefined1 extraout_var [12];
+  undefined1 auVar9 [16];
+  float fVar10;
+  float local_dc;
+  float local_d8;
+  float local_d4;
+  float local_d0;
+  float local_cc;
+  float local_c8;
+  float local_c4;
+  float local_c0;
+  float local_bc;
+  float local_b8;
+  float local_b4;
+  byte local_ae;
+  byte local_ad;
+  int local_ac;
+  long local_a8;
+  long local_a0;
+  long lStack_98;
+
+  local_ac = param_4;
+  local_a8 = param_3;
+  local_a0 = param_2;
+  lStack_98 = param_1;
+  bVar2 = FUN_0000ebb0(param_1 + 0x270);
+  if (bVar2) {
+    local_ad = true;
+  }
+  else {
+    local_ad = FUN_0000ebb0(param_1 + 0x288);
+  }
+  local_ae = FUN_0000ebb0(param_1 + 0x250);
+  local_b4 = 0.0001;
+  local_b8 = (float)FUN_0000fba4(param_1 + 0x250);
+  local_b8 = FUN_00012f48(&local_b4,&local_b8);
+  local_bc = (float)FUN_0000fba4(param_1 + 0x270);
+  local_c0 = (float)FUN_0000fba4(param_1 + 0x288);
+  fVar7 = local_b8;
+  switch(*(undefined4 *)(param_1 + 0x248)) {
+  case 0:
+    dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
+    local_c4 = (float)((int)dVar8 << 2 | 1);
+    fVar7 = (float)powf(local_b8,0x40000000);
+    local_c8 = fVar7 * 100.0 + 1.0;
+    for (local_cc = 0.0; (int)local_cc < local_ac; local_cc = (float)((int)local_cc + 1)) {
+      if ((local_ae & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x250);
+        local_d0 = (float)FUN_0000ec38(param_1 + 0x250);
+        local_b8 = FUN_00012f48(&local_b4,&local_d0);
+        dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
+        local_c4 = (float)((int)dVar8 << 2 | 1);
+        fVar7 = (float)powf(local_b8,0x40000000);
+        local_c8 = fVar7 * 100.0 + 1.0;
+      }
+      if ((local_ad & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x270);
+        FUN_0000ec04(param_1 + 0x288);
+        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
+        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
+      }
+      local_d0 = (float)FUN_0000b350(*(float *)(local_a0 + (long)(int)local_cc * 4));
+      iVar3 = FUN_0000b350(*(float *)(local_a8 + (long)(int)local_cc * 4));
+      local_d0 = (float)((int)local_d0 * (int)local_c4 >> 7);
+      local_d4 = (float)(iVar3 * (int)local_c4 >> 7);
+      local_dc = 4.59163e-41;
+      local_d8 = -NAN;
+      FUN_0001bcc0((int *)&local_d0,(int *)&local_d8,(int *)&local_dc);
+      local_dc = 4.59163e-41;
+      local_d8 = -NAN;
+      FUN_0001bcc0((int *)&local_d4,(int *)&local_d8,(int *)&local_dc);
+      iVar3 = (int)local_d0 << 7;
+      iVar1 = (int)local_d4 << 7;
+      local_d0 = 0.0;
+      if (local_c4 != 0.0) {
+        local_d0 = (float)(iVar3 / (int)local_c4);
+      }
+      local_d4 = 0.0;
+      if (local_c4 != 0.0) {
+        local_d4 = (float)(iVar1 / (int)local_c4);
+      }
+      auVar9 = FUN_0001bcf8((double)(int)local_d0,param_1 + 0x2b0);
+      local_d8 = (float)auVar9._0_8_;
+      auVar9 = FUN_0001bd40((double)(long)(int)local_d4,param_1 + 0x2b0);
+      lVar4 = (long)(int)local_cc * 4;
+      *(float *)(local_a0 + lVar4) =
+           local_d8 * local_bc * local_c8 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
+      *(float *)(local_a8 + lVar4) =
+           (float)auVar9._0_8_ * local_bc * local_c8 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
+      ;
+    }
+    break;
+  case 1:
+    local_c4 = (float)powf(local_b8 * 10.0,0x40200000);
+    local_c8 = (float)powf(fVar7 / 4.0,0x3e4ccccd);
+    local_c8 = 1.0 - local_c8;
+    for (local_cc = 0.0; (int)local_cc < local_ac; local_cc = (float)((int)local_cc + 1)) {
+      if ((local_ae & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x250);
+        local_d0 = (float)FUN_0000ec38(param_1 + 0x250);
+        fVar7 = FUN_00012f48(&local_b4,&local_d0);
+        local_b8 = fVar7;
+        local_c4 = (float)powf(fVar7 * 10.0,0x40200000);
+        local_c8 = (float)powf(fVar7 / 4.0,0x3e4ccccd);
+        local_c8 = 1.0 - local_c8;
+      }
+      if ((local_ad & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x270);
+        FUN_0000ec04(param_1 + 0x288);
+        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
+        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
+      }
+      fVar7 = local_c4;
+      local_d0 = *(float *)(local_a0 + (long)(int)local_cc * 4) / 32767.0;
+      local_d4 = *(float *)(local_a8 + (long)(int)local_cc * 4) / 32767.0;
+      fVar10 = (local_c4 + 1.0) * local_d0;
+      fVar5 = FUN_0001bd88(local_d0);
+      fVar6 = local_c4;
+      local_d8 = fVar10 / (fVar5 * fVar7 + 1.0);
+      fVar5 = (local_c4 + 1.0) * local_d4;
+      fVar7 = FUN_0001bd88(local_d4);
+      local_dc = fVar5 / (fVar7 * fVar6 + 1.0);
+      auVar9 = FUN_0001bcf8((double)local_d8,param_1 + 0x2b0);
+      local_d8 = (float)auVar9._0_8_;
+      auVar9 = FUN_0001bd40((double)local_dc,param_1 + 0x2b0);
+      lVar4 = (long)(int)local_cc * 4;
+      *(float *)(local_a0 + lVar4) =
+           local_d8 * 32767.0 * local_bc * local_c8 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
+      *(float *)(local_a8 + lVar4) =
+           (float)auVar9._0_8_ * 32767.0 * local_bc * local_c8 +
+           local_c0 * *(float *)(local_a8 + lVar4) + 0.0;
+    }
+    break;
+  case 2:
+    fVar6 = (float)powf(local_b8,0x3e4ccccd);
+    local_c4 = 1.01 - fVar6;
+    local_c8 = (float)powf(fVar7,0x40000000);
+    local_c8 = local_c8 + 1.0;
+    local_cc = 1.0 / ((1.01 - fVar6) * 2.75) + 0.6;
+    for (local_d0 = 0.0; (int)local_d0 < local_ac; local_d0 = (float)((int)local_d0 + 1)) {
+      if ((local_ae & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x250);
+        local_d4 = (float)FUN_0000ec38(param_1 + 0x250);
+        auVar9._0_4_ = FUN_00012f48(&local_b4,&local_d4);
+        auVar9._4_12_ = extraout_var;
+        local_b8 = auVar9._0_4_;
+        fVar7 = (float)powf(auVar9,0x3e4ccccd);
+        local_c4 = 1.01 - fVar7;
+        local_c8 = (float)powf(auVar9._0_4_,0x40000000);
+        local_c8 = local_c8 + 1.0;
+        local_cc = 1.0 / ((1.01 - fVar7) * 2.75) + 0.6;
+      }
+      if ((local_ad & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x270);
+        FUN_0000ec04(param_1 + 0x288);
+        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
+        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
+      }
+      fVar7 = (*(float *)(local_a0 + (long)(int)local_d0 * 4) / 32767.0) * local_c8;
+      local_d8 = (*(float *)(local_a8 + (long)(int)local_d0 * 4) / 32767.0) * local_c8;
+      local_d4 = fVar7;
+      if ((local_c4 < fVar7) || (fVar7 < -local_c4)) {
+        fVar7 = (float)fmodf(fVar7 - local_c4,local_c4 * 4.0);
+        fVar7 = FUN_0001bd88(fVar7);
+        fVar7 = FUN_0001bd88(fVar7 + local_c4 * -2.0);
+        fVar7 = fVar7 - local_c4;
+      }
+      local_dc = fVar7;
+      if ((local_c4 < local_d8) || (fVar7 = local_d8, local_d8 < -local_c4)) {
+        fVar7 = (float)fmodf(local_d8 - local_c4,local_c4 * 4.0);
+        fVar7 = FUN_0001bd88(fVar7);
+        fVar7 = FUN_0001bd88(fVar7 + local_c4 * -2.0);
+        fVar7 = fVar7 - local_c4;
+      }
+      auVar9 = FUN_0001bcf8((double)local_dc,param_1 + 0x2b0);
+      local_dc = (float)auVar9._0_8_;
+      auVar9 = FUN_0001bd40((double)fVar7,param_1 + 0x2b0);
+      lVar4 = (long)(int)local_d0 * 4;
+      *(float *)(local_a0 + lVar4) =
+           local_dc * 32767.0 * local_bc * local_cc + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
+      *(float *)(local_a8 + lVar4) =
+           (float)auVar9._0_8_ * 32767.0 * local_bc * local_cc +
+           local_c0 * *(float *)(local_a8 + lVar4) + 0.0;
+    }
+    break;
+  case 3:
+    local_c4 = (float)powf(local_b8 / 2.0,0x3f733333);
+    local_c4 = 1.5 - local_c4;
+    for (local_c8 = 0.0; (int)local_c8 < local_ac; local_c8 = (float)((int)local_c8 + 1)) {
+      if ((local_ae & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x250);
+        local_cc = (float)FUN_0000ec38(param_1 + 0x250);
+        local_b8 = FUN_00012f48(&local_b4,&local_cc);
+        local_c4 = (float)powf(local_b8 / 2.0,0x3f733333);
+        local_c4 = 1.5 - local_c4;
+      }
+      if ((local_ad & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x270);
+        FUN_0000ec04(param_1 + 0x288);
+        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
+        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
+      }
+      local_cc = *(float *)(local_a0 + (long)(int)local_c8 * 4);
+      local_d0 = *(float *)(local_a8 + (long)(int)local_c8 * 4);
+      iVar3 = FUN_0000b350(local_cc);
+      iVar3 = FUN_00018cac(iVar3);
+      fVar7 = (float)powf((float)iVar3 / 32767.0,1.0 - local_b8 * 0.9);
+      local_d4 = (fVar7 * 32767.0 - *(float *)(param_1 + 0x2a4)) +
+                 *(float *)(param_1 + 0x2a0) * 0.99 + 0.0;
+      *(float *)(param_1 + 0x2a0) = local_d4;
+      *(float *)(param_1 + 0x2a4) = fVar7 * 32767.0;
+      iVar3 = FUN_0000b350(local_d0);
+      iVar3 = FUN_00018cac(iVar3);
+      fVar7 = (float)powf((float)iVar3 / 32767.0,1.0 - local_b8 * 0.9);
+      local_d8 = (fVar7 * 32767.0 - *(float *)(param_1 + 0x2ac)) +
+                 *(float *)(param_1 + 0x2a8) * 0.99 + 0.0;
+      *(float *)(param_1 + 0x2a8) = local_d8;
+      *(float *)(param_1 + 0x2ac) = fVar7 * 32767.0;
+      auVar9 = FUN_0001bcf8((double)local_d4,param_1 + 0x2b0);
+      local_d4 = (float)auVar9._0_8_;
+      auVar9 = FUN_0001bd40((double)local_d8,param_1 + 0x2b0);
+      lVar4 = (long)(int)local_c8 * 4;
+      *(float *)(local_a0 + lVar4) =
+           local_d4 * local_bc * local_c4 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
+      *(float *)(local_a8 + lVar4) =
+           (float)auVar9._0_8_ * local_bc * local_c4 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
+      ;
+    }
+  }
+  return;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_0001b2dc(long param_1,long param_2,long param_3,int param_4)
+
+{
+  int iVar1;
+  bool bVar2;
+  int iVar3;
+  long lVar4;
+  float fVar5;
+  float fVar6;
+  float fVar7;
+  double dVar8;
+  undefined1 extraout_var [12];
+  undefined1 auVar9 [16];
+  float fVar10;
+  float local_dc;
+  float local_d8;
+  float local_d4;
+  float local_d0;
+  float local_cc;
+  float local_c8;
+  float local_c4;
+  float local_c0;
+  float local_bc;
+  float local_b8;
+  float local_b4;
+  byte local_ae;
+  byte local_ad;
+  int local_ac;
+  long local_a8;
+  long local_a0;
+  long lStack_98;
+  
+  local_ac = param_4;
+  local_a8 = param_3;
+  local_a0 = param_2;
+  lStack_98 = param_1;
+  bVar2 = FUN_0000ebb0(param_1 + 0x270);
+  if (bVar2) {
+    local_ad = true;
+  }
+  else {
+    local_ad = FUN_0000ebb0(param_1 + 0x288);
+  }
+  local_ae = FUN_0000ebb0(param_1 + 0x250);
+  local_b4 = 0.0001;
+  local_b8 = (float)FUN_0000fba4(param_1 + 0x250);
+  local_b8 = FUN_00012f48(&local_b4,&local_b8);
+  local_bc = (float)FUN_0000fba4(param_1 + 0x270);
+  local_c0 = (float)FUN_0000fba4(param_1 + 0x288);
+  fVar7 = local_b8;
+  switch(*(undefined4 *)(param_1 + 0x248)) {
+  case 0:
+    dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
+    local_c4 = (float)((int)dVar8 << 2 | 1);
+    fVar7 = (float)_powf(local_b8,0x40000000);
+    local_c8 = fVar7 * 100.0 + 1.0;
+    for (local_cc = 0.0; (int)local_cc < local_ac; local_cc = (float)((int)local_cc + 1)) {
+      if ((local_ae & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x250);
+        local_d0 = (float)FUN_0000ec38(param_1 + 0x250);
+        local_b8 = FUN_00012f48(&local_b4,&local_d0);
+        dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
+        local_c4 = (float)((int)dVar8 << 2 | 1);
+        fVar7 = (float)_powf(local_b8,0x40000000);
+        local_c8 = fVar7 * 100.0 + 1.0;
+      }
+      if ((local_ad & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x270);
+        FUN_0000ec04(param_1 + 0x288);
+        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
+        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
+      }
+      local_d0 = (float)FUN_0000b350(*(float *)(local_a0 + (long)(int)local_cc * 4));
+      iVar3 = FUN_0000b350(*(float *)(local_a8 + (long)(int)local_cc * 4));
+      local_d0 = (float)((int)local_d0 * (int)local_c4 >> 7);
+      local_d4 = (float)(iVar3 * (int)local_c4 >> 7);
+      local_dc = 4.59163e-41;
+      local_d8 = -NAN;
+      FUN_0001bcc0((int *)&local_d0,(int *)&local_d8,(int *)&local_dc);
+      local_dc = 4.59163e-41;
+      local_d8 = -NAN;
+      FUN_0001bcc0((int *)&local_d4,(int *)&local_d8,(int *)&local_dc);
+      iVar3 = (int)local_d0 << 7;
+      iVar1 = (int)local_d4 << 7;
+      local_d0 = 0.0;
+      if (local_c4 != 0.0) {
+        local_d0 = (float)(iVar3 / (int)local_c4);
+      }
+      local_d4 = 0.0;
+      if (local_c4 != 0.0) {
+        local_d4 = (float)(iVar1 / (int)local_c4);
+      }
+      auVar9 = FUN_0001bcf8((double)(int)local_d0,param_1 + 0x2b0);
+      local_d8 = (float)auVar9._0_8_;
+      auVar9 = FUN_0001bd40((double)(long)(int)local_d4,param_1 + 0x2b0);
+      lVar4 = (long)(int)local_cc * 4;
+      *(float *)(local_a0 + lVar4) =
+           local_d8 * local_bc * local_c8 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
+      *(float *)(local_a8 + lVar4) =
+           (float)auVar9._0_8_ * local_bc * local_c8 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
+      ;
+    }
+    break;
+  case 1:
+    local_c4 = (float)_powf(local_b8 * 10.0,0x40200000);
+    local_c8 = (float)_powf(fVar7 / 4.0,0x3e4ccccd);
+    local_c8 = 1.0 - local_c8;
+    for (local_cc = 0.0; (int)local_cc < local_ac; local_cc = (float)((int)local_cc + 1)) {
+      if ((local_ae & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x250);
+        local_d0 = (float)FUN_0000ec38(param_1 + 0x250);
+        fVar7 = FUN_00012f48(&local_b4,&local_d0);
+        local_b8 = fVar7;
+        local_c4 = (float)_powf(fVar7 * 10.0,0x40200000);
+        local_c8 = (float)_powf(fVar7 / 4.0,0x3e4ccccd);
+        local_c8 = 1.0 - local_c8;
+      }
+      if ((local_ad & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x270);
+        FUN_0000ec04(param_1 + 0x288);
+        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
+        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
+      }
+      fVar7 = local_c4;
+      local_d0 = *(float *)(local_a0 + (long)(int)local_cc * 4) / 32767.0;
+      local_d4 = *(float *)(local_a8 + (long)(int)local_cc * 4) / 32767.0;
+      fVar10 = (local_c4 + 1.0) * local_d0;
+      fVar5 = FUN_0001bd88(local_d0);
+      fVar6 = local_c4;
+      local_d8 = fVar10 / (fVar5 * fVar7 + 1.0);
+      fVar5 = (local_c4 + 1.0) * local_d4;
+      fVar7 = FUN_0001bd88(local_d4);
+      local_dc = fVar5 / (fVar7 * fVar6 + 1.0);
+      auVar9 = FUN_0001bcf8((double)local_d8,param_1 + 0x2b0);
+      local_d8 = (float)auVar9._0_8_;
+      auVar9 = FUN_0001bd40((double)local_dc,param_1 + 0x2b0);
+      lVar4 = (long)(int)local_cc * 4;
+      *(float *)(local_a0 + lVar4) =
+           local_d8 * 32767.0 * local_bc * local_c8 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
+      *(float *)(local_a8 + lVar4) =
+           (float)auVar9._0_8_ * 32767.0 * local_bc * local_c8 +
+           local_c0 * *(float *)(local_a8 + lVar4) + 0.0;
+    }
+    break;
+  case 2:
+    fVar6 = (float)_powf(local_b8,0x3e4ccccd);
+    local_c4 = 1.01 - fVar6;
+    local_c8 = (float)_powf(fVar7,0x40000000);
+    local_c8 = local_c8 + 1.0;
+    local_cc = 1.0 / ((1.01 - fVar6) * 2.75) + 0.6;
+    for (local_d0 = 0.0; (int)local_d0 < local_ac; local_d0 = (float)((int)local_d0 + 1)) {
+      if ((local_ae & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x250);
+        local_d4 = (float)FUN_0000ec38(param_1 + 0x250);
+        auVar9._0_4_ = FUN_00012f48(&local_b4,&local_d4);
+        auVar9._4_12_ = extraout_var;
+        local_b8 = auVar9._0_4_;
+        fVar7 = (float)_powf(auVar9,0x3e4ccccd);
+        local_c4 = 1.01 - fVar7;
+        local_c8 = (float)_powf(auVar9._0_4_,0x40000000);
+        local_c8 = local_c8 + 1.0;
+        local_cc = 1.0 / ((1.01 - fVar7) * 2.75) + 0.6;
+      }
+      if ((local_ad & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x270);
+        FUN_0000ec04(param_1 + 0x288);
+        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
+        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
+      }
+      fVar7 = (*(float *)(local_a0 + (long)(int)local_d0 * 4) / 32767.0) * local_c8;
+      local_d8 = (*(float *)(local_a8 + (long)(int)local_d0 * 4) / 32767.0) * local_c8;
+      local_d4 = fVar7;
+      if ((local_c4 < fVar7) || (fVar7 < -local_c4)) {
+        fVar7 = (float)_fmodf(fVar7 - local_c4,local_c4 * 4.0);
+        fVar7 = FUN_0001bd88(fVar7);
+        fVar7 = FUN_0001bd88(fVar7 + local_c4 * -2.0);
+        fVar7 = fVar7 - local_c4;
+      }
+      local_dc = fVar7;
+      if ((local_c4 < local_d8) || (fVar7 = local_d8, local_d8 < -local_c4)) {
+        fVar7 = (float)_fmodf(local_d8 - local_c4,local_c4 * 4.0);
+        fVar7 = FUN_0001bd88(fVar7);
+        fVar7 = FUN_0001bd88(fVar7 + local_c4 * -2.0);
+        fVar7 = fVar7 - local_c4;
+      }
+      auVar9 = FUN_0001bcf8((double)local_dc,param_1 + 0x2b0);
+      local_dc = (float)auVar9._0_8_;
+      auVar9 = FUN_0001bd40((double)fVar7,param_1 + 0x2b0);
+      lVar4 = (long)(int)local_d0 * 4;
+      *(float *)(local_a0 + lVar4) =
+           local_dc * 32767.0 * local_bc * local_cc + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
+      *(float *)(local_a8 + lVar4) =
+           (float)auVar9._0_8_ * 32767.0 * local_bc * local_cc +
+           local_c0 * *(float *)(local_a8 + lVar4) + 0.0;
+    }
+    break;
+  case 3:
+    local_c4 = (float)_powf(local_b8 / 2.0,0x3f733333);
+    local_c4 = 1.5 - local_c4;
+    for (local_c8 = 0.0; (int)local_c8 < local_ac; local_c8 = (float)((int)local_c8 + 1)) {
+      if ((local_ae & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x250);
+        local_cc = (float)FUN_0000ec38(param_1 + 0x250);
+        local_b8 = FUN_00012f48(&local_b4,&local_cc);
+        local_c4 = (float)_powf(local_b8 / 2.0,0x3f733333);
+        local_c4 = 1.5 - local_c4;
+      }
+      if ((local_ad & 1) != 0) {
+        FUN_0000ec04(param_1 + 0x270);
+        FUN_0000ec04(param_1 + 0x288);
+        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
+        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
+      }
+      local_cc = *(float *)(local_a0 + (long)(int)local_c8 * 4);
+      local_d0 = *(float *)(local_a8 + (long)(int)local_c8 * 4);
+      iVar3 = FUN_0000b350(local_cc);
+      iVar3 = FUN_00018cac(iVar3);
+      fVar7 = (float)_powf((float)iVar3 / 32767.0,1.0 - local_b8 * 0.9);
+      local_d4 = (fVar7 * 32767.0 - *(float *)(param_1 + 0x2a4)) +
+                 *(float *)(param_1 + 0x2a0) * 0.99 + 0.0;
+      *(float *)(param_1 + 0x2a0) = local_d4;
+      *(float *)(param_1 + 0x2a4) = fVar7 * 32767.0;
+      iVar3 = FUN_0000b350(local_d0);
+      iVar3 = FUN_00018cac(iVar3);
+      fVar7 = (float)_powf((float)iVar3 / 32767.0,1.0 - local_b8 * 0.9);
+      local_d8 = (fVar7 * 32767.0 - *(float *)(param_1 + 0x2ac)) +
+                 *(float *)(param_1 + 0x2a8) * 0.99 + 0.0;
+      *(float *)(param_1 + 0x2a8) = local_d8;
+      *(float *)(param_1 + 0x2ac) = fVar7 * 32767.0;
+      auVar9 = FUN_0001bcf8((double)local_d4,param_1 + 0x2b0);
+      local_d4 = (float)auVar9._0_8_;
+      auVar9 = FUN_0001bd40((double)local_d8,param_1 + 0x2b0);
+      lVar4 = (long)(int)local_c8 * 4;
+      *(float *)(local_a0 + lVar4) =
+           local_d4 * local_bc * local_c4 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
+      *(float *)(local_a8 + lVar4) =
+           (float)auVar9._0_8_ * local_bc * local_c4 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
+      ;
+    }
+  }
+  return;
+}
+```
 
 #### FUN_00046e1c — funcs/_FUN_00046e1c.cpp, Ghidra 46e1c, 0 model attempt(s)
 
@@ -24228,160 +24663,6 @@ long * FUN_000553f8(long *param_1)
 }
 ```
 
-#### FUN_000632ac — funcs/FUN_000632ac.cpp, Ghidra 632ac, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000632ac.cpp:38:35: error: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-   38 |         local_78 = (ulong)local_78._4_4_ << 0x20;
-      |                           ~~~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000632ac.cpp:39:43: error: member reference base type 'long' is not a structure or union
-   39 |         local_68[0] = CONCAT44(local_68[0]._4_4_,0x3f800000);
-      |                                ~~~~~~~~~~~^~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined4
-FUN_000632ac(float param_1,long *param_2,uint param_3,uint param_4,uint param_5,undefined4 param_6)
-{
-  bool bVar1;
-  int iVar2;
-  undefined8 uVar3;
-  long *plVar4;
-  long lVar5;
-  undefined1 local_79;
-  undefined8 local_78;
-  long local_68 [3];
-  int aiStack_50 [2];
-  uint local_48;
-  undefined4 local_44;
-  float local_40;
-  uint local_3c;
-  uint local_38;
-  uint local_34;
-  long *local_30;
-  undefined4 local_24;
-
-  local_44 = param_6;
-  local_40 = param_1;
-  local_3c = param_5;
-  local_38 = param_4;
-  local_34 = param_3;
-  local_30 = param_2;
-  if (param_4 == 0) {
-    if (-1 < (int)param_3) {
-      local_48 = param_3;
-      plVar4 = (long *)FUN_0006f128(param_2 + 0x4f);
-      iVar2 = (**(code **)(*plVar4 + 0x168))();
-      if ((int)param_3 < iVar2) {
-        iVar2 = FUN_00202568((undefined4 *)(param_2 + 0x4e));
-        FUN_00201c00(aiStack_50,iVar2);
-        local_78 = (ulong)local_78._4_4_ << 0x20;
-        local_68[0] = CONCAT44(local_68[0]._4_4_,0x3f800000);
-        FUN_00018a10(&local_40,(float *)&local_78,(float *)local_68);
-        uVar3 = FUN_00063468(param_2 + 0x56);
-        plVar4 = (long *)FUN_0006f128(param_2 + 0x4f);
-        local_78 = (**(code **)(*plVar4 + 0x180))(plVar4,local_48);
-        local_68[0] = FUN_0006347c(uVar3,&local_78);
-        FUN_00063468(param_2 + 0x56);
-        local_78 = FUN_000634d0();
-        bVar1 = FUN_000634b0(local_68,&local_78);
-        if (bVar1) {
-          lVar5 = FUN_00063504(local_68);
-          local_79 = 1;
-          FUN_00006df4(&local_78,(undefined1 *)(lVar5 + 0x25),&local_79);
-          plVar4 = (long *)FUN_0006f128(param_2 + 0x4f);
-          (**(code **)(*plVar4 + 0x178))(local_40,plVar4,local_48);
-          FUN_00006e48(&local_78);
-        }
-        local_24 = 0;
-        FUN_00201c3c(aiStack_50);
-        return local_24;
-      }
-    }
-    local_24 = 0xffffd582;
-  }
-  else {
-    uVar3 = FUN_0026ee70(param_1,param_2,param_3,param_4,param_5);
-    local_24 = (undefined4)uVar3;
-  }
-  return local_24;
-}
-```
-Ghidra's pseudocode:
-```c
-undefined4
-FUN_000632ac(float param_1,long *param_2,uint param_3,uint param_4,uint param_5,undefined4 param_6)
-
-{
-  bool bVar1;
-  int iVar2;
-  undefined8 uVar3;
-  long *plVar4;
-  long lVar5;
-  undefined1 local_79;
-  undefined8 local_78;
-  long local_68 [3];
-  int aiStack_50 [2];
-  uint local_48;
-  undefined4 local_44;
-  float local_40;
-  uint local_3c;
-  uint local_38;
-  uint local_34;
-  long *local_30;
-  undefined4 local_24;
-  
-  local_44 = param_6;
-  local_40 = param_1;
-  local_3c = param_5;
-  local_38 = param_4;
-  local_34 = param_3;
-  local_30 = param_2;
-  if (param_4 == 0) {
-    if (-1 < (int)param_3) {
-      local_48 = param_3;
-      plVar4 = (long *)FUN_0006f128(param_2 + 0x4f);
-      iVar2 = (**(code **)(*plVar4 + 0x168))();
-      if ((int)param_3 < iVar2) {
-        iVar2 = FUN_00202568((undefined4 *)(param_2 + 0x4e));
-        FUN_00201c00(aiStack_50,iVar2);
-        local_78 = (ulong)local_78._4_4_ << 0x20;
-        local_68[0] = CONCAT44(local_68[0]._4_4_,0x3f800000);
-        FUN_00018a10(&local_40,(float *)&local_78,(float *)local_68);
-        uVar3 = FUN_00063468(param_2 + 0x56);
-        plVar4 = (long *)FUN_0006f128(param_2 + 0x4f);
-        local_78 = (**(code **)(*plVar4 + 0x180))(plVar4,local_48);
-        local_68[0] = FUN_0006347c(uVar3,&local_78);
-        FUN_00063468(param_2 + 0x56);
-        local_78 = FUN_000634d0();
-        bVar1 = FUN_000634b0(local_68,&local_78);
-        if (bVar1) {
-          lVar5 = FUN_00063504(local_68);
-          local_79 = 1;
-          FUN_00006df4(&local_78,(undefined1 *)(lVar5 + 0x25),&local_79);
-          plVar4 = (long *)FUN_0006f128(param_2 + 0x4f);
-          (**(code **)(*plVar4 + 0x178))(local_40,plVar4,local_48);
-          FUN_00006e48(&local_78);
-        }
-        local_24 = 0;
-        FUN_00201c3c(aiStack_50);
-        return local_24;
-      }
-    }
-    local_24 = 0xffffd582;
-  }
-  else {
-    uVar3 = FUN_0026ee70(param_1,param_2,param_3,param_4,param_5);
-    local_24 = (undefined4)uVar3;
-  }
-  return local_24;
-}
-```
-
 ### Not compiling yet — 132 × unknown type name 'X'
 
 All: interfaceVersion (5fab0), uiViewForAudioUnit_withSize (5fac0), alloc_5fd8c (5fd8c), dealloc_5fe20 (5fe20), initWithFrame_5feb4 (5feb4), setContentSize_5ff4c (5ff4c), setContentSizeConstraints_60014 (60014), pluginShell (60104), setPluginShell_6011c (6011c), shellWindowGlue_6013c (6013c), isShellWindowOpen_60168 (60168), openShellWindow_60180 (60180), closeShellWindow_606b4 (606b4), updateShellWindowWantKeys_60808 (60808), viewDidMoveToWindow_60868 (60868), frameTimer (608e8), cxx_destruct_60b1c (60b1c), cxx_construct_60b64 (60b64), finishLaunching_1676f4 (1676f4), sendEvent_16774c (16774c), terminate (16782c), applicationShouldTerminate_167934 (167934), application_openFile (1679ac), mainLoop (167abc), onIdle (167c48), onTrackingIdle (167e4c), dealloc_168970 (168970), waitUntilPendingCommandsCompleted_1689cc (1689cc), display_168a4c (168a4c), commandQueue_168c6c (168c6c), setCommandQueue_168c84 (168c84), texture_168cb0 (168cb0), setTexture_168cc8 (168cc8), alloc_168cf4 (168cf4), initWithContentRect_styleMask_backing_defer_168d74 (168d74), dealloc_169244 (169244), setStyleMask_169384 (169384), setFrame_display_169580 (169580), close_169730 (169730), cppParent_169a28 (169a28), setCppParent_169a40 (169a40), allowGettingClosed (169a8c), setAllowGettingClosed_169aa4 (169aa4), autoForwardKeyEvents_169ac4 (169ac4), setAutoForwardKeyEvents_169b14 (169b14), windowGraphicsContext_169b58 (169b58), cancelCurrentMouseDownEvent_169b70 (169b70), preferredBackingLocation (169ba0), worksWhenModal (169bb0), canBecomeMainWindow (169c7c), canBecomeKeyWindow_169d4c (169d4c), becomeKeyWindow_169ddc (169ddc), resignKeyWindow_169f10 (169f10), applicationDidResignActive (169fa4), applicationDidBecomeActive (16a0d4), applicationDidHide (16a248), applicationDidUnhide (16a308), windowShouldClose (16a37c), windowWillMiniaturize (16a3f4), windowDidDeminiaturize (16a4e4), windowBecameKeyOrMainWindow (16a5a8), windowDidMove (16a670), screenParameterChanged (16a6e4), windowScreenChanged (16a7ec), toggleFullScreen (16a800), miniaturize_16a88c (16a88c), deminiaturize_16a920 (16a920), zoom_16a9c8 (16a9c8), performClose_16aa5c (16aa5c), closeButtonProxi (16ab10), openAbout (16ac00), openPreferences (16ac9c), performKeyEquivalent (16ad38), sendEvent_16adcc (16adcc), menuCallback (16af98), validateMenuItem_16b0bc (16b0bc), keyEquivalentFromMenuEntry_16b3b0 (16b3b0), modflagsFromMenuEntry_16b854 (16b854), buildMenuGroupEntries_entry_16bb04 (16bb04), buildMenu (16bc80), cxx_destruct_16c458 (16c458), cxx_construct_16c4a4 (16c4a4), alloc_16c4f4 (16c4f4), initWithFrame_16c574 (16c574), dealloc_16c680 (16c680), cppWindow (16c6dc), setCppWindow_16c6f4 (16c6f4), currentInterpretKeyEventsKey (16c714), setCurrentInterpretKeyEventsKey_16c72c (16c72c), acceptsFirstResponder_16c74c (16c74c), becomeFirstResponder_16c7ac (16c7ac), resignFirstResponder_16c7e8 (16c7e8), acceptsFirstMouse (16c88c), isOpaque (16c8f0), isFlipped (16c900), makeBackingLayer_16c910 (16c910), wantsUpdateLayer (16c9b0), createMetalLayer_16c9d0 (16c9d0), createLayerTextureWithSize_16cb94 (16cb94), updateLayerInRect_16ce54 (16ce54), drawRect_16d1bc (16d1bc), prepareForDragOperation (16d4c4), draggingEntered (16d618), performDragOperation (16d6dc), insertText_16d864 (16d864), doCommandBySelector (16dd58), setMarkedText_selectedRange (16df60), unmarkText (16e100), hasMarkedText_16e120 (16e120), conversationIdentifier (16e164), attributedSubstringFromRange (16e170), markedRange (16e184), selectedRange (16e1d4), firstRectForCharacterRange (16e1f4), characterIndexForPoint (16e34c), validAttributesForMarkedText (16e360), keyboardInputSourceChanged (16e388), changeFont (171844), validModesForFontPanel (171894), fontManager_willIncludeFont (1718ac), alloc_1a86b8 (1a86b8), initWithFrame_frame_1a8754 (1a8754), intrinsicContentSize (1a8824), setContentSize_1a8844 (1a8844), layout_1a88bc (1a88bc), invalidate_1a8a74 (1a8a74), viewWillMoveToSuperview_1a8b48 (1a8b48), viewDidMoveToWindow_1a8cf8 (1a8cf8), viewDidHide_1a8e8c (1a8e8c), viewDidUnhide_1a90dc (1a90dc), idleTimer (1a91d0), viewFrameChanged (1a929c)
@@ -25127,60 +25408,9 @@ undefined8 Name1215vst3AudioUnitPluginShellView::pluginShell(long param_1)
 }
 ```
 
-### Not compiling yet — 89 × assigning to 'X' from incompatible type 'X'
+### Not compiling yet — 88 × assigning to 'X' from incompatible type 'X'
 
-All: FUN_000194b8 (194b8), FUN_0001da54 (1da54), FUN_0001dbd4 (1dbd4), FUN_0001e1d8 (1e1d8), FUN_0001e3d4 (1e3d4), FUN_0001e730 (1e730), FUN_0001e770 (1e770), FUN_0001e7b4 (1e7b4), FUN_0001e800 (1e800), FUN_0001e860 (1e860), FUN_0001e8bc (1e8bc), FUN_0001e91c (1e91c), FUN_0001e998 (1e998), FUN_0001ec2c (1ec2c), FUN_0001ee2c (1ee2c), FUN_0001f218 (1f218), FUN_0001f334 (1f334), FUN_0001f464 (1f464), FUN_0001f500 (1f500), FUN_00020270 (20270), FUN_00027aac (27aac), FUN_00027b1c (27b1c), FUN_00027cac (27cac), FUN_00027cec (27cec), FUN_00027d70 (27d70), FUN_00027db0 (27db0), FUN_00027df8 (27df8), FUN_00027e38 (27e38), FUN_000280c4 (280c4), FUN_0002dc48 (2dc48), FUN_0002dfc0 (2dfc0), FUN_0002eae0 (2eae0), FUN_00030b30 (30b30), FUN_00032a3c (32a3c), FUN_00032ab0 (32ab0), FUN_00032b2c (32b2c), FUN_00032bac (32bac), FUN_000378d0 (378d0), FUN_00037b58 (37b58), FUN_0003b010 (3b010), FUN_0003b7c0 (3b7c0), FUN_0003f94c (3f94c), FUN_00041034 (41034), FUN_000419ec (419ec), FUN_00042508 (42508), FUN_000427b0 (427b0), FUN_00045e28 (45e28), FUN_00045fa0 (45fa0), FUN_00045ff0 (45ff0), FUN_00047674 (47674), FUN_0004884c (4884c), FUN_00048aac (48aac), FUN_0004a428 (4a428), FUN_0004a91c (4a91c), FUN_0004acf4 (4acf4), FUN_0004de00 (4de00), FUN_0004e5f8 (4e5f8), FUN_0004f15c (4f15c), FUN_00051f20 (51f20), FUN_000532f4 (532f4), FUN_00053364 (53364), FUN_0005a2c8 (5a2c8), FUN_0005cfcc (5cfcc), FUN_00065c70 (65c70), FUN_00074784 (74784), FUN_00085ab8 (85ab8), FUN_00095390 (95390), FUN_000a0adc (a0adc), FUN_000b310c (b310c), FUN_000bd534 (bd534), FUN_000d0c3c (d0c3c), FUN_000d61a8 (d61a8), FUN_000f0888 (f0888), FUN_000ff628 (ff628), FUN_000ff7e4 (ff7e4), FUN_000ff994 (ff994), FUN_000ffa08 (ffa08), FUN_00107c9c (107c9c), FUN_0011b1d8 (11b1d8), FUN_0011ff30 (11ff30), FUN_00136474 (136474), FUN_001c36ac (1c36ac), FUN_001c61a0 (1c61a0), FUN_001c6a08 (1c6a08), FUN_001d0d0c (1d0d0c), FUN_001fc7b0 (1fc7b0), FUN_0021c4b4 (21c4b4), FUN_0021f2cc (21f2cc), FUN_0022ad34 (22ad34)
-
-#### FUN_000194b8 — funcs/_FUN_000194b8.cpp, Ghidra 194b8, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000194b8.cpp:10:12: error: assigning to 'int' from incompatible type 'void'
-   10 |   local_2c = FUN_00019580((undefined8 *)(param_1 + 0x88));
-      |            ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000194b8(long param_1)
-{
-  bool bVar1;
-  int local_2c;
-  long local_28;
-
-  local_28 = param_1;
-  local_2c = FUN_00019580((undefined8 *)(param_1 + 0x88));
-  bVar1 = FUN_00019740(&local_2c,(int *)(param_1 + 0xa8));
-  if (!bVar1) {
-    FUN_001db0a0(param_1,2);
-    *(int *)(param_1 + 0xa8) = local_2c;
-    FUN_001db0a0(param_1,3);
-  }
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_000194b8(long param_1)
-
-{
-  bool bVar1;
-  int local_2c;
-  long local_28;
-  
-  local_28 = param_1;
-  local_2c = FUN_00019580((undefined8 *)(param_1 + 0x88));
-  bVar1 = FUN_00019740(&local_2c,(int *)(param_1 + 0xa8));
-  if (!bVar1) {
-    FUN_001db0a0(param_1,2);
-    *(int *)(param_1 + 0xa8) = local_2c;
-    FUN_001db0a0(param_1,3);
-  }
-  return;
-}
-```
+All: FUN_0001da54 (1da54), FUN_0001dbd4 (1dbd4), FUN_0001e1d8 (1e1d8), FUN_0001e3d4 (1e3d4), FUN_0001e730 (1e730), FUN_0001e770 (1e770), FUN_0001e7b4 (1e7b4), FUN_0001e800 (1e800), FUN_0001e860 (1e860), FUN_0001e8bc (1e8bc), FUN_0001e91c (1e91c), FUN_0001e998 (1e998), FUN_0001ec2c (1ec2c), FUN_0001ee2c (1ee2c), FUN_0001f218 (1f218), FUN_0001f334 (1f334), FUN_0001f464 (1f464), FUN_0001f500 (1f500), FUN_00020270 (20270), FUN_00027aac (27aac), FUN_00027b1c (27b1c), FUN_00027cac (27cac), FUN_00027cec (27cec), FUN_00027d70 (27d70), FUN_00027db0 (27db0), FUN_00027df8 (27df8), FUN_00027e38 (27e38), FUN_000280c4 (280c4), FUN_0002dc48 (2dc48), FUN_0002dfc0 (2dfc0), FUN_0002eae0 (2eae0), FUN_00030b30 (30b30), FUN_00032a3c (32a3c), FUN_00032ab0 (32ab0), FUN_00032b2c (32b2c), FUN_00032bac (32bac), FUN_000378d0 (378d0), FUN_00037b58 (37b58), FUN_0003b010 (3b010), FUN_0003b7c0 (3b7c0), FUN_0003f94c (3f94c), FUN_00041034 (41034), FUN_000419ec (419ec), FUN_00042508 (42508), FUN_000427b0 (427b0), FUN_00045e28 (45e28), FUN_00045fa0 (45fa0), FUN_00045ff0 (45ff0), FUN_00047674 (47674), FUN_0004884c (4884c), FUN_00048aac (48aac), FUN_0004a428 (4a428), FUN_0004a91c (4a91c), FUN_0004acf4 (4acf4), FUN_0004de00 (4de00), FUN_0004e5f8 (4e5f8), FUN_0004f15c (4f15c), FUN_00051f20 (51f20), FUN_000532f4 (532f4), FUN_00053364 (53364), FUN_0005a2c8 (5a2c8), FUN_0005cfcc (5cfcc), FUN_00065c70 (65c70), FUN_00074784 (74784), FUN_00085ab8 (85ab8), FUN_00095390 (95390), FUN_000a0adc (a0adc), FUN_000b310c (b310c), FUN_000bd534 (bd534), FUN_000d0c3c (d0c3c), FUN_000d61a8 (d61a8), FUN_000f0888 (f0888), FUN_000ff628 (ff628), FUN_000ff7e4 (ff7e4), FUN_000ff994 (ff994), FUN_000ffa08 (ffa08), FUN_00107c9c (107c9c), FUN_0011b1d8 (11b1d8), FUN_0011ff30 (11ff30), FUN_00136474 (136474), FUN_001c36ac (1c36ac), FUN_001c61a0 (1c61a0), FUN_001c6a08 (1c6a08), FUN_001d0d0c (1d0d0c), FUN_001fc7b0 (1fc7b0), FUN_0021c4b4 (21c4b4), FUN_0021f2cc (21f2cc), FUN_0022ad34 (22ad34)
 
 #### FUN_0001da54 — funcs/_FUN_0001da54.cpp, Ghidra 1da54, 0 model attempt(s)
 
@@ -25688,6 +25918,64 @@ void FUN_0001e7b4(long param_1)
   lVar1 = FUN_00009cb0(lVar1);
   lVar2 = FUN_0001da40((undefined8 *)(param_1 + 0x328));
   FUN_00044d18(lVar2,lVar1,0);
+  return;
+}
+```
+
+#### FUN_0001e800 — funcs/_FUN_0001e800.cpp, Ghidra 1e800, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001e800.cpp:8:9: error: assigning to 'long' from incompatible type 'void'
+    8 |   lVar1 = FUN_0001da00(param_1);
+      |         ^ ~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0001e800(long param_1)
+{
+  long lVar1;
+  long lVar2;
+
+  lVar1 = FUN_0001da00(param_1);
+  lVar2 = FUN_000097c4((undefined8 *)(param_1 + 0x2f8));
+  FUN_000369e0(lVar1,lVar2);
+  FUN_001dc654(param_1 + 0x5c0);
+  FUN_001dc654(param_1 + 0x638);
+  FUN_001dc654(param_1 + 0x6b0);
+  return;
+}
+```
+Notes:
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+- 10-21 19:15 [compile] assigning to 'long' from incompatible type 'void' — fixed with a learned rule.
+- 10-21 19:15 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_0001e800(long param_1)
+
+{
+  long lVar1;
+  long lVar2;
+  
+  lVar1 = FUN_0001da00(param_1);
+  lVar2 = FUN_000097c4((undefined8 *)(param_1 + 0x2f8));
+  FUN_000369e0(lVar1,lVar2);
+  FUN_001dc654(param_1 + 0x5c0);
+  FUN_001dc654(param_1 + 0x638);
+  FUN_001dc654(param_1 + 0x6b0);
   return;
 }
 ```
@@ -27198,52 +27486,9 @@ void FUN_0014399c(ulong param_1,char param_2)
 }
 ```
 
-### Not compiling yet — 59 × assigning to 'X' (aka 'X') from incompatible type 'X'
+### Not compiling yet — 58 × assigning to 'X' (aka 'X') from incompatible type 'X'
 
-All: FUN_00012648 (12648), FUN_00028a0c (28a0c), FUN_00048454 (48454), FUN_00057740 (57740), FUN_00078f34 (78f34), FUN_0007f1e0 (7f1e0), FUN_0008a6ac (8a6ac), FUN_0008b728 (8b728), FUN_0008f904 (8f904), FUN_0009d03c (9d03c), FUN_000a54b8 (a54b8), FUN_000aba20 (aba20), FUN_000b071c (b071c), FUN_000ba618 (ba618), FUN_000d0430 (d0430), FUN_000e88b0 (e88b0), FUN_00105c60 (105c60), FUN_0010631c (10631c), FUN_00107e94 (107e94), FUN_00118ea0 (118ea0), FUN_001286fc (1286fc), FUN_00128be8 (128be8), FUN_0012b9c0 (12b9c0), FUN_0012d230 (12d230), FUN_0012e4fc (12e4fc), FUN_00133c80 (133c80), FUN_00134bec (134bec), FUN_00135d98 (135d98), FUN_00138bf0 (138bf0), FUN_0013a1ac (13a1ac), FUN_0013ab38 (13ab38), FUN_00159050 (159050), FUN_001715bc (1715bc), FUN_001a6eb0 (1a6eb0), FUN_001aa8c0 (1aa8c0), FUN_001aa954 (1aa954), FUN_001af180 (1af180), FUN_001b1ca0 (1b1ca0), FUN_001b1d50 (1b1d50), FUN_001b1e94 (1b1e94), FUN_001b208c (1b208c), FUN_001b2298 (1b2298), FUN_001b4600 (1b4600), FUN_001b4860 (1b4860), FUN_001b81e0 (1b81e0), FUN_001b849c (1b849c), FUN_001b85fc (1b85fc), FUN_001b87cc (1b87cc), FUN_001b8b40 (1b8b40), FUN_001b8da4 (1b8da4), FUN_001b8ee8 (1b8ee8), FUN_001ba8c8 (1ba8c8), FUN_001bba3c (1bba3c), FUN_001bcda0 (1bcda0), FUN_001d59cc (1d59cc), FUN_001f8278 (1f8278), FUN_0020e894 (20e894), FUN_0020fbe8 (20fbe8), FUN_00217738 (217738)
-
-#### FUN_00012648 — funcs/_FUN_00012648.cpp, Ghidra 12648, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00012648.cpp:8:21: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-    8 |     GD_DAT_00453298 = FUN_000041f4(0x426230);
-      |                     ^ ~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void * FUN_00012648(ulong param_1)
-{
-  void *pvVar1;
-
-  if ((GD_DAT_004532a0 & 1) == 0) {
-    GD_DAT_00453298 = FUN_000041f4(0x426230);
-    GD_DAT_004532a0 = 1;
-  }
-  pvVar1 = FUN_0021608c(GD_DAT_00453298,param_1 << 4);
-  FUN_000126e4((long)pvVar1,param_1);
-  return pvVar1;
-}
-```
-Ghidra's pseudocode:
-```c
-void * FUN_00012648(ulong param_1)
-
-{
-  void *pvVar1;
-  
-  if ((DAT_004532a0 & 1) == 0) {
-    DAT_00453298 = FUN_000041f4(0x426230);
-    DAT_004532a0 = 1;
-  }
-  pvVar1 = FUN_0021608c(DAT_00453298,param_1 << 4);
-  FUN_000126e4((long)pvVar1,param_1);
-  return pvVar1;
-}
-```
+All: FUN_00028a0c (28a0c), FUN_00048454 (48454), FUN_00057740 (57740), FUN_00078f34 (78f34), FUN_0007f1e0 (7f1e0), FUN_0008a6ac (8a6ac), FUN_0008b728 (8b728), FUN_0008f904 (8f904), FUN_0009d03c (9d03c), FUN_000a54b8 (a54b8), FUN_000aba20 (aba20), FUN_000b071c (b071c), FUN_000ba618 (ba618), FUN_000d0430 (d0430), FUN_000e88b0 (e88b0), FUN_00105c60 (105c60), FUN_0010631c (10631c), FUN_00107e94 (107e94), FUN_00118ea0 (118ea0), FUN_001286fc (1286fc), FUN_00128be8 (128be8), FUN_0012b9c0 (12b9c0), FUN_0012d230 (12d230), FUN_0012e4fc (12e4fc), FUN_00133c80 (133c80), FUN_00134bec (134bec), FUN_00135d98 (135d98), FUN_00138bf0 (138bf0), FUN_0013a1ac (13a1ac), FUN_0013ab38 (13ab38), FUN_00159050 (159050), FUN_001715bc (1715bc), FUN_001a6eb0 (1a6eb0), FUN_001aa8c0 (1aa8c0), FUN_001aa954 (1aa954), FUN_001af180 (1af180), FUN_001b1ca0 (1b1ca0), FUN_001b1d50 (1b1d50), FUN_001b1e94 (1b1e94), FUN_001b208c (1b208c), FUN_001b2298 (1b2298), FUN_001b4600 (1b4600), FUN_001b4860 (1b4860), FUN_001b81e0 (1b81e0), FUN_001b849c (1b849c), FUN_001b85fc (1b85fc), FUN_001b87cc (1b87cc), FUN_001b8b40 (1b8b40), FUN_001b8da4 (1b8da4), FUN_001b8ee8 (1b8ee8), FUN_001ba8c8 (1ba8c8), FUN_001bba3c (1bba3c), FUN_001bcda0 (1bcda0), FUN_001d59cc (1d59cc), FUN_001f8278 (1f8278), FUN_0020e894 (20e894), FUN_0020fbe8 (20fbe8), FUN_00217738 (217738)
 
 #### FUN_00028a0c — funcs/_FUN_00028a0c.cpp, Ghidra 28a0c, 0 model attempt(s)
 
@@ -27531,6 +27776,49 @@ void FUN_0008b728(undefined8 param_1,long param_2)
   }
   FUN_0021608c(DAT_004534b0,param_2 * 0x48);
   return;
+}
+```
+
+#### FUN_0008f904 — funcs/FUN_0008f904.cpp, Ghidra 8f904, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0008f904.cpp:8:21: error: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
+    8 |     GD_DAT_004534c0 = FUN_000041f4(0x431468);
+      |                     ^ ~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void * FUN_0008f904(ulong param_1)
+{
+  void *pvVar1;
+
+  if ((GD_DAT_004534c8 & 1) == 0) {
+    GD_DAT_004534c0 = FUN_000041f4(0x431468);
+    GD_DAT_004534c8 = 1;
+  }
+  pvVar1 = FUN_0021608c(GD_DAT_004534c0,param_1 << 4);
+  FUN_0008f9a0((long)pvVar1,param_1);
+  return pvVar1;
+}
+```
+Ghidra's pseudocode:
+```c
+void * FUN_0008f904(ulong param_1)
+
+{
+  void *pvVar1;
+  
+  if ((DAT_004534c8 & 1) == 0) {
+    DAT_004534c0 = FUN_000041f4(0x431468);
+    DAT_004534c8 = 1;
+  }
+  pvVar1 = FUN_0021608c(DAT_004534c0,param_1 << 4);
+  FUN_0008f9a0((long)pvVar1,param_1);
+  return pvVar1;
 }
 ```
 
@@ -27838,100 +28126,9 @@ void __thiscall std::string::string(string *this,string *param_1)
 }
 ```
 
-### Not compiling yet — 46 × member reference base type 'X' is not a structure or union
+### Not compiling yet — 45 × member reference base type 'X' is not a structure or union
 
-All: FUN_00018538 (18538), FUN_0002a7a4 (2a7a4), FUN_0002cf38 (2cf38), FUN_0002d060 (2d060), FUN_00043890 (43890), FUN_00043970 (43970), FUN_0005182c (5182c), FUN_0005dc00 (5dc00), FUN_00061d48 (61d48), FUN_00062b28 (62b28), FUN_0006fa04 (6fa04), FUN_00072390 (72390), FUN_00087c2c (87c2c), FUN_00097abc (97abc), FUN_000dd254 (dd254), FUN_000df094 (df094), FUN_000e5708 (e5708), FUN_000e641c (e641c), FUN_000e6a1c (e6a1c), FUN_000edfb4 (edfb4), FUN_000f1d98 (f1d98), FUN_000f3cdc (f3cdc), FUN_00115b30 (115b30), FUN_0012a888 (12a888), FUN_001b2ae4 (1b2ae4), FUN_001b2f14 (1b2f14), FUN_001b3180 (1b3180), FUN_001b337c (1b337c), FUN_001ca768 (1ca768), FUN_001f0bf0 (1f0bf0), FUN_001f0e84 (1f0e84), FUN_00255990 (255990), FUN_002572cc (2572cc), FUN_00257474 (257474), FUN_00257510 (257510), FUN_002575ac (2575ac), FUN_00257790 (257790), FUN_00280068 (280068), FUN_00280494 (280494), FUN_00280860 (280860), FUN_002809ac (2809ac), FUN_00313260 (313260), FUN_00315a54 (315a54), FUN_00315e9c (315e9c), FUN_003177a4 (3177a4), FUN_0031d248 (31d248)
-
-#### FUN_00018538 — funcs/_FUN_00018538.cpp, Ghidra 18538, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00018538.cpp:19:39: error: member reference base type 'double' is not a structure or union
-   19 |   local_48 = (double)CONCAT44(local_48._4_4_,(float)param_3);
-      |                               ~~~~~~~~^~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-float FUN_00018538(float param_1,undefined8 param_2,int param_3,undefined4 *param_4)
-{
-  float fVar1;
-  float fVar2;
-  double dVar3;
-  long lVar4;
-  double local_58;
-  double local_50;
-  double local_48;
-  double local_40;
-  undefined4 *local_38;
-  int local_30;
-  float local_2c;
-  undefined8 local_28;
-
-  local_40 = (double)((ulong)local_40 & 0xffffffff00000000);
-  local_48 = (double)CONCAT44(local_48._4_4_,(float)param_3);
-  local_38 = param_4;
-  local_30 = param_3;
-  local_2c = param_1;
-  local_28 = param_2;
-  FUN_00018a10(&local_2c,(float *)&local_40,(float *)&local_48);
-  fVar1 = (float)FUN_00012d1c((long)local_38);
-  fVar2 = (float)FUN_00012d08(local_38);
-  local_40 = (double)fVar1 - (double)fVar2;
-  dVar3 = (double)local_2c * local_40;
-  lVar4 = (long)local_30;
-  fVar1 = (float)FUN_00012d08(local_38);
-  local_48 = dVar3 / (double)lVar4 + (double)fVar1;
-  fVar1 = (float)FUN_00012d08(local_38);
-  local_50 = (double)fVar1;
-  fVar1 = (float)FUN_00012d1c((long)local_38);
-  local_58 = (double)fVar1;
-  FUN_0000e748(&local_48,&local_50,&local_58);
-  return (float)local_48;
-}
-```
-Ghidra's pseudocode:
-```c
-float FUN_00018538(float param_1,undefined8 param_2,int param_3,undefined4 *param_4)
-
-{
-  float fVar1;
-  float fVar2;
-  double dVar3;
-  long lVar4;
-  double local_58;
-  double local_50;
-  double local_48;
-  double local_40;
-  undefined4 *local_38;
-  int local_30;
-  float local_2c;
-  undefined8 local_28;
-  
-  local_40 = (double)((ulong)local_40 & 0xffffffff00000000);
-  local_48 = (double)CONCAT44(local_48._4_4_,(float)param_3);
-  local_38 = param_4;
-  local_30 = param_3;
-  local_2c = param_1;
-  local_28 = param_2;
-  FUN_00018a10(&local_2c,(float *)&local_40,(float *)&local_48);
-  fVar1 = (float)FUN_00012d1c((long)local_38);
-  fVar2 = (float)FUN_00012d08(local_38);
-  local_40 = (double)fVar1 - (double)fVar2;
-  dVar3 = (double)local_2c * local_40;
-  lVar4 = (long)local_30;
-  fVar1 = (float)FUN_00012d08(local_38);
-  local_48 = dVar3 / (double)lVar4 + (double)fVar1;
-  fVar1 = (float)FUN_00012d08(local_38);
-  local_50 = (double)fVar1;
-  fVar1 = (float)FUN_00012d1c((long)local_38);
-  local_58 = (double)fVar1;
-  FUN_0000e748(&local_48,&local_50,&local_58);
-  return (float)local_48;
-}
-```
+All: FUN_0002a7a4 (2a7a4), FUN_0002cf38 (2cf38), FUN_0002d060 (2d060), FUN_00043890 (43890), FUN_00043970 (43970), FUN_0005182c (5182c), FUN_0005dc00 (5dc00), FUN_00061d48 (61d48), FUN_00062b28 (62b28), FUN_0006fa04 (6fa04), FUN_00072390 (72390), FUN_00087c2c (87c2c), FUN_00097abc (97abc), FUN_000dd254 (dd254), FUN_000df094 (df094), FUN_000e5708 (e5708), FUN_000e641c (e641c), FUN_000e6a1c (e6a1c), FUN_000edfb4 (edfb4), FUN_000f1d98 (f1d98), FUN_000f3cdc (f3cdc), FUN_00115b30 (115b30), FUN_0012a888 (12a888), FUN_001b2ae4 (1b2ae4), FUN_001b2f14 (1b2f14), FUN_001b3180 (1b3180), FUN_001b337c (1b337c), FUN_001ca768 (1ca768), FUN_001f0bf0 (1f0bf0), FUN_001f0e84 (1f0e84), FUN_00255990 (255990), FUN_002572cc (2572cc), FUN_00257474 (257474), FUN_00257510 (257510), FUN_002575ac (2575ac), FUN_00257790 (257790), FUN_00280068 (280068), FUN_00280494 (280494), FUN_00280860 (280860), FUN_002809ac (2809ac), FUN_00313260 (313260), FUN_00315a54 (315a54), FUN_00315e9c (315e9c), FUN_003177a4 (3177a4), FUN_0031d248 (31d248)
 
 #### FUN_0002a7a4 — funcs/_FUN_0002a7a4.cpp, Ghidra 2a7a4, 0 model attempt(s)
 
@@ -28916,828 +29113,330 @@ void FUN_0005dc00(long *param_1,undefined4 param_2,long *param_3)
 }
 ```
 
-### Not compiling yet — 28 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
-
-All: FUN_00016c90 (16c90), FUN_000173a0 (173a0), FUN_00019460 (19460), FUN_000b1034 (b1034), FUN_000ff0bc (ff0bc), FUN_00101d90 (101d90), FUN_00101e60 (101e60), FUN_00101f38 (101f38), FUN_00102034 (102034), FUN_00102120 (102120), FUN_0011e170 (11e170), FUN_0011e1f8 (11e1f8), FUN_001ebd10 (1ebd10), FUN_00217c64 (217c64), FUN_0027b1d8 (27b1d8), FUN_002875f8 (2875f8), FUN_00287b88 (287b88), FUN_00287f18 (287f18), FUN_0028fcd4 (28fcd4), FUN_0029133c (29133c), FUN_002fe4a0 (2fe4a0), FUN_003020bc (3020bc), FUN_00302264 (302264), FUN_0030cad0 (30cad0), FUN_0030cbd0 (30cbd0), FUN_0030ffb8 (30ffb8), FUN_003196d0 (3196d0), FUN_003197ac (3197ac)
-
-#### FUN_00016c90 — funcs/_FUN_00016c90.cpp, Ghidra 16c90, 0 model attempt(s)
+#### FUN_00061d48 — funcs/FUN_00061d48.cpp, Ghidra 61d48, 0 model attempt(s)
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00016c90.cpp:9:17: error: redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int')
-    9 |   unsigned char uVar1 = FUN_00016dac((undefined8*)(param_1+0x88));
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00016c90.cpp:5:14: note: previous definition is here
-    5 |   undefined4 uVar1;
-      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00061d48.cpp:105:33: error: member reference base type 'unsigned char[16]' is not a structure or union
+  105 |         local_60 = (uint)auVar15._0_8_;
+      |                          ~~~~~~~^~~~~~
 1 error generated.
 ```
 Code:
 ```cpp
 #include "shared.h"
 
-void FUN_00016c90(long param_1)
+int FUN_00061d48(long param_1)
 {
-  undefined4 uVar1;
-
-  FUN_001db0a0(param_1,2);
-  FUN_00016f6c((undefined8 *)(param_1 + 0xb0));
-  unsigned char uVar1 = FUN_00016dac((undefined8*)(param_1+0x88));
-  *(undefined4 *)(param_1 + 0xa8) = uVar1;
-  FUN_001db0a0(param_1,3);
-  return;
-}
-```
-Notes:
-- 10-21 16:47 [compile] assigning to 'undefined4' (aka 'unsigned int') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 16:47 [compile] redefinition of 'uVar1' with a different type: 'void *' vs 'undefined4' (aka 'unsigned int') — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00016c90(long param_1)
-
-{
-  undefined4 uVar1;
-  
-  FUN_001db0a0(param_1,2);
-  FUN_00016f6c((undefined8 *)(param_1 + 0xb0));
-  uVar1 = FUN_00016dac((undefined8 *)(param_1 + 0x88));
-  *(undefined4 *)(param_1 + 0xa8) = uVar1;
-  FUN_001db0a0(param_1,3);
-  return;
-}
-```
-
-#### FUN_000173a0 — funcs/_FUN_000173a0.cpp, Ghidra 173a0, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:25:9: error: redefinition of 'extraout_w0' with a different type: 'float' vs 'uint64_t' (aka 'unsigned long long')
-   25 |   float extraout_w0;
-      |         ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:20:14: note: previous definition is here
-   20 |     uint64_t extraout_w0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:30:14: error: redefinition of 'extraout_var' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   30 |   undefined4 extraout_var;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:11:14: note: previous definition is here
-   11 |     uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:38:14: error: redefinition of 'extraout_s0' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   38 |   undefined4 extraout_s0;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:7:14: note: previous definition is here
-    7 |     uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:39:14: error: redefinition of 'extraout_s0_00' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   39 |   undefined4 extraout_s0_00;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:8:14: note: previous definition is here
-    8 |     uint64_t extraout_s0_00 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:40:14: error: redefinition of 'extraout_s0_01' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   40 |   undefined4 extraout_s0_01;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:9:14: note: previous definition is here
-    9 |     uint64_t extraout_s0_01 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:41:14: error: redefinition of 'extraout_s0_02' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   41 |   undefined4 extraout_s0_02;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:10:14: note: previous definition is here
-   10 |     uint64_t extraout_s0_02 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:42:14: error: redefinition of 'extraout_var_00' with a different type: 'undefined4' (aka 'unsigned int') vs 'uint64_t' (aka 'unsigned long long')
-   42 |   undefined4 extraout_var_00;
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:12:14: note: previous definition is here
-   12 |     uint64_t extraout_var_00 = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_
-...
-9:11: error: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-   79 |   local_70._4_4_ = extraout_var;
-      |   ~~~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_000173a0.cpp:82:11: error: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-   82 |   local_80._0_4_ = iVar4;
-      |   ~~~~~~~~^~~~~~
-fatal error: too many errors emitted, stopping now [-ferror-limit=]
-21 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-undefined8
-FUN_000173a0(undefined1 param_1 [16],double param_2,undefined1 param_3 [16],double param_4,
-            long *param_5,undefined4 param_6,float param_7,uint param_8)
-{
-    uint64_t extraout_s0 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_s0_00 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_s0_01 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_s0_02 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_00 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_01 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_02 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_03 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_04 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_05 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_06 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_var_07 = 0; // TODO: phantom var (incomplete lift)
-    uint64_t extraout_w0 = 0; // TODO: phantom var (incomplete lift)
-
-  undefined1 auVar1 [16];
-  undefined1 auVar2 [16];
-  char cVar3;
-  float extraout_w0;
+  undefined8 *puVar1;
+  ulong *puVar2;
+  bool bVar3;
   int iVar4;
   int iVar5;
-  int iVar6;
+  uint uVar6;
   int iVar7;
-  undefined4 extraout_var;
-  ulong uVar8;
-  long *plVar9;
-  long lVar10;
-  undefined8 uVar11;
-  float fVar12;
-  float fVar13;
-  undefined4 uVar14;
-  undefined4 extraout_s0;
-  undefined4 extraout_s0_00;
-  undefined4 extraout_s0_01;
-  undefined4 extraout_s0_02;
-  undefined4 extraout_var_00;
-  undefined4 extraout_var_01;
-  undefined4 extraout_var_02;
-  undefined4 extraout_var_03;
-  undefined4 uVar15;
-  undefined8 extraout_var_04;
-  undefined8 extraout_var_05;
-  undefined8 extraout_var_06;
-  undefined8 extraout_var_07;
-  double dVar16;
-  undefined4 uVar17;
-  float local_90;
-  float local_8c;
-  float local_88;
-  int local_84;
-  undefined8 local_80;
-  byte local_71;
-  undefined8 local_70;
-  int local_68;
-  uint local_64;
-  float local_60;
-  undefined4 local_5c;
-  long *local_58;
+  int iVar8;
+  long lVar9;
+  undefined8 uVar10;
+  long lVar11;
+  long *plVar12;
+  undefined8 uVar13;
+  char *pcVar14;
+  undefined1 auVar15 [16];
+  uint local_60;
+  uint local_58;
+  int iStack_54;
+  int local_50;
 
-  fVar13 = param_3._0_4_;
-  uVar17 = param_3._4_4_;
-  local_64 = param_8;
-  local_60 = param_7;
-  local_5c = param_6;
-  local_58 = param_5;
-  local_70 = FUN_0011c60c(param_1,param_2,param_3._0_8_,param_4,(long)param_5);
-  local_68 = (int)param_5[0x4f] - (int)((ulong)local_70 >> 0x20);
-  *(undefined1 *)((long)param_5 + 0x26d) = 1;
-  local_71 = (byte)local_64 & 1;
-  local_80 = FUN_0013b090();
-  FUN_00018c38(2,&local_80);
-  local_70._0_4_ = extraout_w0;
-  local_70._4_4_ = extraout_var;
-  iVar4 = FUN_00018c74((int *)&local_70);
-  local_84 = 0xfa;
-  local_80._0_4_ = iVar4;
-  uVar8 = FUN_00017f18();
-  if ((uVar8 & 1) == 0) {
-    fVar12 = FUN_00012d30((float *)((long)param_5 + 0x25c));
-    if ((float)local_84 <= fVar12) goto LAB_00017470;
-    fVar12 = FUN_00012d30((float *)((long)param_5 + 0x25c));
-    local_84 = (int)fVar12;
-    if ((local_71 & 1) != 0) {
-      local_80._0_4_ = (int)local_80 << 3;
+  bVar3 = true;
+  lVar9 = FUN_00062178(param_1);
+  iVar4 = FUN_0006218c(lVar9);
+  lVar9 = FUN_000621d8(param_1);
+  iVar5 = FUN_0006218c(lVar9);
+  uVar10 = FUN_002066a0();
+  FUN_00208454(uVar10,"AU Shell",
+               "Initializing with %d input and %d output busses. Checking bus layouts...");
+  local_50 = 0;
+  local_58 = 0;
+  iStack_54 = 0;
+  while( true ) {
+    lVar9 = FUN_00062178(param_1);
+    uVar6 = FUN_0006218c(lVar9);
+    if (uVar6 <= local_58) break;
+    lVar9 = FUN_000621ec(param_1,local_58);
+    lVar11 = FUN_00062218(lVar9);
+    local_50 = local_50 + *(int *)(lVar11 + 0x1c);
+    plVar12 = (long *)FUN_0006f128((undefined8 *)(param_1 + 0x278));
+    iVar7 = (**(code **)(*plVar12 + 0x128))();
+    lVar11 = FUN_00062218(lVar9);
+    iVar8 = *(int *)(lVar11 + 0x1c);
+    if (iVar7 == 0) {
+LAB_00061e40:
+      if ((iVar8 != 1) && (lVar9 = FUN_00062218(lVar9), *(int *)(lVar9 + 0x1c) != 2)) {
+        uVar10 = FUN_002066a0();
+        FUN_00208454(uVar10,"AU Shell",
+                     "Input bus %d is neither mono nor stereo. Rejecting layout...");
+        bVar3 = false;
+      }
     }
+    else if (iVar8 != 0) {
+      lVar11 = FUN_00062218(lVar9);
+      iVar8 = *(int *)(lVar11 + 0x1c);
+      goto LAB_00061e40;
+    }
+    local_58 = local_58 + 1;
+  }
+  local_58 = 0;
+  while( true ) {
+    lVar9 = FUN_000621d8(param_1);
+    uVar6 = FUN_0006218c(lVar9);
+    if (uVar6 <= local_58) break;
+    lVar9 = FUN_0006222c(param_1,local_58);
+    lVar11 = FUN_00062218(lVar9);
+    iStack_54 = iStack_54 + *(int *)(lVar11 + 0x1c);
+    lVar9 = FUN_00062218(lVar9);
+    if (*(int *)(lVar9 + 0x1c) != 2) {
+      uVar10 = FUN_002066a0();
+      FUN_00208454(uVar10,"AU Shell","Output bus %d is not stereo. Rejecting layout...");
+      bVar3 = false;
+    }
+    local_58 = local_58 + 1;
+  }
+  plVar12 = (long *)FUN_0006e184((undefined8 *)(param_1 + 0x288));
+  iVar8 = (**(code **)(*plVar12 + 0x70))();
+  if (iVar8 < iVar4) {
+LAB_00061f54:
+    uVar10 = FUN_002066a0();
+    FUN_00208454(uVar10,"AU Shell",
+                 "Total channel counts exceed maximum supported channels. Rejecting layout...");
+    bVar3 = false;
   }
   else {
-LAB_00017470:
-    if ((local_71 & 1) != 0) {
-      local_84 = local_84 * 0x19;
-    }
+    plVar12 = (long *)FUN_0006e184((undefined8 *)(param_1 + 0x288));
+    iVar8 = (**(code **)(*plVar12 + 0x80))();
+    if (iVar8 < iVar5) goto LAB_00061f54;
   }
-  iVar4 = FUN_00018cac(local_68);
-  if (iVar4 < (int)local_80) {
-    return 1;
-  }
-  plVar9 = (long *)FUN_00018ccc(param_5 + 0x50);
-  iVar6 = local_68;
-  iVar4 = local_84;
-  FUN_00018ce0((undefined4 *)&local_70,(long)param_5);
-  FUN_00018d08((long)param_5);
-  local_88 = (float)(**(code **)(*plVar9 + 0x60))(plVar9,iVar6,iVar4,&local_70);
-  local_8c = (float)FUN_00018d08((long)param_5);
-  dVar16 = (double)(ulong)(uint)local_88;
-  local_8c = local_8c + local_88;
-  if (((*(byte *)((long)param_5 + 0x27d) & 1) == 0) && ((int)param_5[0x4b] != 1)) goto LAB_00017600;
-  plVar9 = (long *)FUN_00018ccc(param_5 + 0x50);
-  iVar4 = local_84;
-  FUN_00018ce0((undefined4 *)&local_70,(long)param_5);
-  FUN_00018d08((long)param_5);
-  local_70._0_4_ = (float)(**(code **)(*plVar9 + 0x60))(plVar9,1,iVar4,&local_70);
-  if ((*(byte *)((long)param_5 + 0x27d) & 1) == 0) {
-LAB_00017594:
-    if ((int)param_5[0x4b] != 1) goto LAB_00017600;
-    fVar12 = (float)FUN_00012d08((float *)((long)param_5 + 0x25c));
-    fVar13 = FUN_00012d30((float *)((long)param_5 + 0x25c));
-    fVar12 = fVar12 + fVar13 / 2.0;
-    dVar16 = (double)(ulong)(uint)local_8c;
-    uVar17 = 0;
-    fVar13 = (float)local_70;
-    local_90 = fVar12;
-    if (fVar12 + (float)local_70 <= local_8c) goto LAB_00017600;
-    uVar17 = 0;
-    dVar16 = (double)(ulong)(uint)(fVar12 - (float)local_70);
-    if (local_8c <= fVar12 - (float)local_70) goto LAB_00017600;
+  plVar12 = (long *)FUN_0006f128((undefined8 *)(param_1 + 0x278));
+  iVar8 = (**(code **)(*plVar12 + 0x128))();
+  if (iVar8 == 0) {
+    if ((local_50 != 0) && (iStack_54 != 0)) goto LAB_00061fb8;
+    uVar10 = FUN_002066a0();
+    pcVar14 = "Effects need at least one input and one output channel. Rejecting layout...";
   }
   else {
-    uVar17 = 0;
-    fVar12 = *(float *)((long)param_5 + 0x264) + (float)local_70;
-    dVar16 = (double)(ulong)(uint)fVar12;
-    fVar13 = (float)local_70;
-    if (fVar12 <= local_8c) goto LAB_00017594;
-    uVar17 = 0;
-    fVar12 = *(float *)((long)param_5 + 0x264) - (float)local_70;
-    dVar16 = (double)(ulong)(uint)fVar12;
-    if (local_8c <= fVar12) goto LAB_00017594;
-    fVar12 = *(float *)((long)param_5 + 0x264);
-  }
-  uVar17 = 0;
-  fVar13 = (float)local_70;
-  local_8c = fVar12;
-LAB_00017600:
-  uVar14 = FUN_00012d08((undefined4 *)((long)param_5 + 0x25c));
-  local_70 = CONCAT44(local_70._4_4_,uVar14);
-  local_90 = (float)FUN_00012d1c((long)param_5 + 0x25c);
-  FUN_00018a10(&local_8c,(float *)&local_70,&local_90);
-  FUN_00018bac((long)param_5,&local_8c);
-  (**(code **)(*param_5 + 0x238))(param_5,local_64 >> 6 & 1);
-  lVar10 = FUN_000adbc4();
-  cVar3 = FUN_00018c24(lVar10 + 0x3b0);
-  uVar14 = extraout_s0;
-  uVar15 = extraout_var_00;
-  uVar11 = extraout_var_04;
-  if (cVar3 != '\0') {
-    iVar5 = FUN_00018d54((long)param_5);
-    fVar12 = local_60;
-    iVar6 = FUN_00018d54((long)param_5);
-    iVar4 = FUN_00003628((long)param_5);
-    iVar4 = ((int)fVar12 - iVar6) + iVar4;
-    iVar7 = FUN_00003628((long)param_5);
-    iVar6 = 0;
-    if (iVar7 != 0) {
-      iVar6 = iVar4 / iVar7;
+    if (iStack_54 != 0) {
+LAB_00061fb8:
+      if (bVar3) {
+        unsigned char auVar15[16] = {0};FUN_00062258(param_1);
+        local_60 = (uint)auVar15._0_8_;
+        if ((int)local_60 < 1) {
+          uVar10 = FUN_002066a0();
+          FUN_00208454(uVar10,"AU Shell","Fixed bogus sample rate from host. Assume 44100 Hz...");
+          local_60 = 0xac44;
+        }
+        local_58 = FUN_000622b0(param_1);
+        if ((int)local_58 < 1) {
+          uVar10 = FUN_002066a0();
+          FUN_00208454(uVar10,"AU Shell","Fixed bogus blocksize from host. Assume 1024 samples...");
+          local_58 = 0x400;
+        }
+        puVar1 = (undefined8 *)(param_1 + 0x288);
+        plVar12 = (long *)FUN_0006e184(puVar1);
+        FUN_001f1e58(plVar12,local_58);
+        plVar12 = (long *)FUN_0006e184(puVar1);
+        FUN_001f1e08(plVar12,(ulong)local_60);
+        plVar12 = (long *)FUN_0006e184(puVar1);
+        FUN_001f1dc8(plVar12,iVar4);
+        plVar12 = (long *)FUN_0006e184(puVar1);
+        FUN_001f1de8(plVar12,iVar5);
+        if (iVar4 != 0) {
+          puVar2 = (ulong *)(param_1 + 0x340);
+          FUN_00022800(puVar2,local_58);
+          uVar10 = FUN_00022964(puVar2);
+          iVar4 = FUN_0000f824((long)puVar2);
+          FUN_001f1cf8(uVar10,iVar4);
+        }
+        uVar10 = FUN_0026d62c();
+        uVar13 = FUN_002066a0();
+        if ((int)uVar10 == 0) {
+          pcVar14 = "Initialized with %d/%d in/outputs at %dHz with %d samples";
+        }
+        else {
+          pcVar14 = "Initialization failed with error %d";
+        }
+        FUN_00208454(uVar13,"AU Shell",pcVar14);
+        return (int)uVar10;
+      }
+      goto LAB_00062100;
     }
-    local_90 = (float)(iVar5 + (iVar4 - iVar6 * iVar7));
-    uVar14 = extraout_s0_00;
-    uVar15 = extraout_var_01;
-    uVar11 = extraout_var_05;
-    if (local_90 != local_60) {
-      FUN_00014150((undefined4 *)&local_70,local_5c,local_90);
-      auVar1._4_4_ = extraout_var_02;
-      auVar1._0_4_ = extraout_s0_01;
-      auVar1._8_8_ = extraout_var_06;
-      FUN_0011d550(auVar1,dVar16,CONCAT44(uVar17,fVar13),param_4,(long)param_5,&local_70);
-      uVar14 = extraout_s0_02;
-      uVar15 = extraout_var_03;
-      uVar11 = extraout_var_07;
-    }
+    uVar10 = FUN_002066a0();
+    pcVar14 = "Synths need at least one output channel. Rejecting layout...";
   }
-  auVar2._4_4_ = uVar15;
-  auVar2._0_4_ = uVar14;
-  auVar2._8_8_ = uVar11;
-  uVar11 = FUN_0011c60c(auVar2,dVar16,CONCAT44(uVar17,fVar13),param_4,(long)param_5);
-  *(undefined8 *)((long)param_5 + 0x274) = uVar11;
-  return 1;
+  FUN_00208454(uVar10,"AU Shell",pcVar14);
+LAB_00062100:
+  uVar10 = FUN_002066a0();
+  FUN_00208454(uVar10,"AU Shell",
+               "Initialization failed. Neglecting invalid channel configuration %d/%d.");
+  return -0x2a74;
 }
 ```
+Notes:
+- 10-21 19:16 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
-undefined8
-FUN_000173a0(undefined1 param_1 [16],double param_2,undefined1 param_3 [16],double param_4,
-            long *param_5,undefined4 param_6,float param_7,uint param_8)
+int FUN_00061d48(long param_1)
 
 {
-  undefined1 auVar1 [16];
-  undefined1 auVar2 [16];
-  char cVar3;
-  float extraout_w0;
+  undefined8 *puVar1;
+  ulong *puVar2;
+  bool bVar3;
   int iVar4;
   int iVar5;
-  int iVar6;
+  uint uVar6;
   int iVar7;
-  undefined4 extraout_var;
-  ulong uVar8;
-  long *plVar9;
-  long lVar10;
-  undefined8 uVar11;
-  float fVar12;
-  float fVar13;
-  undefined4 uVar14;
-  undefined4 extraout_s0;
-  undefined4 extraout_s0_00;
-  undefined4 extraout_s0_01;
-  undefined4 extraout_s0_02;
-  undefined4 extraout_var_00;
-  undefined4 extraout_var_01;
-  undefined4 extraout_var_02;
-  undefined4 extraout_var_03;
-  undefined4 uVar15;
-  undefined8 extraout_var_04;
-  undefined8 extraout_var_05;
-  undefined8 extraout_var_06;
-  undefined8 extraout_var_07;
-  double dVar16;
-  undefined4 uVar17;
-  float local_90;
-  float local_8c;
-  float local_88;
-  int local_84;
-  undefined8 local_80;
-  byte local_71;
-  undefined8 local_70;
-  int local_68;
-  uint local_64;
-  float local_60;
-  undefined4 local_5c;
-  long *local_58;
+  int iVar8;
+  long lVar9;
+  undefined8 uVar10;
+  long lVar11;
+  long *plVar12;
+  undefined8 uVar13;
+  char *pcVar14;
+  undefined1 auVar15 [16];
+  uint local_60;
+  uint local_58;
+  int iStack_54;
+  int local_50;
   
-  fVar13 = param_3._0_4_;
-  uVar17 = param_3._4_4_;
-  local_64 = param_8;
-  local_60 = param_7;
-  local_5c = param_6;
-  local_58 = param_5;
-  local_70 = FUN_0011c60c(param_1,param_2,param_3._0_8_,param_4,(long)param_5);
-  local_68 = (int)param_5[0x4f] - (int)((ulong)local_70 >> 0x20);
-  *(undefined1 *)((long)param_5 + 0x26d) = 1;
-  local_71 = (byte)local_64 & 1;
-  local_80 = FUN_0013b090();
-  FUN_00018c38(2,&local_80);
-  local_70._0_4_ = extraout_w0;
-  local_70._4_4_ = extraout_var;
-  iVar4 = FUN_00018c74((int *)&local_70);
-  local_84 = 0xfa;
-  local_80._0_4_ = iVar4;
-  uVar8 = FUN_00017f18();
-  if ((uVar8 & 1) == 0) {
-    fVar12 = FUN_00012d30((float *)((long)param_5 + 0x25c));
-    if ((float)local_84 <= fVar12) goto LAB_00017470;
-    fVar12 = FUN_00012d30((float *)((long)param_5 + 0x25c));
-    local_84 = (int)fVar12;
-    if ((local_71 & 1) != 0) {
-      local_80._0_4_ = (int)local_80 << 3;
+  bVar3 = true;
+  lVar9 = FUN_00062178(param_1);
+  iVar4 = FUN_0006218c(lVar9);
+  lVar9 = FUN_000621d8(param_1);
+  iVar5 = FUN_0006218c(lVar9);
+  uVar10 = FUN_002066a0();
+  FUN_00208454(uVar10,"AU Shell",
+               "Initializing with %d input and %d output busses. Checking bus layouts...");
+  local_50 = 0;
+  local_58 = 0;
+  iStack_54 = 0;
+  while( true ) {
+    lVar9 = FUN_00062178(param_1);
+    uVar6 = FUN_0006218c(lVar9);
+    if (uVar6 <= local_58) break;
+    lVar9 = FUN_000621ec(param_1,local_58);
+    lVar11 = FUN_00062218(lVar9);
+    local_50 = local_50 + *(int *)(lVar11 + 0x1c);
+    plVar12 = (long *)FUN_0006f128((undefined8 *)(param_1 + 0x278));
+    iVar7 = (**(code **)(*plVar12 + 0x128))();
+    lVar11 = FUN_00062218(lVar9);
+    iVar8 = *(int *)(lVar11 + 0x1c);
+    if (iVar7 == 0) {
+LAB_00061e40:
+      if ((iVar8 != 1) && (lVar9 = FUN_00062218(lVar9), *(int *)(lVar9 + 0x1c) != 2)) {
+        uVar10 = FUN_002066a0();
+        FUN_00208454(uVar10,"AU Shell",
+                     "Input bus %d is neither mono nor stereo. Rejecting layout...");
+        bVar3 = false;
+      }
     }
+    else if (iVar8 != 0) {
+      lVar11 = FUN_00062218(lVar9);
+      iVar8 = *(int *)(lVar11 + 0x1c);
+      goto LAB_00061e40;
+    }
+    local_58 = local_58 + 1;
+  }
+  local_58 = 0;
+  while( true ) {
+    lVar9 = FUN_000621d8(param_1);
+    uVar6 = FUN_0006218c(lVar9);
+    if (uVar6 <= local_58) break;
+    lVar9 = FUN_0006222c(param_1,local_58);
+    lVar11 = FUN_00062218(lVar9);
+    iStack_54 = iStack_54 + *(int *)(lVar11 + 0x1c);
+    lVar9 = FUN_00062218(lVar9);
+    if (*(int *)(lVar9 + 0x1c) != 2) {
+      uVar10 = FUN_002066a0();
+      FUN_00208454(uVar10,"AU Shell","Output bus %d is not stereo. Rejecting layout...");
+      bVar3 = false;
+    }
+    local_58 = local_58 + 1;
+  }
+  plVar12 = (long *)FUN_0006e184((undefined8 *)(param_1 + 0x288));
+  iVar8 = (**(code **)(*plVar12 + 0x70))();
+  if (iVar8 < iVar4) {
+LAB_00061f54:
+    uVar10 = FUN_002066a0();
+    FUN_00208454(uVar10,"AU Shell",
+                 "Total channel counts exceed maximum supported channels. Rejecting layout...");
+    bVar3 = false;
   }
   else {
-LAB_00017470:
-    if ((local_71 & 1) != 0) {
-      local_84 = local_84 * 0x19;
-    }
+    plVar12 = (long *)FUN_0006e184((undefined8 *)(param_1 + 0x288));
+    iVar8 = (**(code **)(*plVar12 + 0x80))();
+    if (iVar8 < iVar5) goto LAB_00061f54;
   }
-  iVar4 = FUN_00018cac(local_68);
-  if (iVar4 < (int)local_80) {
-    return 1;
-  }
-  plVar9 = (long *)FUN_00018ccc(param_5 + 0x50);
-  iVar6 = local_68;
-  iVar4 = local_84;
-  FUN_00018ce0((undefined4 *)&local_70,(long)param_5);
-  FUN_00018d08((long)param_5);
-  local_88 = (float)(**(code **)(*plVar9 + 0x60))(plVar9,iVar6,iVar4,&local_70);
-  local_8c = (float)FUN_00018d08((long)param_5);
-  dVar16 = (double)(ulong)(uint)local_88;
-  local_8c = local_8c + local_88;
-  if (((*(byte *)((long)param_5 + 0x27d) & 1) == 0) && ((int)param_5[0x4b] != 1)) goto LAB_00017600;
-  plVar9 = (long *)FUN_00018ccc(param_5 + 0x50);
-  iVar4 = local_84;
-  FUN_00018ce0((undefined4 *)&local_70,(long)param_5);
-  FUN_00018d08((long)param_5);
-  local_70._0_4_ = (float)(**(code **)(*plVar9 + 0x60))(plVar9,1,iVar4,&local_70);
-  if ((*(byte *)((long)param_5 + 0x27d) & 1) == 0) {
-LAB_00017594:
-    if ((int)param_5[0x4b] != 1) goto LAB_00017600;
-    fVar12 = (float)FUN_00012d08((float *)((long)param_5 + 0x25c));
-    fVar13 = FUN_00012d30((float *)((long)param_5 + 0x25c));
-    fVar12 = fVar12 + fVar13 / 2.0;
-    dVar16 = (double)(ulong)(uint)local_8c;
-    uVar17 = 0;
-    fVar13 = (float)local_70;
-    local_90 = fVar12;
-    if (fVar12 + (float)local_70 <= local_8c) goto LAB_00017600;
-    uVar17 = 0;
-    dVar16 = (double)(ulong)(uint)(fVar12 - (float)local_70);
-    if (local_8c <= fVar12 - (float)local_70) goto LAB_00017600;
+  plVar12 = (long *)FUN_0006f128((undefined8 *)(param_1 + 0x278));
+  iVar8 = (**(code **)(*plVar12 + 0x128))();
+  if (iVar8 == 0) {
+    if ((local_50 != 0) && (iStack_54 != 0)) goto LAB_00061fb8;
+    uVar10 = FUN_002066a0();
+    pcVar14 = "Effects need at least one input and one output channel. Rejecting layout...";
   }
   else {
-    uVar17 = 0;
-    fVar12 = *(float *)((long)param_5 + 0x264) + (float)local_70;
-    dVar16 = (double)(ulong)(uint)fVar12;
-    fVar13 = (float)local_70;
-    if (fVar12 <= local_8c) goto LAB_00017594;
-    uVar17 = 0;
-    fVar12 = *(float *)((long)param_5 + 0x264) - (float)local_70;
-    dVar16 = (double)(ulong)(uint)fVar12;
-    if (local_8c <= fVar12) goto LAB_00017594;
-    fVar12 = *(float *)((long)param_5 + 0x264);
-  }
-  uVar17 = 0;
-  fVar13 = (float)local_70;
-  local_8c = fVar12;
-LAB_00017600:
-  uVar14 = FUN_00012d08((undefined4 *)((long)param_5 + 0x25c));
-  local_70 = CONCAT44(local_70._4_4_,uVar14);
-  local_90 = (float)FUN_00012d1c((long)param_5 + 0x25c);
-  FUN_00018a10(&local_8c,(float *)&local_70,&local_90);
-  FUN_00018bac((long)param_5,&local_8c);
-  (**(code **)(*param_5 + 0x238))(param_5,local_64 >> 6 & 1);
-  lVar10 = FUN_000adbc4();
-  cVar3 = FUN_00018c24(lVar10 + 0x3b0);
-  uVar14 = extraout_s0;
-  uVar15 = extraout_var_00;
-  uVar11 = extraout_var_04;
-  if (cVar3 != '\0') {
-    iVar5 = FUN_00018d54((long)param_5);
-    fVar12 = local_60;
-    iVar6 = FUN_00018d54((long)param_5);
-    iVar4 = FUN_00003628((long)param_5);
-    iVar4 = ((int)fVar12 - iVar6) + iVar4;
-    iVar7 = FUN_00003628((long)param_5);
-    iVar6 = 0;
-    if (iVar7 != 0) {
-      iVar6 = iVar4 / iVar7;
+    if (iStack_54 != 0) {
+LAB_00061fb8:
+      if (bVar3) {
+        auVar15 = FUN_00062258(param_1);
+        local_60 = (uint)auVar15._0_8_;
+        if ((int)local_60 < 1) {
+          uVar10 = FUN_002066a0();
+          FUN_00208454(uVar10,"AU Shell","Fixed bogus sample rate from host. Assume 44100 Hz...");
+          local_60 = 0xac44;
+        }
+        local_58 = FUN_000622b0(param_1);
+        if ((int)local_58 < 1) {
+          uVar10 = FUN_002066a0();
+          FUN_00208454(uVar10,"AU Shell","Fixed bogus blocksize from host. Assume 1024 samples...");
+          local_58 = 0x400;
+        }
+        puVar1 = (undefined8 *)(param_1 + 0x288);
+        plVar12 = (long *)FUN_0006e184(puVar1);
+        FUN_001f1e58(plVar12,local_58);
+        plVar12 = (long *)FUN_0006e184(puVar1);
+        FUN_001f1e08(plVar12,(ulong)local_60);
+        plVar12 = (long *)FUN_0006e184(puVar1);
+        FUN_001f1dc8(plVar12,iVar4);
+        plVar12 = (long *)FUN_0006e184(puVar1);
+        FUN_001f1de8(plVar12,iVar5);
+        if (iVar4 != 0) {
+          puVar2 = (ulong *)(param_1 + 0x340);
+          FUN_00022800(puVar2,local_58);
+          uVar10 = FUN_00022964(puVar2);
+          iVar4 = FUN_0000f824((long)puVar2);
+          FUN_001f1cf8(uVar10,iVar4);
+        }
+        uVar10 = FUN_0026d62c();
+        uVar13 = FUN_002066a0();
+        if ((int)uVar10 == 0) {
+          pcVar14 = "Initialized with %d/%d in/outputs at %dHz with %d samples";
+        }
+        else {
+          pcVar14 = "Initialization failed with error %d";
+        }
+        FUN_00208454(uVar13,"AU Shell",pcVar14);
+        return (int)uVar10;
+      }
+      goto LAB_00062100;
     }
-    local_90 = (float)(iVar5 + (iVar4 - iVar6 * iVar7));
-    uVar14 = extraout_s0_00;
-    uVar15 = extraout_var_01;
-    uVar11 = extraout_var_05;
-    if (local_90 != local_60) {
-      FUN_00014150((undefined4 *)&local_70,local_5c,local_90);
-      auVar1._4_4_ = extraout_var_02;
-      auVar1._0_4_ = extraout_s0_01;
-      auVar1._8_8_ = extraout_var_06;
-      FUN_0011d550(auVar1,dVar16,CONCAT44(uVar17,fVar13),param_4,(long)param_5,&local_70);
-      uVar14 = extraout_s0_02;
-      uVar15 = extraout_var_03;
-      uVar11 = extraout_var_07;
-    }
+    uVar10 = FUN_002066a0();
+    pcVar14 = "Synths need at least one output channel. Rejecting layout...";
   }
-  auVar2._4_4_ = uVar15;
-  auVar2._0_4_ = uVar14;
-  auVar2._8_8_ = uVar11;
-  uVar11 = FUN_0011c60c(auVar2,dVar16,CONCAT44(uVar17,fVar13),param_4,(long)param_5);
-  *(undefined8 *)((long)param_5 + 0x274) = uVar11;
-  return 1;
-}
-```
-
-#### FUN_00019460 — funcs/_FUN_00019460.cpp, Ghidra 19460, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00019460.cpp:9:17: error: redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int')
-    9 |   unsigned char uVar1 = FUN_00019580((undefined8*)(param_1+0x88));
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00019460.cpp:5:14: note: previous definition is here
-    5 |   undefined4 uVar1;
-      |              ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00019460(long param_1)
-{
-  undefined4 uVar1;
-
-  FUN_001db0a0(param_1,2);
-  FUN_0001975c((undefined8 *)(param_1 + 0xb0));
-  unsigned char uVar1 = FUN_00019580((undefined8*)(param_1+0x88));
-  *(undefined4 *)(param_1 + 0xa8) = uVar1;
-  FUN_001db0a0(param_1,3);
-  return;
-}
-```
-Notes:
-- 10-21 16:47 [compile] assigning to 'undefined4' (aka 'unsigned int') from incompatible type 'void' — fixed with a learned rule.
-- 10-21 16:47 [compile] redefinition of 'uVar1' with a different type: 'void *' vs 'undefined4' (aka 'unsigned int') — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00019460(long param_1)
-
-{
-  undefined4 uVar1;
-  
-  FUN_001db0a0(param_1,2);
-  FUN_0001975c((undefined8 *)(param_1 + 0xb0));
-  uVar1 = FUN_00019580((undefined8 *)(param_1 + 0x88));
-  *(undefined4 *)(param_1 + 0xa8) = uVar1;
-  FUN_001db0a0(param_1,3);
-  return;
-}
-```
-
-#### FUN_000b1034 — funcs/FUN_000b1034.cpp, Ghidra b1034, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b1034.cpp:12:17: error: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-   12 |   unsigned char auVar3[16] = {0};FUN_0012a6d8(lVar1);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b1034.cpp:7:14: note: previous definition is here
-    7 |   undefined1 auVar3 [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b1034.cpp:16:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   16 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-      |                   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b1034.cpp:16:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   16 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-      |                                                   ~~~~~~^~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000b1034(long param_1)
-{
-  long lVar1;
-  long lVar2;
-  undefined1 auVar3 [12];
-  undefined4 uStack_2c;
-
-  lVar2 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  lVar1 = FUN_001aaa88((undefined8 *)(param_1 + 0x240));
-  unsigned char auVar3[16] = {0};FUN_0012a6d8(lVar1);
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar2) {
-    return;
-  }
-  _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-}
-```
-Notes:
-- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000b1034(long param_1)
-
-{
-  long lVar1;
-  long lVar2;
-  undefined1 auVar3 [12];
-  undefined4 uStack_2c;
-  
-  lVar2 = *(long *)PTR____stack_chk_guard_004241e8;
-  lVar1 = FUN_001aaa88((undefined8 *)(param_1 + 0x240));
-  auVar3 = FUN_0012a6d8(lVar1);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar2) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-}
-```
-
-#### FUN_000ff0bc — funcs/FUN_000ff0bc.cpp, Ghidra ff0bc, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ff0bc.cpp:13:17: error: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-   13 |   unsigned char auVar3[16] = {0};FUN_000037fc(lVar1);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ff0bc.cpp:7:14: note: previous definition is here
-    7 |   undefined1 auVar3 [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ff0bc.cpp:17:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   17 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-      |                   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ff0bc.cpp:17:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   17 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-      |                                                   ~~~~~~^~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_000ff0bc(int param_1)
-{
-  long lVar1;
-  long lVar2;
-  undefined1 auVar3 [12];
-  undefined4 uStack_2c;
-
-  lVar2 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  lVar1 = FUN_0010a634();
-  lVar1 = FUN_0010eac0(lVar1,param_1);
-  unsigned char auVar3[16] = {0};FUN_000037fc(lVar1);
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar2) {
-    return;
-  }
-  _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-}
-```
-Notes:
-- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_000ff0bc(int param_1)
-
-{
-  long lVar1;
-  long lVar2;
-  undefined1 auVar3 [12];
-  undefined4 uStack_2c;
-  
-  lVar2 = *(long *)PTR____stack_chk_guard_004241e8;
-  lVar1 = FUN_0010a634();
-  lVar1 = FUN_0010eac0(lVar1,param_1);
-  auVar3 = FUN_000037fc(lVar1);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar2) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
-}
-```
-
-#### FUN_00101d90 — funcs/FUN_00101d90.cpp, Ghidra 101d90, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101d90.cpp:10:17: error: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-   10 |   unsigned char auVar2[16] = {0};FUN_00101df8(param_2);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101d90.cpp:6:14: note: previous definition is here
-    6 |   undefined1 auVar2 [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101d90.cpp:14:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-      |                   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101d90.cpp:14:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-      |                                                   ~~~~~~^~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00101d90(undefined8 param_1,undefined8 *param_2)
-{
-  long lVar1;
-  undefined1 auVar2 [12];
-  undefined4 uStack_2c;
-
-  lVar1 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  unsigned char auVar2[16] = {0};FUN_00101df8(param_2);
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar1) {
-    return;
-  }
-  _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-}
-```
-Notes:
-- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00101d90(undefined8 param_1,undefined8 *param_2)
-
-{
-  long lVar1;
-  undefined1 auVar2 [12];
-  undefined4 uStack_2c;
-  
-  lVar1 = *(long *)PTR____stack_chk_guard_004241e8;
-  auVar2 = FUN_00101df8(param_2);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar1) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-}
-```
-
-#### FUN_00101e60 — funcs/FUN_00101e60.cpp, Ghidra 101e60, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101e60.cpp:10:17: error: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-   10 |   unsigned char auVar2[16] = {0};FUN_00101ec8(param_2);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101e60.cpp:6:14: note: previous definition is here
-    6 |   undefined1 auVar2 [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101e60.cpp:14:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-      |                   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101e60.cpp:14:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-      |                                                   ~~~~~~^~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00101e60(undefined8 param_1,undefined8 *param_2)
-{
-  long lVar1;
-  undefined1 auVar2 [12];
-  undefined4 uStack_2c;
-
-  lVar1 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  unsigned char auVar2[16] = {0};FUN_00101ec8(param_2);
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar1) {
-    return;
-  }
-  _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-}
-```
-Notes:
-- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00101e60(undefined8 param_1,undefined8 *param_2)
-
-{
-  long lVar1;
-  undefined1 auVar2 [12];
-  undefined4 uStack_2c;
-  
-  lVar1 = *(long *)PTR____stack_chk_guard_004241e8;
-  auVar2 = FUN_00101ec8(param_2);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar1) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-}
-```
-
-#### FUN_00101f38 — funcs/FUN_00101f38.cpp, Ghidra 101f38, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101f38.cpp:10:17: error: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-   10 |   unsigned char auVar2[16];
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101f38.cpp:6:14: note: previous definition is here
-    6 |   undefined1 auVar2 [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101f38.cpp:14:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-      |                   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101f38.cpp:14:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
-   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-      |                                                   ~~~~~~^~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00101f38(void)
-{
-  long lVar1;
-  undefined1 auVar2 [12];
-  undefined4 uStack_2c;
-
-  lVar1 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  unsigned char auVar2[16];
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar1) {
-    return;
-  }
-  _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
-}
-```
-Notes:
-- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00101f38(void)
-
-{
-  long lVar1;
-  undefined1 auVar2 [12];
-  undefined4 uStack_2c;
-  
-  lVar1 = *(long *)PTR____stack_chk_guard_004241e8;
-  auVar2 = FUN_00101f9c();
-  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar1) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+  FUN_00208454(uVar10,"AU Shell",pcVar14);
+LAB_00062100:
+  uVar10 = FUN_002066a0();
+  FUN_00208454(uVar10,"AU Shell",
+               "Initialization failed. Neglecting invalid channel configuration %d/%d.");
+  return -0x2a74;
 }
 ```
 
@@ -30096,6 +29795,496 @@ undefined8 FUN_0012f5d0(void)
   uVar1 = (*DAT_00453788)();
   FUN_0012f5b0();
   return uVar1;
+}
+```
+
+### Not compiling yet — 25 × redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+
+All: FUN_000b1034 (b1034), FUN_000ff0bc (ff0bc), FUN_00101d90 (101d90), FUN_00101e60 (101e60), FUN_00101f38 (101f38), FUN_00102034 (102034), FUN_00102120 (102120), FUN_0011e170 (11e170), FUN_0011e1f8 (11e1f8), FUN_001ebd10 (1ebd10), FUN_00217c64 (217c64), FUN_0027b1d8 (27b1d8), FUN_002875f8 (2875f8), FUN_00287b88 (287b88), FUN_00287f18 (287f18), FUN_0028fcd4 (28fcd4), FUN_0029133c (29133c), FUN_002fe4a0 (2fe4a0), FUN_003020bc (3020bc), FUN_00302264 (302264), FUN_0030cad0 (30cad0), FUN_0030cbd0 (30cbd0), FUN_0030ffb8 (30ffb8), FUN_003196d0 (3196d0), FUN_003197ac (3197ac)
+
+#### FUN_000b1034 — funcs/FUN_000b1034.cpp, Ghidra b1034, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b1034.cpp:12:17: error: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
+   12 |   unsigned char auVar3[16] = {0};FUN_0012a6d8(lVar1);
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b1034.cpp:7:14: note: previous definition is here
+    7 |   undefined1 auVar3 [12];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b1034.cpp:16:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   16 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000b1034.cpp:16:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   16 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
+      |                                                   ~~~~~~^~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000b1034(long param_1)
+{
+  long lVar1;
+  long lVar2;
+  undefined1 auVar3 [12];
+  undefined4 uStack_2c;
+
+  lVar2 = *(long *)GD_PTR____stack_chk_guard_004241e8;
+  lVar1 = FUN_001aaa88((undefined8 *)(param_1 + 0x240));
+  unsigned char auVar3[16] = {0};FUN_0012a6d8(lVar1);
+  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar2) {
+    return;
+  }
+  _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
+}
+```
+Notes:
+- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000b1034(long param_1)
+
+{
+  long lVar1;
+  long lVar2;
+  undefined1 auVar3 [12];
+  undefined4 uStack_2c;
+  
+  lVar2 = *(long *)PTR____stack_chk_guard_004241e8;
+  lVar1 = FUN_001aaa88((undefined8 *)(param_1 + 0x240));
+  auVar3 = FUN_0012a6d8(lVar1);
+  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar2) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  ___stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
+}
+```
+
+#### FUN_000ff0bc — funcs/FUN_000ff0bc.cpp, Ghidra ff0bc, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ff0bc.cpp:13:17: error: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
+   13 |   unsigned char auVar3[16] = {0};FUN_000037fc(lVar1);
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ff0bc.cpp:7:14: note: previous definition is here
+    7 |   undefined1 auVar3 [12];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ff0bc.cpp:17:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   17 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_000ff0bc.cpp:17:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   17 |   _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
+      |                                                   ~~~~~~^~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_000ff0bc(int param_1)
+{
+  long lVar1;
+  long lVar2;
+  undefined1 auVar3 [12];
+  undefined4 uStack_2c;
+
+  lVar2 = *(long *)GD_PTR____stack_chk_guard_004241e8;
+  lVar1 = FUN_0010a634();
+  lVar1 = FUN_0010eac0(lVar1,param_1);
+  unsigned char auVar3[16] = {0};FUN_000037fc(lVar1);
+  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar2) {
+    return;
+  }
+  _stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
+}
+```
+Notes:
+- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_000ff0bc(int param_1)
+
+{
+  long lVar1;
+  long lVar2;
+  undefined1 auVar3 [12];
+  undefined4 uStack_2c;
+  
+  lVar2 = *(long *)PTR____stack_chk_guard_004241e8;
+  lVar1 = FUN_0010a634();
+  lVar1 = FUN_0010eac0(lVar1,param_1);
+  auVar3 = FUN_000037fc(lVar1);
+  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar2) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  ___stack_chk_fail(auVar3._0_8_,CONCAT44(uStack_2c,auVar3._8_4_));
+}
+```
+
+#### FUN_00101d90 — funcs/FUN_00101d90.cpp, Ghidra 101d90, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101d90.cpp:10:17: error: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
+   10 |   unsigned char auVar2[16] = {0};FUN_00101df8(param_2);
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101d90.cpp:6:14: note: previous definition is here
+    6 |   undefined1 auVar2 [12];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101d90.cpp:14:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101d90.cpp:14:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                                                   ~~~~~~^~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00101d90(undefined8 param_1,undefined8 *param_2)
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+
+  lVar1 = *(long *)GD_PTR____stack_chk_guard_004241e8;
+  unsigned char auVar2[16] = {0};FUN_00101df8(param_2);
+  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+  _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+Notes:
+- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_00101d90(undefined8 param_1,undefined8 *param_2)
+
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+  
+  lVar1 = *(long *)PTR____stack_chk_guard_004241e8;
+  auVar2 = FUN_00101df8(param_2);
+  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  ___stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+
+#### FUN_00101e60 — funcs/FUN_00101e60.cpp, Ghidra 101e60, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101e60.cpp:10:17: error: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
+   10 |   unsigned char auVar2[16] = {0};FUN_00101ec8(param_2);
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101e60.cpp:6:14: note: previous definition is here
+    6 |   undefined1 auVar2 [12];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101e60.cpp:14:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101e60.cpp:14:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                                                   ~~~~~~^~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00101e60(undefined8 param_1,undefined8 *param_2)
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+
+  lVar1 = *(long *)GD_PTR____stack_chk_guard_004241e8;
+  unsigned char auVar2[16] = {0};FUN_00101ec8(param_2);
+  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+  _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+Notes:
+- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_00101e60(undefined8 param_1,undefined8 *param_2)
+
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+  
+  lVar1 = *(long *)PTR____stack_chk_guard_004241e8;
+  auVar2 = FUN_00101ec8(param_2);
+  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  ___stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+
+#### FUN_00101f38 — funcs/FUN_00101f38.cpp, Ghidra 101f38, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101f38.cpp:10:17: error: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
+   10 |   unsigned char auVar2[16];
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101f38.cpp:6:14: note: previous definition is here
+    6 |   undefined1 auVar2 [12];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101f38.cpp:14:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00101f38.cpp:14:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                                                   ~~~~~~^~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00101f38(void)
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+
+  lVar1 = *(long *)GD_PTR____stack_chk_guard_004241e8;
+  unsigned char auVar2[16];
+  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+  _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+Notes:
+- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_00101f38(void)
+
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+  
+  lVar1 = *(long *)PTR____stack_chk_guard_004241e8;
+  auVar2 = FUN_00101f9c();
+  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  ___stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+
+#### FUN_00102034 — funcs/FUN_00102034.cpp, Ghidra 102034, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00102034.cpp:10:17: error: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
+   10 |   unsigned char auVar2[16];
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00102034.cpp:6:14: note: previous definition is here
+    6 |   undefined1 auVar2 [12];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00102034.cpp:14:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00102034.cpp:14:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                                                   ~~~~~~^~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00102034(void)
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+
+  lVar1 = *(long *)GD_PTR____stack_chk_guard_004241e8;
+  unsigned char auVar2[16];
+  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+  _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+Notes:
+- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_00102034(void)
+
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+  
+  lVar1 = *(long *)PTR____stack_chk_guard_004241e8;
+  auVar2 = FUN_00102098();
+  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  ___stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+
+#### FUN_00102120 — funcs/FUN_00102120.cpp, Ghidra 102120, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00102120.cpp:10:17: error: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
+   10 |   unsigned char auVar2[16];
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00102120.cpp:6:14: note: previous definition is here
+    6 |   undefined1 auVar2 [12];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00102120.cpp:14:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00102120.cpp:14:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   14 |   _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+      |                                                   ~~~~~~^~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00102120(void)
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+
+  lVar1 = *(long *)GD_PTR____stack_chk_guard_004241e8;
+  unsigned char auVar2[16];
+  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+  _stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+Notes:
+- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_00102120(void)
+
+{
+  long lVar1;
+  undefined1 auVar2 [12];
+  undefined4 uStack_2c;
+  
+  lVar1 = *(long *)PTR____stack_chk_guard_004241e8;
+  auVar2 = FUN_00102184();
+  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  ___stack_chk_fail(auVar2._0_8_,CONCAT44(uStack_2c,auVar2._8_4_));
+}
+```
+
+#### FUN_0011e170 — funcs/FUN_0011e170.cpp, Ghidra 11e170, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011e170.cpp:20:17: error: redefinition of 'auVar5' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
+   20 |   unsigned char auVar5[16] = {0};FUN_000037fc(lVar2);
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011e170.cpp:9:14: note: previous definition is here
+    9 |   undefined1 auVar5 [12];
+      |              ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011e170.cpp:24:25: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   24 |   _stack_chk_fail(auVar5._0_8_,CONCAT44(uStack_3c,auVar5._8_4_));
+      |                   ~~~~~~^~~~~~
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0011e170.cpp:24:57: error: member reference base type 'undefined1[12]' (aka 'unsigned char[12]') is not a structure or union
+   24 |   _stack_chk_fail(auVar5._0_8_,CONCAT44(uStack_3c,auVar5._8_4_));
+      |                                                   ~~~~~~^~~~~~
+3 errors generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0011e170(long param_1)
+{
+  byte bVar1;
+  long lVar2;
+  int iVar3;
+  long lVar4;
+  undefined1 auVar5 [12];
+  undefined4 uStack_3c;
+
+  lVar4 = *(long *)GD_PTR____stack_chk_guard_004241e8;
+  bVar1 = *(byte *)(param_1 + 0xd9);
+  lVar2 = FUN_0010a634();
+  iVar3 = 0xc;
+  if ((bVar1 & 1) == 0) {
+    iVar3 = 0xe;
+  }
+  lVar2 = FUN_0010eac0(lVar2,iVar3);
+  unsigned char auVar5[16] = {0};FUN_000037fc(lVar2);
+  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == lVar4) {
+    return;
+  }
+  _stack_chk_fail(auVar5._0_8_,CONCAT44(uStack_3c,auVar5._8_4_));
+}
+```
+Notes:
+- 10-21 19:16 [compile] array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_0011e170(long param_1)
+
+{
+  byte bVar1;
+  long lVar2;
+  int iVar3;
+  long lVar4;
+  undefined1 auVar5 [12];
+  undefined4 uStack_3c;
+  
+  lVar4 = *(long *)PTR____stack_chk_guard_004241e8;
+  bVar1 = *(byte *)(param_1 + 0xd9);
+  lVar2 = FUN_0010a634();
+  iVar3 = 0xc;
+  if ((bVar1 & 1) == 0) {
+    iVar3 = 0xe;
+  }
+  lVar2 = FUN_0010eac0(lVar2,iVar3);
+  auVar5 = FUN_000037fc(lVar2);
+  if (*(long *)PTR____stack_chk_guard_004241e8 == lVar4) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  ___stack_chk_fail(auVar5._0_8_,CONCAT44(uStack_3c,auVar5._8_4_));
 }
 ```
 
@@ -31425,54 +31614,9 @@ ID FUN_0020da98(long param_1)
 }
 ```
 
-### Not compiling yet — 21 × expression is not assignable
+### Not compiling yet — 20 × expression is not assignable
 
-All: FUN_0001654c (1654c), FUN_000315b0 (315b0), FUN_00031f7c (31f7c), FUN_00031fc8 (31fc8), FUN_000334c4 (334c4), FUN_000393f4 (393f4), FUN_00039840 (39840), FUN_00039cb8 (39cb8), FUN_0003c290 (3c290), FUN_000471a8 (471a8), FUN_0004b65c (4b65c), FUN_0004f7b8 (4f7b8), FUN_000b11f8 (b11f8), FUN_000b40a4 (b40a4), FUN_000c24dc (c24dc), FUN_000cc0bc (cc0bc), FUN_000e43dc (e43dc), FUN_000f02dc (f02dc), FUN_000f235c (f235c), FUN_0011547c (11547c), FUN_00120960 (120960)
-
-#### FUN_0001654c — funcs/_FUN_0001654c.cpp, Ghidra 1654c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001654c.cpp:11:18: error: expression is not assignable
-   11 |   (void)local_30 = FUN_0000392c();
-      |   ~~~~~~~~~~~~~~ ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0001654c(long param_1)
-{
-  long *plVar1;
-  undefined8 local_30;
-  long local_28;
-
-  local_28 = param_1;
-  plVar1 = (long *)FUN_000164dc((undefined8 *)(param_1 + 0x160));
-  (void)local_30 = FUN_0000392c();
-  FUN_0011d154(plVar1,(int *)&local_30);
-  return;
-}
-```
-Notes:
-- 10-21 16:47 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_0001654c(long param_1)
-
-{
-  long *plVar1;
-  undefined8 local_30;
-  long local_28;
-  
-  local_28 = param_1;
-  plVar1 = (long *)FUN_000164dc((undefined8 *)(param_1 + 0x160));
-  local_30 = FUN_0000392c();
-  FUN_0011d154(plVar1,(int *)&local_30);
-  return;
-}
-```
+All: FUN_000315b0 (315b0), FUN_00031f7c (31f7c), FUN_00031fc8 (31fc8), FUN_000334c4 (334c4), FUN_000393f4 (393f4), FUN_00039840 (39840), FUN_00039cb8 (39cb8), FUN_0003c290 (3c290), FUN_000471a8 (471a8), FUN_0004b65c (4b65c), FUN_0004f7b8 (4f7b8), FUN_000b11f8 (b11f8), FUN_000b40a4 (b40a4), FUN_000c24dc (c24dc), FUN_000cc0bc (cc0bc), FUN_000e43dc (e43dc), FUN_000f02dc (f02dc), FUN_000f235c (f235c), FUN_0011547c (11547c), FUN_00120960 (120960)
 
 #### FUN_000315b0 — funcs/_FUN_000315b0.cpp, Ghidra 315b0, 0 model attempt(s)
 
@@ -31891,6 +32035,51 @@ void FUN_00039cb8(long param_1)
   
   local_28 = param_1;
   plVar1 = (long *)FUN_00039114((undefined8 *)(param_1 + 0x160));
+  local_30 = FUN_0000392c();
+  FUN_0011d154(plVar1,(int *)&local_30);
+  return;
+}
+```
+
+#### FUN_0003c290 — funcs/_FUN_0003c290.cpp, Ghidra 3c290, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0003c290.cpp:11:18: error: expression is not assignable
+   11 |   (void)local_30 = FUN_0000392c();
+      |   ~~~~~~~~~~~~~~ ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0003c290(long param_1)
+{
+  long *plVar1;
+  undefined8 local_30;
+  long local_28;
+
+  local_28 = param_1;
+  plVar1 = (long *)FUN_000031e0((undefined8 *)(param_1 + 0x160));
+  (void)local_30 = FUN_0000392c();
+  FUN_0011d154(plVar1,(int *)&local_30);
+  return;
+}
+```
+Notes:
+- 10-21 16:47 [compile] assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+void FUN_0003c290(long param_1)
+
+{
+  long *plVar1;
+  undefined8 local_30;
+  long local_28;
+  
+  local_28 = param_1;
+  plVar1 = (long *)FUN_000031e0((undefined8 *)(param_1 + 0x160));
   local_30 = FUN_0000392c();
   FUN_0011d154(plVar1,(int *)&local_30);
   return;
@@ -43547,819 +43736,6 @@ LAB_00273c2c:
 }
 ```
 
-### Not compiling yet — 7 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
-
-All: FUN_0000e748 (e748), FUN_00017294 (17294), FUN_0001b2dc (1b2dc), FUN_00142778 (142778), FUN_0014707c (14707c), FUN_001f8794 (1f8794), FUN_00223288 (223288)
-
-#### FUN_0000e748 — funcs/_FUN_0000e748.cpp, Ghidra e748, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e748.cpp:7:14: error: redefinition of 'auVar1' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-    7 |   undefined8 auVar1[16] = {0};FUN_0000f9b4(param_1, param_2, param_3);
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e748.cpp:5:14: note: previous definition is here
-    5 |   undefined1 auVar1 [16];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e748.cpp:8:20: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-    8 |   *param_1 = auVar1._0_8_;
-      |              ~~~~~~^~~~~~
-2 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0000e748(double *param_1,double *param_2,double *param_3)
-{
-  undefined1 auVar1 [16];
-
-  undefined8 auVar1[16] = {0};FUN_0000f9b4(param_1, param_2, param_3);
-  *param_1 = auVar1._0_8_;
-  return;
-}
-```
-Notes:
-- 10-21 16:47 [compile] array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable — fixed with a learned rule.
-- 10-21 19:29 [compile] redefinition of 'auVar1' — plan: Change `undefined1 auVar1[16];` to `undefined8 auVar1[16];` — still fails: redefinition of 'auVar1' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs '
-Ghidra's pseudocode:
-```c
-void FUN_0000e748(double *param_1,double *param_2,double *param_3)
-
-{
-  undefined1 auVar1 [16];
-  
-  auVar1 = FUN_0000f9b4(param_1,param_2,param_3);
-  *param_1 = auVar1._0_8_;
-  return;
-}
-```
-
-#### FUN_00017294 — funcs/_FUN_00017294.cpp, Ghidra 17294, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00017294.cpp:14:14: error: redefinition of 'extraout_var' with a different type: 'undefined1[12]' (aka 'unsigned char[12]') vs 'uint64_t' (aka 'unsigned long long')
-   14 |   undefined1 extraout_var [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00017294.cpp:6:14: note: previous definition is here
-    6 |     uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00017294.cpp:19:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   19 |   auVar1._4_12_ = extraout_var;
-      |   ~~~~~~^~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00017294.cpp:20:9: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   20 |   auVar1._0_4_ = uVar6;
-      |   ~~~~~~^~~~~~
-3 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00017294(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long *param_5,undefined8 param_6,undefined8 param_7,uint param_8)
-{
-    uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-
-  undefined1 auVar1 [16];
-  char cVar2;
-  long *plVar3;
-  undefined8 uVar4;
-  long lVar5;
-  undefined4 uVar6;
-  undefined1 extraout_var [12];
-
-  plVar3 = (long *)FUN_00017a40((long)(param_5 + 0x48));
-  uVar6 = FUN_00018bf8(plVar3);
-  *(undefined4 *)(param_5 + 0x4d) = uVar6;
-  auVar1._4_12_ = extraout_var;
-  auVar1._0_4_ = uVar6;
-  uVar4 = FUN_0011c60c(auVar1,param_2,param_3,param_4,(long)param_5);
-  *(undefined8 *)((long)param_5 + 0x274) = uVar4;
-  *(undefined2 *)((long)param_5 + 0x26c) = 0;
-  (**(code **)(*param_5 + 0x238))(param_5,param_8 >> 6 & 1);
-  lVar5 = FUN_000adbc4();
-  cVar2 = FUN_00018c24(lVar5 + 0x3b0);
-  if (cVar2 != '\0') {
-    uVar6 = FUN_0011d5cc((long)param_5);
-    *(undefined4 *)(param_5 + 0x4e) = uVar6;
-    FUN_0011d5e0(param_5,9);
-  }
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_00017294(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long *param_5,undefined8 param_6,undefined8 param_7,uint param_8)
-
-{
-  undefined1 auVar1 [16];
-  char cVar2;
-  long *plVar3;
-  undefined8 uVar4;
-  long lVar5;
-  undefined4 uVar6;
-  undefined1 extraout_var [12];
-  
-  plVar3 = (long *)FUN_00017a40((long)(param_5 + 0x48));
-  uVar6 = FUN_00018bf8(plVar3);
-  *(undefined4 *)(param_5 + 0x4d) = uVar6;
-  auVar1._4_12_ = extraout_var;
-  auVar1._0_4_ = uVar6;
-  uVar4 = FUN_0011c60c(auVar1,param_2,param_3,param_4,(long)param_5);
-  *(undefined8 *)((long)param_5 + 0x274) = uVar4;
-  *(undefined2 *)((long)param_5 + 0x26c) = 0;
-  (**(code **)(*param_5 + 0x238))(param_5,param_8 >> 6 & 1);
-  lVar5 = FUN_000adbc4();
-  cVar2 = FUN_00018c24(lVar5 + 0x3b0);
-  if (cVar2 != '\0') {
-    uVar6 = FUN_0011d5cc((long)param_5);
-    *(undefined4 *)(param_5 + 0x4e) = uVar6;
-    FUN_0011d5e0(param_5,9);
-  }
-  return;
-}
-```
-
-#### FUN_0001b2dc — funcs/_FUN_0001b2dc.cpp, Ghidra 1b2dc, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:15:14: error: redefinition of 'extraout_var' with a different type: 'undefined1[12]' (aka 'unsigned char[12]') vs 'uint64_t' (aka 'unsigned long long')
-   15 |   undefined1 extraout_var [12];
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:5:14: note: previous definition is here
-    5 |     uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-      |              ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:56:21: error: operand of type 'void' where arithmetic or pointer type is required
-   56 |     dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
-      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:65:25: error: operand of type 'void' where arithmetic or pointer type is required
-   65 |         dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:96:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   96 |       auVar9 = FUN_0001bcf8((double)(int)local_d0,param_1 + 0x2b0);
-      |       ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:97:31: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-   97 |       local_d8 = (float)auVar9._0_8_;
-      |                         ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:98:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   98 |       auVar9 = FUN_0001bd40((double)(long)(int)local_d4,param_1 + 0x2b0);
-      |       ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:103:25: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-  103 |            (float)auVar9._0_8_ * local_bc * local_c8 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
-      |                   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:137:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-  137 |       auVar9 = FUN_0001bcf8((double)local_d8,param_1 + 0x2b0);
-      |       ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:138:31: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-  138 |       local_d8 = (float)auVar9._0_8_;
-      |                         ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:139:14: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-  139 |       auVar9 = FUN_0001bd40((double)local_dc,param_1 + 0x2b0);
-      |       ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:144:25: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-  144 |            (float)auVar9._0_8_ * 32767.0 * local_bc * local_c8 +
-      |                   ~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:158:15: error: member reference base type 'undefined1[16]' (aka 'unsigned 
-...
-r[16]') is not assignable
-  191 |       auVar9 = FUN_0001bd40((double)fVar7,param_1 + 0x2b0);
-      |       ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0001b2dc.cpp:196:25: error: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-  196 |            (float)auVar9._0_8_ * 32767.0 * local_bc * local_cc +
-      |                   ~~~~~~^~~~~~
-fatal error: too many errors emitted, stopping now [-ferror-limit=]
-21 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0001b2dc(long param_1,long param_2,long param_3,int param_4)
-{
-    uint64_t extraout_var = 0; // TODO: phantom var (incomplete lift)
-
-  int iVar1;
-  bool bVar2;
-  int iVar3;
-  long lVar4;
-  float fVar5;
-  float fVar6;
-  float fVar7;
-  double dVar8;
-  undefined1 extraout_var [12];
-  undefined1 auVar9 [16];
-  float fVar10;
-  float local_dc;
-  float local_d8;
-  float local_d4;
-  float local_d0;
-  float local_cc;
-  float local_c8;
-  float local_c4;
-  float local_c0;
-  float local_bc;
-  float local_b8;
-  float local_b4;
-  byte local_ae;
-  byte local_ad;
-  int local_ac;
-  long local_a8;
-  long local_a0;
-  long lStack_98;
-
-  local_ac = param_4;
-  local_a8 = param_3;
-  local_a0 = param_2;
-  lStack_98 = param_1;
-  bVar2 = FUN_0000ebb0(param_1 + 0x270);
-  if (bVar2) {
-    local_ad = true;
-  }
-  else {
-    local_ad = FUN_0000ebb0(param_1 + 0x288);
-  }
-  local_ae = FUN_0000ebb0(param_1 + 0x250);
-  local_b4 = 0.0001;
-  local_b8 = (float)FUN_0000fba4(param_1 + 0x250);
-  local_b8 = FUN_00012f48(&local_b4,&local_b8);
-  local_bc = (float)FUN_0000fba4(param_1 + 0x270);
-  local_c0 = (float)FUN_0000fba4(param_1 + 0x288);
-  fVar7 = local_b8;
-  switch(*(undefined4 *)(param_1 + 0x248)) {
-  case 0:
-    dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
-    local_c4 = (float)((int)dVar8 << 2 | 1);
-    fVar7 = (float)powf(local_b8,0x40000000);
-    local_c8 = fVar7 * 100.0 + 1.0;
-    for (local_cc = 0.0; (int)local_cc < local_ac; local_cc = (float)((int)local_cc + 1)) {
-      if ((local_ae & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x250);
-        local_d0 = (float)FUN_0000ec38(param_1 + 0x250);
-        local_b8 = FUN_00012f48(&local_b4,&local_d0);
-        dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
-        local_c4 = (float)((int)dVar8 << 2 | 1);
-        fVar7 = (float)powf(local_b8,0x40000000);
-        local_c8 = fVar7 * 100.0 + 1.0;
-      }
-      if ((local_ad & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x270);
-        FUN_0000ec04(param_1 + 0x288);
-        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
-        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
-      }
-      local_d0 = (float)FUN_0000b350(*(float *)(local_a0 + (long)(int)local_cc * 4));
-      iVar3 = FUN_0000b350(*(float *)(local_a8 + (long)(int)local_cc * 4));
-      local_d0 = (float)((int)local_d0 * (int)local_c4 >> 7);
-      local_d4 = (float)(iVar3 * (int)local_c4 >> 7);
-      local_dc = 4.59163e-41;
-      local_d8 = -NAN;
-      FUN_0001bcc0((int *)&local_d0,(int *)&local_d8,(int *)&local_dc);
-      local_dc = 4.59163e-41;
-      local_d8 = -NAN;
-      FUN_0001bcc0((int *)&local_d4,(int *)&local_d8,(int *)&local_dc);
-      iVar3 = (int)local_d0 << 7;
-      iVar1 = (int)local_d4 << 7;
-      local_d0 = 0.0;
-      if (local_c4 != 0.0) {
-        local_d0 = (float)(iVar3 / (int)local_c4);
-      }
-      local_d4 = 0.0;
-      if (local_c4 != 0.0) {
-        local_d4 = (float)(iVar1 / (int)local_c4);
-      }
-      auVar9 = FUN_0001bcf8((double)(int)local_d0,param_1 + 0x2b0);
-      local_d8 = (float)auVar9._0_8_;
-      auVar9 = FUN_0001bd40((double)(long)(int)local_d4,param_1 + 0x2b0);
-      lVar4 = (long)(int)local_cc * 4;
-      *(float *)(local_a0 + lVar4) =
-           local_d8 * local_bc * local_c8 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
-      *(float *)(local_a8 + lVar4) =
-           (float)auVar9._0_8_ * local_bc * local_c8 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
-      ;
-    }
-    break;
-  case 1:
-    local_c4 = (float)powf(local_b8 * 10.0,0x40200000);
-    local_c8 = (float)powf(fVar7 / 4.0,0x3e4ccccd);
-    local_c8 = 1.0 - local_c8;
-    for (local_cc = 0.0; (int)local_cc < local_ac; local_cc = (float)((int)local_cc + 1)) {
-      if ((local_ae & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x250);
-        local_d0 = (float)FUN_0000ec38(param_1 + 0x250);
-        fVar7 = FUN_00012f48(&local_b4,&local_d0);
-        local_b8 = fVar7;
-        local_c4 = (float)powf(fVar7 * 10.0,0x40200000);
-        local_c8 = (float)powf(fVar7 / 4.0,0x3e4ccccd);
-        local_c8 = 1.0 - local_c8;
-      }
-      if ((local_ad & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x270);
-        FUN_0000ec04(param_1 + 0x288);
-        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
-        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
-      }
-      fVar7 = local_c4;
-      local_d0 = *(float *)(local_a0 + (long)(int)local_cc * 4) / 32767.0;
-      local_d4 = *(float *)(local_a8 + (long)(int)local_cc * 4) / 32767.0;
-      fVar10 = (local_c4 + 1.0) * local_d0;
-      fVar5 = FUN_0001bd88(local_d0);
-      fVar6 = local_c4;
-      local_d8 = fVar10 / (fVar5 * fVar7 + 1.0);
-      fVar5 = (local_c4 + 1.0) * local_d4;
-      fVar7 = FUN_0001bd88(local_d4);
-      local_dc = fVar5 / (fVar7 * fVar6 + 1.0);
-      auVar9 = FUN_0001bcf8((double)local_d8,param_1 + 0x2b0);
-      local_d8 = (float)auVar9._0_8_;
-      auVar9 = FUN_0001bd40((double)local_dc,param_1 + 0x2b0);
-      lVar4 = (long)(int)local_cc * 4;
-      *(float *)(local_a0 + lVar4) =
-           local_d8 * 32767.0 * local_bc * local_c8 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
-      *(float *)(local_a8 + lVar4) =
-           (float)auVar9._0_8_ * 32767.0 * local_bc * local_c8 +
-           local_c0 * *(float *)(local_a8 + lVar4) + 0.0;
-    }
-    break;
-  case 2:
-    fVar6 = (float)powf(local_b8,0x3e4ccccd);
-    local_c4 = 1.01 - fVar6;
-    local_c8 = (float)powf(fVar7,0x40000000);
-    local_c8 = local_c8 + 1.0;
-    local_cc = 1.0 / ((1.01 - fVar6) * 2.75) + 0.6;
-    for (local_d0 = 0.0; (int)local_d0 < local_ac; local_d0 = (float)((int)local_d0 + 1)) {
-      if ((local_ae & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x250);
-        local_d4 = (float)FUN_0000ec38(param_1 + 0x250);
-        auVar9._0_4_ = FUN_00012f48(&local_b4,&local_d4);
-        auVar9._4_12_ = extraout_var;
-        local_b8 = auVar9._0_4_;
-        fVar7 = (float)powf(auVar9,0x3e4ccccd);
-        local_c4 = 1.01 - fVar7;
-        local_c8 = (float)powf(auVar9._0_4_,0x40000000);
-        local_c8 = local_c8 + 1.0;
-        local_cc = 1.0 / ((1.01 - fVar7) * 2.75) + 0.6;
-      }
-      if ((local_ad & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x270);
-        FUN_0000ec04(param_1 + 0x288);
-        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
-        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
-      }
-      fVar7 = (*(float *)(local_a0 + (long)(int)local_d0 * 4) / 32767.0) * local_c8;
-      local_d8 = (*(float *)(local_a8 + (long)(int)local_d0 * 4) / 32767.0) * local_c8;
-      local_d4 = fVar7;
-      if ((local_c4 < fVar7) || (fVar7 < -local_c4)) {
-        fVar7 = (float)fmodf(fVar7 - local_c4,local_c4 * 4.0);
-        fVar7 = FUN_0001bd88(fVar7);
-        fVar7 = FUN_0001bd88(fVar7 + local_c4 * -2.0);
-        fVar7 = fVar7 - local_c4;
-      }
-      local_dc = fVar7;
-      if ((local_c4 < local_d8) || (fVar7 = local_d8, local_d8 < -local_c4)) {
-        fVar7 = (float)fmodf(local_d8 - local_c4,local_c4 * 4.0);
-        fVar7 = FUN_0001bd88(fVar7);
-        fVar7 = FUN_0001bd88(fVar7 + local_c4 * -2.0);
-        fVar7 = fVar7 - local_c4;
-      }
-      auVar9 = FUN_0001bcf8((double)local_dc,param_1 + 0x2b0);
-      local_dc = (float)auVar9._0_8_;
-      auVar9 = FUN_0001bd40((double)fVar7,param_1 + 0x2b0);
-      lVar4 = (long)(int)local_d0 * 4;
-      *(float *)(local_a0 + lVar4) =
-           local_dc * 32767.0 * local_bc * local_cc + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
-      *(float *)(local_a8 + lVar4) =
-           (float)auVar9._0_8_ * 32767.0 * local_bc * local_cc +
-           local_c0 * *(float *)(local_a8 + lVar4) + 0.0;
-    }
-    break;
-  case 3:
-    local_c4 = (float)powf(local_b8 / 2.0,0x3f733333);
-    local_c4 = 1.5 - local_c4;
-    for (local_c8 = 0.0; (int)local_c8 < local_ac; local_c8 = (float)((int)local_c8 + 1)) {
-      if ((local_ae & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x250);
-        local_cc = (float)FUN_0000ec38(param_1 + 0x250);
-        local_b8 = FUN_00012f48(&local_b4,&local_cc);
-        local_c4 = (float)powf(local_b8 / 2.0,0x3f733333);
-        local_c4 = 1.5 - local_c4;
-      }
-      if ((local_ad & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x270);
-        FUN_0000ec04(param_1 + 0x288);
-        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
-        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
-      }
-      local_cc = *(float *)(local_a0 + (long)(int)local_c8 * 4);
-      local_d0 = *(float *)(local_a8 + (long)(int)local_c8 * 4);
-      iVar3 = FUN_0000b350(local_cc);
-      iVar3 = FUN_00018cac(iVar3);
-      fVar7 = (float)powf((float)iVar3 / 32767.0,1.0 - local_b8 * 0.9);
-      local_d4 = (fVar7 * 32767.0 - *(float *)(param_1 + 0x2a4)) +
-                 *(float *)(param_1 + 0x2a0) * 0.99 + 0.0;
-      *(float *)(param_1 + 0x2a0) = local_d4;
-      *(float *)(param_1 + 0x2a4) = fVar7 * 32767.0;
-      iVar3 = FUN_0000b350(local_d0);
-      iVar3 = FUN_00018cac(iVar3);
-      fVar7 = (float)powf((float)iVar3 / 32767.0,1.0 - local_b8 * 0.9);
-      local_d8 = (fVar7 * 32767.0 - *(float *)(param_1 + 0x2ac)) +
-                 *(float *)(param_1 + 0x2a8) * 0.99 + 0.0;
-      *(float *)(param_1 + 0x2a8) = local_d8;
-      *(float *)(param_1 + 0x2ac) = fVar7 * 32767.0;
-      auVar9 = FUN_0001bcf8((double)local_d4,param_1 + 0x2b0);
-      local_d4 = (float)auVar9._0_8_;
-      auVar9 = FUN_0001bd40((double)local_d8,param_1 + 0x2b0);
-      lVar4 = (long)(int)local_c8 * 4;
-      *(float *)(local_a0 + lVar4) =
-           local_d4 * local_bc * local_c4 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
-      *(float *)(local_a8 + lVar4) =
-           (float)auVar9._0_8_ * local_bc * local_c4 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
-      ;
-    }
-  }
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_0001b2dc(long param_1,long param_2,long param_3,int param_4)
-
-{
-  int iVar1;
-  bool bVar2;
-  int iVar3;
-  long lVar4;
-  float fVar5;
-  float fVar6;
-  float fVar7;
-  double dVar8;
-  undefined1 extraout_var [12];
-  undefined1 auVar9 [16];
-  float fVar10;
-  float local_dc;
-  float local_d8;
-  float local_d4;
-  float local_d0;
-  float local_cc;
-  float local_c8;
-  float local_c4;
-  float local_c0;
-  float local_bc;
-  float local_b8;
-  float local_b4;
-  byte local_ae;
-  byte local_ad;
-  int local_ac;
-  long local_a8;
-  long local_a0;
-  long lStack_98;
-  
-  local_ac = param_4;
-  local_a8 = param_3;
-  local_a0 = param_2;
-  lStack_98 = param_1;
-  bVar2 = FUN_0000ebb0(param_1 + 0x270);
-  if (bVar2) {
-    local_ad = true;
-  }
-  else {
-    local_ad = FUN_0000ebb0(param_1 + 0x288);
-  }
-  local_ae = FUN_0000ebb0(param_1 + 0x250);
-  local_b4 = 0.0001;
-  local_b8 = (float)FUN_0000fba4(param_1 + 0x250);
-  local_b8 = FUN_00012f48(&local_b4,&local_b8);
-  local_bc = (float)FUN_0000fba4(param_1 + 0x270);
-  local_c0 = (float)FUN_0000fba4(param_1 + 0x288);
-  fVar7 = local_b8;
-  switch(*(undefined4 *)(param_1 + 0x248)) {
-  case 0:
-    dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
-    local_c4 = (float)((int)dVar8 << 2 | 1);
-    fVar7 = (float)_powf(local_b8,0x40000000);
-    local_c8 = fVar7 * 100.0 + 1.0;
-    for (local_cc = 0.0; (int)local_cc < local_ac; local_cc = (float)((int)local_cc + 1)) {
-      if ((local_ae & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x250);
-        local_d0 = (float)FUN_0000ec38(param_1 + 0x250);
-        local_b8 = FUN_00012f48(&local_b4,&local_d0);
-        dVar8 = (double)FUN_0001bca4(local_b8 * 100.0 + 7.0,2);
-        local_c4 = (float)((int)dVar8 << 2 | 1);
-        fVar7 = (float)_powf(local_b8,0x40000000);
-        local_c8 = fVar7 * 100.0 + 1.0;
-      }
-      if ((local_ad & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x270);
-        FUN_0000ec04(param_1 + 0x288);
-        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
-        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
-      }
-      local_d0 = (float)FUN_0000b350(*(float *)(local_a0 + (long)(int)local_cc * 4));
-      iVar3 = FUN_0000b350(*(float *)(local_a8 + (long)(int)local_cc * 4));
-      local_d0 = (float)((int)local_d0 * (int)local_c4 >> 7);
-      local_d4 = (float)(iVar3 * (int)local_c4 >> 7);
-      local_dc = 4.59163e-41;
-      local_d8 = -NAN;
-      FUN_0001bcc0((int *)&local_d0,(int *)&local_d8,(int *)&local_dc);
-      local_dc = 4.59163e-41;
-      local_d8 = -NAN;
-      FUN_0001bcc0((int *)&local_d4,(int *)&local_d8,(int *)&local_dc);
-      iVar3 = (int)local_d0 << 7;
-      iVar1 = (int)local_d4 << 7;
-      local_d0 = 0.0;
-      if (local_c4 != 0.0) {
-        local_d0 = (float)(iVar3 / (int)local_c4);
-      }
-      local_d4 = 0.0;
-      if (local_c4 != 0.0) {
-        local_d4 = (float)(iVar1 / (int)local_c4);
-      }
-      auVar9 = FUN_0001bcf8((double)(int)local_d0,param_1 + 0x2b0);
-      local_d8 = (float)auVar9._0_8_;
-      auVar9 = FUN_0001bd40((double)(long)(int)local_d4,param_1 + 0x2b0);
-      lVar4 = (long)(int)local_cc * 4;
-      *(float *)(local_a0 + lVar4) =
-           local_d8 * local_bc * local_c8 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
-      *(float *)(local_a8 + lVar4) =
-           (float)auVar9._0_8_ * local_bc * local_c8 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
-      ;
-    }
-    break;
-  case 1:
-    local_c4 = (float)_powf(local_b8 * 10.0,0x40200000);
-    local_c8 = (float)_powf(fVar7 / 4.0,0x3e4ccccd);
-    local_c8 = 1.0 - local_c8;
-    for (local_cc = 0.0; (int)local_cc < local_ac; local_cc = (float)((int)local_cc + 1)) {
-      if ((local_ae & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x250);
-        local_d0 = (float)FUN_0000ec38(param_1 + 0x250);
-        fVar7 = FUN_00012f48(&local_b4,&local_d0);
-        local_b8 = fVar7;
-        local_c4 = (float)_powf(fVar7 * 10.0,0x40200000);
-        local_c8 = (float)_powf(fVar7 / 4.0,0x3e4ccccd);
-        local_c8 = 1.0 - local_c8;
-      }
-      if ((local_ad & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x270);
-        FUN_0000ec04(param_1 + 0x288);
-        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
-        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
-      }
-      fVar7 = local_c4;
-      local_d0 = *(float *)(local_a0 + (long)(int)local_cc * 4) / 32767.0;
-      local_d4 = *(float *)(local_a8 + (long)(int)local_cc * 4) / 32767.0;
-      fVar10 = (local_c4 + 1.0) * local_d0;
-      fVar5 = FUN_0001bd88(local_d0);
-      fVar6 = local_c4;
-      local_d8 = fVar10 / (fVar5 * fVar7 + 1.0);
-      fVar5 = (local_c4 + 1.0) * local_d4;
-      fVar7 = FUN_0001bd88(local_d4);
-      local_dc = fVar5 / (fVar7 * fVar6 + 1.0);
-      auVar9 = FUN_0001bcf8((double)local_d8,param_1 + 0x2b0);
-      local_d8 = (float)auVar9._0_8_;
-      auVar9 = FUN_0001bd40((double)local_dc,param_1 + 0x2b0);
-      lVar4 = (long)(int)local_cc * 4;
-      *(float *)(local_a0 + lVar4) =
-           local_d8 * 32767.0 * local_bc * local_c8 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
-      *(float *)(local_a8 + lVar4) =
-           (float)auVar9._0_8_ * 32767.0 * local_bc * local_c8 +
-           local_c0 * *(float *)(local_a8 + lVar4) + 0.0;
-    }
-    break;
-  case 2:
-    fVar6 = (float)_powf(local_b8,0x3e4ccccd);
-    local_c4 = 1.01 - fVar6;
-    local_c8 = (float)_powf(fVar7,0x40000000);
-    local_c8 = local_c8 + 1.0;
-    local_cc = 1.0 / ((1.01 - fVar6) * 2.75) + 0.6;
-    for (local_d0 = 0.0; (int)local_d0 < local_ac; local_d0 = (float)((int)local_d0 + 1)) {
-      if ((local_ae & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x250);
-        local_d4 = (float)FUN_0000ec38(param_1 + 0x250);
-        auVar9._0_4_ = FUN_00012f48(&local_b4,&local_d4);
-        auVar9._4_12_ = extraout_var;
-        local_b8 = auVar9._0_4_;
-        fVar7 = (float)_powf(auVar9,0x3e4ccccd);
-        local_c4 = 1.01 - fVar7;
-        local_c8 = (float)_powf(auVar9._0_4_,0x40000000);
-        local_c8 = local_c8 + 1.0;
-        local_cc = 1.0 / ((1.01 - fVar7) * 2.75) + 0.6;
-      }
-      if ((local_ad & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x270);
-        FUN_0000ec04(param_1 + 0x288);
-        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
-        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
-      }
-      fVar7 = (*(float *)(local_a0 + (long)(int)local_d0 * 4) / 32767.0) * local_c8;
-      local_d8 = (*(float *)(local_a8 + (long)(int)local_d0 * 4) / 32767.0) * local_c8;
-      local_d4 = fVar7;
-      if ((local_c4 < fVar7) || (fVar7 < -local_c4)) {
-        fVar7 = (float)_fmodf(fVar7 - local_c4,local_c4 * 4.0);
-        fVar7 = FUN_0001bd88(fVar7);
-        fVar7 = FUN_0001bd88(fVar7 + local_c4 * -2.0);
-        fVar7 = fVar7 - local_c4;
-      }
-      local_dc = fVar7;
-      if ((local_c4 < local_d8) || (fVar7 = local_d8, local_d8 < -local_c4)) {
-        fVar7 = (float)_fmodf(local_d8 - local_c4,local_c4 * 4.0);
-        fVar7 = FUN_0001bd88(fVar7);
-        fVar7 = FUN_0001bd88(fVar7 + local_c4 * -2.0);
-        fVar7 = fVar7 - local_c4;
-      }
-      auVar9 = FUN_0001bcf8((double)local_dc,param_1 + 0x2b0);
-      local_dc = (float)auVar9._0_8_;
-      auVar9 = FUN_0001bd40((double)fVar7,param_1 + 0x2b0);
-      lVar4 = (long)(int)local_d0 * 4;
-      *(float *)(local_a0 + lVar4) =
-           local_dc * 32767.0 * local_bc * local_cc + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
-      *(float *)(local_a8 + lVar4) =
-           (float)auVar9._0_8_ * 32767.0 * local_bc * local_cc +
-           local_c0 * *(float *)(local_a8 + lVar4) + 0.0;
-    }
-    break;
-  case 3:
-    local_c4 = (float)_powf(local_b8 / 2.0,0x3f733333);
-    local_c4 = 1.5 - local_c4;
-    for (local_c8 = 0.0; (int)local_c8 < local_ac; local_c8 = (float)((int)local_c8 + 1)) {
-      if ((local_ae & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x250);
-        local_cc = (float)FUN_0000ec38(param_1 + 0x250);
-        local_b8 = FUN_00012f48(&local_b4,&local_cc);
-        local_c4 = (float)_powf(local_b8 / 2.0,0x3f733333);
-        local_c4 = 1.5 - local_c4;
-      }
-      if ((local_ad & 1) != 0) {
-        FUN_0000ec04(param_1 + 0x270);
-        FUN_0000ec04(param_1 + 0x288);
-        local_bc = (float)FUN_0000ec38(param_1 + 0x270);
-        local_c0 = (float)FUN_0000ec38(param_1 + 0x288);
-      }
-      local_cc = *(float *)(local_a0 + (long)(int)local_c8 * 4);
-      local_d0 = *(float *)(local_a8 + (long)(int)local_c8 * 4);
-      iVar3 = FUN_0000b350(local_cc);
-      iVar3 = FUN_00018cac(iVar3);
-      fVar7 = (float)_powf((float)iVar3 / 32767.0,1.0 - local_b8 * 0.9);
-      local_d4 = (fVar7 * 32767.0 - *(float *)(param_1 + 0x2a4)) +
-                 *(float *)(param_1 + 0x2a0) * 0.99 + 0.0;
-      *(float *)(param_1 + 0x2a0) = local_d4;
-      *(float *)(param_1 + 0x2a4) = fVar7 * 32767.0;
-      iVar3 = FUN_0000b350(local_d0);
-      iVar3 = FUN_00018cac(iVar3);
-      fVar7 = (float)_powf((float)iVar3 / 32767.0,1.0 - local_b8 * 0.9);
-      local_d8 = (fVar7 * 32767.0 - *(float *)(param_1 + 0x2ac)) +
-                 *(float *)(param_1 + 0x2a8) * 0.99 + 0.0;
-      *(float *)(param_1 + 0x2a8) = local_d8;
-      *(float *)(param_1 + 0x2ac) = fVar7 * 32767.0;
-      auVar9 = FUN_0001bcf8((double)local_d4,param_1 + 0x2b0);
-      local_d4 = (float)auVar9._0_8_;
-      auVar9 = FUN_0001bd40((double)local_d8,param_1 + 0x2b0);
-      lVar4 = (long)(int)local_c8 * 4;
-      *(float *)(local_a0 + lVar4) =
-           local_d4 * local_bc * local_c4 + local_c0 * *(float *)(local_a0 + lVar4) + 0.0;
-      *(float *)(local_a8 + lVar4) =
-           (float)auVar9._0_8_ * local_bc * local_c4 + local_c0 * *(float *)(local_a8 + lVar4) + 0.0
-      ;
-    }
-  }
-  return;
-}
-```
-
-#### FUN_00142778 — funcs/FUN_00142778.cpp, Ghidra 142778, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00142778.cpp:5:17: error: redefinition of 'param_1' with a different type: 'runtime_error' (aka 'struct runtime_error') vs 'runtime_error *' (aka 'struct runtime_error *')
-    5 |   runtime_error(param_1);
-      |                 ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00142778.cpp:3:34: note: previous definition is here
-    3 | void FUN_00142778(runtime_error *param_1)
-      |                                  ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00142778(runtime_error *param_1)
-{
-  runtime_error(param_1);
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_00142778(runtime_error *param_1)
-
-{
-  std::runtime_error::~runtime_error(param_1);
-  return;
-}
-```
-
-#### FUN_0014707c — funcs/FUN_0014707c.cpp, Ghidra 14707c, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0014707c.cpp:5:13: error: redefinition of 'param_1' with a different type: 'exception' (aka 'struct exception') vs 'exception *' (aka 'struct exception *')
-    5 |   exception(param_1);
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0014707c.cpp:3:30: note: previous definition is here
-    3 | void FUN_0014707c(exception *param_1)
-      |                              ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0014707c(exception *param_1)
-{
-  exception(param_1);
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_0014707c(exception *param_1)
-
-{
-  std::exception::~exception(param_1);
-  return;
-}
-```
-
-#### FUN_001f8794 — funcs/FUN_001f8794.cpp, Ghidra 1f8794, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f8794.cpp:5:13: error: redefinition of 'param_1' with a different type: 'exception' (aka 'struct exception') vs 'exception *' (aka 'struct exception *')
-    5 |   exception(param_1);
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f8794.cpp:3:30: note: previous definition is here
-    3 | void FUN_001f8794(exception *param_1)
-      |                              ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_001f8794(exception *param_1)
-{
-  exception(param_1);
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_001f8794(exception *param_1)
-
-{
-  std::exception::~exception(param_1);
-  return;
-}
-```
-
-#### FUN_00223288 — funcs/FUN_00223288.cpp, Ghidra 223288, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00223288.cpp:7:13: error: redefinition of 'param_1' with a different type: 'exception' (aka 'struct exception') vs 'exception *' (aka 'struct exception *')
-    7 |   exception(param_1);
-      |             ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00223288.cpp:3:30: note: previous definition is here
-    3 | void FUN_00223288(exception *param_1)
-      |                              ^
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00223288(exception *param_1)
-{
-  *(undefined **)param_1 = &GD_DAT_00445058;
-  FUN_000031f4((long)(param_1 + 8));
-  exception(param_1);
-  return;
-}
-```
-Ghidra's pseudocode:
-```c
-void FUN_00223288(exception *param_1)
-
-{
-  *(undefined **)param_1 = &DAT_00445058;
-  FUN_000031f4((long)(param_1 + 8));
-  std::exception::~exception(param_1);
-  return;
-}
-```
-
 ### Not compiling yet — 7 × array type 'X' is not assignable
 
 All: FUN_000a7e64 (a7e64), FUN_000ac698 (ac698), FUN_000b75ec (b75ec), FUN_00106410 (106410), FUN_001169a0 (1169a0), FUN_00119aac (119aac), FUN_0030c890 (30c890)
@@ -53286,6 +52662,142 @@ LAB_0037eb60:
 }
 ```
 
+### Not compiling yet — 4 × redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
+
+All: FUN_00142778 (142778), FUN_0014707c (14707c), FUN_001f8794 (1f8794), FUN_00223288 (223288)
+
+#### FUN_00142778 — funcs/FUN_00142778.cpp, Ghidra 142778, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00142778.cpp:5:17: error: redefinition of 'param_1' with a different type: 'runtime_error' (aka 'struct runtime_error') vs 'runtime_error *' (aka 'struct runtime_error *')
+    5 |   runtime_error(param_1);
+      |                 ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00142778.cpp:3:34: note: previous definition is here
+    3 | void FUN_00142778(runtime_error *param_1)
+      |                                  ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00142778(runtime_error *param_1)
+{
+  runtime_error(param_1);
+  return;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_00142778(runtime_error *param_1)
+
+{
+  std::runtime_error::~runtime_error(param_1);
+  return;
+}
+```
+
+#### FUN_0014707c — funcs/FUN_0014707c.cpp, Ghidra 14707c, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0014707c.cpp:5:13: error: redefinition of 'param_1' with a different type: 'exception' (aka 'struct exception') vs 'exception *' (aka 'struct exception *')
+    5 |   exception(param_1);
+      |             ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_0014707c.cpp:3:30: note: previous definition is here
+    3 | void FUN_0014707c(exception *param_1)
+      |                              ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_0014707c(exception *param_1)
+{
+  exception(param_1);
+  return;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_0014707c(exception *param_1)
+
+{
+  std::exception::~exception(param_1);
+  return;
+}
+```
+
+#### FUN_001f8794 — funcs/FUN_001f8794.cpp, Ghidra 1f8794, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f8794.cpp:5:13: error: redefinition of 'param_1' with a different type: 'exception' (aka 'struct exception') vs 'exception *' (aka 'struct exception *')
+    5 |   exception(param_1);
+      |             ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_001f8794.cpp:3:30: note: previous definition is here
+    3 | void FUN_001f8794(exception *param_1)
+      |                              ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_001f8794(exception *param_1)
+{
+  exception(param_1);
+  return;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_001f8794(exception *param_1)
+
+{
+  std::exception::~exception(param_1);
+  return;
+}
+```
+
+#### FUN_00223288 — funcs/FUN_00223288.cpp, Ghidra 223288, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00223288.cpp:7:13: error: redefinition of 'param_1' with a different type: 'exception' (aka 'struct exception') vs 'exception *' (aka 'struct exception *')
+    7 |   exception(param_1);
+      |             ^
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00223288.cpp:3:30: note: previous definition is here
+    3 | void FUN_00223288(exception *param_1)
+      |                              ^
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+void FUN_00223288(exception *param_1)
+{
+  *(undefined **)param_1 = &GD_DAT_00445058;
+  FUN_000031f4((long)(param_1 + 8));
+  exception(param_1);
+  return;
+}
+```
+Ghidra's pseudocode:
+```c
+void FUN_00223288(exception *param_1)
+
+{
+  *(undefined **)param_1 = &DAT_00445058;
+  FUN_000031f4((long)(param_1 + 8));
+  std::exception::~exception(param_1);
+  return;
+}
+```
+
 ### Not compiling yet — 4 × unexpected type name 'X': expected expression
 
 All: FUN_00200240 (200240), FUN_00208e58 (208e58), FUN_00209ca4 (209ca4), FUN_002518e4 (2518e4)
@@ -53710,213 +53222,6 @@ undefined4 FUN_002518e4(char *param_1)
     }
   }
   return uVar2;
-}
-```
-
-### Not compiling yet — 2 × initializing 'X' (aka 'X') with an expression of incompatible type 'X'
-
-All: FUN_0000e054 (e054), FUN_00225568 (225568)
-
-#### FUN_0000e054 — funcs/_FUN_0000e054.cpp, Ghidra e054, 1 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e054.cpp:9:14: error: initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void'
-    9 |   undefined8 lVar1 = FUN_0000de1c(param_1);
-      |              ^       ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e054.cpp:10:18: error: operand of type 'void' where arithmetic or pointer type is required
-   10 |   fVar3 = (float)FUN_00012d48(plVar1);
-      |                  ^~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e054.cpp:11:9: error: assigning to 'long' from incompatible type 'void'
-   11 |   lVar2 = FUN_0000ddf8(param_1);
-      |         ^ ~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_0000e054.cpp:12:9: error: assigning to 'long' from incompatible type 'void'
-   12 |   lVar2 = FUN_0001317c(lVar2);
-      |         ^ ~~~~~~~~~~~~~~~~~~~
-4 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_0000e054(long param_1)
-{
-  long *plVar1;
-  long lVar2;
-  float fVar3;
-
-  undefined8 lVar1 = FUN_0000de1c(param_1);
-  fVar3 = (float)FUN_00012d48(plVar1);
-  lVar2 = FUN_0000ddf8(param_1);
-  lVar2 = FUN_0001317c(lVar2);
-  FUN_0005d694(lVar2,(int)fVar3 != 0);
-  return;
-}
-```
-Notes:
-- 10-21 19:29 [compile] operand of type 'void' where arithmetic or pointer type is required — plan: Change `plVar1 = (long *)FUN_0000de1c(param_1);` to `undefined8 lVar1 = FUN_0000de1c(param_1);` — still fails: initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void'
-Ghidra's pseudocode:
-```c
-void FUN_0000e054(long param_1)
-
-{
-  long *plVar1;
-  long lVar2;
-  float fVar3;
-  
-  plVar1 = (long *)FUN_0000de1c(param_1);
-  fVar3 = (float)FUN_00012d48(plVar1);
-  lVar2 = FUN_0000ddf8(param_1);
-  lVar2 = FUN_0001317c(lVar2);
-  FUN_0005d694(lVar2,(int)fVar3 != 0);
-  return;
-}
-```
-
-#### FUN_00225568 — funcs/FUN_00225568.cpp, Ghidra 225568, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00225568.cpp:37:15: error: initializing 'uintptr_t' (aka 'unsigned long') with an expression of incompatible type 'void'
-   37 |     uintptr_t uVar6 = FUN_000031f4((long)alStack_48);
-      |               ^       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 error generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-ulong FUN_00225568(undefined8 param_1,undefined8 *param_2,int param_3)
-{
-  undefined8 *puVar1;
-  bool bVar2;
-  uint uVar3;
-  long lVar4;
-  undefined8 uVar5;
-  ulong uVar6;
-  char *pcVar7;
-  undefined8 auStack_58 [2];
-  long alStack_48 [2];
-  int local_34;
-  undefined8 *local_30;
-  undefined8 uStack_28;
-
-  local_34 = param_3;
-  local_30 = param_2;
-  uStack_28 = param_1;
-  lVar4 = FUN_002288d0();
-  if (lVar4 == 0) {
-LAB_00225598:
-    puVar1 = local_30;
-    if (local_34 == 1) {
-      FUN_0021a1f4(alStack_48,"Warning");
-      FUN_0021a214(auStack_58);
-      FUN_00214ae0(puVar1,alStack_48,auStack_58);
-    }
-    else {
-      if (local_34 != 2) goto LAB_002256a0;
-      FUN_0021a1f4(alStack_48,"Error");
-      FUN_0021a214(auStack_58);
-      FUN_00214840(puVar1,alStack_48,0,auStack_58);
-    }
-    FUN_000031f4((long)auStack_58);
-    uintptr_t uVar6 = FUN_000031f4((long)alStack_48);
-  }
-  else {
-    lVar4 = FUN_002288d0();
-    bVar2 = FUN_00229244(lVar4,3);
-    if (bVar2) goto LAB_00225598;
-    if (local_34 == 1) {
-      lVar4 = FUN_002066a0();
-      if (lVar4 != 0) {
-        uVar5 = FUN_002066a0();
-        FUN_002135c0(local_30,0);
-        pcVar7 = "Warning: %s";
-        goto LAB_00225698;
-      }
-    }
-    else if ((local_34 == 2) && (lVar4 = FUN_002066a0(), lVar4 != 0)) {
-      uVar5 = FUN_002066a0();
-      FUN_002135c0(local_30,0);
-      pcVar7 = "Error: %s";
-LAB_00225698:
-      FUN_00208454(uVar5,"System",pcVar7);
-    }
-LAB_002256a0:
-    pcVar7 = FUN_002135c0(local_30,0);
-    uVar3 = FUN_001fa8a8(pcVar7);
-    uVar6 = (ulong)uVar3;
-  }
-  return uVar6;
-}
-```
-Notes:
-- 10-21 16:48 [compile] assigning to 'ulong' (aka 'unsigned long') from incompatible type 'void' — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-ulong FUN_00225568(undefined8 param_1,undefined8 *param_2,int param_3)
-
-{
-  undefined8 *puVar1;
-  bool bVar2;
-  uint uVar3;
-  long lVar4;
-  undefined8 uVar5;
-  ulong uVar6;
-  char *pcVar7;
-  undefined8 auStack_58 [2];
-  long alStack_48 [2];
-  int local_34;
-  undefined8 *local_30;
-  undefined8 uStack_28;
-  
-  local_34 = param_3;
-  local_30 = param_2;
-  uStack_28 = param_1;
-  lVar4 = FUN_002288d0();
-  if (lVar4 == 0) {
-LAB_00225598:
-    puVar1 = local_30;
-    if (local_34 == 1) {
-      FUN_0021a1f4(alStack_48,"Warning");
-      FUN_0021a214(auStack_58);
-      FUN_00214ae0(puVar1,alStack_48,auStack_58);
-    }
-    else {
-      if (local_34 != 2) goto LAB_002256a0;
-      FUN_0021a1f4(alStack_48,"Error");
-      FUN_0021a214(auStack_58);
-      FUN_00214840(puVar1,alStack_48,0,auStack_58);
-    }
-    FUN_000031f4((long)auStack_58);
-    uVar6 = FUN_000031f4((long)alStack_48);
-  }
-  else {
-    lVar4 = FUN_002288d0();
-    bVar2 = FUN_00229244(lVar4,3);
-    if (bVar2) goto LAB_00225598;
-    if (local_34 == 1) {
-      lVar4 = FUN_002066a0();
-      if (lVar4 != 0) {
-        uVar5 = FUN_002066a0();
-        FUN_002135c0(local_30,0);
-        pcVar7 = "Warning: %s";
-        goto LAB_00225698;
-      }
-    }
-    else if ((local_34 == 2) && (lVar4 = FUN_002066a0(), lVar4 != 0)) {
-      uVar5 = FUN_002066a0();
-      FUN_002135c0(local_30,0);
-      pcVar7 = "Error: %s";
-LAB_00225698:
-      FUN_00208454(uVar5,"System",pcVar7);
-    }
-LAB_002256a0:
-    pcVar7 = FUN_002135c0(local_30,0);
-    uVar3 = FUN_001fa8a8(pcVar7);
-    uVar6 = (ulong)uVar3;
-  }
-  return uVar6;
 }
 ```
 
@@ -55847,672 +55152,6 @@ void __thiscall std::bad_alloc::bad_alloc(bad_alloc *this)
 }
 ```
 
-### Not compiling yet — 1 × initializing 'X' with an expression of incompatible type 'X'
-
-All: FUN_00014e50 (14e50)
-
-#### FUN_00014e50 — funcs/_FUN_00014e50.cpp, Ghidra 14e50, 0 model attempt(s)
-
-Compiler output:
-```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:72:10: error: initializing 'long' with an expression of incompatible type 'void'
-   72 |     long puVar2 = FUN_00015d94(0xd0);
-      |          ^        ~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:80:12: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   80 |     auVar6 = FUN_00015e88(puVar2,param_5,local_68,local_88);
-      |     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:82:12: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-   82 |     auVar6 = FUN_000e9cd4(auVar6,param_2,param_3,param_4,plVar3,(long)puVar2);
-      |     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:120:12: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-  120 |     auVar6 = FUN_000031f4((long)local_120);
-      |     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:133:11: error: assigning to 'long' from incompatible type 'void'
-  133 |     lVar5 = FUN_00011bf0(local_a0);
-      |           ^ ~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:134:12: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-  134 |     auVar6 = FUN_0021a1f4(local_68,"Filter frequency.");
-      |     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:140:11: error: assigning to 'long' from incompatible type 'void'
-  140 |     lVar5 = FUN_00011c14(local_a0);
-      |           ^ ~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:141:12: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-  141 |     auVar6 = FUN_0021a1f4(local_68,"Filter Q/bandwidth.");
-      |     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:172:11: error: assigning to 'long' from incompatible type 'void'
-  172 |     lVar5 = FUN_00011b60(local_a0);
-      |           ^ ~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:173:12: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-  173 |     auVar6 = FUN_0021a1f4(local_68,"Dry/wet mix.");
-      |     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:179:11: error: assigning to 'long' from incompatible type 'void'
-  179 |     lVar5 = FUN_00011ba8(local_a0);
-      |           ^ ~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:180:12: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-  180 |     auVar6 = FUN_0021a1f4(local_68,"Panning");
-      |     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:186:11: error: assigning to 'long' from incompatible type 'void'
-  186 |     lVar5 = FUN_00011b84(local_a0);
-      |           ^ ~~~~~~~~~~~~~~~~~~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:187:12: error: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-  187 |     auVar6 = FUN_0021a1f4(local_68,"Volume.");
-      |     ~~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:203:39: error: member reference base type 'long *' is not a s
-...
-~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:204:39: error: member reference base type 'long *' is not a structure or union
-  204 |   local_d0 = (long *)CONCAT44(local_d0._4_4_,0x12);
-      |                               ~~~~~~~~^~~~~~
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_00014e50.cpp:291:15: error: assigning to 'long' from incompatible type 'void'
-  291 |   local_68[0] = FUN_0000392c();
-      |               ^ ~~~~~~~~~~~~~~
-17 errors generated.
-```
-Code:
-```cpp
-#include "shared.h"
-
-void FUN_00014e50(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long *param_5,long param_6)
-{
-  int iVar1;
-  undefined8 *puVar2;
-  long *plVar3;
-  long *plVar4;
-  long lVar5;
-  undefined1 auVar6 [16];
-  long *local_120 [2];
-  undefined1 local_10a;
-  undefined1 local_109;
-  code *local_108;
-  undefined8 uStack_100;
-  code *local_f8;
-  undefined8 uStack_f0;
-  long *local_e8;
-  undefined1 local_d9;
-  long *local_d8;
-  long *local_d0;
-  long *local_c8;
-  long *local_c0;
-  long *local_b8;
-  long local_a0;
-  long *plStack_98;
-  long *local_90;
-  long *local_88 [4];
-  long local_68 [4];
-  long local_48;
-
-  local_48 = *(long *)GD_PTR____stack_chk_guard_004241e8;
-  local_a0 = param_6;
-  plStack_98 = param_5;
-  local_90 = param_5;
-  puVar2 = FUN_0011b43c(param_5);
-  *puVar2 = &GD_DAT_00426a50;
-  puVar2[0xd] = &GD_DAT_00426c88;
-  FUN_00015d74(puVar2 + 0x2a,local_a0);
-  plVar3 = (long *)FUN_0013af84();
-  local_b8 = (long *)(**(code **)(*plVar3 + 0x80))(plVar3,0);
-  plVar3 = (long *)FUN_001da808(0x198);
-  FUN_000edeac(plVar3,0,0);
-  local_c0 = plVar3;
-  FUN_000ed6c4(plVar3,10,10);
-  FUN_000ed564(local_c0,0);
-  iVar1 = FUN_0001171c(local_a0);
-  if (iVar1 != 0) {
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000eddd4(plVar3,0,0);
-    local_c8 = plVar3;
-    FUN_000ed6c4(plVar3,5,0xc);
-    FUN_000ed564(local_c8,5);
-    FUN_000ed744((long)local_c8,6);
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000edeac(plVar3,0,0);
-    local_d0 = plVar3;
-    FUN_000ed6c4(plVar3,0,0);
-    FUN_000ed564(local_d0,0);
-    plVar3 = (long *)FUN_001da808(0x1b0);
-    local_d9 = 1;
-    FUN_0021a1f4(local_68,"Filter");
-    FUN_001193e4(plVar3,local_68,1,0,0);
-    local_d9 = 0;
-    FUN_000031f4((long)local_68);
-    local_d8 = plVar3;
-    FUN_0011d17c(plVar3,0x32,0x12);
-    FUN_0011c968(local_d0,local_d8);
-    plVar3 = (long *)FUN_001da808(800);
-    local_10a = 1;
-    long puVar2 = FUN_00015d94(0xd0);
-    local_109 = 1;
-    local_f8 = FUN_00015dc0;
-    uStack_f0 = 0;
-    FUN_00015df0(local_68,param_5,FUN_00015dc0,0);
-    local_108 = FUN_00015e20;
-    uStack_100 = 0;
-    FUN_00015e58(local_88,param_5,FUN_00015e20,0);
-    auVar6 = FUN_00015e88(puVar2,param_5,local_68,local_88);
-    local_109 = 0;
-    auVar6 = FUN_000e9cd4(auVar6,param_2,param_3,param_4,plVar3,(long)puVar2);
-    local_10a = 0;
-    local_e8 = plVar3;
-    FUN_000ea5e0(auVar6,param_2,param_3,param_4,(long)plVar3,0);
-    FUN_0011d17c(local_e8,0x2d,0x12);
-    FUN_0000363c(local_68);
-    FUN_00008118((int *)local_68,5);
-    FUN_0021a1f4((long *)local_88,"Off");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0021a1f4((long *)local_88,"LP");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0021a1f4((long *)local_88,"HP");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0021a1f4((long *)local_88,"BP");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0021a1f4((long *)local_88,"BS");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0000363c(local_88);
-    FUN_00008118((int *)local_88,5);
-    FUN_0021a1f4((long *)local_120,"Off");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    FUN_000031f4((long)local_120);
-    FUN_0021a1f4((long *)local_120,"Low-pass");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    FUN_000031f4((long)local_120);
-    FUN_0021a1f4((long *)local_120,"High-pass");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    FUN_000031f4((long)local_120);
-    FUN_0021a1f4((long *)local_120,"Band-pass");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    FUN_000031f4((long)local_120);
-    FUN_0021a1f4((long *)local_120,"Band-stop");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    auVar6 = FUN_000031f4((long)local_120);
-    FUN_000ea6d0(auVar6,param_2,param_3,param_4,(long)local_e8,(int *)local_88,(int *)local_68);
-    FUN_0011c968(local_d0,local_e8);
-    FUN_00003320((int *)local_88);
-    FUN_00003320((int *)local_68);
-    FUN_0011c968(local_c8,local_d0);
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000edeac(plVar3,0,0);
-    local_88[0] = plVar3;
-    FUN_000ed564(plVar3,0);
-    FUN_000ed6c4(local_88[0],0,0);
-    plVar3 = local_88[0];
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011bf0(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Filter frequency.");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    plVar3 = local_88[0];
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011c14(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Filter Q/bandwidth.");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    FUN_0011c968(local_c8,local_88[0]);
-    FUN_0011c968(local_c0,local_c8);
-  }
-  iVar1 = FUN_0001171c(local_a0);
-  if (iVar1 != 0) {
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000eddd4(plVar3,0,0);
-    local_88[0] = plVar3;
-    FUN_000ed6c4(plVar3,5,0xc);
-    FUN_000ed564(local_88[0],5);
-    FUN_000ed744((long)local_88[0],6);
-    plVar3 = (long *)FUN_001da808(0x1b0);
-    FUN_0021a1f4(local_68,"Mixer");
-    FUN_001193e4(plVar3,local_68,1,0,0);
-    FUN_000031f4((long)local_68);
-    local_120[0] = plVar3;
-    FUN_0011d17c(plVar3,0x8f,0x12);
-    FUN_00119a24((long)local_120[0],2);
-    FUN_0011d040(local_120[0],0,0);
-    FUN_0011c968(local_88[0],local_120[0]);
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000edeac(plVar3,0,0);
-    local_c8 = plVar3;
-    FUN_000ed564(plVar3,0);
-    FUN_000ed6c4(local_c8,0,0);
-    plVar3 = local_c8;
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011b60(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Dry/wet mix.");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    plVar3 = local_c8;
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011ba8(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Panning");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    plVar3 = local_c8;
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011b84(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Volume.");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    FUN_0011c968(local_88[0],local_c8);
-    FUN_0011c968(local_c0,local_88[0]);
-  }
-  plVar3 = (long *)FUN_001da808(0x198);
-  FUN_000eddd4(plVar3,0,0);
-  local_88[0] = plVar3;
-  FUN_000ed6c4(plVar3,2,2);
-  FUN_000ed564(local_88[0],0);
-  plVar3 = local_b8;
-  FUN_0021a1f4(local_68,"Mutate");
-  iVar1 = (**(code **)(*plVar3 + 0x80))(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  local_c8 = (long *)CONCAT44(local_c8._4_4_,iVar1 + 10);
-  local_d0 = (long *)CONCAT44(local_d0._4_4_,0x12);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Copy");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Copy all parameters to the clipboard.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_00015ed4,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Paste");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Paste all parameters from the clipboard.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_00015f58,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Init");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Initialise all parameters.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_00015fac,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Rand");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Randomize all parameters.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_00015fdc,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Mutate");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Mutate all parameters.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_0001600c,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  FUN_0011c968(local_c0,local_88[0]);
-  local_68[0] = FUN_0000392c();
-  FUN_0011d154(param_5,(int *)local_68);
-  FUN_0011c968(param_5,local_c0);
-  if (*(long *)GD_PTR____stack_chk_guard_004241e8 == local_48) {
-    return;
-  }
-  _stack_chk_fail(local_90);
-}
-```
-Notes:
-- 10-21 16:47 [compile] operand of type 'void' where arithmetic or pointer type is required — fixed with a learned rule.
-Ghidra's pseudocode:
-```c
-void FUN_00014e50(undefined1 param_1 [16],double param_2,undefined8 param_3,double param_4,
-                 long *param_5,long param_6)
-
-{
-  int iVar1;
-  undefined8 *puVar2;
-  long *plVar3;
-  long *plVar4;
-  long lVar5;
-  undefined1 auVar6 [16];
-  long *local_120 [2];
-  undefined1 local_10a;
-  undefined1 local_109;
-  code *local_108;
-  undefined8 uStack_100;
-  code *local_f8;
-  undefined8 uStack_f0;
-  long *local_e8;
-  undefined1 local_d9;
-  long *local_d8;
-  long *local_d0;
-  long *local_c8;
-  long *local_c0;
-  long *local_b8;
-  long local_a0;
-  long *plStack_98;
-  long *local_90;
-  long *local_88 [4];
-  long local_68 [4];
-  long local_48;
-  
-  local_48 = *(long *)PTR____stack_chk_guard_004241e8;
-  local_a0 = param_6;
-  plStack_98 = param_5;
-  local_90 = param_5;
-  puVar2 = FUN_0011b43c(param_5);
-  *puVar2 = &DAT_00426a50;
-  puVar2[0xd] = &DAT_00426c88;
-  FUN_00015d74(puVar2 + 0x2a,local_a0);
-  plVar3 = (long *)FUN_0013af84();
-  local_b8 = (long *)(**(code **)(*plVar3 + 0x80))(plVar3,0);
-  plVar3 = (long *)FUN_001da808(0x198);
-  FUN_000edeac(plVar3,0,0);
-  local_c0 = plVar3;
-  FUN_000ed6c4(plVar3,10,10);
-  FUN_000ed564(local_c0,0);
-  iVar1 = FUN_0001171c(local_a0);
-  if (iVar1 != 0) {
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000eddd4(plVar3,0,0);
-    local_c8 = plVar3;
-    FUN_000ed6c4(plVar3,5,0xc);
-    FUN_000ed564(local_c8,5);
-    FUN_000ed744((long)local_c8,6);
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000edeac(plVar3,0,0);
-    local_d0 = plVar3;
-    FUN_000ed6c4(plVar3,0,0);
-    FUN_000ed564(local_d0,0);
-    plVar3 = (long *)FUN_001da808(0x1b0);
-    local_d9 = 1;
-    FUN_0021a1f4(local_68,"Filter");
-    FUN_001193e4(plVar3,local_68,1,0,0);
-    local_d9 = 0;
-    FUN_000031f4((long)local_68);
-    local_d8 = plVar3;
-    FUN_0011d17c(plVar3,0x32,0x12);
-    FUN_0011c968(local_d0,local_d8);
-    plVar3 = (long *)FUN_001da808(800);
-    local_10a = 1;
-    puVar2 = (undefined8 *)FUN_00015d94(0xd0);
-    local_109 = 1;
-    local_f8 = FUN_00015dc0;
-    uStack_f0 = 0;
-    FUN_00015df0(local_68,param_5,FUN_00015dc0,0);
-    local_108 = FUN_00015e20;
-    uStack_100 = 0;
-    FUN_00015e58(local_88,param_5,FUN_00015e20,0);
-    auVar6 = FUN_00015e88(puVar2,param_5,local_68,local_88);
-    local_109 = 0;
-    auVar6 = FUN_000e9cd4(auVar6,param_2,param_3,param_4,plVar3,(long)puVar2);
-    local_10a = 0;
-    local_e8 = plVar3;
-    FUN_000ea5e0(auVar6,param_2,param_3,param_4,(long)plVar3,0);
-    FUN_0011d17c(local_e8,0x2d,0x12);
-    FUN_0000363c(local_68);
-    FUN_00008118((int *)local_68,5);
-    FUN_0021a1f4((long *)local_88,"Off");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0021a1f4((long *)local_88,"LP");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0021a1f4((long *)local_88,"HP");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0021a1f4((long *)local_88,"BP");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0021a1f4((long *)local_88,"BS");
-    FUN_00003f94((int *)local_68,(long *)local_88);
-    FUN_000031f4((long)local_88);
-    FUN_0000363c(local_88);
-    FUN_00008118((int *)local_88,5);
-    FUN_0021a1f4((long *)local_120,"Off");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    FUN_000031f4((long)local_120);
-    FUN_0021a1f4((long *)local_120,"Low-pass");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    FUN_000031f4((long)local_120);
-    FUN_0021a1f4((long *)local_120,"High-pass");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    FUN_000031f4((long)local_120);
-    FUN_0021a1f4((long *)local_120,"Band-pass");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    FUN_000031f4((long)local_120);
-    FUN_0021a1f4((long *)local_120,"Band-stop");
-    FUN_00003f94((int *)local_88,(long *)local_120);
-    auVar6 = FUN_000031f4((long)local_120);
-    FUN_000ea6d0(auVar6,param_2,param_3,param_4,(long)local_e8,(int *)local_88,(int *)local_68);
-    FUN_0011c968(local_d0,local_e8);
-    FUN_00003320((int *)local_88);
-    FUN_00003320((int *)local_68);
-    FUN_0011c968(local_c8,local_d0);
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000edeac(plVar3,0,0);
-    local_88[0] = plVar3;
-    FUN_000ed564(plVar3,0);
-    FUN_000ed6c4(local_88[0],0,0);
-    plVar3 = local_88[0];
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011bf0(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Filter frequency.");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    plVar3 = local_88[0];
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011c14(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Filter Q/bandwidth.");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    FUN_0011c968(local_c8,local_88[0]);
-    FUN_0011c968(local_c0,local_c8);
-  }
-  iVar1 = FUN_0001171c(local_a0);
-  if (iVar1 != 0) {
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000eddd4(plVar3,0,0);
-    local_88[0] = plVar3;
-    FUN_000ed6c4(plVar3,5,0xc);
-    FUN_000ed564(local_88[0],5);
-    FUN_000ed744((long)local_88[0],6);
-    plVar3 = (long *)FUN_001da808(0x1b0);
-    FUN_0021a1f4(local_68,"Mixer");
-    FUN_001193e4(plVar3,local_68,1,0,0);
-    FUN_000031f4((long)local_68);
-    local_120[0] = plVar3;
-    FUN_0011d17c(plVar3,0x8f,0x12);
-    FUN_00119a24((long)local_120[0],2);
-    FUN_0011d040(local_120[0],0,0);
-    FUN_0011c968(local_88[0],local_120[0]);
-    plVar3 = (long *)FUN_001da808(0x198);
-    FUN_000edeac(plVar3,0,0);
-    local_c8 = plVar3;
-    FUN_000ed564(plVar3,0);
-    FUN_000ed6c4(local_c8,0,0);
-    plVar3 = local_c8;
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011b60(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Dry/wet mix.");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    plVar3 = local_c8;
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011ba8(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Panning");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    plVar3 = local_c8;
-    plVar4 = (long *)FUN_001da808(0x220);
-    lVar5 = FUN_00011b84(local_a0);
-    auVar6 = FUN_0021a1f4(local_68,"Volume.");
-    FUN_00014a20(auVar6,param_2,param_3,param_4,plVar4,lVar5,local_68,0x32,0x3c);
-    FUN_0011c968(plVar3,plVar4);
-    FUN_000031f4((long)local_68);
-    FUN_0011c968(local_88[0],local_c8);
-    FUN_0011c968(local_c0,local_88[0]);
-  }
-  plVar3 = (long *)FUN_001da808(0x198);
-  FUN_000eddd4(plVar3,0,0);
-  local_88[0] = plVar3;
-  FUN_000ed6c4(plVar3,2,2);
-  FUN_000ed564(local_88[0],0);
-  plVar3 = local_b8;
-  FUN_0021a1f4(local_68,"Mutate");
-  iVar1 = (**(code **)(*plVar3 + 0x80))(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  local_c8 = (long *)CONCAT44(local_c8._4_4_,iVar1 + 10);
-  local_d0 = (long *)CONCAT44(local_d0._4_4_,0x12);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Copy");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Copy all parameters to the clipboard.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_00015ed4,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Paste");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Paste all parameters from the clipboard.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_00015f58,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Init");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Initialise all parameters.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_00015fac,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Rand");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Randomize all parameters.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_00015fdc,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  plVar3 = (long *)FUN_001da808(0x328);
-  FUN_000b22cc(plVar3);
-  local_120[0] = plVar3;
-  FUN_000b22ec((long)plVar3,2);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Mutate");
-  FUN_000b23e4(plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  plVar3 = local_120[0];
-  FUN_0021a1f4(local_68,"Mutate all parameters.");
-  FUN_0011dd60((long)plVar3,local_68);
-  FUN_000031f4((long)local_68);
-  FUN_0011d17c(local_120[0],(int)local_c8,0x12);
-  plVar3 = local_120[0];
-  FUN_00015f28(local_68,param_5,FUN_0001600c,0);
-  FUN_000b274c((long)plVar3,local_68);
-  FUN_0011c968(local_88[0],local_120[0]);
-  FUN_0011c968(local_c0,local_88[0]);
-  local_68[0] = FUN_0000392c();
-  FUN_0011d154(param_5,(int *)local_68);
-  FUN_0011c968(param_5,local_c0);
-  if (*(long *)PTR____stack_chk_guard_004241e8 == local_48) {
-    return;
-  }
-                    /* WARNING: Subroutine does not return */
-  ___stack_chk_fail(local_90);
-}
-```
-
 ### Not compiling yet — 1 × subscript of pointer to function type 'X'
 
 All: FUN_00086a44 (86a44)
@@ -56650,6 +55289,157 @@ long FUN_00086a44(long param_1)
     local_38 = param_1 + 0x4938;
   }
   return local_38;
+}
+```
+
+### Not compiling yet — 1 × initializing 'X' (aka 'X') with an expression of incompatible type 'X'
+
+All: FUN_00225568 (225568)
+
+#### FUN_00225568 — funcs/FUN_00225568.cpp, Ghidra 225568, 0 model attempt(s)
+
+Compiler output:
+```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/FUN_00225568.cpp:37:15: error: initializing 'uintptr_t' (aka 'unsigned long') with an expression of incompatible type 'void'
+   37 |     uintptr_t uVar6 = FUN_000031f4((long)alStack_48);
+      |               ^       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+```
+Code:
+```cpp
+#include "shared.h"
+
+ulong FUN_00225568(undefined8 param_1,undefined8 *param_2,int param_3)
+{
+  undefined8 *puVar1;
+  bool bVar2;
+  uint uVar3;
+  long lVar4;
+  undefined8 uVar5;
+  ulong uVar6;
+  char *pcVar7;
+  undefined8 auStack_58 [2];
+  long alStack_48 [2];
+  int local_34;
+  undefined8 *local_30;
+  undefined8 uStack_28;
+
+  local_34 = param_3;
+  local_30 = param_2;
+  uStack_28 = param_1;
+  lVar4 = FUN_002288d0();
+  if (lVar4 == 0) {
+LAB_00225598:
+    puVar1 = local_30;
+    if (local_34 == 1) {
+      FUN_0021a1f4(alStack_48,"Warning");
+      FUN_0021a214(auStack_58);
+      FUN_00214ae0(puVar1,alStack_48,auStack_58);
+    }
+    else {
+      if (local_34 != 2) goto LAB_002256a0;
+      FUN_0021a1f4(alStack_48,"Error");
+      FUN_0021a214(auStack_58);
+      FUN_00214840(puVar1,alStack_48,0,auStack_58);
+    }
+    FUN_000031f4((long)auStack_58);
+    uintptr_t uVar6 = FUN_000031f4((long)alStack_48);
+  }
+  else {
+    lVar4 = FUN_002288d0();
+    bVar2 = FUN_00229244(lVar4,3);
+    if (bVar2) goto LAB_00225598;
+    if (local_34 == 1) {
+      lVar4 = FUN_002066a0();
+      if (lVar4 != 0) {
+        uVar5 = FUN_002066a0();
+        FUN_002135c0(local_30,0);
+        pcVar7 = "Warning: %s";
+        goto LAB_00225698;
+      }
+    }
+    else if ((local_34 == 2) && (lVar4 = FUN_002066a0(), lVar4 != 0)) {
+      uVar5 = FUN_002066a0();
+      FUN_002135c0(local_30,0);
+      pcVar7 = "Error: %s";
+LAB_00225698:
+      FUN_00208454(uVar5,"System",pcVar7);
+    }
+LAB_002256a0:
+    pcVar7 = FUN_002135c0(local_30,0);
+    uVar3 = FUN_001fa8a8(pcVar7);
+    uVar6 = (ulong)uVar3;
+  }
+  return uVar6;
+}
+```
+Notes:
+- 10-21 16:48 [compile] assigning to 'ulong' (aka 'unsigned long') from incompatible type 'void' — fixed with a learned rule.
+Ghidra's pseudocode:
+```c
+ulong FUN_00225568(undefined8 param_1,undefined8 *param_2,int param_3)
+
+{
+  undefined8 *puVar1;
+  bool bVar2;
+  uint uVar3;
+  long lVar4;
+  undefined8 uVar5;
+  ulong uVar6;
+  char *pcVar7;
+  undefined8 auStack_58 [2];
+  long alStack_48 [2];
+  int local_34;
+  undefined8 *local_30;
+  undefined8 uStack_28;
+  
+  local_34 = param_3;
+  local_30 = param_2;
+  uStack_28 = param_1;
+  lVar4 = FUN_002288d0();
+  if (lVar4 == 0) {
+LAB_00225598:
+    puVar1 = local_30;
+    if (local_34 == 1) {
+      FUN_0021a1f4(alStack_48,"Warning");
+      FUN_0021a214(auStack_58);
+      FUN_00214ae0(puVar1,alStack_48,auStack_58);
+    }
+    else {
+      if (local_34 != 2) goto LAB_002256a0;
+      FUN_0021a1f4(alStack_48,"Error");
+      FUN_0021a214(auStack_58);
+      FUN_00214840(puVar1,alStack_48,0,auStack_58);
+    }
+    FUN_000031f4((long)auStack_58);
+    uVar6 = FUN_000031f4((long)alStack_48);
+  }
+  else {
+    lVar4 = FUN_002288d0();
+    bVar2 = FUN_00229244(lVar4,3);
+    if (bVar2) goto LAB_00225598;
+    if (local_34 == 1) {
+      lVar4 = FUN_002066a0();
+      if (lVar4 != 0) {
+        uVar5 = FUN_002066a0();
+        FUN_002135c0(local_30,0);
+        pcVar7 = "Warning: %s";
+        goto LAB_00225698;
+      }
+    }
+    else if ((local_34 == 2) && (lVar4 = FUN_002066a0(), lVar4 != 0)) {
+      uVar5 = FUN_002066a0();
+      FUN_002135c0(local_30,0);
+      pcVar7 = "Error: %s";
+LAB_00225698:
+      FUN_00208454(uVar5,"System",pcVar7);
+    }
+LAB_002256a0:
+    pcVar7 = FUN_002135c0(local_30,0);
+    uVar3 = FUN_001fa8a8(pcVar7);
+    uVar6 = (ulong)uVar3;
+  }
+  return uVar6;
 }
 ```
 
@@ -79123,390 +77913,43 @@ _parse_monolith.cpp:53209: expected function body after function declarator
 ## Build log of this run (build/worklist.log)
 
 ```
-[19:14:31]   declared 40 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 4 function(s) that use them again
-[19:14:31]   compiling with 11 parallel worker(s)
-[19:14:31]   isolated compile: 0/4 TUs pass, 4 need repair (0s)
-[19:14:32]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[19:14:32]   » dependency order + fixer loop
-[19:14:32]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
-[19:14:32]   callgraph: 580 callee name(s) not in our TU set (external/library calls) — ignored for ordering
-[19:14:32]   callgraph: exact deps for 21707/30176 functions
-[19:14:33]     FUN_002112f8 -> fixed without the model
-[19:14:33]     FUN_002121e8 -> fixed without the model
-[19:14:33]     FUN_00205648 -> fixed without the model
-[19:16:40]     FUN_0008d908 -> fixed without the model
-[19:16:44]     FUN_0011e75c -> fixed without the model
-[19:16:53]     FUN_0011e6d0 -> fixed without the model
-[19:16:53]     FUN_000f4704 -> fixed without the model
-[19:17:10]     FUN_00257648 -> fixed without the model
-[19:17:16]     FUN_0029f86c -> fixed without the model
-[19:17:17]     FUN_00303ab8 -> fixed without the model
-[19:17:17]     FUN_0030cc98 -> fixed without the model
-[19:17:17]     FUN_0030d24c -> fixed without the model
-[19:17:22]   quick fixes (no model): 12 of 2482 function(s) compile now
-[19:17:22]   fixer loop over 2470 failing TU(s), dependency-ordered
-[19:17:48]     [2/2470] FUN_002018c0 -> fixed (26s)
-[19:18:02]     [6/2470] FUN_00201a38 -> fixed (39s)
-[19:18:11]   QUARANTINE FUN_00201778: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-[19:18:11]     [3/2470] FUN_00201778 -> quarantined (48s)
-[19:18:14]   QUARANTINE FUN_002039cc: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[19:18:14]     [1/2470] FUN_002039cc -> quarantined (52s)
-[19:18:15]   QUARANTINE FUN_002047f0: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[19:18:15]     [4/2470] FUN_002047f0 -> quarantined (53s)
-[19:18:15]   QUARANTINE FUN_00077470: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[19:18:15]     [17/2470] FUN_00077470 -> quarantined (0s)
-[19:18:30]   QUARANTINE FUN_002043e0: redefinition of 'local_50' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[19:18:30]     [5/2470] FUN_002043e0 -> quarantined (1m)
-[19:18:35]   QUARANTINE FUN_00216788: member reference base type 'ulong' (aka 'unsigned long') is not a structure or union
-[19:18:35]     [8/2470] FUN_00216788 -> quarantined (1m)
-[19:18:39]   QUARANTINE FUN_00068504: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[19:18:39]     [12/2470] FUN_00068504 -> quarantined (1m)
-[19:18:40]   QUARANTINE FUN_002018f0: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-[19:18:40]     [7/2470] FUN_002018f0 -> quarantined (1m)
-[19:18:42]   QUARANTINE FUN_00023dfc: operand of type 'void' where arithmetic or pointer type is required
-[19:18:42]     [9/2470] FUN_00023dfc -> quarantined (1m)
-[19:18:43]   QUARANTINE FUN_00069494: operand of type 'void' where arithmetic or pointer type is required
-[19:18:43]     [11/2470] FUN_00069494 -> quarantined (1m)
-[19:18:44]   QUARANTINE FUN_00022800: initializing 'uintptr_t' (aka 'unsigned long') with an expression of incompatible type 'void'
-[19:18:44]     [10/2470] FUN_00022800 -> quarantined (1m)
-[19:19:04]     [15/2470] FUN_00069bc8 -> fixed (53s)
-[19:19:07]     [16/2470] FUN_00064b14 -> fixed (52s)
-[19:19:13]   QUARANTINE FUN_00061330: redefinition of 'local_40' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[19:19:13]     [13/2470] FUN_00061330 -> quarantined (1m)
-[19:19:31]   QUARANTINE FUN_0006a0b4: operand of type 'void' where arithmetic or pointer type is required
-[19:19:31]     [14/2470] FUN_0006a0b4 -> quarantined (1m)
-[19:19:31]   QUARANTINE FUN_0008888c: operand of type 'void' where arithmetic or pointer type is required
-[19:19:31]     [29/2470] FUN_0008888c -> quarantined (0s)
-[19:19:38]     [23/2470] FUN_0026ccdc -> fixed (56s)
-[19:19:40]   QUARANTINE FUN_0026a960: expected ';' after expression
-[19:19:40]     [25/2470] FUN_0026a960 -> quarantined (56s)
-[19:19:45]   QUARANTINE FUN_001c1a6c: operand of type 'void' where arithmetic or pointer type is required
-[19:19:45]     [18/2470] FUN_001c1a6c -> quarantined (1m)
-[19:20:01]   QUARANTINE FUN_000690b4: operand of type 'void' where arithmetic or pointer type is required
-[19:20:01]     [19/2470] FUN_000690b4 -> quarantined (1m)
-[19:20:02]     [27/2470] FUN_0026ce1c -> fixed (54s)
-[19:20:05]   QUARANTINE FUN_00079078: operand of type 'void' where arithmetic or pointer type is required
-[19:20:05]     [20/2470] FUN_00079078 -> quarantined (1m)
-[19:20:09]   QUARANTINE FUN_0007bc74: operand of type 'void' where arithmetic or pointer type is required
-[19:20:09]     [21/2470] FUN_0007bc74 -> quarantined (1m)
-[19:20:10]   QUARANTINE FUN_00078d88: operand of type 'void' where arithmetic or pointer type is required
-[19:20:10]     [22/2470] FUN_00078d88 -> quarantined (1m)
-[19:20:12]   QUARANTINE FUN_0026cc10: called object type 'undefined8' (aka 'unsigned long long') is not a function or function pointer
-[19:20:12]     [24/2470] FUN_0026cc10 -> quarantined (1m)
-[19:20:23]     [30/2470] FUN_00087068 -> fixed (52s)
-[19:20:30]   QUARANTINE FUN_0026bc2c: expected ';' after expression
-[19:20:30]     [26/2470] FUN_0026bc2c -> quarantined (1m)
-[19:20:38]   QUARANTINE FUN_00060bbc: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[19:20:38]     [28/2470] FUN_00060bbc -> quarantined (1m)
-[19:20:52]     [36/2470] FUN_00211c60 -> fixed (46s)
-[19:20:57]     [38/2470] FUN_00211d58 -> fixed (46s)
-[19:20:58]   QUARANTINE FUN_000076a4: redefinition of 'extraout_q0'
-[19:20:58]     [31/2470] FUN_000076a4 -> quarantined (1m)
-[19:21:01]   QUARANTINE FUN_001ffa5c: operand of type 'void' where arithmetic or pointer type is required
-[19:21:01]     [32/2470] FUN_001ffa5c -> quarantined (1m)
-[19:21:06]   QUARANTINE FUN_001ffd14: operand of type 'void' where arithmetic or pointer type is required
-[19:21:06]     [33/2470] FUN_001ffd14 -> quarantined (1m)
-[19:21:20]   QUARANTINE FUN_002106a8: redefinition of 'unaff_x29'
-[19:21:20]     [34/2470] FUN_002106a8 -> quarantined (1m)
-[19:21:21]   QUARANTINE FUN_002115b0: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-[19:21:21]     [35/2470] FUN_002115b0 -> quarantined (1m)
-[19:21:28]   QUARANTINE FUN_00211a28: redefinition of 'local_80' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[19:21:28]     [37/2470] FUN_00211a28 -> quarantined (1m)
-[19:21:31]   QUARANTINE FUN_00211db8: expected identifier or '('
-[19:21:31]     [39/2470] FUN_00211db8 -> quarantined (1m)
-[19:21:40]     [43/2470] FUN_00210128 -> fixed (48s)
-[19:21:42]   QUARANTINE FUN_0021195c: extraneous ')' before ';'
-[19:21:42]     [40/2470] FUN_0021195c -> quarantined (1m)
-[19:21:47]     [44/2470] FUN_002124a4 -> fixed (49s)
-[19:21:52]   QUARANTINE FUN_00211904: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[19:21:52]     [41/2470] FUN_00211904 -> quarantined (1m)
-[19:22:02]   QUARANTINE FUN_002113b4: redefinition of 'local_50'
-[19:22:02]     [42/2470] FUN_002113b4 -> quarantined (1m)
-[19:22:12]   QUARANTINE FUN_001f934c: redefinition of 'auVar2' with a different type: 'uint64_t' (aka 'unsigned long long') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[19:22:12]     [49/2470] FUN_001f934c -> quarantined (51s)
-[19:22:17]     [50/2470] FUN_001f8650 -> fixed (48s)
-[19:22:19]   QUARANTINE FUN_002126c0: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[19:22:19]     [45/2470] FUN_002126c0 -> quarantined (1m)
-[19:22:20]     [51/2470] FUN_001f9a28 -> fixed (48s)
-[19:22:22]   QUARANTINE FUN_002122a4: redefinition of 'local_50'
-[19:22:22]     [46/2470] FUN_002122a4 -> quarantined (1m)
-[19:22:25]   QUARANTINE FUN_001ff470: redefinition of 'in_x3'
-[19:22:25]     [47/2470] FUN_001ff470 -> quarantined (1m)
-[19:22:26]     [52/2470] FUN_001f9a74 -> fixed (46s)
-[19:22:30]     [54/2470] FUN_0022aa10 -> fixed (43s)
-[19:22:36]   QUARANTINE FUN_00084778: redefinition of 'extraout_x0'
-[19:22:36]     [48/2470] FUN_00084778 -> quarantined (1m)
-[19:22:42]     [56/2470] FUN_00218d44 -> fixed (40s)
-[19:22:59]   QUARANTINE FUN_0020aaac: subscripted value is not an array, pointer, or vector
-[19:22:59]     [53/2470] FUN_0020aaac -> quarantined (1m)
-[19:23:03]     [59/2470] FUN_00219520 -> fixed (44s)
-[19:23:03]     [68/2470] FUN_00205900 -> fixed (0s)
-[19:23:07]   QUARANTINE FUN_000776ac: expected ';' after expression
-[19:23:07]     [55/2470] FUN_000776ac -> quarantined (1m)
-[19:23:17]     [64/2470] FUN_00219984 -> fixed (46s)
-[19:23:24]   QUARANTINE FUN_00219428: too many arguments to function call, expected 2, have 3
-[19:23:24]     [57/2470] FUN_00219428 -> quarantined (1m)
-[19:23:31]   QUARANTINE FUN_002191f0: redefinition of 'local_80'
-[19:23:31]     [58/2470] FUN_002191f0 -> quarantined (1m)
-[19:23:34]   QUARANTINE FUN_00219580: expected identifier or '('
-[19:23:34]     [60/2470] FUN_00219580 -> quarantined (1m)
-[19:23:34]   QUARANTINE FUN_00057350: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[19:23:34]     [74/2470] FUN_00057350 -> quarantined (0s)
-[19:23:35]   QUARANTINE FUN_00057184: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[19:23:35]     [75/2470] FUN_00057184 -> quarantined (0s)
-[19:23:35]   QUARANTINE FUN_00219124: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[19:23:35]     [61/2470] FUN_00219124 -> quarantined (1m)
-[19:23:40]   QUARANTINE FUN_002190cc: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[19:23:40]     [62/2470] FUN_002190cc -> quarantined (1m)
-[19:23:42]   QUARANTINE FUN_00218ba8: redefinition of 'local_50'
-[19:23:42]     [63/2470] FUN_00218ba8 -> quarantined (1m)
-[19:23:55]   QUARANTINE FUN_00217fcc: redefinition of 'in_x2' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[19:23:55]     [65/2470] FUN_00217fcc -> quarantined (1m)
-[19:24:02]   QUARANTINE FUN_00219c4c: redefinition of 'local_58'
-[19:24:02]     [66/2470] FUN_00219c4c -> quarantined (1m)
-[19:24:17]   QUARANTINE FUN_00219b04: redefinition of 'extraout_x1'
-[19:24:17]     [67/2470] FUN_00219b04 -> quarantined (1m)
-[19:24:22]   QUARANTINE FUN_00205b14: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[19:24:22]     [69/2470] FUN_00205b14 -> quarantined (1m)
-[19:24:24]     [77/2470] FUN_001d77b8 -> fixed (49s)
-[19:24:26]   QUARANTINE FUN_00205704: redefinition of 'local_50'
-[19:24:26]     [70/2470] FUN_00205704 -> quarantined (1m)
-[19:24:30]     [78/2470] FUN_001d632c -> fixed (49s)
-[19:24:38]   QUARANTINE FUN_00084694: array type 'unsigned char[16]' is not assignable
-[19:24:38]     [71/2470] FUN_00084694 -> quarantined (1m)
-[19:24:48]   QUARANTINE FUN_00075e7c: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[19:24:48]     [72/2470] FUN_00075e7c -> quarantined (1m)
-[19:24:56]   QUARANTINE FUN_000b6044: initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void'
-[19:24:56]     [73/2470] FUN_000b6044 -> quarantined (1m)
-[19:25:00]   QUARANTINE FUN_001d7ca4: operand of type 'void' where arithmetic or pointer type is required
-[19:25:00]     [76/2470] FUN_001d7ca4 -> quarantined (1m)
-[19:25:09]   QUARANTINE FUN_001d860c: operand of type 'void' where arithmetic or pointer type is required
-[19:25:09]     [79/2470] FUN_001d860c -> quarantined (1m)
-[19:25:19]     [84/2470] FUN_001d9eb4 -> fixed (54s)
-[19:25:20]     [85/2470] FUN_001d92c4 -> fixed (54s)
-[19:25:22]   QUARANTINE FUN_001d88dc: operand of type 'void' where arithmetic or pointer type is required
-[19:25:22]     [80/2470] FUN_001d88dc -> quarantined (1m)
-[19:25:24]   QUARANTINE FUN_000c4d4c: redefinition of 'extraout_x1'
-[19:25:24]     [86/2470] FUN_000c4d4c -> quarantined (53s)
-[19:25:29]   QUARANTINE FUN_001d8bd8: operand of type 'void' where arithmetic or pointer type is required
-[19:25:29]     [81/2470] FUN_001d8bd8 -> quarantined (1m)
-[19:25:41]   QUARANTINE FUN_002854b0: redefinition of 'unaff_x21' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[19:25:41]     [88/2470] FUN_002854b0 -> quarantined (53s)
-[19:25:45]   QUARANTINE FUN_001f184c: operand of type 'void' where arithmetic or pointer type is required
-[19:25:45]     [82/2470] FUN_001f184c -> quarantined (1m)
-[19:25:47]   QUARANTINE FUN_00156044: redefinition of 'extraout_x1'
-[19:25:47]     [89/2470] FUN_00156044 -> quarantined (51s)
-[19:25:50]   QUARANTINE FUN_001da3a0: operand of type 'void' where arithmetic or pointer type is required
-[19:25:50]     [83/2470] FUN_001da3a0 -> quarantined (1m)
-[19:26:09]   QUARANTINE FUN_0012db5c: redefinition of 'auVar1'
-[19:26:09]     [87/2470] FUN_0012db5c -> quarantined (1m)
-[19:26:27]   QUARANTINE FUN_001c2514: redefinition of 'uVar2'
-[19:26:27]     [90/2470] FUN_001c2514 -> quarantined (1m)
-[19:26:27]   QUARANTINE FUN_00007d70: redefinition of 'in_x3' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[19:26:27]     [102/2470] FUN_00007d70 -> quarantined (0s)
-[19:26:28]   QUARANTINE FUN_00035c30: operand of type 'void' where arithmetic or pointer type is required
-[19:26:28]     [103/2470] FUN_00035c30 -> quarantined (0s)
-[19:26:33]     [97/2470] FUN_001e7d64 -> fixed (52s)
-[19:26:36]   QUARANTINE FUN_001c256c: redefinition of 'uVar2'
-[19:26:36]     [91/2470] FUN_001c256c -> quarantined (1m)
-[19:26:37]     [98/2470] FUN_001e50c4 -> fixed (51s)
-[19:26:45]   QUARANTINE FUN_001c25c4: redefinition of 'uVar2'
-[19:26:45]     [92/2470] FUN_001c25c4 -> quarantined (1m)
-[19:26:46]   QUARANTINE FUN_001c261c: redefinition of 'uVar2'
-[19:26:46]     [93/2470] FUN_001c261c -> quarantined (1m)
-[19:26:47]   QUARANTINE FUN_001c2674: redefinition of 'uVar2'
-[19:26:47]     [94/2470] FUN_001c2674 -> quarantined (1m)
-[19:26:50]   QUARANTINE FUN_001c26cc: redefinition of 'uVar2'
-[19:26:50]     [95/2470] FUN_001c26cc -> quarantined (1m)
-[19:26:55]   QUARANTINE FUN_001e8340: operand of type 'void' where arithmetic or pointer type is required
-[19:26:55]     [96/2470] FUN_001e8340 -> quarantined (1m)
-[19:26:57]   QUARANTINE FUN_00008040: redefinition of 'auVar1' with a different type: 'uint64_t' (aka 'unsigned long long') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[19:26:57]     [101/2470] FUN_00008040 -> quarantined (48s)
-[19:27:12]   QUARANTINE FUN_00267a58: subscripted value is not an array, pointer, or vector
-[19:27:12]     [99/2470] FUN_00267a58 -> quarantined (1m)
-[19:27:15]   QUARANTINE FUN_001f1ea4: redefinition of 'auVar1'
-[19:27:15]     [100/2470] FUN_001f1ea4 -> quarantined (1m)
-[19:27:19]     [105/2470] FUN_00129240 -> fixed (46s)
-[19:27:21]     [106/2470] FUN_0012efcc -> fixed (45s)
-[19:27:22]     [107/2470] FUN_0012f684 -> fixed (44s)
-[19:27:29]     [108/2470] FUN_00131cd8 -> fixed (44s)
-[19:27:30]     [109/2470] FUN_0013ea2c -> fixed (43s)
-[19:27:31]     [110/2470] FUN_00156dec -> fixed (43s)
-[19:27:31]   QUARANTINE FUN_0000fae8: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[19:27:31]     [121/2470] FUN_0000fae8 -> quarantined (0s)
-[19:27:33]     [111/2470] FUN_00156e54 -> fixed (43s)
-[19:27:37]     [112/2470] FUN_00167670 -> fixed (42s)
-[19:27:38]   QUARANTINE FUN_00021f4c: operand of type 'void' where arithmetic or pointer type is required
-[19:27:38]     [124/2470] FUN_00021f4c -> quarantined (0s)
-[19:27:38]   QUARANTINE FUN_0000e0ac: operand of type 'void' where arithmetic or pointer type is required
-[19:27:38]     [125/2470] FUN_0000e0ac -> quarantined (0s)
-[19:27:39]   QUARANTINE FUN_0001afa4: operand of type 'void' where arithmetic or pointer type is required
-[19:27:39]     [126/2470] FUN_0001afa4 -> quarantined (0s)
-[19:27:39]   QUARANTINE FUN_0002d2f8: operand of type 'void' where arithmetic or pointer type is required
-[19:27:39]     [127/2470] FUN_0002d2f8 -> quarantined (0s)
-[19:27:39]     [113/2470] thunk_FUN_001f48d8 -> fixed (41s)
-[19:27:39]   QUARANTINE FUN_000301c4: operand of type 'void' where arithmetic or pointer type is required
-[19:27:39]     [128/2470] FUN_000301c4 -> quarantined (0s)
-[19:27:40]   QUARANTINE FUN_0003455c: operand of type 'void' where arithmetic or pointer type is required
-[19:27:40]     [129/2470] FUN_0003455c -> quarantined (0s)
-[19:27:40]   QUARANTINE FUN_0003e984: operand of type 'void' where arithmetic or pointer type is required
-[19:27:40]     [130/2470] FUN_0003e984 -> quarantined (0s)
-[19:27:40]   QUARANTINE FUN_00040548: operand of type 'void' where arithmetic or pointer type is required
-[19:27:40]     [131/2470] FUN_00040548 -> quarantined (0s)
-[19:27:41]   QUARANTINE FUN_00035330: redefinition of 'plVar1'
-[19:27:41]     [104/2470] FUN_00035330 -> quarantined (1m)
-[19:27:42]   QUARANTINE FUN_000588dc: operand of type 'void' where arithmetic or pointer type is required
-[19:27:42]     [134/2470] FUN_000588dc -> quarantined (0s)
-[19:27:42]   QUARANTINE FUN_0005bf20: operand of type 'void' where arithmetic or pointer type is required
-[19:27:42]     [135/2470] FUN_0005bf20 -> quarantined (0s)
-[19:27:42]   QUARANTINE FUN_00008f18: operand of type 'void' where arithmetic or pointer type is required
-[19:27:42]     [136/2470] FUN_00008f18 -> quarantined (0s)
-[19:27:43]   QUARANTINE FUN_000099b4: assigning to 'long' from incompatible type 'void'
-[19:27:43]     [137/2470] FUN_000099b4 -> quarantined (0s)
-[19:27:58]     [115/2470] FUN_000c5484 -> fixed (42s)
-[19:28:09]     [116/2470] FUN_0011206c -> fixed (49s)
-[19:28:10]   QUARANTINE FUN_00008a4c: assigning to 'long' from incompatible type 'void'
-[19:28:10]     [140/2470] FUN_00008a4c -> quarantined (0s)
-[19:28:10]   QUARANTINE FUN_00009448: operand of type 'void' where arithmetic or pointer type is required
-[19:28:10]     [141/2470] FUN_00009448 -> quarantined (0s)
-[19:28:10]   QUARANTINE FUN_000095cc: operand of type 'void' where arithmetic or pointer type is required
-[19:28:10]     [142/2470] FUN_000095cc -> quarantined (0s)
-[19:28:11]   QUARANTINE FUN_00009614: operand of type 'void' where arithmetic or pointer type is required
-[19:28:11]     [143/2470] FUN_00009614 -> quarantined (0s)
-[19:28:11]     [117/2470] FUN_00112840 -> fixed (49s)
-[19:28:11]   QUARANTINE FUN_000097ec: operand of type 'void' where arithmetic or pointer type is required
-[19:28:11]     [144/2470] FUN_000097ec -> quarantined (0s)
-[19:28:11]   QUARANTINE FUN_00009ec0: assigning to 'long' from incompatible type 'void'
-[19:28:11]     [145/2470] FUN_00009ec0 -> quarantined (0s)
-[19:28:12]   QUARANTINE FUN_00009f10: assigning to 'long' from incompatible type 'void'
-[19:28:12]     [146/2470] FUN_00009f10 -> quarantined (0s)
-[19:28:12]   QUARANTINE FUN_0000bed0: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[19:28:12]     [147/2470] FUN_0000bed0 -> quarantined (0s)
-[19:28:12]   QUARANTINE FUN_0000c050: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[19:28:12]     [148/2470] FUN_0000c050 -> quarantined (0s)
-[19:28:12]     [118/2470] FUN_001f2df8 -> fixed (50s)
-[19:28:12]   QUARANTINE FUN_0000c1c8: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[19:28:12]     [149/2470] FUN_0000c1c8 -> quarantined (0s)
-[19:28:12]   QUARANTINE FUN_0000b154: assigning to 'long' from incompatible type 'void'
-[19:28:12]     [150/2470] FUN_0000b154 -> quarantined (0s)
-[19:28:13]   QUARANTINE FUN_0000c288: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[19:28:13]     [151/2470] FUN_0000c288 -> quarantined (0s)
-[19:28:13]   QUARANTINE FUN_0000ab60: assigning to 'long' from incompatible type 'void'
-[19:28:13]     [152/2470] FUN_0000ab60 -> quarantined (0s)
-[19:28:20]   QUARANTINE FUN_001f2970: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'double'
-[19:28:20]     [119/2470] FUN_001f2970 -> quarantined (50s)
-[19:28:20]   QUARANTINE FUN_0000c394: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[19:28:20]     [156/2470] FUN_0000c394 -> quarantined (0s)
-[19:28:21]   QUARANTINE FUN_0000b96c: assigning to 'void *' from incompatible type 'void'
-[19:28:21]     [157/2470] FUN_0000b96c -> quarantined (0s)
-[19:28:21]   QUARANTINE FUN_0000bcec: assigning to 'void *' from incompatible type 'void'
-[19:28:21]     [158/2470] FUN_0000bcec -> quarantined (0s)
-[19:28:22]   QUARANTINE FUN_0000bf64: operand of type 'void' where arithmetic or pointer type is required
-[19:28:22]     [159/2470] FUN_0000bf64 -> quarantined (0s)
-[19:28:22]   QUARANTINE FUN_0000c0a4: assigning to 'void *' from incompatible type 'void'
-[19:28:22]     [160/2470] FUN_0000c0a4 -> quarantined (0s)
-[19:28:23]   QUARANTINE FUN_0000c1f4: assigning to 'void *' from incompatible type 'void'
-[19:28:23]     [161/2470] FUN_0000c1f4 -> quarantined (0s)
-[19:28:23]   QUARANTINE FUN_0000c2dc: operand of type 'void' where arithmetic or pointer type is required
-[19:28:23]     [162/2470] FUN_0000c2dc -> quarantined (0s)
-[19:28:24]   QUARANTINE FUN_0000c3f8: operand of type 'void' where arithmetic or pointer type is required
-[19:28:24]     [163/2470] FUN_0000c3f8 -> quarantined (0s)
-[19:28:31]   QUARANTINE FUN_000b60c0: initializing 'long' with an expression of incompatible type 'void'
-[19:28:31]     [114/2470] FUN_000b60c0 -> quarantined (1m)
-[19:28:48]     [139/2470] FUN_0000922c -> fixed (50s)
-[19:28:53]   QUARANTINE FUN_001f3cd0: use of undeclared identifier '_DAT_00470a00'
-[19:28:53]     [120/2470] FUN_001f3cd0 -> quarantined (1m)
-[19:28:54]   QUARANTINE FUN_0000cdcc: operand of type 'void' where arithmetic or pointer type is required
-[19:28:54]     [122/2470] FUN_0000cdcc -> quarantined (1m)
-[19:28:55]   QUARANTINE FUN_0000ccd4: assigning to 'void *' from incompatible type 'void'
-[19:28:55]     [168/2470] FUN_0000ccd4 -> quarantined (0s)
-[19:28:57]   QUARANTINE FUN_0000c9c8: initializing 'uintptr_t' (aka 'unsigned long') with an expression of incompatible type 'void'
-[19:28:57]     [123/2470] FUN_0000c9c8 -> quarantined (1m)
-[19:29:02]   QUARANTINE FUN_0004ff54: assigning to 'long' from incompatible type 'void'
-[19:29:02]     [132/2470] FUN_0004ff54 -> quarantined (1m)
-[19:29:04]   QUARANTINE FUN_000514b0: use of undeclared identifier 'DAT_00002b11'
-[19:29:04]     [133/2470] FUN_000514b0 -> quarantined (1m)
-[19:29:06]   QUARANTINE FUN_000092c8: assigning to 'ulong' (aka 'unsigned long') from incompatible type 'void'
-[19:29:06]     [138/2470] FUN_000092c8 -> quarantined (1m)
-[19:29:09]   QUARANTINE FUN_0000cac4: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-[19:29:09]     [164/2470] FUN_0000cac4 -> quarantined (45s)
-[19:29:27]     [153/2470] FUN_0000a854 -> fixed (1m)
-[19:29:28]   QUARANTINE FUN_0000ee9c: assigning to 'void *' from incompatible type 'void'
-[19:29:28]     [175/2470] FUN_0000ee9c -> quarantined (0s)
-[19:29:28]   QUARANTINE FUN_0000f0f0: assigning to 'void *' from incompatible type 'void'
-[19:29:28]     [176/2470] FUN_0000f0f0 -> quarantined (0s)
-[19:29:28]   QUARANTINE FUN_0000a9c0: expected ')'
-[19:29:28]     [154/2470] FUN_0000a9c0 -> quarantined (1m)
-[19:29:29]   QUARANTINE FUN_0000f1b4: assigning to 'void *' from incompatible type 'void'
-[19:29:29]     [177/2470] FUN_0000f1b4 -> quarantined (0s)
-[19:29:29]   QUARANTINE FUN_00012cc0: assigning to 'long' from incompatible type 'void'
-[19:29:29]     [178/2470] FUN_00012cc0 -> quarantined (0s)
-[19:29:29]   QUARANTINE FUN_0000f1d8: operand of type 'void' where arithmetic or pointer type is required
-[19:29:29]     [179/2470] FUN_0000f1d8 -> quarantined (0s)
-[19:29:29]   QUARANTINE FUN_0000f408: assigning to 'void *' from incompatible type 'void'
-[19:29:29]     [180/2470] FUN_0000f408 -> quarantined (0s)
-[19:29:29]   QUARANTINE FUN_0000b0a8: assigning to 'long' from incompatible type 'void'
-[19:29:29]     [155/2470] FUN_0000b0a8 -> quarantined (1m)
-[19:29:30]   QUARANTINE FUN_0000fb38: assigning to 'void *' from incompatible type 'void'
-[19:29:30]     [182/2470] FUN_0000fb38 -> quarantined (0s)
-[19:29:30]   QUARANTINE FUN_00011484: operand of type 'void' where arithmetic or pointer type is required
-[19:29:30]     [183/2470] FUN_00011484 -> quarantined (0s)
-[19:29:30]   QUARANTINE FUN_00011a98: assigning to 'undefined4' (aka 'unsigned int') from incompatible type 'void'
-[19:29:30]     [185/2470] FUN_00011a98 -> quarantined (0s)
-[19:29:32]   QUARANTINE FUN_0000cb3c: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-[19:29:32]     [166/2470] FUN_0000cb3c -> quarantined (43s)
-[19:29:33]   QUARANTINE FUN_00011dfc: operand of type 'void' where arithmetic or pointer type is required
-[19:29:33]     [187/2470] FUN_00011dfc -> quarantined (0s)
-[19:29:33]   QUARANTINE FUN_00011f3c: assigning to 'void *' from incompatible type 'void'
-[19:29:33]     [188/2470] FUN_00011f3c -> quarantined (0s)
-[19:29:34]   QUARANTINE FUN_00011ff4: assigning to 'void *' from incompatible type 'void'
-[19:29:34]     [189/2470] FUN_00011ff4 -> quarantined (0s)
-[19:29:34]   QUARANTINE FUN_00012018: assigning to 'long' from incompatible type 'void'
-[19:29:34]     [190/2470] FUN_00012018 -> quarantined (0s)
-[19:29:35]   QUARANTINE FUN_00012048: assigning to 'long' from incompatible type 'void'
-[19:29:35]     [191/2470] FUN_00012048 -> quarantined (0s)
-[19:29:35]   QUARANTINE FUN_00012170: assigning to 'void *' from incompatible type 'void'
-[19:29:35]     [192/2470] FUN_00012170 -> quarantined (0s)
-[19:29:35]   QUARANTINE FUN_00012194: assigning to 'long' from incompatible type 'void'
-[19:29:35]     [193/2470] FUN_00012194 -> quarantined (0s)
-[19:29:36]   QUARANTINE FUN_000121c4: assigning to 'long' from incompatible type 'void'
-[19:29:36]     [194/2470] FUN_000121c4 -> quarantined (0s)
-[19:29:36]   QUARANTINE FUN_000122a0: assigning to 'void *' from incompatible type 'void'
-[19:29:36]     [195/2470] FUN_000122a0 -> quarantined (0s)
-[19:29:37]   QUARANTINE FUN_000122c4: assigning to 'long' from incompatible type 'void'
-[19:29:37]     [196/2470] FUN_000122c4 -> quarantined (0s)
-[19:29:37]   QUARANTINE FUN_00012e5c: redefinition of 'auVar1' with a different type: 'uint64_t' (aka 'unsigned long long') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[19:29:37]     [169/2470] FUN_00012e5c -> quarantined (42s)
-[19:29:37]   QUARANTINE FUN_000122f4: assigning to 'long' from incompatible type 'void'
-[19:29:37]     [197/2470] FUN_000122f4 -> quarantined (0s)
-[19:29:37]   QUARANTINE FUN_00012c80: assigning to 'long' from incompatible type 'void'
-[19:29:37]     [198/2470] FUN_00012c80 -> quarantined (0s)
-[19:29:37]   QUARANTINE FUN_00013268: assigning to 'void *' from incompatible type 'void'
-[19:29:37]     [199/2470] FUN_00013268 -> quarantined (0s)
-[19:29:38]   QUARANTINE FUN_000132dc: assigning to 'void *' from incompatible type 'void'
-[19:29:38]     [200/2470] FUN_000132dc -> quarantined (0s)
-[19:29:38]   QUARANTINE FUN_00013388: assigning to 'void *' from incompatible type 'void'
-[19:29:38]     [201/2470] FUN_00013388 -> quarantined (0s)
-[19:29:38]   QUARANTINE FUN_00014174: assigning to 'long' from incompatible type 'void'
-[19:29:38]     [202/2470] FUN_00014174 -> quarantined (0s)
-[19:29:38]   QUARANTINE FUN_00014c8c: assigning to 'long' from incompatible type 'void'
-[19:29:38]     [203/2470] FUN_00014c8c -> quarantined (0s)
-[19:29:39]   QUARANTINE FUN_00014888: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[19:29:39]     [204/2470] FUN_00014888 -> quarantined (0s)
-[19:29:39]   QUARANTINE FUN_00012f88: redefinition of 'auVar5' with a different type: 'uint64_t' (aka 'unsigned long long') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[19:29:39]     [170/2470] FUN_00012f88 -> quarantined (42s)
-[19:29:39]   QUARANTINE FUN_00014ab0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[19:29:39]     [206/2470] FUN_00014ab0 -> quarantined (0s)
-[19:29:44]   QUARANTINE FUN_0000ca40: expected expression
-[19:29:44]     [165/2470] FUN_0000ca40 -> quarantined (1m)
-[19:29:45]   QUARANTINE FUN_0000def4: assigning to 'float' from incompatible type 'void'
-[19:29:45]     [171/2470] FUN_0000def4 -> quarantined (43s)
-[19:29:46]   QUARANTINE FUN_00015ed4: assigning to 'long' from incompatible type 'void'
-[19:29:46]     [210/2470] FUN_00015ed4 -> quarantined (0s)
-[19:29:46]   QUARANTINE FUN_00015f58: assigning to 'long' from incompatible type 'void'
-[19:29:46]     [211/2470] FUN_00015f58 -> quarantined (0s)
-[19:29:47]   QUARANTINE FUN_0000f9b4: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-[19:29:47]     [173/2470] FUN_0000f9b4 -> quarantined (41s)
+[19:35:16]   link round 1: 2375 file(s) failed to compile
+[19:35:16]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
+[19:35:22]   QUARANTINE FUN_0000cbac: redefinition of 'auVar3'
+[19:35:26]   QUARANTINE FUN_0000e054: initializing 'undefined8' (aka 'unsigned long long') with an expression of incompatible type 'void'
+[19:35:32]   QUARANTINE FUN_0000e748: redefinition of 'auVar1' with a different type: 'undefined8[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
+[19:35:37]   QUARANTINE FUN_0000f8d8: redefinition of 'uVar2' with a different type: 'undefined8' (aka 'unsigned long long') vs 'ulong' (aka 'unsigned long')
+[19:35:45]   QUARANTINE FUN_00012648: operand of type 'void' where arithmetic or pointer type is required
+[19:35:47]   QUARANTINE FUN_00012ec0: assigning to 'float' from incompatible type 'void'
+[19:35:51]   QUARANTINE FUN_00014a48: brackets are not allowed here; to declare an array, place the brackets after the identifier
+[19:35:56]   QUARANTINE FUN_00014e50: operand of type 'void' where arithmetic or pointer type is required
+[19:35:59]   QUARANTINE FUN_00015dc0: assigning to 'long *' from incompatible type 'void'
+[19:36:04]   QUARANTINE FUN_00015e20: assigning to 'long *' from incompatible type 'void'
+[19:36:10]   QUARANTINE FUN_00016390: operand of type 'void' where arithmetic or pointer type is required
+[19:36:13]   QUARANTINE FUN_000165b8: assigning to 'void *' from incompatible type 'void'
+[19:36:14]   QUARANTINE FUN_00016620: assigning to 'void *' from incompatible type 'void'
+[19:36:14]   QUARANTINE FUN_00016688: assigning to 'void *' from incompatible type 'void'
+[19:36:14]   QUARANTINE FUN_000166f0: assigning to 'void *' from incompatible type 'void'
+[19:36:15]   QUARANTINE FUN_00016bc8: assigning to 'void *' from incompatible type 'void'
+[19:36:22]   QUARANTINE FUN_00016c90: redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int')
+[19:36:30]   QUARANTINE FUN_00016ce8: operand of type 'void' where arithmetic or pointer type is required
+[19:36:30]   QUARANTINE FUN_00016e10: assigning to 'void *' from incompatible type 'void'
+[19:36:31]   QUARANTINE FUN_000171d4: assigning to 'void *' from incompatible type 'void'
+[19:36:31]   QUARANTINE FUN_000171f8: redefinition of 'extraout_s0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
+[19:36:38]   QUARANTINE FUN_00017294: redefinition of 'extraout_var'
+[19:36:48]   QUARANTINE FUN_000173a0: redefinition of 'extraout_w0'
+[19:36:55]   QUARANTINE FUN_000177b4: redefinition of 'local_68'
+[19:36:55]   QUARANTINE FUN_00017968: assigning to 'void *' from incompatible type 'void'
+[19:36:55]   QUARANTINE FUN_00017f4c: assigning to 'void *' from incompatible type 'void'
+[19:37:03]   QUARANTINE FUN_00018538: member reference base type 'double' is not a structure or union
+[19:37:04]   QUARANTINE FUN_0001939c: assigning to 'void *' from incompatible type 'void'
+[19:37:10]   QUARANTINE FUN_00019460: redefinition of 'uVar1' with a different type: 'unsigned char' vs 'undefined4' (aka 'unsigned int')
+[19:37:18]   QUARANTINE FUN_000194b8: assigning to 'int' from incompatible type 'void'
+[19:37:19]   QUARANTINE FUN_000195e4: assigning to 'void *' from incompatible type 'void'
+[19:37:19]   QUARANTINE FUN_00019b80: assigning to 'void *' from incompatible type 'void'
+[19:37:19]   QUARANTINE FUN_00019be8: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
+[19:37:20]   QUARANTINE FUN_00019dcc: assigning to 'void *' from incompatible type 'void'
+[19:37:25]   QUARANTINE FUN_0001ae70: assigning to 'float' from incompatible type 'void'
 ```
 
 ## pipeline_state.json
@@ -79545,9 +77988,11 @@ _parse_monolith.cpp:53209: expected function body after function declarator
       "model": "qwen2.5-coder-0.5b-instruct-mlx"
     },
     "recover": {
-      "done": false,
-      "started": "2026-10-21 11:19:31",
-      "at": "2026-10-21 11:19:31"
+      "done": true,
+      "started": "2026-10-21 19:30:13",
+      "at": "2026-10-21 19:30:13",
+      "seconds": 0,
+      "model": ""
     },
     "privacy": {
       "done": true,
@@ -79555,6 +78000,11 @@ _parse_monolith.cpp:53209: expected function body after function declarator
       "at": "2026-10-21 16:06:35",
       "seconds": 2,
       "note": "1141 replacement(s)"
+    },
+    "link": {
+      "done": false,
+      "started": "2026-10-21 19:30:13",
+      "at": "2026-10-21 19:30:13"
     }
   },
   "version": "2026-10-21.1",
@@ -79563,169 +78013,6 @@ _parse_monolith.cpp:53209: expected function body after function declarator
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-21 11:40:06",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: no matching function for call to 'X'": 679,
-        "fix|quarantined: cannot cast from type 'X' to pointer type 'X'": 233,
-        "fix|quarantined: C-style cast from 'X' to 'X' is not allowed": 213,
-        "fix|quarantined: use of undeclared identifier 'X'": 162,
-        "fix|quarantined: no member named 'X' in 'X'": 150,
-        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 117,
-        "fix|quarantined: C-style cast from 'X' to 'X' (aka 'X') is not allowed": 107,
-        "fix|quarantined: cannot cast from type 'X' to pointer type 'X' (aka 'X')": 104,
-        "fix|quarantined: redefinition of 'X'": 103,
-        "fix|quarantined: subscripted value is not an array, pointer, or vector": 100,
-        "fix|quarantined: assignment to cast is illegal, lvalue casts are not supported": 72,
-        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 68,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 64,
-        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 52,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X'": 47,
-        "fix|quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X'": 47,
-        "fix|quarantined: expected 'X' after top level declarator": 34,
-        "fix|quarantined: indirection requires pointer operand ('X' invalid)": 28,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'": 28,
-        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 27,
-        "fix|quarantined: unknown type name 'X'": 26,
-        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 25,
-        "fix|quarantined: must use 'X' tag to refer to type 'X' in this scope": 23,
-        "fix|quarantined: use of undeclared identifier 'X'; did you mean 'X'?": 18,
-        "fix|quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X'": 18,
-        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 17,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); dereference with *": 17,
-        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 17,
-        "fix|quarantined: reinterpret_cast from 'X' to 'X' is not allowed": 16,
-        "fix|quarantined: brackets are not allowed here; to declare an array, place the brackets after the name": 15,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 14,
-        "fix|quarantined: no matching constructor for initialization of 'X'": 14,
-        "fix|quarantined: member reference base type 'X' is not a structure or union": 13,
-        "fix|quarantined: expected expression": 13,
-        "fix|quarantined: ISO C++ does not allow indirection on operand of type 'X' [-Wvoid-ptr-dereference]": 13,
-        "fix|quarantined: called object type 'X' is not a function or function pointer": 12,
-        "fix|quarantined: function definition is not allowed here": 11,
-        "fix|quarantined: expected unqualified-id": 11,
-        "fix|quarantined: excess elements in struct initializer": 10,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 9,
-        "fix|quarantined: redeclaration of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 9,
-        "fix|quarantined: extern declaration of 'X' follows non-extern declaration": 9,
-        "fix|quarantined: no viable conversion from 'X' to 'X'": 8,
-        "fix|quarantined: no matching conversion for C-style cast from 'X' to 'X'": 8,
-        "fix|quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X' (aka 'X')": 8,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X')": 8,
-        "fix|quarantined: void function 'X' should not return a value [-Wreturn-mismatch]": 7,
-        "fix|quarantined: expected 'X'": 7,
-        "fix|quarantined: arithmetic on a pointer to void": 7,
-        "fix|quarantined: unknown type name 'X'; did you mean 'X'?": 6,
-        "fix|quarantined: reference to type 'X' could not bind to an lvalue of type 'X' (aka 'X')": 6,
-        "fix|quarantined: redeclaration of 'X' with a different type: 'X' vs 'X'": 6,
-        "fix|quarantined: incompatible pointer types assigning to 'X' from 'X' (aka 'X')": 6,
-        "fix|quarantined: unexpected type name 'X': expected expression": 5,
-        "fix|quarantined: non-const lvalue reference to type 'X' cannot bind to an initializer list temporary": 5,
-        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')": 5,
-        "fix|quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X'": 5,
-        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an lvalue of type 'X'": 5,
-        "fix|quarantined: 'X' statement not in loop statement": 5,
-        "fix|quarantined: static_cast from 'X' (aka 'X') to 'X' is not allowed": 4,
-        "fix|quarantined: invalid range expression of type 'X'; no viable 'X' function available": 4,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' from 'X'; dereference with *": 4,
-        "fix|quarantined: subscript of pointer to incomplete type 'X'": 3,
-        "fix|quarantined: static_cast from 'X' to 'X' is not allowed": 3,
-        "fix|quarantined: static_cast from 'X' to 'X' (aka 'X') is not allowed": 3,
-        "fix|quarantined: out-of-line definition of 'X' does not match any declaration in 'X'": 3,
-        "fix|quarantined: no member named 'X' in 'X'; did you mean 'X'?": 3,
-        "fix|quarantined: no matching conversion for functional-style cast from 'X' to 'X'": 3,
-        "fix|quarantined: invalid use of non-static data member 'X'": 3,
-        "fix|quarantined: incompatible integer to pointer conversion assigning to 'X' from 'X' (aka 'X')": 3,
-        "fix|quarantined: extraneous 'X' before 'X'": 3,
-        "fix|quarantined: expected identifier": 3,
-        "fix|quarantined: expected 'X' for function-style cast or type construction": 3,
-        "fix|quarantined: duplicate case value 'X'": 3,
-        "fix|quarantined: cannot initialize a variable of type 'X' with an lvalue of type 'X'": 3,
-        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X'": 3,
-        "fix|quarantined: cannot assign to return value because function 'X' returns a const value": 3,
-        "fix|quarantined: 'X' statement not in loop or switch statement": 3,
-        "fix|quarantined: variable has incomplete type 'X'": 2,
-        "fix|quarantined: too many arguments to function call, expected N, have N": 2,
-        "fix|quarantined: too few arguments to function call, expected N, have N": 2,
-        "fix|quarantined: reinterpret_cast from 'X' to 'X' (aka 'X') is not allowed": 2,
-        "fix|quarantined: redefinition of 'X' as different kind of symbol": 2,
-        "fix|quarantined: non-const lvalue reference to type 'X' cannot bind to a value of unrelated type 'X' (aka 'X')": 2,
-        "fix|quarantined: no viable overloaded 'X'": 2,
-        "fix|quarantined: no viable conversion from returned value of type 'X' (aka 'X') to function return type 'X'": 2,
-        "fix|quarantined: no member named 'X' in namespace 'X'": 2,
-        "fix|quarantined: no matching conversion for C-style cast from 'X' (aka 'X') to 'X'": 2,
-        "fix|quarantined: no matching constructor for initialization of 'X' (aka 'X')": 2,
-        "fix|quarantined: member reference type 'X' is not a pointer; did you mean to use 'X'?": 2,
-        "fix|quarantined: member reference type 'X' (aka 'X') is not a pointer": 2,
-        "fix|quarantined: invalid operands to binary expression ('X' and 'X' (aka 'X'))": 2,
-        "fix|quarantined: incompatible pointer types assigning to 'X' from 'X'": 2,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X' (aka 'X'); remove &": 2,
-        "fix|quarantined: expression is not assignable": 2,
-        "fix|quarantined: expected 'X' at end of declaration": 2,
-        "fix|quarantined: expected 'X' after expression": 2,
-        "fix|quarantined: comparison between pointer and integer ('X' (aka 'X') and 'X')": 2,
-        "fix|quarantined: cannot use dynamic_cast to convert from 'X' to 'X'": 2,
-        "fix|quarantined: cannot initialize return object of type 'X' (aka 'X') with an lvalue of type 'X' (aka 'X')": 2,
-        "fix|quarantined: cannot initialize a parameter of type 'X' with an lvalue of type 'X' (aka 'X')": 2,
-        "fix|quarantined: cannot convert 'X' to 'X' without a conversion operator": 2,
-        "fix|quarantined: arithmetic on a pointer to the function type 'X' (aka 'X')": 2,
-        "fix|quarantined: a type specifier is required for all declarations": 2,
-        "fix|quarantined: C-style cast from 'X' (aka 'X') to 'X' is not allowed": 2,
-        "fix|quarantined: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/vN/__locale:N:N: error: missing 'X' prior to depende": 2,
-        "fix|quarantined: 'X' (aka 'X') and 'X' are not pointers to compatible types": 2,
-        "fix|quarantined: use of undeclared label 'X'": 1,
-        "fix|quarantined: type 'X' does not provide a subscript operator": 1,
-        "fix|quarantined: statement requires expression of integer type ('X' invalid)": 1,
-        "fix|quarantined: reinterpret_cast from 'X' (aka 'X') to 'X' is not allowed": 1,
-        "fix|quarantined: reference to non-static member function must be called; did you mean to call it with no arguments?": 1,
-        "fix|quarantined: redefinition of parameter 'X'": 1,
-        "fix|quarantined: read-only variable is not assignable": 1,
-        "fix|quarantined: non-const lvalue reference to type 'X' cannot bind to a value of unrelated type 'X'": 1,
-        "fix|quarantined: no viable conversion from 'X' (aka 'X') to 'X'": 1,
-        "fix|quarantined: no matching conversion for functional-style cast from 'X' (aka 'X') to 'X'": 1,
-        "fix|quarantined: invalid range expression of type 'X' (aka 'X'); no viable 'X' function available": 1,
-        "fix|quarantined: invalid argument type 'X' (aka 'X') to unary expression": 1,
-        "fix|quarantined: invalid 'X' at end of declaration; did you mean 'X'?": 1,
-        "fix|quarantined: incompatible pointer types assigning to 'X' (aka 'X') from 'X'": 1,
-        "fix|quarantined: incompatible pointer to integer conversion assigning to 'X' from 'X' (aka 'X')": 1,
-        "fix|quarantined: incompatible integer to pointer conversion assigning to 'X' (aka 'X') from 'X'": 1,
-        "fix|quarantined: expected variable name or 'X' in lambda capture list": 1,
-        "fix|quarantined: expected 'X' in do/while loop": 1,
-        "fix|quarantined: comparison of distinct pointer types ('X' (aka 'X') and 'X' (aka 'X'))": 1,
-        "fix|quarantined: comparison between pointer and integer ('X' and 'X')": 1,
-        "fix|quarantined: cast from pointer to smaller type 'X' loses information": 1,
-        "fix|quarantined: cannot initialize an array element of type 'X' with an lvalue of type 'X'": 1,
-        "fix|quarantined: cannot initialize a variable of type 'X' with an rvalue of type 'X' (aka 'X')": 1,
-        "fix|quarantined: cannot initialize a variable of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')": 1,
-        "fix|quarantined: cannot initialize a parameter of type 'X' with an rvalue of type 'X' (aka 'X')": 1,
-        "fix|quarantined: cannot initialize a parameter of type 'X' (aka 'X') with an rvalue of type 'X' (aka 'X')": 1,
-        "fix|quarantined: cannot assign to variable 'X' with const-qualified type 'X'": 1,
-        "fix|quarantined: assigning to 'X' from incompatible type 'X'; dereference with *": 1,
-        "fix|quarantined: array type 'X' is not assignable": 1,
-        "fix|quarantined: arithmetic on a pointer to the function type 'X'": 1,
-        "fix|quarantined: C-style cast from 'X' (aka 'X') to 'X' (aka 'X') is not allowed": 1,
-        "fix|quarantined: 'X' does not refer to a value": 1,
-        "fix|quarantined: 'X' does not refer to a type name in pseudo-destructor expression; expected the name of type 'X' (aka 'X')": 1,
-        "fix|quarantined: 'X' declared as array of functions of type 'X' (aka 'X')": 1,
-        "fix|not compiling yet (not reached before the run ended)": 7156,
-        "recover|Ghidra's pseudocode still doesn't compile: C-style cast from 'X' to 'X' is not allowed": 4,
-        "recover|Ghidra's pseudocode still doesn't compile: brackets are not allowed here; to declare an array, place the brackets after the name": 1,
-        "recover|Ghidra's pseudocode still doesn't compile: no matching function for call to 'X'": 24,
-        "recover|Ghidra's pseudocode still doesn't compile: expected 'X'": 3,
-        "recover|Ghidra's pseudocode still doesn't compile: assigning to 'X' from incompatible type 'X'": 10,
-        "recover|Ghidra's pseudocode still doesn't compile: cannot cast from type 'X' to pointer type 'X'": 4,
-        "recover|Ghidra's pseudocode still doesn't compile: incompatible pointer to integer conversion assigning to 'X' (aka 'X') from 'X'": 2,
-        "recover|Ghidra's pseudocode still doesn't compile: assigning to 'X' (aka 'X') from incompatible type 'X'": 7,
-        "recover|Ghidra's pseudocode still doesn't compile: incompatible pointer types assigning to 'X' (aka 'X') from 'X'": 1,
-        "recover|Ghidra's pseudocode still doesn't compile: cannot cast from type 'X' to pointer type 'X' (aka 'X')": 3,
-        "recover|Ghidra's pseudocode still doesn't compile: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 3,
-        "recover|Ghidra's pseudocode still doesn't compile: member reference base type 'X' (aka 'X') is not a structure or union": 1,
-        "recover|Ghidra's pseudocode still doesn't compile: redefinition of 'X'": 1,
-        "recover|Ghidra's pseudocode still doesn't compile: no viable overloaded 'X'": 1,
-        "recover|Ghidra's pseudocode still doesn't compile: array type 'X' (aka 'X') is not assignable": 1
-      }
-    },
     {
       "at": "2026-10-21 12:03:40",
       "keys": {
@@ -80028,19 +78315,51 @@ _parse_monolith.cpp:53209: expected function body after function declarator
         "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 40,
         "fix|the model repeated an edit that had already failed (skipped)": 13
       }
+    },
+    {
+      "at": "2026-10-21 19:37:25",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "fix|quarantined: operand of type 'X' where arithmetic or pointer type is required": 136,
+        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 78,
+        "fix|quarantined: redefinition of 'X'": 61,
+        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 42,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 30,
+        "fix|quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier": 29,
+        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 27,
+        "fix|quarantined: expected 'X'": 22,
+        "fix|quarantined: expected 'X' after expression": 18,
+        "fix|quarantined: expected 'X' after top level declarator": 15,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 12,
+        "fix|quarantined: member reference base type 'X' is not a structure or union": 9,
+        "fix|quarantined: use of undeclared identifier 'X'": 8,
+        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 6,
+        "fix|quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'": 4,
+        "fix|quarantined: variable has incomplete type 'X'": 3,
+        "fix|quarantined: redefinition of 'X' as different kind of symbol": 3,
+        "fix|quarantined: subscripted value is not an array, pointer, or vector": 2,
+        "fix|quarantined: no member named 'X' in 'X'": 2,
+        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 2,
+        "fix|quarantined: expression is not assignable": 2,
+        "fix|quarantined: expected identifier or 'X'": 2,
+        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 2,
+        "fix|quarantined: array type 'X' is not assignable": 2,
+        "fix|quarantined: unknown type name 'X'": 1,
+        "fix|quarantined: unexpected type name 'X': expected expression": 1,
+        "fix|quarantined: too many arguments to function call, expected N, have N": 1,
+        "fix|quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'": 1,
+        "fix|quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required": 1,
+        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')": 1,
+        "fix|quarantined: initializing 'X' with an expression of incompatible type 'X'": 1,
+        "fix|quarantined: extraneous 'X' before 'X'": 1,
+        "fix|quarantined: expected expression": 1,
+        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 1,
+        "fix|not compiling yet (not reached before the run ended)": 2233,
+        "fix|the model repeated an edit that had already failed (skipped)": 3
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-21 10:55",
-      "functions": 30464,
-      "compile_pct": 66.4,
-      "quarantined_pct": 10.1,
-      "to_fix": 7156,
-      "fix_tried": 389,
-      "fix_success_pct": 9.3,
-      "fix_per_hour": 754
-    },
     {
       "at": "10-21 11:40",
       "functions": 30464,
@@ -80087,6 +78406,13 @@ _parse_monolith.cpp:53209: expected function body after function declarator
       "fix_tried": 201,
       "fix_success_pct": 19.9,
       "fix_per_hour": 986
+    },
+    {
+      "at": "10-21 19:37",
+      "functions": 30176,
+      "compile_pct": 90.9,
+      "quarantined_pct": 1.7,
+      "to_fix": 2233
     }
   ]
 }
@@ -80096,8 +78422,8 @@ _parse_monolith.cpp:53209: expected function body after function declarator
 
 ```json
 {
-  "generated": "2026-10-21 19:14:09",
-  "pipeline_version": "2026-10-21.3",
+  "generated": "2026-10-21 19:30:02",
+  "pipeline_version": "2026-10-21.1",
   "workdir": "/Users/admin/glitchdecomp/fastpass 3",
   "export": {
     "functions": 30489,
@@ -80131,9 +78457,9 @@ _parse_monolith.cpp:53209: expected function body after function declarator
   },
   "build": {
     "functions": 30176,
-    "compile": 27363,
-    "quarantined": 331,
-    "fixed_by_model": 111,
+    "compile": 27415,
+    "quarantined": 492,
+    "fixed_by_model": 150,
     "rederived": 31,
     "rederived_by": {
       "rewrite": 2,
@@ -80178,8 +78504,8 @@ _parse_monolith.cpp:53209: expected function body after function declarator
     },
     "fix": {
       "done": false,
-      "started": "2026-10-21 16:46:36",
-      "at": "2026-10-21 16:46:36",
+      "started": "2026-10-21 19:14:27",
+      "at": "2026-10-21 19:14:27",
       "seconds": 86,
       "model": "qwen2.5-coder-0.5b-instruct-mlx"
     },
