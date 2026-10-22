@@ -1805,3 +1805,13 @@ def test_header_ideas_must_not_break_what_compiles(tmp_path, monkeypatch):
     assert "hi_t" not in cfg.shared_h.read_text()                # put back after the test
     book = json.loads((tmp_path / "ideas.json").read_text())
     assert "compiling function(s) broke" in book["ideas"][0]["why_result"]
+
+
+def test_ideas_run_twice_a_run_without_counting_two_runs(tmp_path, monkeypatch):
+    same = '{"type": "rewrite", "before": "lVar0.hi", "after": "(lVar0).hi"}'
+    cfg, recs, asked = _idea_setup(tmp_path, monkeypatch, [same] * 4)
+    dp.idea_round(cfg, recs, {}, new_run=True, when="before the one-by-one fixes")
+    asked.clear()
+    # the round after the one-by-one fixes, same run, nothing changed: still parked
+    assert dp.idea_round(cfg, recs, {}, new_run=False)["parked"] == 1 and not asked
+    assert json.loads((tmp_path / "ideas.json").read_text())["run"] == 1

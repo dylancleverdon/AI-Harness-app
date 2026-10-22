@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.2"
+PIPELINE_VERSION = "2026-10-22.3"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -8196,6 +8196,11 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
         log(cfg, show=True, msg=f"  quick fixes (no model): {qn[0]} of {len(todo)} function(s) "
                                 f"compile now")
         failing = [m for m in failing if not records[m].compiles]
+    # ideas first: one adopted idea can fix a whole group at once, so the model
+    # doesn't have to fix those functions one by one
+    if failing:
+        idea_round(cfg, records, cache, new_run=True, when="before the one-by-one fixes")
+        failing = [m for m in failing if not records[m].compiles]
     total = len(failing)
     log(cfg, f"  fixer loop over {total} failing TU(s), dependency-ordered")
     fixed = [0]
@@ -8256,8 +8261,9 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
         lessons.save()
     # everything learned this run, on everything quarantined
     retry_quarantined(cfg, records, cache)
-    # kinds of error many functions still share: the model proposes general fixes
-    idea_round(cfg, records, cache)
+    # kinds of error many functions still share: ideas again, with what the
+    # one-by-one fixes changed (groups with nothing new stay parked)
+    idea_round(cfg, records, cache, new_run=False, when="after the one-by-one fixes")
     save_cache(cfg, cache)
     report_learned(cfg, lessons)
     if MODEL_STATS["no_answer"]:
@@ -12485,8 +12491,10 @@ def _group_key(cfg: Config, kind: str, recs: list) -> str:
     return text_sha(f"{hk}|{lessons.fingerprint(kind)}|{cfg.fix_model_used}|{len(recs)}|{codes}")[:16]
 
 
-def idea_round(cfg: Config, records: dict[str, FuncRecord], cache: dict) -> dict:
-    """One round of ideas for every stuck kind of error. Returns counts."""
+def idea_round(cfg: Config, records: dict[str, FuncRecord], cache: dict, new_run: bool = True,
+               when: str = "") -> dict:
+    """One round of ideas for every stuck kind of error. Returns counts. new_run:
+    the first round of this run (parking is counted in runs, not rounds)."""
     counts = Counter()
     if getattr(cfg, "no_ideas", False) or not cfg.fix_model_used:
         return counts
@@ -12496,7 +12504,8 @@ def idea_round(cfg: Config, records: dict[str, FuncRecord], cache: dict) -> dict
             continue
         groups.setdefault(error_kind(_first_error(r.last_error, r.file)[1]), []).append(r)
     book = IdeaBook(cfg)
-    book.data["run"] += 1
+    if new_run or not book.data["run"]:
+        book.data["run"] += 1
     run_no = book.data["run"]
     todo = []
     for kind, recs in sorted(groups.items(), key=lambda kv: -len(kv[1])):
@@ -12511,11 +12520,12 @@ def idea_round(cfg: Config, records: dict[str, FuncRecord], cache: dict) -> dict
     if not todo:
         book.save(cfg)
         return counts
-    log(cfg, show=True, msg=f"  ideas: {len(todo)} kind(s) of error that {IDEA_MIN_GROUP} or more "
-                            f"functions share get ideas from the model"
+    log(cfg, show=True, msg=f"  ideas{' (' + when + ')' if when else ''}: {len(todo)} kind(s) of "
+                            f"error that {IDEA_MIN_GROUP} or more functions share get ideas from the model"
                             + (f" ({counts['parked']} parked until something changes)"
                                if counts["parked"] else ""))
-    prog = Progress(len(todo), 0, title="ideas for kinds of error many functions share")
+    prog = Progress(len(todo), 0, title="ideas for kinds of error many functions share"
+                    + (f" ({when})" if when else ""))
     prog.extra = lambda: (f"{counts['asks']} asks, {counts['tested']} tested, {counts['adopted']} "
                           f"adopted, {counts['repeats']} repeats, {counts['rescued']} functions fixed")
     lessons = fix_lessons(cfg)
@@ -12557,7 +12567,9 @@ def idea_round(cfg: Config, records: dict[str, FuncRecord], cache: dict) -> dict
         prog.close()
         book.save(cfg)
         lessons.save()
-    RUN_CTX["ideas"] = dict(counts)
+    total = RUN_CTX.setdefault("ideas", {})
+    for k, v in counts.items():
+        total[k] = total.get(k, 0) + v
     log(cfg, show=True, msg=f"  ideas: {counts['asks']} asked, {counts['tested']} tested, "
                             f"{counts['adopted']} adopted, {counts['repeats']} repeats caught, "
                             f"{counts['rescued']} function(s) compile now. All in build/ideas.txt")
@@ -12791,7 +12803,7 @@ def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
         cache = load_cache(cfg)
         retry_quarantined(cfg, records, cache)
         if model_check(cfg):
-            idea_round(cfg, records, cache)
+            idea_round(cfg, records, cache, new_run=True)
             save_cache(cfg, cache)
         save_manifest(cfg, records)
         log(cfg, show=True, msg="  nothing to fix")
