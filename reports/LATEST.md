@@ -1,18 +1,18 @@
-# Diagnostics — fastpass 3 — 2026-10-21 20:50:45
+# Diagnostics — fastpass 3 — 2026-10-21 20:52:16
 
 
 ## Run
 
 ```
-script: decomp_pipeline 2026-10-22.1 (build 2026-10-18.1)
-command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from link --to organize --headless-export --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
+script: decomp_pipeline 2026-10-22.2 (build 2026-10-18.1)
+command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from export --to organize --headless-export --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
 python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
 compile flags: -Wno-c++11-narrowing
 --ctx 8192, chars per token 2.06
-model: qwen2.5-coder-3b-instruct-mlx
+model: ?
 model requests turned down this run: 0, thinking-only answers: 0
-fix stage model edits: {'calls': 522, 'no_answer': 42, 'rejected': 0}
+fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 ```
 
 ## What the script struggled with
@@ -22,12 +22,12 @@ fix stage model edits: {'calls': 522, 'no_answer': 42, 'rejected': 0}
 ━━━━ what the script struggled with this run ━━━━
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
-  run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued        test pass %
-  10-21 19:37                90.9                1.7               2233                  -                  -                  -                  -                  -                  -                  -                  -
-  10-21 19:38                90.9                1.7               2233                  -                  -                  -                  -                  -                  -                  -                  -
-  10-21 19:50                90.9                2.5               1986                  -                  -                  -                  -                  -                  -                  -                  -
-  10-21 20:03                90.7                3.0               1893                  -                  -                  -                  -                  -                  -                  -                  -
-  10-21 20:50                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                  -
+  run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescuedideas adopted/tested        test pass %
+  10-21 19:38                90.9                1.7               2233                  -                  -                  -                  -                  -                  -                  -                  -                  -
+  10-21 19:50                90.9                2.5               1986                  -                  -                  -                  -                  -                  -                  -                  -                  -
+  10-21 20:03                90.7                3.0               1893                  -                  -                  -                  -                  -                  -                  -                  -                  -
+  10-21 20:50                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                  -                  -
+  10-21 20:52                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                  -                  -
 couldn't handle:
   fix        1277 × not compiling yet (not reached before the run ended)   e.g. acceptsFirstResponder_16c74c, becomeFirstResponder_16c7ac, resignFirstResponder_16c7e8   [also in the last 5 run(s)]
   fix         261 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_00003cb4, FUN_00003d30, FUN_00004478   [also in the last 5 run(s)]
@@ -47,97 +47,93 @@ couldn't handle:
   fix          16 × quarantined: variable has incomplete type 'X'   e.g. setContentSizeConstraints_60014, openShellWindow_60180, closeShellWindow_606b4   [also in the last 5 run(s)]
   fix          16 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00053124, FUN_000533dc, FUN_00090ca8   [also in the last 5 run(s)]
   fix          11 × quarantined: unknown type name 'X'   e.g. uiViewForAudioUnit_withSize, setContentSize_5ff4c, setPluginShell_6011c   [also in the last 5 run(s)]
-  fix           8 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_0001f9b0, FUN_000200a4, FUN_0002e28c   [also in the last 2 run(s)]
+  fix           8 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_0001f9b0, FUN_000200a4, FUN_0002e28c   [also in the last 3 run(s)]
   fix           8 × quarantined: expected expression   e.g. FUN_0000ca40, FUN_0009d658, FUN_000a17d0   [also in the last 5 run(s)]
   fix           7 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_000319ac, FUN_00075e7c, FUN_0007ebe0   [also in the last 5 run(s)]
   fix           7 × quarantined: expected identifier or 'X'   e.g. FUN_00030910, FUN_0007234c, FUN_0009ec58   [also in the last 5 run(s)]
   fix           6 × quarantined: expression is not assignable   e.g. FUN_00003c10, FUN_00031fc8, FUN_000ca774   [also in the last 5 run(s)]
   fix           6 × quarantined: array type 'X' is not assignable   e.g. FUN_00084694, FUN_000a7e64, FUN_000ac698   [also in the last 5 run(s)]
-  fix           5 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_0001fa08, FUN_0001fa58, FUN_000d7638   [also in the last 2 run(s)]
+  fix           5 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_0001fa08, FUN_0001fa58, FUN_000d7638   [also in the last 3 run(s)]
   fix           5 × quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'   e.g. FUN_0000c9c8, FUN_0000e054, FUN_0001f9d8   [also in the last 5 run(s)]
-  fix           4 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_000af00c, FUN_0010ac1c, FUN_0010f59c
+  fix           4 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_000af00c, FUN_0010ac1c, FUN_0010f59c   [also in the last 1 run(s)]
   fix           4 × quarantined: redefinition of 'X' as different kind of symbol   e.g. windowShouldClose, bad_array_new_length, sentry   [also in the last 5 run(s)]
-  fix           3 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_00022a18, FUN_00032e8c, FUN_000409f0   [also in the last 2 run(s)]
+  fix           3 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_00022a18, FUN_00032e8c, FUN_000409f0   [also in the last 3 run(s)]
   fix           3 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0002a1cc, FUN_00037ecc, FUN_00038b64   [also in the last 5 run(s)]
   fix           2 × quarantined: no member named 'X' in 'X'   e.g. FUN_001f9bc4, FUN_001f9dec   [also in the last 5 run(s)]
   fix           2 × quarantined: initializing 'X' with an expression of incompatible type 'X'   e.g. FUN_0005c368, FUN_000b60c0   [also in the last 5 run(s)]
   fix           2 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_0024d608, FUN_0026cc10   [also in the last 5 run(s)]
   fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_00208d74   [also in the last 5 run(s)]
   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00219428   [also in the last 5 run(s)]
-  fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 1 run(s)]
+  fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 2 run(s)]
   fix           1 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_001f2970   [also in the last 5 run(s)]
   fix           1 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_0013cf80   [also in the last 5 run(s)]
   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_0011d17c   [also in the last 5 run(s)]
-  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. FUN_00142778
+  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. FUN_00142778   [also in the last 1 run(s)]
   fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0021195c   [also in the last 5 run(s)]
   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
                     → tried again next run
-worked around (cost time, nothing lost):
-  fix          38 × the model repeated an edit that had already failed (skipped)   e.g. FUN_000a0ca8, FUN_000a7e64, FUN_000ac698   [also in the last 2 run(s)]
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[20:15:31] decomp_pipeline 2026-10-22.1: /Users/admin/glitchdecomp/fastpass 3 — stages link → organize
-[20:15:31]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[20:15:31] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
-[20:50:45] 
-[20:50:45] ━━━━ what the script struggled with this run ━━━━
-[20:50:45] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[20:50:45] rates (this run last; earlier runs above it):
-[20:50:45]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued        test pass %
-[20:50:45]   10-21 19:37                90.9                1.7               2233                  -                  -                  -                  -                  -                  -                  -                  -
-[20:50:45]   10-21 19:38                90.9                1.7               2233                  -                  -                  -                  -                  -                  -                  -                  -
-[20:50:45]   10-21 19:50                90.9                2.5               1986                  -                  -                  -                  -                  -                  -                  -                  -
-[20:50:45]   10-21 20:03                90.7                3.0               1893                  -                  -                  -                  -                  -                  -                  -                  -
-[20:50:45]   10-21 20:50                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                  -
-[20:50:45] couldn't handle:
-[20:50:45]   fix        1277 × not compiling yet (not reached before the run ended)   e.g. acceptsFirstResponder_16c74c, becomeFirstResponder_16c7ac, resignFirstResponder_16c7e8   [also in the last 5 run(s)]
-[20:50:45]   fix         261 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_00003cb4, FUN_00003d30, FUN_00004478   [also in the last 5 run(s)]
-[20:50:45]   fix         199 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_00007d70, FUN_00014888, FUN_00014ab0   [also in the last 5 run(s)]
-[20:50:45]   fix         191 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_0000340c, FUN_00003468, FUN_00003568   [also in the last 5 run(s)]
-[20:50:45]   fix         163 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00008040, FUN_0000e748, FUN_0000f8d8   [also in the last 5 run(s)]
-[20:50:45]   fix          97 × quarantined: redefinition of 'X'   e.g. FUN_00003780, FUN_00004f0c, FUN_000076a4   [also in the last 5 run(s)]
-[20:50:45]   fix          90 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_0000cac4, FUN_0000cb3c, FUN_0000f9b4   [also in the last 5 run(s)]
-[20:50:45]   fix          78 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00004130, FUN_00008858, FUN_000092c8   [also in the last 5 run(s)]
-[20:50:45]   fix          49 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00018538, FUN_00022fe4, FUN_0002a7a4   [also in the last 5 run(s)]
-[20:50:45]   fix          48 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier   e.g. FUN_000037b8, FUN_00004574, FUN_0000cae4   [also in the last 5 run(s)]
-[20:50:45]   fix          29 × quarantined: expected 'X' after expression   e.g. FUN_00062470, FUN_000776ac, FUN_0013e3ec   [also in the last 5 run(s)]
-[20:50:45]   fix          25 × quarantined: expected 'X'   e.g. FUN_00001a3c, FUN_0000365c, FUN_00003a04   [also in the last 5 run(s)]
-[20:50:45]   fix          23 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00040d14, FUN_0004b344, FUN_00052e68   [also in the last 5 run(s)]
-[20:50:45]   fix          22 × quarantined: use of undeclared identifier 'X'   e.g. FUN_0001f814, FUN_00020a48, FUN_0003988c   [also in the last 5 run(s)]
-[20:50:45]   fix          17 × quarantined: expected 'X' after top level declarator   e.g. shellWindowGlue_6013c, allowGettingClosed, bundlePath   [also in the last 5 run(s)]
-[20:50:45]   fix          16 × quarantined: variable has incomplete type 'X'   e.g. setContentSizeConstraints_60014, openShellWindow_60180, closeShellWindow_606b4   [also in the last 5 run(s)]
-[20:50:45]   fix          16 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00053124, FUN_000533dc, FUN_00090ca8   [also in the last 5 run(s)]
-[20:50:45]   fix          11 × quarantined: unknown type name 'X'   e.g. uiViewForAudioUnit_withSize, setContentSize_5ff4c, setPluginShell_6011c   [also in the last 5 run(s)]
-[20:50:45]   fix           8 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_0001f9b0, FUN_000200a4, FUN_0002e28c   [also in the last 2 run(s)]
-[20:50:45]   fix           8 × quarantined: expected expression   e.g. FUN_0000ca40, FUN_0009d658, FUN_000a17d0   [also in the last 5 run(s)]
-[20:50:45]   fix           7 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_000319ac, FUN_00075e7c, FUN_0007ebe0   [also in the last 5 run(s)]
-[20:50:45]   fix           7 × quarantined: expected identifier or 'X'   e.g. FUN_00030910, FUN_0007234c, FUN_0009ec58   [also in the last 5 run(s)]
-[20:50:45]   fix           6 × quarantined: expression is not assignable   e.g. FUN_00003c10, FUN_00031fc8, FUN_000ca774   [also in the last 5 run(s)]
-[20:50:45]   fix           6 × quarantined: array type 'X' is not assignable   e.g. FUN_00084694, FUN_000a7e64, FUN_000ac698   [also in the last 5 run(s)]
-[20:50:45]   fix           5 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_0001fa08, FUN_0001fa58, FUN_000d7638   [also in the last 2 run(s)]
-[20:50:45]   fix           5 × quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'   e.g. FUN_0000c9c8, FUN_0000e054, FUN_0001f9d8   [also in the last 5 run(s)]
-[20:50:45]   fix           4 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_000af00c, FUN_0010ac1c, FUN_0010f59c
-[20:50:45]   fix           4 × quarantined: redefinition of 'X' as different kind of symbol   e.g. windowShouldClose, bad_array_new_length, sentry   [also in the last 5 run(s)]
-[20:50:45]   fix           3 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_00022a18, FUN_00032e8c, FUN_000409f0   [also in the last 2 run(s)]
-[20:50:45]   fix           3 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0002a1cc, FUN_00037ecc, FUN_00038b64   [also in the last 5 run(s)]
-[20:50:45]   fix           2 × quarantined: no member named 'X' in 'X'   e.g. FUN_001f9bc4, FUN_001f9dec   [also in the last 5 run(s)]
-[20:50:45]   fix           2 × quarantined: initializing 'X' with an expression of incompatible type 'X'   e.g. FUN_0005c368, FUN_000b60c0   [also in the last 5 run(s)]
-[20:50:45]   fix           2 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_0024d608, FUN_0026cc10   [also in the last 5 run(s)]
-[20:50:45]   fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_00208d74   [also in the last 5 run(s)]
-[20:50:45]   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00219428   [also in the last 5 run(s)]
-[20:50:45]   fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 1 run(s)]
-[20:50:45]   fix           1 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_001f2970   [also in the last 5 run(s)]
-[20:50:45]   fix           1 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_0013cf80   [also in the last 5 run(s)]
-[20:50:45]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_0011d17c   [also in the last 5 run(s)]
-[20:50:45]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. FUN_00142778
-[20:50:45]   fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0021195c   [also in the last 5 run(s)]
-[20:50:45]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
-[20:50:45]                     → tried again next run
-[20:50:45] worked around (cost time, nothing lost):
-[20:50:45]   fix          38 × the model repeated an edit that had already failed (skipped)   e.g. FUN_000a0ca8, FUN_000a7e64, FUN_000ac698   [also in the last 2 run(s)]
+[20:51:41] decomp_pipeline 2026-10-22.2: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
+[20:51:41]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[20:51:41] ━━━━ Stage 1/10 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
+[20:52:16] 
+[20:52:16] ━━━━ what the script struggled with this run ━━━━
+[20:52:16] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[20:52:16] rates (this run last; earlier runs above it):
+[20:52:16]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescuedideas adopted/tested        test pass %
+[20:52:16]   10-21 19:38                90.9                1.7               2233                  -                  -                  -                  -                  -                  -                  -                  -                  -
+[20:52:16]   10-21 19:50                90.9                2.5               1986                  -                  -                  -                  -                  -                  -                  -                  -                  -
+[20:52:16]   10-21 20:03                90.7                3.0               1893                  -                  -                  -                  -                  -                  -                  -                  -                  -
+[20:52:16]   10-21 20:50                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                  -                  -
+[20:52:16]   10-21 20:52                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                  -                  -
+[20:52:16] couldn't handle:
+[20:52:16]   fix        1277 × not compiling yet (not reached before the run ended)   e.g. acceptsFirstResponder_16c74c, becomeFirstResponder_16c7ac, resignFirstResponder_16c7e8   [also in the last 5 run(s)]
+[20:52:16]   fix         261 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_00003cb4, FUN_00003d30, FUN_00004478   [also in the last 5 run(s)]
+[20:52:16]   fix         199 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_00007d70, FUN_00014888, FUN_00014ab0   [also in the last 5 run(s)]
+[20:52:16]   fix         191 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_0000340c, FUN_00003468, FUN_00003568   [also in the last 5 run(s)]
+[20:52:16]   fix         163 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_00008040, FUN_0000e748, FUN_0000f8d8   [also in the last 5 run(s)]
+[20:52:16]   fix          97 × quarantined: redefinition of 'X'   e.g. FUN_00003780, FUN_00004f0c, FUN_000076a4   [also in the last 5 run(s)]
+[20:52:16]   fix          90 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_0000cac4, FUN_0000cb3c, FUN_0000f9b4   [also in the last 5 run(s)]
+[20:52:16]   fix          78 × quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'   e.g. FUN_00004130, FUN_00008858, FUN_000092c8   [also in the last 5 run(s)]
+[20:52:16]   fix          49 × quarantined: member reference base type 'X' is not a structure or union   e.g. FUN_00018538, FUN_00022fe4, FUN_0002a7a4   [also in the last 5 run(s)]
+[20:52:16]   fix          48 × quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier   e.g. FUN_000037b8, FUN_00004574, FUN_0000cae4   [also in the last 5 run(s)]
+[20:52:16]   fix          29 × quarantined: expected 'X' after expression   e.g. FUN_00062470, FUN_000776ac, FUN_0013e3ec   [also in the last 5 run(s)]
+[20:52:16]   fix          25 × quarantined: expected 'X'   e.g. FUN_00001a3c, FUN_0000365c, FUN_00003a04   [also in the last 5 run(s)]
+[20:52:16]   fix          23 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00040d14, FUN_0004b344, FUN_00052e68   [also in the last 5 run(s)]
+[20:52:16]   fix          22 × quarantined: use of undeclared identifier 'X'   e.g. FUN_0001f814, FUN_00020a48, FUN_0003988c   [also in the last 5 run(s)]
+[20:52:16]   fix          17 × quarantined: expected 'X' after top level declarator   e.g. shellWindowGlue_6013c, allowGettingClosed, bundlePath   [also in the last 5 run(s)]
+[20:52:16]   fix          16 × quarantined: variable has incomplete type 'X'   e.g. setContentSizeConstraints_60014, openShellWindow_60180, closeShellWindow_606b4   [also in the last 5 run(s)]
+[20:52:16]   fix          16 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_00053124, FUN_000533dc, FUN_00090ca8   [also in the last 5 run(s)]
+[20:52:16]   fix          11 × quarantined: unknown type name 'X'   e.g. uiViewForAudioUnit_withSize, setContentSize_5ff4c, setPluginShell_6011c   [also in the last 5 run(s)]
+[20:52:16]   fix           8 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X'   e.g. FUN_0001f9b0, FUN_000200a4, FUN_0002e28c   [also in the last 3 run(s)]
+[20:52:16]   fix           8 × quarantined: expected expression   e.g. FUN_0000ca40, FUN_0009d658, FUN_000a17d0   [also in the last 5 run(s)]
+[20:52:16]   fix           7 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_000319ac, FUN_00075e7c, FUN_0007ebe0   [also in the last 5 run(s)]
+[20:52:16]   fix           7 × quarantined: expected identifier or 'X'   e.g. FUN_00030910, FUN_0007234c, FUN_0009ec58   [also in the last 5 run(s)]
+[20:52:16]   fix           6 × quarantined: expression is not assignable   e.g. FUN_00003c10, FUN_00031fc8, FUN_000ca774   [also in the last 5 run(s)]
+[20:52:16]   fix           6 × quarantined: array type 'X' is not assignable   e.g. FUN_00084694, FUN_000a7e64, FUN_000ac698   [also in the last 5 run(s)]
+[20:52:16]   fix           5 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_0001fa08, FUN_0001fa58, FUN_000d7638   [also in the last 3 run(s)]
+[20:52:16]   fix           5 × quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'   e.g. FUN_0000c9c8, FUN_0000e054, FUN_0001f9d8   [also in the last 5 run(s)]
+[20:52:16]   fix           4 × quarantined: use of undeclared identifier 'X'; did you mean 'X'?   e.g. FUN_000af00c, FUN_0010ac1c, FUN_0010f59c   [also in the last 1 run(s)]
+[20:52:16]   fix           4 × quarantined: redefinition of 'X' as different kind of symbol   e.g. windowShouldClose, bad_array_new_length, sentry   [also in the last 5 run(s)]
+[20:52:16]   fix           3 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_00022a18, FUN_00032e8c, FUN_000409f0   [also in the last 3 run(s)]
+[20:52:16]   fix           3 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0002a1cc, FUN_00037ecc, FUN_00038b64   [also in the last 5 run(s)]
+[20:52:16]   fix           2 × quarantined: no member named 'X' in 'X'   e.g. FUN_001f9bc4, FUN_001f9dec   [also in the last 5 run(s)]
+[20:52:16]   fix           2 × quarantined: initializing 'X' with an expression of incompatible type 'X'   e.g. FUN_0005c368, FUN_000b60c0   [also in the last 5 run(s)]
+[20:52:16]   fix           2 × quarantined: called object type 'X' (aka 'X') is not a function or function pointer   e.g. FUN_0024d608, FUN_0026cc10   [also in the last 5 run(s)]
+[20:52:16]   fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_00208d74   [also in the last 5 run(s)]
+[20:52:16]   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00219428   [also in the last 5 run(s)]
+[20:52:16]   fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 2 run(s)]
+[20:52:16]   fix           1 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_001f2970   [also in the last 5 run(s)]
+[20:52:16]   fix           1 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_0013cf80   [also in the last 5 run(s)]
+[20:52:16]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_0011d17c   [also in the last 5 run(s)]
+[20:52:16]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. FUN_00142778   [also in the last 1 run(s)]
+[20:52:16]   fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0021195c   [also in the last 5 run(s)]
+[20:52:16]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
+[20:52:16]                     → tried again next run
 ```
 
 ## Build status
@@ -41042,7 +41038,7 @@ void __thiscall std::string::string(string *this,string *param_1)
 
 All: acceptsFirstResponder_16c74c (16c74c), becomeFirstResponder_16c7ac (16c7ac), resignFirstResponder_16c7e8 (16c7e8), acceptsFirstMouse (16c88c), isOpaque (16c8f0), isFlipped (16c900), makeBackingLayer_16c910 (16c910), wantsUpdateLayer (16c9b0), createMetalLayer_16c9d0 (16c9d0), createLayerTextureWithSize_16cb94 (16cb94), updateLayerInRect_16ce54 (16ce54), drawRect_16d1bc (16d1bc), prepareForDragOperation (16d4c4), draggingEntered (16d618), performDragOperation (16d6dc), insertText_16d864 (16d864), doCommandBySelector (16dd58), setMarkedText_selectedRange (16df60), unmarkText (16e100), hasMarkedText_16e120 (16e120), conversationIdentifier (16e164), attributedSubstringFromRange (16e170), markedRange (16e184), selectedRange (16e1d4), firstRectForCharacterRange (16e1f4), characterIndexForPoint (16e34c), validAttributesForMarkedText (16e360), keyboardInputSourceChanged (16e388), changeFont (171844), validModesForFontPanel (171894), fontManager_willIncludeFont (1718ac), alloc_1a86b8 (1a86b8), initWithFrame_frame_1a8754 (1a8754), intrinsicContentSize (1a8824), setContentSize_1a8844 (1a8844), layout_1a88bc (1a88bc), invalidate_1a8a74 (1a8a74), viewWillMoveToSuperview_1a8b48 (1a8b48), viewDidMoveToWindow_1a8cf8 (1a8cf8), viewDidHide_1a8e8c (1a8e8c), viewDidUnhide_1a90dc (1a90dc), idleTimer (1a91d0), viewFrameChanged (1a929c)
 
-#### acceptsFirstResponder_16c74c — funcs/acceptsFirstResponder_16c74c.cpp, Ghidra 16c74c, 1 model attempt(s)
+#### acceptsFirstResponder_16c74c — funcs/acceptsFirstResponder_16c74c.cpp, Ghidra 16c74c, 0 model attempt(s)
 
 Compiler output:
 ```
@@ -77213,1129 +77209,7 @@ _parse_monolith.cpp:53209: expected function body after function declarator
 ## Build log of this run (build/worklist.log)
 
 ```
-[20:16:32]   link round 1: 1894 file(s) didn't compile; the fixer works on them (quick fixes, then small model edits)
-[20:16:32]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[20:16:32]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[20:16:56]   QUARANTINE FUN_0009f24c: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:16:56]     FUN_0009f24c -> quarantined (23s)
-[20:16:56]   QUARANTINE FUN_000a1390: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:16:56]     FUN_000a1390 -> quarantined (0s)
-[20:17:00]     FUN_0009f6fc -> fixed (27s)
-[20:17:04]     FUN_0009f648 -> fixed (31s)
-[20:17:06]   QUARANTINE FUN_000a02ac: redefinition of 'local_68' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:17:06]     FUN_000a02ac -> quarantined (33s)
-[20:17:10]   QUARANTINE FUN_000a127c: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:17:10]     FUN_000a127c -> quarantined (38s)
-[20:17:11]   QUARANTINE FUN_000a25bc: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[20:17:11]     FUN_000a25bc -> quarantined (0s)
-[20:17:31]   QUARANTINE FUN_0009ec58: expected identifier or '('
-[20:17:31]     FUN_0009ec58 -> quarantined (58s)
-[20:17:33]   QUARANTINE FUN_0009ec78: expected ')'
-[20:17:33]     FUN_0009ec78 -> quarantined (1m)
-[20:17:33]   QUARANTINE FUN_000a2c80: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:17:33]     FUN_000a2c80 -> quarantined (0s)
-[20:17:33]   QUARANTINE FUN_0009d658: expected expression
-[20:17:33]     FUN_0009d658 -> quarantined (1m)
-[20:17:33]     FUN_000a2f5c -> fixed (0s)
-[20:17:34]   QUARANTINE FUN_000a3184: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:17:34]     FUN_000a3184 -> quarantined (0s)
-[20:17:34]   QUARANTINE FUN_0009e1f0: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:17:34]     FUN_0009e1f0 -> quarantined (1m)
-[20:17:37]   QUARANTINE FUN_000a0ca8: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:17:37]     FUN_000a0ca8 -> quarantined (1m)
-[20:17:39]   QUARANTINE FUN_0009f7f8: member reference base type 'unsigned char[16]' is not a structure or union
-[20:17:39]     FUN_0009f7f8 -> quarantined (1m)
-[20:17:40]   QUARANTINE FUN_000a0458: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:17:40]     FUN_000a0458 -> quarantined (1m)
-[20:17:40]   QUARANTINE FUN_000a4338: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[20:17:40]     FUN_000a4338 -> quarantined (0s)
-[20:17:41]     FUN_000a16d4 -> fixed (45s)
-[20:17:54]   QUARANTINE FUN_000a2150: redefinition of 'local_68' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:17:54]     FUN_000a2150 -> quarantined (50s)
-[20:17:54]   QUARANTINE FUN_000a49fc: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:17:54]     FUN_000a49fc -> quarantined (0s)
-[20:17:55]     FUN_000a4cd8 -> fixed (0s)
-[20:18:20]     FUN_000a2bd8 -> fixed (48s)
-[20:18:20]   QUARANTINE FUN_000a4f00: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:18:20]     FUN_000a4f00 -> quarantined (0s)
-[20:18:20]   QUARANTINE FUN_000a17d0: expected expression
-[20:18:20]     FUN_000a17d0 -> quarantined (1m)
-[20:18:21]   QUARANTINE FUN_000a59c8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:18:21]     FUN_000a59c8 -> quarantined (0s)
-[20:18:21]     FUN_000a5bb8 -> fixed (0s)
-[20:18:21]   QUARANTINE FUN_000a620c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:18:21]     FUN_000a620c -> quarantined (0s)
-[20:18:22]   QUARANTINE FUN_000a3070: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:18:22]     FUN_000a3070 -> quarantined (48s)
-[20:18:22]   QUARANTINE FUN_000a63ac: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:18:22]     FUN_000a63ac -> quarantined (0s)
-[20:18:22]   QUARANTINE FUN_000a64d4: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:18:22]     FUN_000a64d4 -> quarantined (0s)
-[20:18:22]   QUARANTINE FUN_000a658c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:18:22]     FUN_000a658c -> quarantined (0s)
-[20:18:23]   QUARANTINE FUN_000a6694: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:18:23]     FUN_000a6694 -> quarantined (0s)
-[20:18:23]     FUN_000a34a8 -> fixed (49s)
-[20:18:24]   QUARANTINE FUN_000a35a4: member reference base type 'unsigned char[16]' is not a structure or union
-[20:18:24]     FUN_000a35a4 -> quarantined (49s)
-[20:18:27]   QUARANTINE FUN_000a3ecc: redefinition of 'local_68' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:18:27]     FUN_000a3ecc -> quarantined (49s)
-[20:18:27]   QUARANTINE FUN_000a890c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:18:27]     FUN_000a890c -> quarantined (0s)
-[20:18:28]   QUARANTINE FUN_000a22fc: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:18:28]     FUN_000a22fc -> quarantined (1m)
-[20:18:31]     FUN_000a4954 -> fixed (49s)
-[20:18:31]   QUARANTINE FUN_000aa088: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:18:31]     FUN_000aa088 -> quarantined (0s)
-[20:18:32]   QUARANTINE FUN_000a2a9c: expected ')'
-[20:18:32]     FUN_000a2a9c -> quarantined (1m)
-[20:18:42]   QUARANTINE FUN_000a4dec: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:18:42]     FUN_000a4dec -> quarantined (47s)
-[20:19:08]   QUARANTINE FUN_000a4078: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:19:08]     FUN_000a4078 -> quarantined (1m)
-[20:19:09]   QUARANTINE FUN_000a4818: expected ')'
-[20:19:09]     FUN_000a4818 -> quarantined (1m)
-[20:19:13]   QUARANTINE FUN_000a54b8: operand of type 'void' where arithmetic or pointer type is required
-[20:19:13]     FUN_000a54b8 -> quarantined (52s)
-[20:19:14]   QUARANTINE FUN_000a7b50: redefinition of 'local_40' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:19:14]     FUN_000a7b50 -> quarantined (51s)
-[20:19:17]   QUARANTINE FUN_000a8898: redefinition of 'auVar2' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:19:17]     FUN_000a8898 -> quarantined (53s)
-[20:19:21]   QUARANTINE FUN_000a94c4: redefinition of 'local_40'
-[20:19:21]     FUN_000a94c4 -> quarantined (53s)
-[20:19:32]     FUN_000ab4ac -> fixed (1m)
-[20:19:32]   QUARANTINE FUN_000af418: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:19:32]     FUN_000af418 -> quarantined (0s)
-[20:19:45]   QUARANTINE FUN_000aba20: operand of type 'void' where arithmetic or pointer type is required
-[20:19:45]     FUN_000aba20 -> quarantined (1m)
-[20:19:45]   QUARANTINE FUN_000b091c: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:19:45]     FUN_000b091c -> quarantined (0s)
-[20:19:58]   QUARANTINE FUN_000a7e64: array type 'unsigned char[16]' is not assignable
-[20:19:58]     FUN_000a7e64 -> quarantined (1m)
-[20:19:59]     FUN_000a86d8 -> fixed (1m)
-[20:20:00]   QUARANTINE FUN_000b0de4: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:20:00]     FUN_000b0de4 -> quarantined (0s)
-[20:20:02]   QUARANTINE FUN_000a8d30: member reference base type 'undefined2' (aka 'unsigned short') is not a structure or union
-[20:20:02]     FUN_000a8d30 -> quarantined (1m)
-[20:20:06]   QUARANTINE FUN_000aa8a4: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:20:06]     FUN_000aa8a4 -> quarantined (1m)
-[20:20:07]   QUARANTINE FUN_000b278c: redefinition of 'in_stack_ffffffffffffff60' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:07]     FUN_000b278c -> quarantined (0s)
-[20:20:07]   QUARANTINE FUN_000b310c: operand of type 'void' where arithmetic or pointer type is required
-[20:20:07]     FUN_000b310c -> quarantined (0s)
-[20:20:09]   QUARANTINE FUN_000ada60: redefinition of 'local_48' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:20:09]     FUN_000ada60 -> quarantined (55s)
-[20:20:10]   QUARANTINE FUN_000adac4: redefinition of 'local_40' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:20:10]     FUN_000adac4 -> quarantined (55s)
-[20:20:17]   QUARANTINE FUN_000af00c: use of undeclared identifier '_DAT_003b2014'; did you mean '_DAT_003b9819'?
-[20:20:17]     FUN_000af00c -> quarantined (55s)
-[20:20:17]   QUARANTINE FUN_000b6f14: redefinition of 'extraout_s0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:17]     FUN_000b6f14 -> quarantined (0s)
-[20:20:18]   QUARANTINE FUN_000b7074: redefinition of 'extraout_w0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:18]     FUN_000b7074 -> quarantined (0s)
-[20:20:18]   QUARANTINE FUN_000b755c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:18]     FUN_000b755c -> quarantined (0s)
-[20:20:33]   QUARANTINE FUN_000b0bfc: redefinition of 'local_48' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:20:33]     FUN_000b0bfc -> quarantined (47s)
-[20:20:34]   QUARANTINE FUN_000ac208: array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable
-[20:20:34]     FUN_000ac208 -> quarantined (1m)
-[20:20:35]   QUARANTINE FUN_000b82e0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:35]     FUN_000b82e0 -> quarantined (0s)
-[20:20:40]   QUARANTINE FUN_000ac698: array type 'unsigned char[16]' is not assignable
-[20:20:40]     FUN_000ac698 -> quarantined (1m)
-[20:20:40]   QUARANTINE FUN_000b8888: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:40]     FUN_000b8888 -> quarantined (0s)
-[20:20:41]   QUARANTINE FUN_000b88f0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:41]     FUN_000b88f0 -> quarantined (0s)
-[20:20:41]   QUARANTINE FUN_000b8ba8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:41]     FUN_000b8ba8 -> quarantined (0s)
-[20:20:42]   QUARANTINE FUN_000b8f30: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:42]     FUN_000b8f30 -> quarantined (0s)
-[20:20:46]   QUARANTINE FUN_000b0c48: redefinition of 'local_40'
-[20:20:46]     FUN_000b0c48 -> quarantined (47s)
-[20:20:46]   QUARANTINE FUN_000b9730: redefinition of 'extraout_w0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:46]     FUN_000b9730 -> quarantined (0s)
-[20:20:48]   QUARANTINE FUN_000adbec: member reference base type 'uint' (aka 'unsigned int') is not a structure or union
-[20:20:48]     FUN_000adbec -> quarantined (1m)
-[20:20:48]   QUARANTINE FUN_000ba84c: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:20:48]     FUN_000ba84c -> quarantined (0s)
-[20:20:49]   QUARANTINE FUN_000ba958: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:20:49]     FUN_000ba958 -> quarantined (0s)
-[20:20:49]     FUN_000b11f8 -> fixed (46s)
-[20:20:49]   QUARANTINE FUN_000baaf4: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:20:49]     FUN_000baaf4 -> quarantined (0s)
-[20:20:50]   QUARANTINE FUN_000bbafc: redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:50]     FUN_000bbafc -> quarantined (0s)
-[20:20:50]   QUARANTINE FUN_000bc6c4: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:50]     FUN_000bc6c4 -> quarantined (0s)
-[20:20:50]   QUARANTINE FUN_000bc918: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:50]     FUN_000bc918 -> quarantined (0s)
-[20:20:50]   QUARANTINE FUN_000bd534: operand of type 'void' where arithmetic or pointer type is required
-[20:20:50]     FUN_000bd534 -> quarantined (0s)
-[20:20:51]   QUARANTINE FUN_000bd9ac: member reference base type 'unsigned char[16]' is not a structure or union
-[20:20:51]     FUN_000bd9ac -> quarantined (0s)
-[20:20:51]   QUARANTINE FUN_000bdae4: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:51]     FUN_000bdae4 -> quarantined (0s)
-[20:20:51]   QUARANTINE FUN_000bdb6c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:51]     FUN_000bdb6c -> quarantined (0s)
-[20:20:51]   QUARANTINE FUN_000be918: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:51]     FUN_000be918 -> quarantined (0s)
-[20:20:52]   QUARANTINE FUN_000bea80: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:52]     FUN_000bea80 -> quarantined (0s)
-[20:20:52]   QUARANTINE FUN_000beb14: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:52]     FUN_000beb14 -> quarantined (0s)
-[20:20:52]   QUARANTINE FUN_000beba8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:52]     FUN_000beba8 -> quarantined (0s)
-[20:20:52]   QUARANTINE FUN_000bece4: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:52]     FUN_000bece4 -> quarantined (0s)
-[20:20:53]   QUARANTINE FUN_000bf950: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:53]     FUN_000bf950 -> quarantined (0s)
-[20:20:53]   QUARANTINE FUN_000bf988: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:20:53]     FUN_000bf988 -> quarantined (0s)
-[20:20:54]   QUARANTINE FUN_000b071c: redefinition of 'uVar1'
-[20:20:54]     FUN_000b071c -> quarantined (1m)
-[20:20:57]   QUARANTINE FUN_000b3344: operand of type 'void' where arithmetic or pointer type is required
-[20:20:57]     FUN_000b3344 -> quarantined (49s)
-[20:20:58]     FUN_000b40a4 -> fixed (49s)
-[20:20:58]   QUARANTINE FUN_000c1470: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:20:58]     FUN_000c1470 -> quarantined (0s)
-[20:21:19]   QUARANTINE FUN_000b1034: redefinition of 'auVar3' with a different type: 'uint8_t[16]' (aka 'unsigned char[16]') vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:21:19]     FUN_000b1034 -> quarantined (1m)
-[20:21:20]     FUN_000b815c -> fixed (47s)
-[20:21:21]   QUARANTINE FUN_000b8648: operand of type 'void' where arithmetic or pointer type is required
-[20:21:21]     FUN_000b8648 -> quarantined (46s)
-[20:21:28]   QUARANTINE FUN_000b9510: redefinition of 'local_50' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:21:28]     FUN_000b9510 -> quarantined (46s)
-[20:21:28]     FUN_000c445c -> fixed (0s)
-[20:21:31]   QUARANTINE FUN_000b4abc: member reference base type 'ulong' (aka 'unsigned long') is not a structure or union
-[20:21:31]     FUN_000b4abc -> quarantined (1m)
-[20:21:33]   QUARANTINE FUN_000ba618: operand of type 'void' where arithmetic or pointer type is required
-[20:21:33]     FUN_000ba618 -> quarantined (46s)
-[20:21:42]   QUARANTINE FUN_000b75ec: operand of type 'void' where arithmetic or pointer type is required
-[20:21:42]     FUN_000b75ec -> quarantined (1m)
-[20:21:43]   QUARANTINE FUN_000c02d4: redefinition of 'auVar2' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:21:43]     FUN_000c02d4 -> quarantined (49s)
-[20:21:43]   QUARANTINE FUN_000c5e58: redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:21:43]     FUN_000c5e58 -> quarantined (0s)
-[20:21:44]   QUARANTINE FUN_000c6a8c: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:21:44]     FUN_000c6a8c -> quarantined (0s)
-[20:21:44]   QUARANTINE FUN_000c7158: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:21:44]     FUN_000c7158 -> quarantined (0s)
-[20:21:45]   QUARANTINE FUN_000c815c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:21:45]     FUN_000c815c -> quarantined (0s)
-[20:21:46]   QUARANTINE FUN_000c12e0: redefinition of 'local_58' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:21:46]     FUN_000c12e0 -> quarantined (48s)
-[20:21:47]   QUARANTINE FUN_000c240c: redefinition of 'local_48' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:21:47]     FUN_000c240c -> quarantined (48s)
-[20:22:09]   QUARANTINE FUN_000c2480: redefinition of 'local_50' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:22:09]     FUN_000c2480 -> quarantined (49s)
-[20:22:09]   QUARANTINE FUN_000ca098: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:22:09]     FUN_000ca098 -> quarantined (0s)
-[20:22:11]   QUARANTINE FUN_000bf520: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:22:11]     FUN_000bf520 -> quarantined (1m)
-[20:22:13]   QUARANTINE FUN_000c0cdc: redefinition of 'lVar1'
-[20:22:13]     FUN_000c0cdc -> quarantined (1m)
-[20:22:15]     FUN_000c4f24 -> fixed (46s)
-[20:22:15]   QUARANTINE FUN_000cab20: redefinition of 'extraout_s0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:22:15]     FUN_000cab20 -> quarantined (0s)
-[20:22:15]   QUARANTINE FUN_000cb6b0: redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:22:15]     FUN_000cb6b0 -> quarantined (0s)
-[20:22:16]   QUARANTINE FUN_000cba08: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:22:16]     FUN_000cba08 -> quarantined (0s)
-[20:22:19]     FUN_000c537c -> fixed (46s)
-[20:22:27]     FUN_000c53ac -> fixed (44s)
-[20:22:30]   QUARANTINE FUN_000c972c: operand of type 'void' where arithmetic or pointer type is required
-[20:22:30]     FUN_000c972c -> quarantined (45s)
-[20:22:30]   QUARANTINE FUN_000cc5d4: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:22:30]     FUN_000cc5d4 -> quarantined (0s)
-[20:22:31]   QUARANTINE FUN_000c9b88: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:22:31]     FUN_000c9b88 -> quarantined (44s)
-[20:22:31]   QUARANTINE FUN_000cc990: redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:22:31]     FUN_000cc990 -> quarantined (0s)
-[20:22:35]   QUARANTINE FUN_000c9cc8: redefinition of 'local_30' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:22:35]     FUN_000c9cc8 -> quarantined (47s)
-[20:22:35]     FUN_000cd044 -> fixed (0s)
-[20:22:39]     FUN_000c24dc -> fixed (1m)
-[20:22:41]   QUARANTINE FUN_000c2530: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:22:41]     FUN_000c2530 -> quarantined (1m)
-[20:22:54]   QUARANTINE FUN_000c50e8: redefinition of 'uVar2' with a different type: 'undefined8' (aka 'unsigned long long') vs 'ulong' (aka 'unsigned long')
-[20:22:54]     FUN_000c50e8 -> quarantined (1m)
-[20:22:58]   QUARANTINE FUN_000ca214: redefinition of 'local_50'
-[20:22:58]     FUN_000ca214 -> quarantined (48s)
-[20:22:58]   QUARANTINE FUN_000ce010: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[20:22:58]     FUN_000ce010 -> quarantined (0s)
-[20:23:02]   QUARANTINE FUN_000ca774: expression is not assignable
-[20:23:02]     FUN_000ca774 -> quarantined (50s)
-[20:23:03]     FUN_000ca8cc -> fixed (50s)
-[20:23:03]     FUN_000ce6f8 -> fixed (0s)
-[20:23:04]   QUARANTINE FUN_000ce7a0: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:23:04]     FUN_000ce7a0 -> quarantined (0s)
-[20:23:04]     FUN_000cea50 -> fixed (0s)
-[20:23:07]   QUARANTINE FUN_000cbc3c: operand of type 'void' where arithmetic or pointer type is required
-[20:23:07]     FUN_000cbc3c -> quarantined (50s)
-[20:23:07]   QUARANTINE FUN_000cec50: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:23:07]     FUN_000cec50 -> quarantined (0s)
-[20:23:10]   QUARANTINE FUN_000cbd04: expression is not assignable
-[20:23:10]     FUN_000cbd04 -> quarantined (50s)
-[20:23:17]   QUARANTINE FUN_000cc0bc: assigning to 'long' from incompatible type 'void'
-[20:23:17]     FUN_000cc0bc -> quarantined (50s)
-[20:23:17]     FUN_000ccfd4 -> fixed (46s)
-[20:23:20]     FUN_000cd004 -> fixed (49s)
-[20:23:21]   QUARANTINE FUN_000cd198: member reference base type 'unsigned char[16]' is not a structure or union
-[20:23:21]     FUN_000cd198 -> quarantined (46s)
-[20:23:22]   QUARANTINE FUN_000cfa9c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:23:22]     FUN_000cfa9c -> quarantined (0s)
-[20:23:22]   QUARANTINE FUN_000d0218: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:23:22]     FUN_000d0218 -> quarantined (0s)
-[20:23:26]     FUN_000cda14 -> fixed (46s)
-[20:23:26]   QUARANTINE FUN_000d0b00: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:23:26]     FUN_000d0b00 -> quarantined (0s)
-[20:23:27]   QUARANTINE FUN_000d0c3c: operand of type 'void' where arithmetic or pointer type is required
-[20:23:27]     FUN_000d0c3c -> quarantined (0s)
-[20:23:28]   QUARANTINE FUN_000cdb1c: redefinition of 'local_58' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:23:28]     FUN_000cdb1c -> quarantined (46s)
-[20:23:48]   QUARANTINE FUN_000ceb40: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:23:48]     FUN_000ceb40 -> quarantined (43s)
-[20:23:50]     FUN_000cef04 -> fixed (42s)
-[20:23:50]     FUN_000d19d4 -> fixed (0s)
-[20:23:53]   QUARANTINE FUN_000cef1c: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:23:53]     FUN_000cef1c -> quarantined (42s)
-[20:23:58]     FUN_000cefc4 -> fixed (41s)
-[20:23:59]     FUN_000ceff4 -> fixed (41s)
-[20:24:07]   QUARANTINE FUN_000cdc90: expected ')'
-[20:24:07]     FUN_000cdc90 -> quarantined (1m)
-[20:24:08]   QUARANTINE FUN_000d29cc: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[20:24:08]     FUN_000d29cc -> quarantined (0s)
-[20:24:10]   QUARANTINE FUN_000ce59c: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:24:10]     FUN_000ce59c -> quarantined (1m)
-[20:24:11]   QUARANTINE FUN_000d0f70: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:24:11]     FUN_000d0f70 -> quarantined (44s)
-[20:24:11]     FUN_000d30b4 -> fixed (0s)
-[20:24:12]   QUARANTINE FUN_000d315c: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[20:24:12]     FUN_000d315c -> quarantined (0s)
-[20:24:12]     FUN_000d1964 -> fixed (43s)
-[20:24:12]     FUN_000d3410 -> fixed (0s)
-[20:24:12]   QUARANTINE FUN_000ce5bc: expected ')'
-[20:24:12]     FUN_000ce5bc -> quarantined (1m)
-[20:24:34]     FUN_000d1994 -> fixed (46s)
-[20:24:34]   QUARANTINE FUN_000d3ac4: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:34]     FUN_000d3ac4 -> quarantined (0s)
-[20:24:35]   QUARANTINE FUN_000d3d20: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:35]     FUN_000d3d20 -> quarantined (0s)
-[20:24:35]   QUARANTINE FUN_000cf088: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:24:35]     FUN_000cf088 -> quarantined (1m)
-[20:24:35]   QUARANTINE FUN_000d4114: redefinition of 'extraout_s0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:35]     FUN_000d4114 -> quarantined (0s)
-[20:24:35]   QUARANTINE FUN_000d44e8: redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:35]     FUN_000d44e8 -> quarantined (0s)
-[20:24:36]   QUARANTINE FUN_000d1b28: member reference base type 'unsigned char[16]' is not a structure or union
-[20:24:36]     FUN_000d1b28 -> quarantined (45s)
-[20:24:36]   QUARANTINE FUN_000d4b48: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:36]     FUN_000d4b48 -> quarantined (0s)
-[20:24:36]   QUARANTINE FUN_000d4c88: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:36]     FUN_000d4c88 -> quarantined (0s)
-[20:24:36]   QUARANTINE FUN_000d5230: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:36]     FUN_000d5230 -> quarantined (0s)
-[20:24:37]   QUARANTINE FUN_000d0430: redefinition of 'local_e0' with a different type: 'unsigned long long[1]' vs 'undefined8[3]' (aka 'unsigned long long[3]')
-[20:24:37]     FUN_000d0430 -> quarantined (1m)
-[20:24:37]   QUARANTINE FUN_000d5404: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:37]     FUN_000d5404 -> quarantined (0s)
-[20:24:37]   QUARANTINE FUN_000d54f0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:37]     FUN_000d54f0 -> quarantined (0s)
-[20:24:37]   QUARANTINE FUN_000d56dc: redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:37]     FUN_000d56dc -> quarantined (0s)
-[20:24:37]   QUARANTINE FUN_000d5810: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:37]     FUN_000d5810 -> quarantined (0s)
-[20:24:38]   QUARANTINE FUN_000d5af0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:38]     FUN_000d5af0 -> quarantined (0s)
-[20:24:38]   QUARANTINE FUN_000d6bec: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:38]     FUN_000d6bec -> quarantined (0s)
-[20:24:38]     FUN_000d23d0 -> fixed (44s)
-[20:24:38]   QUARANTINE FUN_000d70b4: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:38]     FUN_000d70b4 -> quarantined (0s)
-[20:24:39]   QUARANTINE FUN_000d70dc: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:39]     FUN_000d70dc -> quarantined (0s)
-[20:24:39]   QUARANTINE FUN_000d7104: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:39]     FUN_000d7104 -> quarantined (0s)
-[20:24:39]   QUARANTINE FUN_000d7304: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:24:39]     FUN_000d7304 -> quarantined (0s)
-[20:24:44]   QUARANTINE FUN_000d24d8: redefinition of 'local_58'
-[20:24:44]     FUN_000d24d8 -> quarantined (46s)
-[20:25:06]   QUARANTINE FUN_000d3500: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:25:06]     FUN_000d3500 -> quarantined (54s)
-[20:25:07]   QUARANTINE FUN_000d3614: subscripted value is not an array, pointer, or vector
-[20:25:07]     FUN_000d3614 -> quarantined (55s)
-[20:25:08]     FUN_000d38cc -> fixed (55s)
-[20:25:26]   QUARANTINE FUN_000d264c: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:25:26]     FUN_000d264c -> quarantined (1m)
-[20:25:26]     FUN_000dbfb4 -> fixed (0s)
-[20:25:27]   QUARANTINE FUN_000d4824: member reference base type 'undefined1[16]' (aka 'unsigned char[16]') is not a structure or union
-[20:25:27]     FUN_000d4824 -> quarantined (51s)
-[20:25:28]   QUARANTINE FUN_000d5310: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:25:28]     FUN_000d5310 -> quarantined (52s)
-[20:25:28]     FUN_000ddcac -> fixed (0s)
-[20:25:29]   QUARANTINE FUN_000d2f58: expected identifier or '('
-[20:25:29]     FUN_000d2f58 -> quarantined (1m)
-[20:25:30]     FUN_000de03c -> fixed (0s)
-[20:25:30]     FUN_000de584 -> fixed (0s)
-[20:25:30]   QUARANTINE FUN_000de7e4: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:25:30]     FUN_000de7e4 -> quarantined (0s)
-[20:25:32]   QUARANTINE FUN_000d2f78: expected ')'
-[20:25:32]     FUN_000d2f78 -> quarantined (1m)
-[20:25:33]   QUARANTINE FUN_000d7a68: subscripted value is not an array, pointer, or vector
-[20:25:33]     FUN_000d7a68 -> quarantined (54s)
-[20:25:34]     FUN_000e02e8 -> fixed (0s)
-[20:25:34]   QUARANTINE FUN_000e06ac: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:25:34]     FUN_000e06ac -> quarantined (0s)
-[20:26:02]     FUN_000db420 -> fixed (54s)
-[20:26:02]   QUARANTINE FUN_000e0ec0: redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:26:02]     FUN_000e0ec0 -> quarantined (0s)
-[20:26:08]   QUARANTINE FUN_000d61a8: operand of type 'void' where arithmetic or pointer type is required
-[20:26:08]     FUN_000d61a8 -> quarantined (1m)
-[20:26:11]   QUARANTINE FUN_000d7638: redefinition of 'iVar7' with a different type: 'undefined8' (aka 'unsigned long long') vs 'int'
-[20:26:11]     FUN_000d7638 -> quarantined (1m)
-[20:26:17]   QUARANTINE FUN_000d90ec: redefinition of 'lStack_28' with a different type: 'undefined8' (aka 'unsigned long long') vs 'long'
-[20:26:17]     FUN_000d90ec -> quarantined (1m)
-[20:26:20]   QUARANTINE FUN_000dddac: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:26:20]     FUN_000dddac -> quarantined (51s)
-[20:26:21]   QUARANTINE FUN_000e1d58: member reference base type 'unsigned char[16]' is not a structure or union
-[20:26:21]     FUN_000e1d58 -> quarantined (0s)
-[20:26:24]     FUN_000df094 -> fixed (52s)
-[20:26:28]   QUARANTINE FUN_000db014: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:26:28]     FUN_000db014 -> quarantined (1m)
-[20:26:32]   QUARANTINE FUN_000db560: redefinition of 'local_28'
-[20:26:32]     FUN_000db560 -> quarantined (1m)
-[20:26:59]     FUN_000dd254 -> fixed (1m)
-[20:26:59]     FUN_000e5ca8 -> fixed (0s)
-[20:27:00]   QUARANTINE FUN_000dd848: redefinition of 'iVar7' with a different type: 'undefined8' (aka 'unsigned long long') vs 'int'
-[20:27:00]     FUN_000dd848 -> quarantined (1m)
-[20:27:04]   QUARANTINE FUN_000dec6c: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:27:04]     FUN_000dec6c -> quarantined (1m)
-[20:27:09]   QUARANTINE FUN_000e08f0: subscripted value is not an array, pointer, or vector
-[20:27:09]     FUN_000e08f0 -> quarantined (1m)
-[20:27:22]   QUARANTINE FUN_000e223c: redefinition of 'auVar7' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:27:22]     FUN_000e223c -> quarantined (1m)
-[20:27:29]   QUARANTINE FUN_000e53e0: redefinition of 'auVar3' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:27:29]     FUN_000e53e0 -> quarantined (1m)
-[20:27:31]   QUARANTINE FUN_000e13a4: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:27:31]     FUN_000e13a4 -> quarantined (1m)
-[20:27:32]     FUN_000e5708 -> fixed (1m)
-[20:27:33]   QUARANTINE FUN_000e8de8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:27:33]     FUN_000e8de8 -> quarantined (0s)
-[20:27:39]   QUARANTINE FUN_000e1468: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:27:39]     FUN_000e1468 -> quarantined (1m)
-[20:27:43]   QUARANTINE FUN_000e1520: expected expression
-[20:27:43]     FUN_000e1520 -> quarantined (1m)
-[20:27:43]   QUARANTINE FUN_000e94ac: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:27:43]     FUN_000e94ac -> quarantined (0s)
-[20:27:43]   QUARANTINE FUN_000e9844: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:27:43]     FUN_000e9844 -> quarantined (0s)
-[20:27:44]   QUARANTINE FUN_000e9950: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:27:44]     FUN_000e9950 -> quarantined (0s)
-[20:27:44]   QUARANTINE FUN_000ea3dc: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:27:44]     FUN_000ea3dc -> quarantined (0s)
-[20:27:45]   QUARANTINE FUN_000eaad8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:27:45]     FUN_000eaad8 -> quarantined (0s)
-[20:27:45]   QUARANTINE FUN_000eacc4: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:27:45]     FUN_000eacc4 -> quarantined (0s)
-[20:27:46]   QUARANTINE FUN_000eaec8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:27:46]     FUN_000eaec8 -> quarantined (0s)
-[20:27:48]   QUARANTINE FUN_000e18ec: expected expression
-[20:27:48]     FUN_000e18ec -> quarantined (1m)
-[20:27:54]   QUARANTINE FUN_000e77ac: redefinition of 'local_40'
-[20:27:54]     FUN_000e77ac -> quarantined (50s)
-[20:27:54]   QUARANTINE FUN_000ebc24: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:27:54]     FUN_000ebc24 -> quarantined (0s)
-[20:27:55]     FUN_000e43dc -> fixed (1m)
-[20:27:55]   QUARANTINE FUN_000ec674: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:27:55]     FUN_000ec674 -> quarantined (0s)
-[20:27:55]   QUARANTINE FUN_000ec7c8: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:27:55]     FUN_000ec7c8 -> quarantined (0s)
-[20:27:57]     FUN_000e77e0 -> fixed (48s)
-[20:28:13]     FUN_000e83bc -> fixed (51s)
-[20:28:21]   QUARANTINE FUN_000e88b0: operand of type 'void' where arithmetic or pointer type is required
-[20:28:21]     FUN_000e88b0 -> quarantined (52s)
-[20:28:26]   QUARANTINE FUN_000e8cc0: redefinition of 'auVar2' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:28:26]     FUN_000e8cc0 -> quarantined (54s)
-[20:28:31]   QUARANTINE FUN_000e641c: member reference base type 'unsigned char[16]' is not a structure or union
-[20:28:31]     FUN_000e641c -> quarantined (1m)
-[20:28:31]   QUARANTINE FUN_000f0888: operand of type 'void' where arithmetic or pointer type is required
-[20:28:31]     FUN_000f0888 -> quarantined (0s)
-[20:28:32]   QUARANTINE FUN_000e6a1c: member reference base type 'long' is not a structure or union
-[20:28:32]     FUN_000e6a1c -> quarantined (1m)
-[20:28:36]   QUARANTINE FUN_000e9228: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:28:36]     FUN_000e9228 -> quarantined (56s)
-[20:28:47]   QUARANTINE FUN_000eb160: redefinition of 'auVar10' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:28:47]     FUN_000eb160 -> quarantined (1m)
-[20:28:47]   QUARANTINE FUN_000f3954: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:28:47]     FUN_000f3954 -> quarantined (0s)
-[20:29:13]   QUARANTINE FUN_000e9188: redefinition of 'local_58' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:29:13]     FUN_000e9188 -> quarantined (1m)
-[20:29:18]   QUARANTINE FUN_000eed64: redefinition of 'local_50' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:29:18]     FUN_000eed64 -> quarantined (1m)
-[20:29:28]   QUARANTINE FUN_000f02dc: redefinition of 'auVar7'
-[20:29:28]     FUN_000f02dc -> quarantined (1m)
-[20:29:29]   QUARANTINE FUN_000f49a0: redefinition of 'extraout_s0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:29:29]     FUN_000f49a0 -> quarantined (0s)
-[20:29:29]   QUARANTINE FUN_000f5678: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:29:29]     FUN_000f5678 -> quarantined (0s)
-[20:29:30]   QUARANTINE FUN_000f59e8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:29:30]     FUN_000f59e8 -> quarantined (0s)
-[20:29:32]   QUARANTINE FUN_000eb738: redefinition of 'local_78'
-[20:29:32]     FUN_000eb738 -> quarantined (1m)
-[20:29:33]     FUN_000f1500 -> fixed (1m)
-[20:29:34]   QUARANTINE FUN_000f660c: redefinition of 'extraout_d0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:29:34]     FUN_000f660c -> quarantined (0s)
-[20:29:34]   QUARANTINE FUN_000f695c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:29:34]     FUN_000f695c -> quarantined (0s)
-[20:29:35]   QUARANTINE FUN_000f6b3c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:29:35]     FUN_000f6b3c -> quarantined (0s)
-[20:29:35]   QUARANTINE FUN_000f7a84: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:29:35]     FUN_000f7a84 -> quarantined (0s)
-[20:29:37]   QUARANTINE FUN_000f235c: member reference base type 'unsigned char[16]' is not a structure or union
-[20:29:37]     FUN_000f235c -> quarantined (1m)
-[20:29:39]   QUARANTINE FUN_000ed7a4: redefinition of 'local_48' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:29:39]     FUN_000ed7a4 -> quarantined (1m)
-[20:29:40]   QUARANTINE FUN_000ed818: redefinition of 'local_40' with a different type: 'unsigned char[16]' vs 'long *'
-[20:29:40]     FUN_000ed818 -> quarantined (1m)
-[20:29:40]   QUARANTINE FUN_000fddd8: member reference base type 'unsigned char[16]' is not a structure or union
-[20:29:40]     FUN_000fddd8 -> quarantined (0s)
-[20:29:43]   QUARANTINE FUN_000edfb4: member reference base type 'long *' is not a structure or union
-[20:29:43]     FUN_000edfb4 -> quarantined (1m)
-[20:29:43]   QUARANTINE FUN_000fe358: member reference base type 'unsigned char[16]' is not a structure or union
-[20:29:43]     FUN_000fe358 -> quarantined (0s)
-[20:30:05]   QUARANTINE FUN_000eee08: expected expression
-[20:30:05]     FUN_000eee08 -> quarantined (1m)
-[20:30:06]   QUARANTINE FUN_000fe7a0: member reference base type 'unsigned char[16]' is not a structure or union
-[20:30:06]     FUN_000fe7a0 -> quarantined (0s)
-[20:30:06]   QUARANTINE FUN_000feb20: redefinition of 'in_stack_ffffffffffffffb2' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:30:06]     FUN_000feb20 -> quarantined (0s)
-[20:30:10]     FUN_000f3d58 -> fixed (57s)
-[20:30:10]   QUARANTINE FUN_000ff0bc: redefinition of 'auVar3' with a different type: 'uint8_t[16]' (aka 'unsigned char[16]') vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:30:10]     FUN_000ff0bc -> quarantined (0s)
-[20:30:13]   QUARANTINE FUN_000f1d98: member reference base type 'unsigned char[16]' is not a structure or union
-[20:30:13]     FUN_000f1d98 -> quarantined (1m)
-[20:30:15]     FUN_000f3df4 -> fixed (57s)
-[20:30:26]   QUARANTINE FUN_000f3cdc: array type 'unsigned char[16]' is not assignable
-[20:30:26]     FUN_000f3cdc -> quarantined (1m)
-[20:30:27]   QUARANTINE FUN_000f5f74: redefinition of 'auVar7' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:30:27]     FUN_000f5f74 -> quarantined (57s)
-[20:30:31]   QUARANTINE FUN_000f6354: redefinition of 'auVar6' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:30:31]     FUN_000f6354 -> quarantined (58s)
-[20:30:34]   QUARANTINE FUN_000fb798: redefinition of 'auVar4' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:30:34]     FUN_000fb798 -> quarantined (59s)
-[20:30:39]   QUARANTINE FUN_000fdd50: operand of type 'void' where arithmetic or pointer type is required
-[20:30:39]     FUN_000fdd50 -> quarantined (1m)
-[20:30:40]   QUARANTINE FUN_000fe2d8: operand of type 'void' where arithmetic or pointer type is required
-[20:30:40]     FUN_000fe2d8 -> quarantined (59s)
-[20:30:42]   QUARANTINE FUN_000fe714: operand of type 'void' where arithmetic or pointer type is required
-[20:30:42]     FUN_000fe714 -> quarantined (58s)
-[20:31:00]   QUARANTINE FUN_000feb74: operand of type 'void' where arithmetic or pointer type is required
-[20:31:00]     FUN_000feb74 -> quarantined (53s)
-[20:31:08]   QUARANTINE FUN_000ff628: operand of type 'void' where arithmetic or pointer type is required
-[20:31:08]     FUN_000ff628 -> quarantined (54s)
-[20:31:11]   QUARANTINE FUN_000ff69c: redefinition of 'auVar4' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:31:11]     FUN_000ff69c -> quarantined (55s)
-[20:31:12]   QUARANTINE FUN_000fc850: subscripted value is not an array, pointer, or vector
-[20:31:12]     FUN_000fc850 -> quarantined (1m)
-[20:31:22]   QUARANTINE FUN_000ff7e4: operand of type 'void' where arithmetic or pointer type is required
-[20:31:22]     FUN_000ff7e4 -> quarantined (56s)
-[20:31:23]   QUARANTINE FUN_000ff858: redefinition of 'auVar4' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:31:23]     FUN_000ff858 -> quarantined (56s)
-[20:31:24]   QUARANTINE FUN_00101778: member reference base type 'unsigned char[16]' is not a structure or union
-[20:31:24]     FUN_00101778 -> quarantined (0s)
-[20:31:26]   QUARANTINE FUN_000ff994: operand of type 'void' where arithmetic or pointer type is required
-[20:31:26]     FUN_000ff994 -> quarantined (54s)
-[20:31:30]   QUARANTINE FUN_000ffa08: operand of type 'void' where arithmetic or pointer type is required
-[20:31:30]     FUN_000ffa08 -> quarantined (55s)
-[20:31:30]   QUARANTINE FUN_00101ccc: array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable
-[20:31:30]     FUN_00101ccc -> quarantined (0s)
-[20:31:31]   QUARANTINE FUN_00101d90: redefinition of 'auVar2' with a different type: 'uint8_t[16]' (aka 'unsigned char[16]') vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:31:31]     FUN_00101d90 -> quarantined (0s)
-[20:31:31]   QUARANTINE FUN_00101df8: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:31:31]     FUN_00101df8 -> quarantined (0s)
-[20:31:32]   QUARANTINE FUN_00101e60: redefinition of 'auVar2' with a different type: 'uint8_t[16]' (aka 'unsigned char[16]') vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:31:32]     FUN_00101e60 -> quarantined (0s)
-[20:31:32]   QUARANTINE FUN_00101ec8: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:31:32]     FUN_00101ec8 -> quarantined (0s)
-[20:31:33]   QUARANTINE FUN_00101f38: redefinition of 'auVar2' with a different type: 'uint8_t[16]' (aka 'unsigned char[16]') vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:31:33]     FUN_00101f38 -> quarantined (0s)
-[20:31:36]   QUARANTINE FUN_000ffa7c: operand of type 'void' where arithmetic or pointer type is required
-[20:31:36]     FUN_000ffa7c -> quarantined (56s)
-[20:31:36]   QUARANTINE FUN_00102034: redefinition of 'auVar2' with a different type: 'uint8_t[16]' (aka 'unsigned char[16]') vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:31:36]     FUN_00102034 -> quarantined (0s)
-[20:31:37]   QUARANTINE FUN_000ffab8: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:31:37]     FUN_000ffab8 -> quarantined (56s)
-[20:31:37]   QUARANTINE FUN_00102120: redefinition of 'auVar2' with a different type: 'uint8_t[16]' (aka 'unsigned char[16]') vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:31:37]     FUN_00102120 -> quarantined (0s)
-[20:31:39]   QUARANTINE FUN_000ffeb4: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:31:39]     FUN_000ffeb4 -> quarantined (56s)
-[20:31:44]   QUARANTINE FUN_000ff2a8: subscripted value is not an array, pointer, or vector
-[20:31:44]     FUN_000ff2a8 -> quarantined (1m)
-[20:32:11]   QUARANTINE FUN_00101468: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:32:11]     FUN_00101468 -> quarantined (58s)
-[20:32:12]   QUARANTINE FUN_0010234c: member reference base type 'unsigned char[16]' is not a structure or union
-[20:32:12]     FUN_0010234c -> quarantined (0s)
-[20:32:18]   QUARANTINE FUN_00101574: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:32:18]     FUN_00101574 -> quarantined (55s)
-[20:32:19]     FUN_00101b18 -> fixed (54s)
-[20:32:21]     FUN_00101c5c -> fixed (55s)
-[20:32:25]   QUARANTINE FUN_00101f9c: redefinition of 'auVar2' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:32:25]     FUN_00101f9c -> quarantined (52s)
-[20:32:27]   QUARANTINE FUN_00102098: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:32:27]     FUN_00102098 -> quarantined (51s)
-[20:32:28]   QUARANTINE FUN_00102184: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:32:28]     FUN_00102184 -> quarantined (51s)
-[20:32:30]   QUARANTINE FUN_001005f0: subscripted value is not an array, pointer, or vector
-[20:32:30]     FUN_001005f0 -> quarantined (1m)
-[20:32:31]   QUARANTINE FUN_00102234: operand of type 'void' where arithmetic or pointer type is required
-[20:32:31]     FUN_00102234 -> quarantined (52s)
-[20:32:34]   QUARANTINE FUN_001022c0: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:32:34]     FUN_001022c0 -> quarantined (50s)
-[20:32:39]   QUARANTINE FUN_00100dec: subscripted value is not an array, pointer, or vector
-[20:32:39]     FUN_00100dec -> quarantined (1m)
-[20:32:42]   QUARANTINE FUN_00101194: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:32:42]     FUN_00101194 -> quarantined (1m)
-[20:33:02]   QUARANTINE FUN_001025d0: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:02]     FUN_001025d0 -> quarantined (50s)
-[20:33:08]   QUARANTINE FUN_0010265c: operand of type 'void' where arithmetic or pointer type is required
-[20:33:08]     FUN_0010265c -> quarantined (50s)
-[20:33:08]   QUARANTINE FUN_0010338c: operand of type 'void' where arithmetic or pointer type is required
-[20:33:08]     FUN_0010338c -> quarantined (0s)
-[20:33:09]   QUARANTINE FUN_00102698: redefinition of 'auVar3' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:09]     FUN_00102698 -> quarantined (49s)
-[20:33:14]   QUARANTINE FUN_001029f4: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:14]     FUN_001029f4 -> quarantined (49s)
-[20:33:15]   QUARANTINE FUN_001036c8: operand of type 'void' where arithmetic or pointer type is required
-[20:33:15]     FUN_001036c8 -> quarantined (0s)
-[20:33:17]   QUARANTINE FUN_00102b50: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:17]     FUN_00102b50 -> quarantined (49s)
-[20:33:18]   QUARANTINE FUN_00102c58: redefinition of 'auVar3' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:18]     FUN_00102c58 -> quarantined (49s)
-[20:33:19]   QUARANTINE FUN_00102d4c: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:19]     FUN_00102d4c -> quarantined (49s)
-[20:33:20]   QUARANTINE FUN_00102df0: redefinition of 'auVar1'
-[20:33:20]     FUN_00102df0 -> quarantined (49s)
-[20:33:25]   QUARANTINE FUN_00102ebc: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:25]     FUN_00102ebc -> quarantined (50s)
-[20:33:27]   QUARANTINE FUN_00102f48: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:27]     FUN_00102f48 -> quarantined (48s)
-[20:33:28]   QUARANTINE FUN_001030b0: redefinition of 'auVar3' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:28]     FUN_001030b0 -> quarantined (46s)
-[20:33:48]   QUARANTINE FUN_001027bc: redefinition of 'fVar2'
-[20:33:48]     FUN_001027bc -> quarantined (1m)
-[20:33:55]   QUARANTINE FUN_001031e4: redefinition of 'auVar3' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:33:55]     FUN_001031e4 -> quarantined (52s)
-[20:34:03]   QUARANTINE FUN_001033c8: redefinition of 'auVar4' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:34:03]     FUN_001033c8 -> quarantined (55s)
-[20:34:04]   QUARANTINE FUN_0010568c: member reference base type 'unsigned char[16]' is not a structure or union
-[20:34:04]     FUN_0010568c -> quarantined (0s)
-[20:34:04]   QUARANTINE FUN_00105884: member reference base type 'unsigned char[16]' is not a structure or union
-[20:34:04]     FUN_00105884 -> quarantined (0s)
-[20:34:04]   QUARANTINE FUN_0010351c: redefinition of 'auVar2' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:34:04]     FUN_0010351c -> quarantined (55s)
-[20:34:14]   QUARANTINE FUN_00103920: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:34:14]     FUN_00103920 -> quarantined (57s)
-[20:34:15]   QUARANTINE FUN_00105d54: member reference base type 'unsigned char[16]' is not a structure or union
-[20:34:15]     FUN_00105d54 -> quarantined (0s)
-[20:34:15]   QUARANTINE FUN_00105f4c: member reference base type 'unsigned char[16]' is not a structure or union
-[20:34:15]     FUN_00105f4c -> quarantined (0s)
-[20:34:23]   QUARANTINE FUN_00104730: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:34:23]     FUN_00104730 -> quarantined (58s)
-[20:34:27]   QUARANTINE FUN_00105290: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:34:27]     FUN_00105290 -> quarantined (58s)
-[20:34:43]   QUARANTINE FUN_001053f8: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:34:43]     FUN_001053f8 -> quarantined (54s)
-[20:34:48]   QUARANTINE FUN_00103704: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[20:34:48]     FUN_00103704 -> quarantined (1m)
-[20:34:49]   QUARANTINE FUN_00107864: member reference base type 'unsigned char[16]' is not a structure or union
-[20:34:49]     FUN_00107864 -> quarantined (0s)
-[20:34:49]   QUARANTINE FUN_00105560: redefinition of 'auVar3' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:34:49]     FUN_00105560 -> quarantined (54s)
-[20:34:50]   QUARANTINE FUN_00107c9c: operand of type 'void' where arithmetic or pointer type is required
-[20:34:50]     FUN_00107c9c -> quarantined (0s)
-[20:34:53]   QUARANTINE FUN_001039b8: subscripted value is not an array, pointer, or vector
-[20:34:53]     FUN_001039b8 -> quarantined (1m)
-[20:34:55]   QUARANTINE FUN_00103c90: subscripted value is not an array, pointer, or vector
-[20:34:55]     FUN_00103c90 -> quarantined (1m)
-[20:34:56]   QUARANTINE FUN_0010834c: member reference base type 'unsigned char[16]' is not a structure or union
-[20:34:56]     FUN_0010834c -> quarantined (0s)
-[20:34:57]   QUARANTINE FUN_00104074: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:34:57]     FUN_00104074 -> quarantined (1m)
-[20:35:04]   QUARANTINE FUN_00105064: redefinition of 'fVar2'
-[20:35:04]     FUN_00105064 -> quarantined (1m)
-[20:35:04]   QUARANTINE FUN_00108a68: member reference base type 'unsigned char[16]' is not a structure or union
-[20:35:04]     FUN_00108a68 -> quarantined (0s)
-[20:35:29]   QUARANTINE FUN_00106410: operand of type 'void' where arithmetic or pointer type is required
-[20:35:29]     FUN_00106410 -> quarantined (1m)
-[20:35:39]   QUARANTINE FUN_00105a7c: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:35:39]     FUN_00105a7c -> quarantined (1m)
-[20:35:40]   QUARANTINE FUN_00105c60: redefinition of 'local_60'
-[20:35:40]     FUN_00105c60 -> quarantined (1m)
-[20:35:43]   QUARANTINE FUN_001067fc: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:35:43]     FUN_001067fc -> quarantined (1m)
-[20:35:50]   QUARANTINE FUN_00107e94: operand of type 'void' where arithmetic or pointer type is required
-[20:35:50]     FUN_00107e94 -> quarantined (1m)
-[20:35:52]   QUARANTINE FUN_00106144: subscripted value is not an array, pointer, or vector
-[20:35:52]     FUN_00106144 -> quarantined (1m)
-[20:36:03]   QUARANTINE FUN_0010631c: redefinition of 'local_60'
-[20:36:03]     FUN_0010631c -> quarantined (1m)
-[20:36:32]   QUARANTINE FUN_00107c48: expected expression
-[20:36:32]     FUN_00107c48 -> quarantined (1m)
-[20:36:35]   QUARANTINE FUN_00108250: redefinition of 'puVar1' with a different type: 'unsigned long long' vs 'undefined8 *' (aka 'unsigned long long *')
-[20:36:35]     FUN_00108250 -> quarantined (1m)
-[20:36:37]   QUARANTINE FUN_001084c4: subscripted value is not an array, pointer, or vector
-[20:36:37]     FUN_001084c4 -> quarantined (1m)
-[20:36:38]   QUARANTINE FUN_0010879c: subscripted value is not an array, pointer, or vector
-[20:36:38]     FUN_0010879c -> quarantined (1m)
-[20:36:43]   QUARANTINE FUN_00108c1c: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:36:43]     FUN_00108c1c -> quarantined (1m)
-[20:37:07]   QUARANTINE FUN_001090f0: redefinition of 'puVar3' with a different type: 'unsigned long long' vs 'undefined8 *' (aka 'unsigned long long *')
-[20:37:07]     FUN_001090f0 -> quarantined (1m)
-[20:37:17]   QUARANTINE FUN_001095a0: subscripted value is not an array, pointer, or vector
-[20:37:17]     FUN_001095a0 -> quarantined (1m)
-[20:37:18]   QUARANTINE FUN_00109774: redefinition of 'puVar5' with a different type: 'unsigned long long' vs 'undefined8 *' (aka 'unsigned long long *')
-[20:37:18]     FUN_00109774 -> quarantined (1m)
-[20:37:20]   QUARANTINE FUN_00109dd8: redefinition of 'fVar6'
-[20:37:20]     FUN_00109dd8 -> quarantined (1m)
-[20:37:23]   QUARANTINE FUN_0010cf00: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:37:23]     FUN_0010cf00 -> quarantined (51s)
-[20:37:24]   QUARANTINE FUN_0010a09c: redefinition of 'fVar6'
-[20:37:24]     FUN_0010a09c -> quarantined (1m)
-[20:37:25]   QUARANTINE FUN_0010ac1c: use of undeclared identifier 'DAT_003b9809'; did you mean '_DAT_003b9809'?
-[20:37:25]     FUN_0010ac1c -> quarantined (1m)
-[20:37:27]   QUARANTINE FUN_0010e110: member reference base type 'unsigned char[16]' is not a structure or union
-[20:37:27]     FUN_0010e110 -> quarantined (51s)
-[20:37:29]   QUARANTINE FUN_0010e7f8: member reference base type 'unsigned char[16]' is not a structure or union
-[20:37:29]     FUN_0010e7f8 -> quarantined (51s)
-[20:37:29]     FUN_0010eb68 -> fixed (50s)
-[20:37:36]   QUARANTINE FUN_0010ce6c: use of undeclared identifier 'UNK_0043b8e8'
-[20:37:36]     FUN_0010ce6c -> quarantined (1m)
-[20:38:11]   QUARANTINE FUN_0010ef3c: redefinition of 'auVar4' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:38:11]     FUN_0010ef3c -> quarantined (54s)
-[20:38:12]   QUARANTINE FUN_0010f14c: redefinition of 'auVar6' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:38:12]     FUN_0010f14c -> quarantined (54s)
-[20:38:14]   QUARANTINE FUN_0010f4ac: redefinition of 'auVar3' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:38:14]     FUN_0010f4ac -> quarantined (54s)
-[20:38:15]   QUARANTINE FUN_0010eb80: use of undeclared identifier 'DAT_000030d8'
-[20:38:15]     FUN_0010eb80 -> quarantined (1m)
-[20:38:15]   QUARANTINE FUN_00113540: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:38:15]     FUN_00113540 -> quarantined (0s)
-[20:38:15]     FUN_00113b0c -> fixed (0s)
-[20:38:16]   QUARANTINE FUN_00113bd0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:38:16]     FUN_00113bd0 -> quarantined (0s)
-[20:38:16]   QUARANTINE FUN_00113c8c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:38:16]     FUN_00113c8c -> quarantined (0s)
-[20:38:16]   QUARANTINE FUN_00113d5c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:38:16]     FUN_00113d5c -> quarantined (0s)
-[20:38:17]   QUARANTINE FUN_00114908: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:38:17]     FUN_00114908 -> quarantined (0s)
-[20:38:17]   QUARANTINE FUN_00114b0c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:38:17]     FUN_00114b0c -> quarantined (0s)
-[20:38:17]     FUN_00114b9c -> fixed (0s)
-[20:38:19]   QUARANTINE FUN_0010f838: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:38:19]     FUN_0010f838 -> quarantined (53s)
-[20:38:20]   QUARANTINE FUN_0010fa24: redefinition of 'auVar6' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:38:20]     FUN_0010fa24 -> quarantined (53s)
-[20:38:21]   QUARANTINE FUN_0010fc48: redefinition of 'auVar4' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:38:21]     FUN_0010fc48 -> quarantined (52s)
-[20:38:22]   QUARANTINE FUN_0010fdec: redefinition of 'auVar7' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:38:22]     FUN_0010fdec -> quarantined (53s)
-[20:38:25]     FUN_00111f80 -> fixed (48s)
-[20:38:27]   QUARANTINE FUN_0010eb98: use of undeclared identifier 'DAT_00003150'
-[20:38:27]     FUN_0010eb98 -> quarantined (1m)
-[20:38:27]   QUARANTINE FUN_00117f18: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:38:27]     FUN_00117f18 -> quarantined (0s)
-[20:38:27]   QUARANTINE FUN_00117f98: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:38:27]     FUN_00117f98 -> quarantined (0s)
-[20:38:28]   QUARANTINE FUN_00118a80: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:38:28]     FUN_00118a80 -> quarantined (0s)
-[20:38:57]   QUARANTINE FUN_0010f59c: use of undeclared identifier 'DAT_00878060'; did you mean '_DAT_00878060'?
-[20:38:57]     FUN_0010f59c -> quarantined (1m)
-[20:38:59]   QUARANTINE FUN_0010f698: redefinition of 'auVar5' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:38:59]     FUN_0010f698 -> quarantined (1m)
-[20:38:59]   QUARANTINE FUN_0011a188: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:38:59]     FUN_0011a188 -> quarantined (0s)
-[20:39:04]     FUN_00111fb0 -> fixed (53s)
-[20:39:05]     FUN_0011278c -> fixed (53s)
-[20:39:06]   QUARANTINE FUN_0011ab00: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:06]     FUN_0011ab00 -> quarantined (0s)
-[20:39:06]   QUARANTINE FUN_0011ad24: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:06]     FUN_0011ad24 -> quarantined (0s)
-[20:39:06]   QUARANTINE FUN_0011afa8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:06]     FUN_0011afa8 -> quarantined (0s)
-[20:39:07]   QUARANTINE FUN_0011b1d8: operand of type 'void' where arithmetic or pointer type is required
-[20:39:07]     FUN_0011b1d8 -> quarantined (0s)
-[20:39:07]     FUN_001127bc -> fixed (53s)
-[20:39:07]   QUARANTINE FUN_0011b230: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:39:07]     FUN_0011b230 -> quarantined (0s)
-[20:39:08]   QUARANTINE FUN_0011d550: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:08]     FUN_0011d550 -> quarantined (0s)
-[20:39:08]   QUARANTINE FUN_0011e170: redefinition of 'auVar5' with a different type: 'uint8_t[16]' (aka 'unsigned char[16]') vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:39:08]     FUN_0011e170 -> quarantined (0s)
-[20:39:09]   QUARANTINE FUN_0011e1f8: redefinition of 'auVar5' with a different type: 'uint8_t[16]' (aka 'unsigned char[16]') vs 'undefined1[12]' (aka 'unsigned char[12]')
-[20:39:09]     FUN_0011e1f8 -> quarantined (0s)
-[20:39:09]   QUARANTINE FUN_0011ff30: operand of type 'void' where arithmetic or pointer type is required
-[20:39:09]     FUN_0011ff30 -> quarantined (0s)
-[20:39:12]     FUN_0011547c -> fixed (54s)
-[20:39:16]   QUARANTINE FUN_001158b0: subscripted value is not an array, pointer, or vector
-[20:39:16]     FUN_001158b0 -> quarantined (56s)
-[20:39:16]   QUARANTINE FUN_00120ae0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:16]     FUN_00120ae0 -> quarantined (0s)
-[20:39:17]     FUN_00115b30 -> fixed (56s)
-[20:39:17]   QUARANTINE FUN_00120cdc: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:17]     FUN_00120cdc -> quarantined (0s)
-[20:39:17]   QUARANTINE FUN_00120f98: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:17]   QUARANTINE FUN_00120e44: redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:17]     FUN_00120f98 -> quarantined (0s)
-[20:39:17]     FUN_00120e44 -> quarantined (0s)
-[20:39:18]   QUARANTINE FUN_00121148: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:18]   QUARANTINE FUN_00120ff0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:18]     FUN_00121148 -> quarantined (0s)
-[20:39:18]     FUN_00120ff0 -> quarantined (0s)
-[20:39:18]   QUARANTINE FUN_00121198: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:18]   QUARANTINE FUN_00121204: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:18]     FUN_00121204 -> quarantined (0s)
-[20:39:18]     FUN_00121198 -> quarantined (0s)
-[20:39:18]   QUARANTINE FUN_001161d0: redefinition of 'auVar12'
-[20:39:18]     FUN_001161d0 -> quarantined (57s)
-[20:39:19]   QUARANTINE FUN_0012136c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:19]   QUARANTINE FUN_00121490: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:19]     FUN_0012136c -> quarantined (0s)
-[20:39:19]     FUN_00121490 -> quarantined (0s)
-[20:39:19]   QUARANTINE FUN_0012180c: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:39:19]     FUN_0012180c -> quarantined (0s)
-[20:39:19]   QUARANTINE FUN_00121644: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:19]     FUN_00121644 -> quarantined (0s)
-[20:39:20]   QUARANTINE FUN_00121c74: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:20]     FUN_00121c74 -> quarantined (0s)
-[20:39:20]   QUARANTINE FUN_00121d3c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:20]     FUN_00121d3c -> quarantined (0s)
-[20:39:20]   QUARANTINE FUN_00121dc8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:20]     FUN_00121dc8 -> quarantined (0s)
-[20:39:20]   QUARANTINE FUN_00123078: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:20]     FUN_00123078 -> quarantined (0s)
-[20:39:21]   QUARANTINE FUN_001230a0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:21]     FUN_001230a0 -> quarantined (0s)
-[20:39:21]   QUARANTINE FUN_001230f0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:21]     FUN_001230f0 -> quarantined (0s)
-[20:39:22]   QUARANTINE FUN_00123694: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:22]     FUN_00123694 -> quarantined (0s)
-[20:39:23]     FUN_00117cf4 -> fixed (58s)
-[20:39:23]   QUARANTINE FUN_00123e8c: redefinition of 'extraout_x0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:23]     FUN_00123e8c -> quarantined (0s)
-[20:39:24]   QUARANTINE FUN_00124424: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:24]     FUN_00124424 -> quarantined (0s)
-[20:39:27]   QUARANTINE FUN_00118ea0: operand of type 'void' where arithmetic or pointer type is required
-[20:39:27]     FUN_00118ea0 -> quarantined (59s)
-[20:39:52]   QUARANTINE FUN_00119aac: operand of type 'void' where arithmetic or pointer type is required
-[20:39:52]     FUN_00119aac -> quarantined (55s)
-[20:39:53]   QUARANTINE FUN_001258fc: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:53]     FUN_001258fc -> quarantined (0s)
-[20:39:53]   QUARANTINE FUN_00125aa4: redefinition of 'extraout_s0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:53]     FUN_00125aa4 -> quarantined (0s)
-[20:39:54]   QUARANTINE FUN_001268a8: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:39:54]     FUN_001268a8 -> quarantined (0s)
-[20:39:54]   QUARANTINE FUN_0011a1f8: redefinition of 'auVar9' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:39:54]     FUN_0011a1f8 -> quarantined (55s)
-[20:39:54]   QUARANTINE FUN_00126f9c: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:39:54]     FUN_00126f9c -> quarantined (0s)
-[20:39:55]   QUARANTINE FUN_0012701c: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:39:55]     FUN_0012701c -> quarantined (0s)
-[20:39:56]   QUARANTINE FUN_001169a0: array type 'unsigned char[16]' is not assignable
-[20:39:56]     FUN_001169a0 -> quarantined (1m)
-[20:39:57]   QUARANTINE FUN_00128d20: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:39:57]     FUN_00128d20 -> quarantined (0s)
-[20:39:57]   QUARANTINE FUN_00128e8c: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:39:57]     FUN_00128e8c -> quarantined (0s)
-[20:40:00]   QUARANTINE FUN_0011a6f4: redefinition of 'auVar7' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:40:00]     FUN_0011a6f4 -> quarantined (55s)
-[20:40:02]   QUARANTINE FUN_0011bcf4: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[20:40:02]     FUN_0011bcf4 -> quarantined (54s)
-[20:40:04]   QUARANTINE FUN_00120648: assigning to 'long *' from incompatible type 'void'
-[20:40:04]     FUN_00120648 -> quarantined (54s)
-[20:40:04]   QUARANTINE FUN_00120960: expression is not assignable
-[20:40:04]     FUN_00120960 -> quarantined (52s)
-[20:40:07]   QUARANTINE FUN_00121510: assigning to 'long *' from incompatible type 'void'
-[20:40:07]     FUN_00121510 -> quarantined (48s)
-[20:40:09]   QUARANTINE FUN_00122ab4: redefinition of 'auVar10' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:40:09]     FUN_00122ab4 -> quarantined (49s)
-[20:40:09]   QUARANTINE FUN_0012d368: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:40:09]     FUN_0012d368 -> quarantined (0s)
-[20:40:10]   QUARANTINE FUN_0012d49c: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:40:10]     FUN_0012d49c -> quarantined (0s)
-[20:40:10]   QUARANTINE FUN_00123bf0: redefinition of 'auVar4' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:40:10]     FUN_00123bf0 -> quarantined (48s)
-[20:40:15]     FUN_00124c90 -> fixed (48s)
-[20:40:43]     FUN_0012918c -> fixed (45s)
-[20:40:46]     FUN_001291bc -> fixed (45s)
-[20:40:47]   QUARANTINE FUN_00124ab8: expected expression
-[20:40:47]     FUN_00124ab8 -> quarantined (1m)
-[20:40:48]   QUARANTINE FUN_0012a348: subscripted value is not an array, pointer, or vector
-[20:40:48]     FUN_0012a348 -> quarantined (46s)
-[20:40:59]     FUN_0012ef18 -> fixed (48s)
-[20:41:05]     FUN_0012ef48 -> fixed (49s)
-[20:41:10]   QUARANTINE FUN_001286fc: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-[20:41:10]     FUN_001286fc -> quarantined (1m)
-[20:41:10]   QUARANTINE FUN_00132b4c: redefinition of 'extraout_var' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:41:10]     FUN_00132b4c -> quarantined (0s)
-[20:41:11]   QUARANTINE FUN_00128be8: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-[20:41:11]     FUN_00128be8 -> quarantined (1m)
-[20:41:22]   QUARANTINE FUN_0012a888: operand of type 'void' where arithmetic or pointer type is required
-[20:41:22]     FUN_0012a888 -> quarantined (1m)
-[20:41:23]     FUN_00133f10 -> fixed (0s)
-[20:41:24]   QUARANTINE FUN_0012b9c0: redefinition of 'local_58'
-[20:41:24]     FUN_0012b9c0 -> quarantined (1m)
-[20:41:32]   QUARANTINE FUN_0012d230: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-[20:41:32]     FUN_0012d230 -> quarantined (1m)
-[20:41:33]     FUN_0012f5d0 -> fixed (50s)
-[20:41:34]   QUARANTINE FUN_0012e4fc: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-[20:41:34]     FUN_0012e4fc -> quarantined (1m)
-[20:41:35]   QUARANTINE FUN_00136474: operand of type 'void' where arithmetic or pointer type is required
-[20:41:35]     FUN_00136474 -> quarantined (0s)
-[20:41:36]     FUN_0012f600 -> fixed (50s)
-[20:41:38]   QUARANTINE FUN_0013131c: member reference base type 'undefined4' (aka 'unsigned int') is not a structure or union
-[20:41:38]     FUN_0013131c -> quarantined (50s)
-[20:42:00]     FUN_00131bec -> fixed (1m)
-[20:42:05]     FUN_00131c1c -> fixed (1m)
-[20:42:09]     FUN_00132d04 -> fixed (58s)
-[20:42:19]     FUN_00130f74 -> fixed (1m)
-[20:42:24]   QUARANTINE FUN_00134bec: operand of type 'void' where arithmetic or pointer type is required
-[20:42:24]     FUN_00134bec -> quarantined (1m)
-[20:42:31]   QUARANTINE FUN_001378b8: redefinition of 'local_40'
-[20:42:31]     FUN_001378b8 -> quarantined (55s)
-[20:42:33]   QUARANTINE FUN_001379d0: redefinition of 'local_40'
-[20:42:33]     FUN_001379d0 -> quarantined (56s)
-[20:42:33]   QUARANTINE FUN_0013bf20: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:42:33]     FUN_0013bf20 -> quarantined (0s)
-[20:42:33]   QUARANTINE FUN_0013c0d0: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:42:33]     FUN_0013c0d0 -> quarantined (0s)
-[20:42:36]   QUARANTINE FUN_00138bf0: operand of type 'void' where arithmetic or pointer type is required
-[20:42:36]     FUN_00138bf0 -> quarantined (57s)
-[20:42:41]   QUARANTINE FUN_00133c80: redefinition of 'local_78'
-[20:42:41]     FUN_00133c80 -> quarantined (1m)
-[20:42:52]   QUARANTINE FUN_0013a1ac: operand of type 'void' where arithmetic or pointer type is required
-[20:42:52]     FUN_0013a1ac -> quarantined (47s)
-[20:42:53]   QUARANTINE FUN_00134180: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:42:53]     FUN_00134180 -> quarantined (1m)
-[20:42:54]     FUN_0013b990 -> fixed (30s)
-[20:42:55]     FUN_0013a644 -> fixed (46s)
-[20:42:58]   QUARANTINE FUN_00135198: redefinition of 'puVar9' with a different type: 'unsigned long long' vs 'undefined8 *' (aka 'unsigned long long *')
-[20:42:58]     FUN_00135198 -> quarantined (1m)
-[20:42:59]   QUARANTINE FUN_00135d98: redefinition of 'local_80'
-[20:42:59]     FUN_00135d98 -> quarantined (1m)
-[20:43:14]     FUN_0013b9a8 -> fixed (43s)
-[20:43:16]     FUN_00139cc0 -> fixed (1m)
-[20:43:16]   QUARANTINE FUN_0013e3ec: expected ';' after expression
-[20:43:16]     FUN_0013e3ec -> quarantined (42s)
-[20:43:17]   QUARANTINE FUN_00154a18: redefinition of 'auVar3'
-[20:43:17]     FUN_00154a18 -> quarantined (0s)
-[20:43:19]     FUN_0013e978 -> fixed (43s)
-[20:43:23]     FUN_0013e9a8 -> fixed (41s)
-[20:43:23]   QUARANTINE FUN_00155b50: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:43:23]     FUN_00155b50 -> quarantined (0s)
-[20:43:24]   QUARANTINE FUN_001561a8: redefinition of 'extraout_q0' with a different type: 'unsigned long' vs 'uint64_t' (aka 'unsigned long long')
-[20:43:24]     FUN_001561a8 -> quarantined (0s)
-[20:43:31]   QUARANTINE FUN_0013ab38: assigning to 'undefined8' (aka 'unsigned long long') from incompatible type 'void'
-[20:43:31]     FUN_0013ab38 -> quarantined (1m)
-[20:43:33]   QUARANTINE FUN_00142778: invalid operands to binary expression ('uint64_t' (aka 'unsigned long long') and 'runtime_error *' (aka 'struct runtime_error *'))
-[20:43:33]     FUN_00142778 -> quarantined (40s)
-[20:43:34]     FUN_0014377c -> fixed (40s)
-[20:43:34]   QUARANTINE FUN_0014399c: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[20:43:34]     FUN_0014399c -> quarantined (39s)
-[20:43:54]   QUARANTINE FUN_00155924: redefinition of 'auVar2' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:43:54]     FUN_00155924 -> quarantined (37s)
-[20:44:01]   QUARANTINE FUN_00145c6c: use of undeclared identifier 'DAT_00010018'
-[20:44:01]     FUN_00145c6c -> quarantined (1m)
-[20:44:02]   QUARANTINE FUN_0014707c: redefinition of 'param_1' with a different type: 'uint64_t' (aka 'unsigned long long') vs 'exception *' (aka 'struct exception *')
-[20:44:02]     FUN_0014707c -> quarantined (1m)
-[20:44:03]     FUN_00156610 -> fixed (38s)
-[20:44:04]   QUARANTINE FUN_0014cc34: use of undeclared identifier 'PTR__string_004240b0'
-[20:44:04]     FUN_0014cc34 -> quarantined (1m)
-[20:44:04]     FUN_001592a8 -> fixed (0s)
-[20:44:09]     FUN_00156640 -> fixed (37s)
-[20:44:11]     FUN_001567ec -> fixed (38s)
-[20:44:12]     FUN_0015681c -> fixed (38s)
-[20:44:23]   QUARANTINE FUN_0014cdec: use of undeclared identifier 'PTR__string_004240b0'
-[20:44:23]     FUN_0014cdec -> quarantined (1m)
-[20:44:23]   QUARANTINE FUN_0015a2d4: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[20:44:23]     FUN_0015a2d4 -> quarantined (0s)
-[20:44:24]   QUARANTINE FUN_0014ce98: use of undeclared identifier 'PTR__string_004240b0'
-[20:44:24]     FUN_0014ce98 -> quarantined (1m)
-[20:44:28]   QUARANTINE FUN_00155b0c: use of undeclared identifier 'DAT_00005398'; did you mean 'FUN_00005398'?
-[20:44:28]     FUN_00155b0c -> quarantined (1m)
-[20:44:29]     FUN_0015a9f0 -> fixed (0s)
-[20:44:29]   QUARANTINE FUN_0015aa98: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:44:29]     FUN_0015aa98 -> quarantined (0s)
-[20:44:29]     FUN_0015ad48 -> fixed (0s)
-[20:44:43]   QUARANTINE FUN_00158c0c: redefinition of 'auVar1' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:44:43]     FUN_00158c0c -> quarantined (49s)
-[20:44:43]   QUARANTINE FUN_0015af48: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:44:43]     FUN_0015af48 -> quarantined (0s)
-[20:44:50]   QUARANTINE FUN_001569b0: redefinition of 'uVar2' with a different type: 'undefined8' (aka 'unsigned long long') vs 'ulong' (aka 'unsigned long')
-[20:44:50]     FUN_001569b0 -> quarantined (1m)
-[20:44:51]   QUARANTINE FUN_00159050: operand of type 'void' where arithmetic or pointer type is required
-[20:44:51]     FUN_00159050 -> quarantined (50s)
-[20:44:52]     FUN_00159238 -> fixed (49s)
-[20:44:53]     FUN_00159268 -> fixed (50s)
-[20:44:53]   QUARANTINE FUN_001593fc: member reference base type 'unsigned char[16]' is not a structure or union
-[20:44:53]     FUN_001593fc -> quarantined (49s)
-[20:44:57]     FUN_00159cd8 -> fixed (47s)
-[20:45:00]   QUARANTINE FUN_00159de0: redefinition of 'local_58' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:45:00]     FUN_00159de0 -> quarantined (48s)
-[20:45:14]   QUARANTINE FUN_0015ae38: member reference base type 'undefined8' (aka 'unsigned long long') is not a structure or union
-[20:45:14]     FUN_0015ae38 -> quarantined (44s)
-[20:45:27]     FUN_0015b1fc -> fixed (43s)
-[20:45:32]   QUARANTINE FUN_00159f54: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:45:32]     FUN_00159f54 -> quarantined (1m)
-[20:45:33]   QUARANTINE FUN_001630a4: redefinition of 'local_40' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:45:33]     FUN_001630a4 -> quarantined (43s)
-[20:45:35]   QUARANTINE FUN_00163110: redefinition of 'local_40' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'undefined1[16]' (aka 'unsigned char[16]')
-[20:45:35]     FUN_00163110 -> quarantined (43s)
-[20:45:38]     FUN_0016759c -> fixed (44s)
-[20:45:39]   QUARANTINE FUN_0015a894: expected identifier or '('
-[20:45:39]     FUN_0015a894 -> quarantined (1m)
-[20:45:40]   QUARANTINE FUN_0015a8b4: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:45:40]     FUN_0015a8b4 -> quarantined (1m)
-[20:45:41]   QUARANTINE FUN_001681ec: assigning to 'undefined8 *' (aka 'unsigned long long *') from incompatible type 'void'
-[20:45:41]     FUN_001681ec -> quarantined (0s)
-[20:45:43]     FUN_001675cc -> fixed (46s)
-[20:46:10]   QUARANTINE FUN_0016593c: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:46:10]     FUN_0016593c -> quarantined (1m)
-[20:46:12]   QUARANTINE FUN_00166470: brackets are not allowed here; to declare an array, place the brackets after the identifier
-[20:46:12]     FUN_00166470 -> quarantined (1m)
-[20:46:19]   QUARANTINE finishLaunching_1676f4: unknown type name 'g_block_25'
-[20:46:19]     finishLaunching_1676f4 -> quarantined (1m)
-[20:46:24]     onTrackingIdle -> fixed (45s)
-[20:46:29]   QUARANTINE sendEvent_16774c: unknown type name 'g_block_25'
-[20:46:29]     sendEvent_16774c -> quarantined (1m)
-[20:46:41]   QUARANTINE terminate: unknown type name 'g_block_25'
-[20:46:41]     terminate -> quarantined (1m)
-[20:46:45]   QUARANTINE applicationShouldTerminate_167934: redefinition of 'g_block_25' with a different type: 'undefined8' (aka 'unsigned long long') vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:46:45]     applicationShouldTerminate_167934 -> quarantined (1m)
-[20:46:46]   QUARANTINE application_openFile: redefinition of 'g_block_25' with a different type: 'undefined8' (aka 'unsigned long long') vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:46:46]     application_openFile -> quarantined (1m)
-[20:46:46]   QUARANTINE mainLoop: unknown type name 'g_block_25'
-[20:46:46]     mainLoop -> quarantined (1m)
-[20:46:48]     waitUntilPendingCommandsCompleted_1689cc -> fixed (36s)
-[20:46:49]   QUARANTINE onIdle: variable has incomplete type 'void'
-[20:46:49]     onIdle -> quarantined (1m)
-[20:46:51]   QUARANTINE FUN_00168374: use of undeclared identifier 'PTR__OBJC_CLASS___NSPasteboard_00452d20'
-[20:46:51]     FUN_00168374 -> quarantined (1m)
-[20:46:52]   QUARANTINE setStyleMask_169384: redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'unsigned long long')
-[20:46:52]     setStyleMask_169384 -> quarantined (0s)
-[20:46:54]   QUARANTINE FUN_00168600: expected ';' after expression
-[20:46:54]     FUN_00168600 -> quarantined (1m)
-[20:47:19]   QUARANTINE dealloc_168970: use of undeclared identifier 'objc_stub'
-[20:47:19]     dealloc_168970 -> quarantined (1m)
-[20:47:25]     setCommandQueue_168c84 -> fixed (43s)
-[20:47:25]   QUARANTINE setCppParent_169a40: expected ';' after expression
-[20:47:25]     setCppParent_169a40 -> quarantined (0s)
-[20:47:28]   QUARANTINE display_168a4c: variable has incomplete type 'void'
-[20:47:28]     display_168a4c -> quarantined (1m)
-[20:47:28]     setAllowGettingClosed_169aa4 -> fixed (0s)
-[20:47:34]   QUARANTINE dealloc_169244: use of undeclared identifier 'PTR__OBJC_CLASS___NSNotificationCenter_00452d30'
-[20:47:34]     dealloc_169244 -> quarantined (45s)
-[20:47:35]   QUARANTINE setAutoForwardKeyEvents_169b14: expected ';' after expression
-[20:47:35]     setAutoForwardKeyEvents_169b14 -> quarantined (0s)
-[20:47:35]   QUARANTINE FUN_00168bfc: expected ';' after expression
-[20:47:35]     FUN_00168bfc -> quarantined (1m)
-[20:47:35]     cancelCurrentMouseDownEvent_169b70 -> fixed (0s)
-[20:47:39]   QUARANTINE commandQueue_168c6c: redefinition of 'g_block_25' with a different type: 'undefined8' (aka 'unsigned long long') vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:47:39]     commandQueue_168c6c -> quarantined (1m)
-[20:47:52]   QUARANTINE texture_168cb0: redefinition of 'g_block_25' with a different type: 'undefined8' (aka 'unsigned long long') vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:47:52]     texture_168cb0 -> quarantined (1m)
-[20:47:53]   QUARANTINE setTexture_168cc8: variable has incomplete type 'void'
-[20:47:53]     setTexture_168cc8 -> quarantined (1m)
-[20:47:55]   QUARANTINE alloc_168cf4: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:47:55]     alloc_168cf4 -> quarantined (1m)
-[20:47:55]     becomeKeyWindow_169ddc -> fixed (0s)
-[20:47:55]     resignKeyWindow_169f10 -> fixed (0s)
-[20:47:55]   QUARANTINE applicationDidResignActive: redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'unsigned long long')
-[20:47:55]     applicationDidResignActive -> quarantined (0s)
-[20:47:56]   QUARANTINE cppParent_169a28: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:47:56]     cppParent_169a28 -> quarantined (36s)
-[20:47:56]   QUARANTINE applicationDidHide: redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'unsigned long long')
-[20:47:56]     applicationDidHide -> quarantined (0s)
-[20:47:56]     applicationDidUnhide -> fixed (0s)
-[20:47:57]   QUARANTINE initWithContentRect_styleMask_backing_defer_168d74: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:47:57]     initWithContentRect_styleMask_backing_defer_168d74 -> quarantined (1m)
-[20:47:57]   QUARANTINE windowWillMiniaturize: redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'unsigned long long')
-[20:47:57]     windowWillMiniaturize -> quarantined (0s)
-[20:47:58]   QUARANTINE windowDidDeminiaturize: redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'unsigned long long')
-[20:47:58]     windowDidDeminiaturize -> quarantined (0s)
-[20:47:58]   QUARANTINE windowBecameKeyOrMainWindow: redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'unsigned long long')
-[20:47:58]     windowBecameKeyOrMainWindow -> quarantined (0s)
-[20:47:58]     windowDidMove -> fixed (0s)
-[20:47:58]   QUARANTINE screenParameterChanged: expected ';' after expression
-[20:47:58]     screenParameterChanged -> quarantined (0s)
-[20:47:58]     windowScreenChanged -> fixed (0s)
-[20:47:59]     toggleFullScreen -> fixed (0s)
-[20:47:59]   QUARANTINE miniaturize_16a88c: expected ';' after expression
-[20:47:59]     miniaturize_16a88c -> quarantined (0s)
-[20:47:59]   QUARANTINE deminiaturize_16a920: expected ';' after expression
-[20:47:59]     deminiaturize_16a920 -> quarantined (0s)
-[20:47:59]   QUARANTINE zoom_16a9c8: expected ';' after expression
-[20:47:59]     zoom_16a9c8 -> quarantined (0s)
-[20:48:00]   QUARANTINE setFrame_display_169580: variable has incomplete type 'void'
-[20:48:00]     setFrame_display_169580 -> quarantined (1m)
-[20:48:00]   QUARANTINE performClose_16aa5c: redefinition of 'extraout_q0' with a different type: 'uint64_t[16]' (aka 'unsigned long long[16]') vs 'uint64_t' (aka 'unsigned long long')
-[20:48:00]     performClose_16aa5c -> quarantined (0s)
-[20:48:00]     openAbout -> fixed (0s)
-[20:48:00]     openPreferences -> fixed (0s)
-[20:48:02]   QUARANTINE close_169730: unknown type name 'g_block_25'
-[20:48:02]     close_169730 -> quarantined (1m)
-[20:48:04]   QUARANTINE autoForwardKeyEvents_169ac4: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:48:04]     autoForwardKeyEvents_169ac4 -> quarantined (35s)
-[20:48:04]   QUARANTINE menuCallback: expected ';' after expression
-[20:48:04]     menuCallback -> quarantined (0s)
-[20:48:11]   QUARANTINE windowGraphicsContext_169b58: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:48:11]     windowGraphicsContext_169b58 -> quarantined (36s)
-[20:48:12]   QUARANTINE preferredBackingLocation: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:48:12]     preferredBackingLocation -> quarantined (36s)
-[20:48:18]   QUARANTINE worksWhenModal: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:48:18]     worksWhenModal -> quarantined (39s)
-[20:48:34]   QUARANTINE allowGettingClosed: expected ';' after top level declarator
-[20:48:34]     allowGettingClosed -> quarantined (1m)
-[20:48:41]   QUARANTINE canBecomeKeyWindow_169d4c: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:48:41]     canBecomeKeyWindow_169d4c -> quarantined (47s)
-[20:48:41]     cxx_destruct_16c458 -> fixed (0s)
-[20:48:53]   QUARANTINE validateMenuItem_16b0bc: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:48:53]     validateMenuItem_16b0bc -> quarantined (49s)
-[20:48:59]   QUARANTINE keyEquivalentFromMenuEntry_16b3b0: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:48:59]     keyEquivalentFromMenuEntry_16b3b0 -> quarantined (47s)
-[20:49:07]   QUARANTINE canBecomeMainWindow: unknown type name 'g_block_25'
-[20:49:07]     canBecomeMainWindow -> quarantined (1m)
-[20:49:07]   QUARANTINE dealloc_16c680: use of undeclared identifier 'PTR__OBJC_CLASS___NSDistributedNotificationCenter_00452d48'
-[20:49:07]     dealloc_16c680 -> quarantined (0s)
-[20:49:09]   QUARANTINE applicationDidBecomeActive: unknown type name 'g_block_25'
-[20:49:09]     applicationDidBecomeActive -> quarantined (1m)
-[20:49:09]     setCppWindow_16c6f4 -> fixed (0s)
-[20:49:10]   QUARANTINE windowShouldClose: redefinition of 'undefined8' as different kind of symbol
-[20:49:10]     windowShouldClose -> quarantined (1m)
-[20:49:10]     setCurrentInterpretKeyEventsKey_16c72c -> fixed (0s)
-[20:49:14]   QUARANTINE closeButtonProxi: variable has incomplete type 'void'
-[20:49:14]     closeButtonProxi -> quarantined (1m)
-[20:49:15]   QUARANTINE performKeyEquivalent: redefinition of 'g_block_25' with a different type: 'undefined1' (aka 'unsigned char') vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:49:15]     performKeyEquivalent -> quarantined (1m)
-[20:49:16]   QUARANTINE sendEvent_16adcc: variable has incomplete type 'void'
-[20:49:16]     sendEvent_16adcc -> quarantined (1m)
-[20:49:25]   QUARANTINE modflagsFromMenuEntry_16b854: redefinition of 'g_block_25' with a different type: 'unsigned_long_long' (aka 'unsigned long long') vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:49:25]     modflagsFromMenuEntry_16b854 -> quarantined (1m)
-[20:49:33]   QUARANTINE buildMenuGroupEntries_entry_16bb04: variable has incomplete type 'void'
-[20:49:33]     buildMenuGroupEntries_entry_16bb04 -> quarantined (1m)
-[20:49:34]   QUARANTINE alloc_16c4f4: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:49:34]     alloc_16c4f4 -> quarantined (40s)
-[20:49:39]   QUARANTINE initWithFrame_16c574: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:49:39]     initWithFrame_16c574 -> quarantined (40s)
-[20:50:22]   QUARANTINE buildMenu: variable has incomplete type 'void'
-[20:50:22]     buildMenu -> quarantined (1m)
-[20:50:43]   QUARANTINE cppWindow: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:50:43]     cppWindow -> quarantined (1m)
-[20:50:44]   QUARANTINE cxx_construct_16c4a4: redefinition of 'g_block_25' with a different type: 'long' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:50:44]     cxx_construct_16c4a4 -> quarantined (2m)
-[20:50:45]   QUARANTINE currentInterpretKeyEventsKey: redefinition of 'g_block_25' with a different type: 'unsigned char' vs 'uint8_t[]' (aka 'unsigned char[]')
-[20:50:45]     currentInterpretKeyEventsKey -> quarantined (1m)
+
 ```
 
 ## pipeline_state.json
@@ -78344,9 +77218,9 @@ _parse_monolith.cpp:53209: expected function body after function declarator
 {
   "stages": {
     "export": {
-      "done": true,
-      "started": "2026-10-21 16:06:25",
-      "at": "2026-10-21 16:06:33",
+      "done": false,
+      "started": "2026-10-21 20:51:41",
+      "at": "2026-10-21 20:51:41",
       "seconds": 7,
       "note": "30489/30489 with pseudocode"
     },
@@ -78393,54 +77267,12 @@ _parse_monolith.cpp:53209: expected function body after function declarator
       "at": "2026-10-21 20:15:31"
     }
   },
-  "version": "2026-10-22.1",
+  "version": "2026-10-22.2",
   "chars_per_token": {
     "ctx": 8192,
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-21 19:37:25",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: operand of type 'X' where arithmetic or pointer type is required": 136,
-        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 78,
-        "fix|quarantined: redefinition of 'X'": 61,
-        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 42,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 30,
-        "fix|quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier": 29,
-        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 27,
-        "fix|quarantined: expected 'X'": 22,
-        "fix|quarantined: expected 'X' after expression": 18,
-        "fix|quarantined: expected 'X' after top level declarator": 15,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 12,
-        "fix|quarantined: member reference base type 'X' is not a structure or union": 9,
-        "fix|quarantined: use of undeclared identifier 'X'": 8,
-        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 6,
-        "fix|quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'": 4,
-        "fix|quarantined: variable has incomplete type 'X'": 3,
-        "fix|quarantined: redefinition of 'X' as different kind of symbol": 3,
-        "fix|quarantined: subscripted value is not an array, pointer, or vector": 2,
-        "fix|quarantined: no member named 'X' in 'X'": 2,
-        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 2,
-        "fix|quarantined: expression is not assignable": 2,
-        "fix|quarantined: expected identifier or 'X'": 2,
-        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 2,
-        "fix|quarantined: array type 'X' is not assignable": 2,
-        "fix|quarantined: unknown type name 'X'": 1,
-        "fix|quarantined: unexpected type name 'X': expected expression": 1,
-        "fix|quarantined: too many arguments to function call, expected N, have N": 1,
-        "fix|quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'": 1,
-        "fix|quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required": 1,
-        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')": 1,
-        "fix|quarantined: initializing 'X' with an expression of incompatible type 'X'": 1,
-        "fix|quarantined: extraneous 'X' before 'X'": 1,
-        "fix|quarantined: expected expression": 1,
-        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 1,
-        "fix|not compiling yet (not reached before the run ended)": 2233,
-        "fix|the model repeated an edit that had already failed (skipped)": 3
-      }
-    },
     {
       "at": "2026-10-21 19:38:38",
       "keys": {
@@ -78620,19 +77452,56 @@ _parse_monolith.cpp:53209: expected function body after function declarator
         "fix|not compiling yet (not reached before the run ended)": 1277,
         "fix|the model repeated an edit that had already failed (skipped)": 38
       }
+    },
+    {
+      "at": "2026-10-21 20:52:16",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "fix|quarantined: operand of type 'X' where arithmetic or pointer type is required": 261,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 199,
+        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 191,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 163,
+        "fix|quarantined: redefinition of 'X'": 97,
+        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 90,
+        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 78,
+        "fix|quarantined: member reference base type 'X' is not a structure or union": 49,
+        "fix|quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier": 48,
+        "fix|quarantined: expected 'X' after expression": 29,
+        "fix|quarantined: expected 'X'": 25,
+        "fix|quarantined: subscripted value is not an array, pointer, or vector": 23,
+        "fix|quarantined: use of undeclared identifier 'X'": 22,
+        "fix|quarantined: expected 'X' after top level declarator": 17,
+        "fix|quarantined: variable has incomplete type 'X'": 16,
+        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 16,
+        "fix|quarantined: unknown type name 'X'": 11,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X'": 8,
+        "fix|quarantined: expected expression": 8,
+        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 7,
+        "fix|quarantined: expected identifier or 'X'": 7,
+        "fix|quarantined: expression is not assignable": 6,
+        "fix|quarantined: array type 'X' is not assignable": 6,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 5,
+        "fix|quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'": 5,
+        "fix|quarantined: use of undeclared identifier 'X'; did you mean 'X'?": 4,
+        "fix|quarantined: redefinition of 'X' as different kind of symbol": 4,
+        "fix|quarantined: pointer cannot be cast to type 'X'": 3,
+        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 3,
+        "fix|quarantined: no member named 'X' in 'X'": 2,
+        "fix|quarantined: initializing 'X' with an expression of incompatible type 'X'": 2,
+        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 2,
+        "fix|quarantined: unexpected type name 'X': expected expression": 1,
+        "fix|quarantined: too many arguments to function call, expected N, have N": 1,
+        "fix|quarantined: subscript of pointer to function type 'X'": 1,
+        "fix|quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'": 1,
+        "fix|quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required": 1,
+        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')": 1,
+        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))": 1,
+        "fix|quarantined: extraneous 'X' before 'X'": 1,
+        "fix|not compiling yet (not reached before the run ended)": 1277
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-21 19:30",
-      "functions": 30176,
-      "compile_pct": 90.9,
-      "quarantined_pct": 1.6,
-      "to_fix": 2269,
-      "fix_tried": 201,
-      "fix_success_pct": 19.9,
-      "fix_per_hour": 986
-    },
     {
       "at": "10-21 19:37",
       "functions": 30176,
@@ -78667,6 +77536,13 @@ _parse_monolith.cpp:53209: expected function body after function declarator
       "compile_pct": 91.1,
       "quarantined_pct": 4.7,
       "to_fix": 1277
+    },
+    {
+      "at": "10-21 20:52",
+      "functions": 30176,
+      "compile_pct": 91.1,
+      "quarantined_pct": 4.7,
+      "to_fix": 1277
     }
   ]
 }
@@ -78676,7 +77552,7 @@ _parse_monolith.cpp:53209: expected function body after function declarator
 
 ```json
 {
-  "generated": "2026-10-21 20:03:33",
+  "generated": "2026-10-21 20:50:45",
   "pipeline_version": "2026-10-22.1",
   "workdir": "/Users/admin/glitchdecomp/fastpass 3",
   "export": {
@@ -78711,9 +77587,9 @@ _parse_monolith.cpp:53209: expected function body after function declarator
   },
   "build": {
     "functions": 30176,
-    "compile": 27372,
-    "quarantined": 911,
-    "fixed_by_model": 196,
+    "compile": 27484,
+    "quarantined": 1415,
+    "fixed_by_model": 273,
     "rederived": 31,
     "rederived_by": {
       "rewrite": 2,
@@ -78779,8 +77655,8 @@ _parse_monolith.cpp:53209: expected function body after function declarator
     },
     "link": {
       "done": false,
-      "started": "2026-10-21 19:51:28",
-      "at": "2026-10-21 19:51:28"
+      "started": "2026-10-21 20:15:31",
+      "at": "2026-10-21 20:15:31"
     }
   }
 }
