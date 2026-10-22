@@ -1,4 +1,5 @@
 import os
+import sys
 import tempfile
 import time
 
@@ -654,3 +655,60 @@ def test_downloaded_but_not_restarted_is_shown(monkeypatch):
     assert updater.check()["restart_needed"] is True
     s = TestClient(server.app, headers={"x-harness": "1"}).get("/api/status").json()
     assert s["update"]["restart_needed"] is True and s["update"]["running"] == "old 2026-10-20"
+
+
+IOREG_AC = '''+-o AppleSmartBattery  <class AppleSmartBattery>
+    {
+      "ExternalConnected" = Yes
+      "IsCharging" = Yes
+      "Voltage" = 12650
+      "InstantAmperage" = 1500
+      "PowerTelemetryData" = {"AdapterEfficiencyLoss"=1250,"BatteryPower"=5000,"SystemCurrentIn"=1500,"SystemPowerIn"=30000,"SystemLoad"=24500,"SystemVoltageIn"=20000}
+    }'''
+
+IOREG_BATTERY = '''+-o AppleSmartBattery  <class AppleSmartBattery>
+    {
+      "ExternalConnected" = No
+      "Voltage" = 12000
+      "InstantAmperage" = 18446744073709549616
+    }'''
+
+
+def test_heat_is_the_power_the_laptop_uses_plus_its_chargers_losses():
+    from harness import sensors
+    # on the charger: the system's own use (not what goes into the battery), plus
+    # the brick's losses on what it delivers
+    r = sensors.heat_reading(IOREG_AC, {}, {})
+    assert r["laptop_w"] == 24.5 and r["brick_w"] == round(30.0 * sensors.BRICK_LOSS, 1)
+    assert r["heat_w"] == round(24.5 + 30.0 * sensors.BRICK_LOSS, 1)
+    assert r["heat_btu_h"] == round(r["heat_w"] * 3.412, 0) or abs(r["heat_btu_h"] - r["heat_w"] * 3.412) < 1
+    assert "system load" in r["power_source"] and r["on_ac"]
+    # on battery: voltage x current (ioreg prints the negative current as unsigned)
+    r = sensors.heat_reading(IOREG_BATTERY, {}, {})
+    assert r["laptop_w"] == 24.0 and r["brick_w"] is None and r["heat_w"] == 24.0
+    # nothing from the battery controller: macmon's system power
+    r = sensors.heat_reading("", {"sys_power_w": 18.2}, {})
+    assert r["heat_w"] == 18.2 and "macmon" in r["power_source"]
+    assert sensors.heat_reading("", {}, {}) == {} or sys.platform.startswith("linux")
+
+
+def test_a_run_adds_up_the_heat_given_off_while_it_ran():
+    from harness import runner as rn
+    from harness.server import app, runs
+    ensure_dirs()
+    (SCRIPTS_DIR / "t_heat.py").write_text("import time; print('warm', flush=True); time.sleep(30)")
+    c = TestClient(app, headers={"x-harness": "1"})
+    rid = c.post("/api/runs", json={"script": "t_heat.py"}).json()["id"]
+    try:
+        run = runs.runs[rid]
+        for _ in range(50):
+            if run.proc:
+                break
+            time.sleep(0.1)
+        run._heat_t = time.time() - 30                    # the last reading, 30 s ago
+        runs.on_tick({"available_pct": 50, "level": "green", "heat_w": 36.0})
+        assert abs(run.heat_wh - 36.0 * 30 / 3600) < 0.01  # 0.3 Wh
+        assert c.get(f"/api/runs/{rid}").json()["heat_wh"] > 0
+    finally:
+        c.post(f"/api/runs/{rid}/stop")
+    assert rn.fmt_energy(1500) == "1.50 kWh (5,118 BTU)" and rn.fmt_energy(2.5) == "2.5 Wh (9 BTU)"

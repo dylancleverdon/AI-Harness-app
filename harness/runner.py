@@ -16,8 +16,14 @@ from . import diagnose, lmstudio, memory, sensors
 from .config import RUNS_DIR, SCRIPTS_DIR, script_python, settings
 
 
+def fmt_energy(wh):
+    """Energy as heat: "0.9 kWh (3,070 BTU)"."""
+    btu = wh * sensors.BTU_PER_WH
+    return (f"{wh / 1000:.2f} kWh" if wh >= 1000 else f"{wh:.1f} Wh") + f" ({btu:,.0f} BTU)"
+
+
 SUMMARY_KEYS = ("id", "script", "args", "started", "ended", "status", "exit_code",
-                "kill_reason", "peak_rss_mb", "peak_cpu_pct", "duration")
+                "kill_reason", "peak_rss_mb", "peak_cpu_pct", "duration", "heat_wh")
 
 
 ANSI = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[@-Z\\-_]")
@@ -74,6 +80,8 @@ class Run:
         self.mem = []  # {t, rss_mb, avail_pct, level}
         self.peak_rss_mb = 0
         self.peak_cpu_pct = 0
+        self.heat_wh = 0.0  # heat the laptop (and its charger) gave off while this ran
+        self._heat_t = None
         self.cpu_now = 0
         self._procs = {}  # psutil Process cache for CPU measurement
         self.proc = None
@@ -95,7 +103,8 @@ class Run:
         return {"id": self.id, "script": self.script, "args": self.args, "started": self.started,
                 "ended": self.ended, "status": self.status, "exit_code": self.exit_code,
                 "kill_reason": self.kill_reason, "peak_rss_mb": self.peak_rss_mb, "peak_cpu_pct": self.peak_cpu_pct,
-                "duration": round((self.ended or time.time()) - self.started, 1)}
+                "duration": round((self.ended or time.time()) - self.started, 1),
+                "heat_wh": round(self.heat_wh, 3)}
 
     def detail(self):
         d = self.summary()
@@ -370,6 +379,10 @@ class RunManager:
             run.peak_rss_mb = max(run.peak_rss_mb, round(rss))
             run.cpu_now = round(memory.tree_cpu(run._procs, run.proc.pid))
             run.peak_cpu_pct = max(run.peak_cpu_pct, run.cpu_now)
+            if snap.get("heat_w") is not None:
+                if run._heat_t is not None:
+                    run.heat_wh += snap["heat_w"] * min(now - run._heat_t, 60) / 3600
+                run._heat_t = now
             run.mem.append({"t": round(now - run.started, 1), "rss_mb": round(rss), "cpu_pct": run.cpu_now,
                             "avail_pct": snap["available_pct"], "level": snap["level"],
                             "thermal": snap.get("thermal", "unknown"), "temp_c": snap.get("temp_c")})
@@ -470,7 +483,7 @@ def report_markdown(d, app_version, lm, mem_snap):
     lines = [f"# Run report: {d['script']}", "",
              f"- Status: **{d['status']}** (exit code {d['exit_code']})",
              f"- Duration: {d['duration']}s, peak script memory {d['peak_rss_mb']} MB, peak CPU {d.get('peak_cpu_pct', 0)}% "
-             f"of one core",
+             f"of one core" + (f", heat given off while it ran {fmt_energy(d['heat_wh'])}" if d.get("heat_wh") else ""),
              f"- Run id: `{d['id']}`  |  AI Harness {app_version}",
              f"- LM Studio: {'online' if lm['ok'] else 'OFFLINE - ' + str(lm['error'])}; loaded models: "
              f"{', '.join(m['id'] for m in lm['models'] if m['loaded']) or 'none'}",

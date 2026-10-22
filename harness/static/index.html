@@ -23,6 +23,7 @@
         <span class="pill lvl-green" id="cpu-pill"><i class="dot"></i><b>CPU</b> <em id="cpu-text">…</em></span>
         <span class="pill hidden" id="therm-pill"><i class="dot"></i><b>Thermal</b> <em id="therm-text">…</em></span>
         <span class="pill" id="mem-pill"><i class="dot"></i><b>Memory</b> <em id="mem-text">…</em></span>
+        <span class="pill hidden" id="heat-pill"><i class="dot"></i><b>Heat</b> <em id="heat-text">…</em></span>
         <label class="switch" id="awake-switch" title="Keep your Mac awake while a script is running (uses macOS caffeinate). Closing the lid on battery power will still sleep it."><input type="checkbox" id="keep-awake" data-setting="keep_awake"><i></i><span>☕ Keep awake</span></label>
         <button id="screen-off" title="Turn the screen off now (the Mac keeps running). Move the mouse to wake it.">🌙 Screen off</button>
         <button id="update-btn" class="hidden"></button>
@@ -91,6 +92,11 @@
           <div class="card hidden" id="fan-card"><label>Fans</label><big id="c-fan">–</big><small id="c-fan-sub"></small></div>
           <div class="card hidden" id="gpu-card"><label>GPU</label><big id="c-gpu">–</big><small id="c-gpu-sub"></small></div>
         </div>
+        <div class="cards" id="heat-cards">
+          <div class="card"><label>Heat given off</label><big id="h-now">–</big><small id="h-now-sub"></small></div>
+          <div class="card"><label>Since AI Harness started</label><big id="h-total">–</big><small id="h-total-sub"></small></div>
+          <div class="card"><label>For scale</label><big id="h-scale">–</big><small id="h-scale-sub"></small></div>
+        </div>
         <div class="panel">
           <h3>CPU, last 10 minutes <span class="muted" id="cpu-chart-note"></span></h3>
           <canvas id="cpu-chart" height="160"></canvas>
@@ -98,6 +104,12 @@
           <h3 style="margin-top:12px">Per core</h3>
           <div id="cores"></div>
           <p class="muted" id="temp-hint"></p>
+          <div id="heat-panel" class="hidden">
+            <h3 style="margin-top:12px">Heat, last 10 minutes <span class="muted" id="heat-chart-note"></span></h3>
+            <canvas id="heat-chart" height="120"></canvas>
+            <div class="legend"><i style="background:#f2994a"></i>laptop <i style="background:#eb5757"></i>with its charger</div>
+            <p class="muted">All the power a computer uses ends up as heat in the room, so its heat output is the power it uses: 1 W = 3.412 BTU/h. Power going into the battery while charging is stored, not heat, so it isn't counted. The charger brick's own losses (about 10% of what it delivers) heat the room too, and are added while it's plugged in.</p>
+          </div>
         </div>
         <div class="panel">
           <h3>Available memory, last 10 minutes</h3>

@@ -71,6 +71,7 @@ function onTelemetry(d) {
   const m = d.memory; if (!m) return;
   lastSnap = m; history.push(m); if (history.length > 600) history.shift();
   updateSystem(m, d);
+  updateHeat(m, d);
   const pill = $('#mem-pill');
   pill.className = 'pill lvl-' + m.level;
   $('#mem-text').textContent = `${m.level} · ${m.available_gb} GB free (${m.available_pct}%)`;
@@ -89,14 +90,14 @@ function onTelemetry(d) {
   $('#m-pressure').textContent = m.pressure ? 'macOS pressure: ' + ({ 1: 'normal', 2: 'warn', 4: 'critical' }[m.pressure] || m.pressure) : '';
   const act = $('#active-runs'); act.replaceChildren();
   if (!d.active.length) act.textContent = 'Nothing running.';
-  d.active.forEach(r => act.append(el('div', { textContent: `${r.script} — running ${fmtTime(r.elapsed)} · ${r.rss_mb} MB now, peak ${r.peak_mb} MB · CPU ${r.cpu_pct}% (≈${(r.cpu_pct / 100).toFixed(1)} cores)` })));
+  d.active.forEach(r => act.append(el('div', { textContent: `${r.script} — running ${fmtTime(r.elapsed)} · ${r.rss_mb} MB now, peak ${r.peak_mb} MB · CPU ${r.cpu_pct}% (≈${(r.cpu_pct / 100).toFixed(1)} cores)` + (r.heat_wh ? ` · ${fmtEnergy(r.heat_wh)} of heat so far` : '') })));
   updateTimers(d);
   $('#guard-state').textContent = state.settings.guard_enabled ? `Armed: stops scripts at ${state.settings.guard_trip_level}.` : 'Guard is disabled.';
   const ev = $('#guard-events'); ev.replaceChildren();
   d.events.slice().reverse().forEach(e => ev.append(el('li', { textContent: new Date(e.t * 1000).toLocaleTimeString() + ' — ' + e.msg })));
   const cur = d.active.find(r => curView() && curView().run && r.id === curView().run.id);
   $('#run-mem').textContent = cur ? `script: ${cur.rss_mb} MB (peak ${cur.peak_mb}) · CPU ${cur.cpu_pct}% · system: ${m.available_pct}% free${m.thermal && m.thermal !== 'unknown' ? ' · ' + m.thermal : ''}` : '';
-  if ($('#page-memory').classList.contains('active')) { drawChart(); drawCpuChart(); }
+  if ($('#page-memory').classList.contains('active')) { drawChart(); drawCpuChart(); drawHeatChart(); }
 }
 function updateTimers(d) {
   const by = Object.fromEntries(d.active.map(r => [r.script, r]));
@@ -139,6 +140,48 @@ function updateSystem(m, d) {
   $('#temp-hint').textContent = m.temp_c ? '' : (tools && tools.darwin)
     ? (tools.macmon || tools.osx_cpu_temp ? 'A temperature tool was found but returned nothing yet. Give it a few seconds.' : 'macOS only shares its thermal state with apps. For exact chip temperatures, GPU load and power, run  brew install macmon  (Apple Silicon)  or  brew install osx-cpu-temp  (Intel). AI Harness picks it up automatically.')
     : '';
+}
+// ---- heat: the power the laptop uses ends up as heat (1 W = 3.412 BTU/h) ----
+const BTU = 3.412;
+const fmtEnergy = wh => (wh >= 1000 ? (wh / 1000).toFixed(2) + ' kWh' : wh.toFixed(wh < 10 ? 2 : 1) + ' Wh') + ` (${Math.round(wh * BTU).toLocaleString()} BTU)`;
+function updateHeat(m, d) {
+  const has = m.heat_w !== undefined && m.heat_w !== null;
+  $('#heat-pill').classList.toggle('hidden', !has);
+  $('#heat-panel').classList.toggle('hidden', !has);
+  if (!has) {
+    $('#h-now').textContent = '–';
+    $('#h-now-sub').textContent = state.status && state.status.sensor_tools && state.status.sensor_tools.darwin
+      ? 'no power reading yet (it comes from the battery controller every few seconds)' : 'no power reading on this system';
+    return;
+  }
+  const w = m.heat_w, btuh = Math.round(w * BTU);
+  $('#heat-pill').className = 'pill ' + (w >= 60 ? 'lvl-orange' : w >= 25 ? 'lvl-yellow' : 'lvl-green');
+  $('#heat-text').textContent = `🔥 ${Math.round(w)} W · ${btuh.toLocaleString()} BTU/h`;
+  const parts = [`laptop ${m.laptop_w} W`];
+  if (m.brick_w) parts.push(`charger ${m.brick_w} W (estimated)`);
+  $('#heat-pill').title = `Heat given off now: ${parts.join(' + ')}. From: ${m.power_source}.` +
+    (m.on_ac ? '' : ' On battery: no charger losses.') + ' All the power a computer uses becomes heat: 1 W = 3.412 BTU/h.';
+  $('#h-now').textContent = `${w} W · ${btuh.toLocaleString()} BTU/h`;
+  $('#h-now-sub').textContent = parts.join(' + ') + (m.power_w ? ` · CPU+GPU ${m.power_w} W` : '') + ` · via ${m.power_source}`;
+  $('#h-total').textContent = m.heat_wh_session ? fmtEnergy(m.heat_wh_session) : '–';
+  $('#h-total-sub').textContent = 'heat given off while the app has been open';
+  $('#h-scale').textContent = w < 100 ? `${Math.round(w)}% of a 100 W bulb` : `${(w / 100).toFixed(1)} × a 100 W bulb`;
+  $('#h-scale-sub').textContent = `a person at rest gives off ~340 BTU/h (${(btuh / 340).toFixed(2)} people) · a small space heater ~5,100 BTU/h (${(btuh / 5100 * 100).toFixed(1)}%)`;
+}
+function drawHeatChart() {
+  const c = $('#heat-chart'); if (!c || $('#heat-panel').classList.contains('hidden')) return;
+  const dpr = devicePixelRatio || 1, w = c.clientWidth, h = 120;
+  c.width = w * dpr; c.height = h * dpr; const g = c.getContext('2d'); g.scale(dpr, dpr);
+  const vals = history.map(s => s.heat_w).filter(v => v !== undefined && v !== null);
+  const top = Math.max(10, Math.ceil(Math.max(...vals, 0) / 10) * 10);
+  const y = v => h - 16 - (v / top) * (h - 26), step = w / 599, off = 600 - history.length;
+  g.strokeStyle = '#2d2d34'; g.fillStyle = '#8b8b96'; g.font = '10px sans-serif'; g.lineWidth = 1;
+  [0, top / 2, top].forEach(v => { g.beginPath(); g.moveTo(0, y(v)); g.lineTo(w, y(v)); g.stroke(); g.fillText(`${v} W · ${Math.round(v * BTU)} BTU/h`, 4, y(v) - 2); });
+  const line = (val, color) => { g.strokeStyle = color; g.lineWidth = 2; g.beginPath(); let started = false;
+    history.forEach((s, i) => { const v = val(s); if (v === undefined || v === null) return; const px = (off + i) * step, py = y(v); started ? g.lineTo(px, py) : g.moveTo(px, py); started = true; }); g.stroke(); };
+  line(s => s.heat_w, '#eb5757');
+  line(s => s.laptop_w, '#f2994a');
+  $('#heat-chart-note').textContent = vals.length ? `(now ${vals.at(-1)} W)` : '';
 }
 function drawCpuChart() {
   const c = $('#cpu-chart'), dpr = devicePixelRatio || 1, w = c.clientWidth, h = 160;
@@ -614,7 +657,7 @@ async function showReport(id) {
   const rerun = el('button', { className: 'ghost', textContent: 'Open script' });
   rerun.onclick = () => { $('#rail button[data-page=run]').click(); openScript(d.script); };
   v.append(el('h2', { textContent: `${d.script} — ${d.status}` }),
-    el('div', { className: 'muted', textContent: `${new Date(d.started * 1000).toLocaleString()} · ${d.duration}s · exit ${d.exit_code} · peak ${d.peak_rss_mb} MB · peak CPU ${d.peak_cpu_pct || 0}%${d.kill_reason ? ' · ' + d.kill_reason : ''}` }),
+    el('div', { className: 'muted', textContent: `${new Date(d.started * 1000).toLocaleString()} · ${d.duration}s · exit ${d.exit_code} · peak ${d.peak_rss_mb} MB · peak CPU ${d.peak_cpu_pct || 0}%${d.heat_wh ? ' · heat ' + fmtEnergy(d.heat_wh) : ''}${d.kill_reason ? ' · ' + d.kill_reason : ''}` }),
     el('div', {}, copy, ' ', rerun));
   const dg = el('div', { className: 'panel' }); showDiagnosis(d.hints, dg); if (d.hints?.length) v.append(dg);
   if (d.files && d.files.length) { const fb = el('div', { className: 'panel' }); showFiles(id, d.files, fb, d.files_total); fb.classList.remove('hidden'); v.append(fb); }

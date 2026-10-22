@@ -87,6 +87,10 @@ The **System** tab (and the top bar) shows live CPU use, per-core load, load ave
 - **Exact temperatures** aren't available to apps on macOS without admin rights. If you install a free helper, AI Harness picks it up automatically within a few seconds and also shows GPU load and power: `brew install macmon` (Apple Silicon) or `brew install osx-cpu-temp` (Intel).
 - **Thermal guard** (Settings, off by default): stop running scripts if the Mac reports *serious* or *critical* for 5 seconds, like the memory guard.
 
+## Heat
+
+The top bar shows the heat the laptop is giving off right now (🔥 watts and BTU/h), and the System page has the details: laptop and charger separately, a 10-minute chart, the total since the app started, and comparisons for scale. All the power a computer uses ends up as heat in the room, so its heat output is the power it uses (1 W = 3.412 BTU/h); power going into the battery while charging is stored, not heat, so it isn't counted, and the charger brick's own losses (estimated at 10% of what it delivers) are added while it's plugged in. The reading comes from the Mac's battery controller (no admin rights needed), else `macmon` if installed, else battery voltage × current; the page says which. Each run records the heat given off while it ran (Reports, and the run report).
+
 ## Failure diagnosis
 
 Failed runs are explained in plain English: LM Studio unreachable, model not loaded, context exceeded, timeouts, bad JSON from the model, killed by the OS, and missing Python packages (with a one-click `pip install`).

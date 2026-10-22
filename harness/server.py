@@ -353,7 +353,8 @@ async def telemetry():
                                    "elapsed": round(time.time() - r.started),
                                    "rss_mb": r.mem[-1]["rss_mb"] if r.mem else 0, "cpu_pct": r.cpu_now,
                                    "peak_cpu": r.peak_cpu_pct,
-                                   "peak_mb": r.peak_rss_mb} for r in runs.active()]}
+                                   "peak_mb": r.peak_rss_mb,
+                                   "heat_wh": round(r.heat_wh, 3)} for r in runs.active()]}
             yield f"data: {json.dumps(payload)}\n\n"
             await asyncio.sleep(1)
     return StreamingResponse(gen(), media_type="text/event-stream")
