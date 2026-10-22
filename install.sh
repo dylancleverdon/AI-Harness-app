@@ -66,7 +66,7 @@ if ! ping; then
   # macOS starts a script-based app like this one under Rosetta (as Intel) on Apple
   # Silicon; start Python natively, so the app and what it runs (the compiler) aren't Intel
   NATIVE=()
-  if [ "\$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ] && /usr/bin/arch -arm64 "\$APP_HOME/.venv/bin/python" -c "pass" 2>/dev/null; then
+  if [ "\$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ] && /usr/bin/arch -arm64 "\$APP_HOME/.venv/bin/python" -c "import psutil, uvicorn, fastapi, pydantic; import harness.server" >/dev/null 2>&1; then
     NATIVE=(/usr/bin/arch -arm64)
   fi
   nohup "\${NATIVE[@]}" "\$APP_HOME/.venv/bin/python" -m harness >> "\$DATA_DIR/harness.log" 2>&1 &

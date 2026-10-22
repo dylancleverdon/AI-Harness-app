@@ -17,6 +17,10 @@ def _sysctl(name):
         return ""
 
 
+# everything the server imports that has compiled code
+NATIVE_CHECK = "import psutil, uvicorn, fastapi, pydantic, starlette, anyio; import harness.server"
+
+
 def native_restart_argv():
     """On an Apple Silicon Mac, an app whose program is a script (like AI Harness.app)
     is started under Rosetta, as Intel, and so is everything it starts: the compiler
@@ -26,9 +30,11 @@ def native_restart_argv():
         return None
     if _sysctl("sysctl.proc_translated") != "1" or _sysctl("hw.optional.arm64") != "1":
         return None
-    try:          # does this Python have Apple Silicon code? Run it that way once to see
-        ok = subprocess.run(["/usr/bin/arch", "-arm64", sys.executable, "-c", "pass"],
-                            capture_output=True, timeout=30).returncode == 0
+    # can this Python AND the packages the app needs run natively? Packages installed
+    # while it ran as Intel are Intel-only, and would crash it: try it once to see
+    try:
+        ok = subprocess.run(["/usr/bin/arch", "-arm64", sys.executable, "-c", NATIVE_CHECK],
+                            capture_output=True, timeout=60).returncode == 0
     except (OSError, subprocess.SubprocessError):
         ok = False
     if not ok:
