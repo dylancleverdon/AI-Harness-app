@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.1"
+PIPELINE_VERSION = "2026-10-22.2"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3445,7 +3445,7 @@ def _c_head(head: str) -> str:
     return head
 
 
-def _split_params(params: str) -> list[str]:
+def _c_split_params(params: str) -> list[str]:
     out, depth, cur = [], 0, ""
     for ch in params:
         if ch in "([<":
@@ -3467,7 +3467,7 @@ def _head_parts(head: str):
     m = re.match(r"^\s*(.*?)\b([A-Za-z_]\w*)\s*\((.*)\)\s*$", head, re.S)
     if not m:
         return None
-    return m.group(1).strip(), m.group(2), _split_params(m.group(3))
+    return m.group(1).strip(), m.group(2), _c_split_params(m.group(3))
 
 
 def _param_type(p: str) -> str:
@@ -3591,6 +3591,8 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
                 before = e["body"][max(0, m.start() - 80):m.start()]
                 if not value_use.search(before):
                     continue
+                if re.search(r"(?:\b(?:LAB|switchD|caseD)_\w+|\bcase\b[^:;{}]*|\bdefault)\s*:\s*$", before):
+                    continue                # a label before the statement, not a value
                 if before.rstrip().endswith(")") and not cast_before.search(before):
                     continue                # "if (x) f();" — not a value
                 used.add(m.group(1))
@@ -3688,15 +3690,19 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
                 continue
             out.append(body[i:m.start()])
             rest = body[m.end():]
-            am = re.match(r"\s*=(?!=)\s*", rest)
+            am = re.match(r"\s*(<<|>>|[+\-*/%&|^])?=(?!=)\s*", rest)
             if am:                                   # a store: the exact bytes of the value
                 vs = m.end() + am.end()
                 ve = _expr_end(body, vs)
-                out.append(f"GH_SET({v}, {off}, {size}, {body[vs:ve].strip()})")
+                val = body[vs:ve].strip()
+                if am.group(1):                      # x._0_4_ += e
+                    val = f"GH_GET({v}, {off}, {size}) {am.group(1)} ({val})"
+                out.append(f"GH_SET({v}, {off}, {size}, {val})")
                 i = ve
                 stats["pieces of variables (v._0_8_)"] += 1
                 continue
-            if out and out[-1].rstrip().endswith("&") and not out[-1].rstrip().endswith("&&"):
+            if out and re.search(r"(?:^|[=(,;{}\[!?:+\-*/%<>|^~]|\breturn)\s*&\s*$", out[-1]) \
+                    and not out[-1].rstrip().endswith("&&"):   # &v._0_8_: an address, not "a & b"
                 out[-1] = out[-1].rstrip()[:-1]
                 out.append(f"GH_ADDR({v}, {off})")
                 i = m.end()
@@ -5041,6 +5047,7 @@ class Config:
     retry_quarantined: bool = False   # revive manifest quarantines for another pass
     no_pseudo: bool = False           # skip the pseudocode recovery stage
     recover_later: bool = False       # don't rebuild a function from pseudocode as soon as the fixer gives up
+    no_ideas: bool = False            # no idea loop (the model proposing fixes for whole kinds of error)
     # where files about to be replaced are copied first (None: don't)
     snapshot_dir: object = field(default_factory=lambda: (lambda: None))
     workers: int = 1                  # functions worked on at once (CPU side)
@@ -7293,6 +7300,19 @@ def _map_tokens(toks: list[str], mapping: dict) -> list[str]:
     return out
 
 
+# names that differ from function to function in Ghidra's code (its locals,
+# parameters and addresses): an idea's rewrite matches any of them; every other
+# name (types, macros, library functions) means itself
+GHIDRA_VARYING = re.compile(r"^(?:[a-z]{1,4}Var\d+|param_\d+|local_\w+|[a-z]*Stack_\w+|in_\w+|"
+                            r"unaff_\w+|extraout_\w+|(?:FUN|DAT|PTR|LAB|UNK|SUB|thunk_FUN)_\w+|"
+                            r"s_\w+|GD_\w+)$")
+
+
+def _idea_tokens(toks: list[str], mapping: dict) -> list[str]:
+    return [mapping.setdefault(t, f"@{len(mapping) + 1}") if GHIDRA_VARYING.match(t) else t
+            for t in toks]
+
+
 def _raw_tokens(text: str) -> list[str]:
     return [tok for kind, tok, _, _ in tokens(text) if kind != "comment"]
 
@@ -7470,9 +7490,10 @@ class FixLessons:
             new = indent + _join_tokens([back.get(t, t) for t in rule["after"]])
         else:
             toks, n = _raw_tokens(line), len(rule["before"])
+            mapper = _idea_tokens if rule.get("vary") else _map_tokens
             for i in range(len(toks) - n + 1):
                 mapping = {}
-                if _map_tokens(toks[i:i + n], mapping) == rule["before"]:
+                if mapper(toks[i:i + n], mapping) == rule["before"]:
                     back = {v: k for k, v in mapping.items()}
                     new = indent + _join_tokens(toks[:i] + [back.get(t, t) for t in rule["after"]]
                                                 + toks[i + n:])
@@ -7954,6 +7975,9 @@ def rates_lines(P: "Paths", records: Optional[dict], st: dict) -> list[str]:
             now["learned_kept_pct"] = round(100 * lr["kept"] / lr["tried"], 1)
     if RUN_CTX.get("rescued"):
         now["rescued"] = RUN_CTX["rescued"]
+    ia = RUN_CTX.get("ideas")
+    if ia and ia.get("asks"):
+        now["ideas_adopted"] = f"{ia.get('adopted', 0)}/{ia.get('tested', 0)}"
     tr = RUN_CTX.get("test_run")
     if tr and tr.get("cases"):
         now["test_pass_pct"] = round(100 * tr["passed"] / tr["cases"], 1)
@@ -7967,6 +7991,7 @@ def rates_lines(P: "Paths", records: Optional[dict], st: dict) -> list[str]:
             ("fix_success_pct", "fixer success %"), ("fix_per_hour", "fixer per hour"),
             ("recover_success_pct", "recover success %"), ("learned_proven", "learned fixes"),
             ("learned_kept_pct", "learned kept %"), ("rescued", "rescued"),
+            ("ideas_adopted", "ideas adopted/tested"),
             ("test_pass_pct", "test pass %")]
     rows = hist[-4:] + [now]
     out = ["rates (this run last; earlier runs above it):",
@@ -8093,7 +8118,7 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
     for name in ("split_report.txt", "libclang_parse_errors.txt", "header_repair_report.txt",
                  "globals_repair_report.txt", "fix_report.txt", "first_error.txt",
                  "header_errors.txt", "link_report.txt", "link_errors.txt",
-                 "improve_report.txt", "learned_fixes.txt", "test/test_report.txt"):
+                 "improve_report.txt", "learned_fixes.txt", "ideas.txt", "test/test_report.txt"):
         f = P.build / name
         if f.exists():
             section(f"build/{name}", _read(f))
@@ -8231,6 +8256,8 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
         lessons.save()
     # everything learned this run, on everything quarantined
     retry_quarantined(cfg, records, cache)
+    # kinds of error many functions still share: the model proposes general fixes
+    idea_round(cfg, records, cache)
     save_cache(cfg, cache)
     report_learned(cfg, lessons)
     if MODEL_STATS["no_answer"]:
@@ -12132,8 +12159,555 @@ def restore_missing_files(cfg: Config, records: dict[str, FuncRecord]) -> int:
     return len(missing)
 
 
+# ----------------------------------------------------------------------------
+# The idea loop: the model proposes fixes for a whole kind of error
+# ----------------------------------------------------------------------------
+#
+# When many functions fail with the same kind of error, the model is shown a few
+# of them and asked for ONE general idea: a rewrite of the failing text, a changed
+# declaration, a type definition or a compile flag that only relaxes a warning. The
+# script tests each idea on copies of up to IDEA_SAMPLE functions with that error,
+# and (for header and flag ideas) on functions that compile today, which must keep
+# compiling. An idea that helps is adopted for the whole group: a rewrite becomes a
+# proven learned fix, a header or flag idea stays in the build (and comes back if
+# the header is rebuilt). Every idea and what happened to it goes in
+# build/ideas.json (readable: build/ideas.txt), which later asks and later runs see.
+#
+# Novelty: an idea the same as one tried (same normal form), with the same effect on
+# the sample however it's worded, or too close to a failed one isn't tested again:
+# the model is told which idea it repeats and why that failed, and asked for
+# something different. Each group gets IDEA_ASKS asks a round; the 2nd shows other
+# examples, the 3rd asks for a different kind of idea, the 4th lets it be more
+# inventive. A group that runs out is parked until something changes (its code,
+# the header, the learned fixes, the model), or for 1, 2, then 4 runs.
+
+IDEA_MIN_GROUP = 8              # functions with the same kind of error before it gets ideas
+IDEA_ASKS = 4                   # asks per group per round
+IDEA_SAMPLE = 20                # functions an idea is tested on
+IDEA_REGRESSION = 30            # compiling functions a header or flag idea must not break
+IDEA_SIMILAR = 0.8              # effect overlap that counts as "too close"
+IDEAS_START = "// ==== ideas the idea loop adopted (generated: don't edit) ===="
+IDEAS_END = "// ==== end of adopted ideas ===="
+FLAG_OK = re.compile(r"^-Wno-error=[a-z0-9][a-z0-9-]*$")
+
+IDEA_SYS = """You improve a tool that makes decompiled C (from Ghidra) compile with clang.
+Many functions fail with the SAME compiler error. Propose ONE general idea that
+fixes this error in all of them. Answer with JSON only, in one of these forms:
+{"type": "rewrite", "before": "<text copied exactly from one example's failing line>", "after": "<what that text becomes>", "why": "...", "different": "..."}
+{"type": "declare", "name": "<a function>", "prototype": "<its full C prototype, ending in ;>", "why": "...", "different": "..."}
+{"type": "typedef", "line": "<one C declaration line: a typedef, struct or macro>", "why": "...", "different": "..."}
+{"type": "flag", "flag": "-Wno-error=<warning name>", "why": "...", "different": "..."}
+A rewrite is applied wherever its "before" text appears in a failing line (names
+stand for any name). Never change what the code does: keep every call, number and
+assignment, and don't comment code out. "different" says how this idea differs
+from the ones already tried."""
+
+
+class IdeaBook:
+    def __init__(self, cfg: Config):
+        self.path = cfg.workdir / "ideas.json"
+        try:
+            self.data = json.loads(self.path.read_text())
+        except Exception:
+            self.data = {}
+        for k, v in (("ideas", []), ("groups", {}), ("run", 0), ("flags", []), ("header", []),
+                     ("protos", [])):
+            self.data.setdefault(k, v)
+
+    def save(self, cfg: Config) -> None:
+        try:
+            write_atomic(self.path, json.dumps(self.data, indent=0))
+        except OSError:
+            pass
+        out = ["Ideas the model proposed for kinds of error many functions share, and what",
+               "happened to each (newest last). 'adopted' ones are in the build.", ""]
+        for g, st in sorted(self.data["groups"].items()):
+            ideas = [i for i in self.data["ideas"] if i["group"] == g]
+            out.append(f"== {g}")
+            out.append(f"   {len(ideas)} idea(s), {sum(1 for i in ideas if i['result'] == 'adopted')} "
+                       f"adopted" + (f"; parked until something changes (or run "
+                                     f"{st.get('until_run')})" if st.get("parked") else ""))
+            for i in ideas[-40:]:
+                out.append(f"   #{i['id']} [{i['result']}] {i['norm'][:160]}")
+                if i.get("why_result"):
+                    out.append(f"        {i['why_result'][:220]}")
+            out.append("")
+        try:
+            write_atomic(cfg.workdir / "ideas.txt", "\n".join(out) + "\n")
+        except OSError:
+            pass
+
+    def add(self, **entry) -> dict:
+        entry["id"] = len(self.data["ideas"]) + 1
+        entry["at"] = time.strftime("%Y-%m-%d %H:%M")
+        self.data["ideas"].append(entry)
+        return entry
+
+    def for_group(self, g: str) -> list:
+        return [i for i in self.data["ideas"] if i["group"] == g]
+
+
+def _idea_norm(idea: dict) -> Optional[str]:
+    t = idea.get("type")
+    try:
+        if t == "rewrite":
+            m: dict = {}
+            b = _idea_tokens(_raw_tokens(str(idea["before"])), m)
+            a = _idea_tokens(_raw_tokens(str(idea["after"])), m)
+            if not b or b == a:
+                return None
+            return "rewrite: " + " ".join(b) + "  ->  " + " ".join(a)
+        if t == "declare":
+            p = str(idea["prototype"]).strip()
+            if not re.search(rf"\b{re.escape(str(idea['name']))}\s*\(", p):
+                return None
+            return f"declare {idea['name']}: " + " ".join(_raw_tokens(p))
+        if t == "typedef":
+            line = str(idea["line"]).strip()
+            if not line or "\n" in line.strip() or len(line) > 400:
+                return None
+            return "typedef: " + " ".join(_raw_tokens(line))
+        if t == "flag":
+            f = str(idea["flag"]).strip()
+            return f"flag: {f}" if FLAG_OK.match(f) else None
+    except (KeyError, TypeError):
+        return None
+    return None
+
+
+def _parse_idea(reply: Optional[str]) -> Optional[dict]:
+    if not reply:
+        return None
+    s = reply.find("{")
+    while s >= 0:
+        depth = 0
+        for e in range(s, len(reply)):
+            if reply[e] == "{":
+                depth += 1
+            elif reply[e] == "}":
+                depth -= 1
+                if depth == 0:
+                    try:
+                        d = json.loads(reply[s:e + 1])
+                        if isinstance(d, dict) and d.get("type"):
+                            return d
+                    except ValueError:
+                        pass
+                    break
+        s = reply.find("{", s + 1)
+    return None
+
+
+def _idea_rule(idea: dict, kind: str) -> Optional[dict]:
+    m: dict = {}
+    b = _idea_tokens(_raw_tokens(str(idea["before"])), m)
+    a = _idea_tokens(_raw_tokens(str(idea["after"])), m)
+    if len(b) < 2 or not all(x in b for x in a if x.startswith("@")):
+        return None
+    return {"kind": kind, "before": b, "after": a, "ok": 0, "bad": 0, "span": True, "vary": True}
+
+
+def _apply_rule_to_errors(rule: dict, code: str, err: str, rel: str) -> str:
+    lines = code.split("\n")
+    for ln in sorted({l for l, _ in _all_errors(err, rel)}):
+        if 1 <= ln <= len(lines):
+            new = FixLessons.apply(rule, lines[ln - 1])
+            if new is not None:
+                lines[ln - 1] = new
+    return "\n".join(lines)
+
+
+def _header_section(cfg: Config, book: IdeaBook) -> None:
+    """Put the adopted header ideas in shared.h (again, if the header was rebuilt),
+    and the adopted prototype changes."""
+    if not cfg.shared_h.exists():
+        return
+    text = cfg.shared_h.read_text()
+    new = text
+    if IDEAS_START in new:
+        a = new.index(IDEAS_START)
+        b = new.find(IDEAS_END, a)
+        new = new[:a] + (new[b + len(IDEAS_END):].lstrip("\n") if b >= 0 else "")
+    for old_line, new_line in book.data["protos"]:
+        if old_line in new:
+            new = new.replace(old_line, new_line, 1)
+    if book.data["header"]:
+        new = new.rstrip("\n") + "\n\n" + "\n".join([IDEAS_START, *book.data["header"], IDEAS_END]) + "\n"
+    if new != text:
+        with HEADER_LOCK.write():
+            cfg.shared_h.write_text(new)
+
+
+def apply_adopted_ideas(cfg: Config) -> None:
+    """Adopted header ideas into shared.h and adopted flags into the build."""
+    if getattr(cfg, "lang", "c++") != "c" and not (cfg.workdir / "ideas.json").exists():
+        return
+    book = IdeaBook(cfg)
+    _header_section(cfg, book)
+    for f in book.data["flags"]:
+        if f not in cfg.extra_flags:
+            cfg.extra_flags.append(f)
+
+
+def _member_code(cfg: Config, rec: FuncRecord) -> Optional[str]:
+    """The function's real code: its file, or (quarantined) the original kept aside."""
+    try:
+        if rec.quarantined:
+            return (cfg.quarantine_dir / Path(rec.file).name).read_text()
+        return (cfg.workdir / rec.file).read_text()
+    except OSError:
+        return None
+
+
+def _try_code(cfg: Config, rec: FuncRecord, code: str) -> tuple[bool, str]:
+    """Compile this code as the function, then put its file back as it was."""
+    path = cfg.workdir / rec.file
+    keep = path.read_text() if path.exists() else None
+    try:
+        path.write_text(code)
+        ok, err, _ = compile_tu(cfg, rec.file)
+        return ok, err
+    finally:
+        if keep is not None:
+            path.write_text(keep)
+
+
+def _test_idea(cfg: Config, idea: dict, rule: Optional[dict], sample: list, regress: list,
+               base: dict, set_phase) -> dict:
+    """{better, worse, broke, tested, effect}: on copies; nothing stays changed."""
+    better = worse = broke = tested = 0
+    t = idea["type"]
+    if t == "rewrite":
+        for i, (rec, code, err) in enumerate(sample, 1):
+            new = _apply_rule_to_errors(rule, code, err, rec.file)
+            if new == code:
+                continue
+            set_phase(f"testing on copies: {i}/{len(sample)}")
+            tested += 1
+            ok, err2 = _try_code(cfg, rec, new)
+            if ok or n_errors(err2) < n_errors(err):
+                better += 1
+            elif n_errors(err2) > n_errors(err):
+                worse += 1
+        return {"better": better, "worse": worse, "broke": 0, "tested": tested}
+    saved_h = cfg.shared_h.read_text()
+    saved_flags = list(cfg.extra_flags)
+    try:
+        if t == "flag":
+            cfg.extra_flags.append(idea["flag"].strip())
+        else:
+            with HEADER_LOCK.write():
+                text = saved_h
+                if t == "declare":
+                    old = next((l for k, lbl, l in _enabled_header_lines(cfg) if lbl == idea["name"]
+                                and k == "proto"), None)
+                    if not old:
+                        return {"better": 0, "worse": 0, "broke": 0, "tested": 0,
+                                "why": f"shared.h declares no function {idea['name']}"}
+                    text = text.replace(old, idea["prototype"].strip(), 1)
+                    idea["_old"] = old
+                else:
+                    text = text.rstrip("\n") + "\n" + idea["line"].strip() + "\n"
+                cfg.shared_h.write_text(text)
+        set_phase("rebuilding the precompiled header with the idea")
+        for i, (rec, code, err) in enumerate(sample, 1):
+            set_phase(f"testing on copies: {i}/{len(sample)}")
+            tested += 1
+            ok, err2 = _try_code(cfg, rec, code)
+            if ok or n_errors(err2) < n_errors(err):
+                better += 1
+            elif n_errors(err2) > n_errors(err):
+                worse += 1
+        for i, rec in enumerate(regress, 1):
+            set_phase(f"checking it breaks nothing that compiles: {i}/{len(regress)}")
+            ok, _ = compile_tu(cfg, rec.file)[:2]
+            if not ok:
+                broke += 1
+                if broke >= 2:
+                    break
+    finally:
+        cfg.extra_flags[:] = saved_flags
+        if cfg.shared_h.read_text() != saved_h:
+            with HEADER_LOCK.write():
+                cfg.shared_h.write_text(saved_h)
+    return {"better": better, "worse": worse, "broke": broke, "tested": tested}
+
+
+def _effect(idea: dict, rule: Optional[dict], sample: list) -> list:
+    """What the idea would change, as text, without compiling: for a rewrite the
+    changed lines of the sample; otherwise the idea itself."""
+    if idea["type"] != "rewrite":
+        return [_idea_norm(idea) or ""]
+    out = []
+    for rec, code, err in sample:
+        new = _apply_rule_to_errors(rule, code, err, rec.file)
+        if new != code:
+            a, b = code.split("\n"), new.split("\n")
+            out += [f"{rec.name}:{n}:{y.strip()}" for n, (x, y) in enumerate(zip(a, b), 1) if x != y]
+    return sorted(out)
+
+
+def _idea_prompt(cfg: Config, kind: str, members: list, tried: list, feedback: str,
+                 other_type: set) -> str:
+    parts = [f"The error, in {len(members)} function(s): {kind}", ""]
+    for rec, code, err in members:
+        line, msg = _first_error(err, rec.file)
+        lines = code.split("\n")
+        lo, hi = max(1, line - 4), min(len(lines), line + 3)
+        parts.append(f"--- {rec.name}: line {line}: {msg}")
+        parts += [f"{n:4d}{'>' if n == line else ' '} {lines[n - 1]}" for n in range(lo, hi + 1)]
+        decls = gather_declarations(cfg, extract_error_symbols(err))
+        if decls:
+            parts.append("    declarations it uses:\n" + "\n".join("    " + d for d in decls.split("\n")[:6]))
+        parts.append("")
+    if tried:
+        parts.append("Ideas already tried for this error (don't repeat them):")
+        for i in tried[-8:]:
+            parts.append(f"  #{i['id']} {i['norm'][:200]} -> {i['result']}"
+                         + (f": {i['why_result'][:160]}" if i.get("why_result") else ""))
+        parts.append("")
+    if other_type:
+        parts.append("This time propose a different KIND of idea than these, already tried: "
+                     + ", ".join(sorted(other_type)) + ".")
+    if feedback:
+        parts.append(feedback)
+    return "\n".join(parts)
+
+
+def _group_key(cfg: Config, kind: str, recs: list) -> str:
+    lessons = fix_lessons(cfg)
+    try:
+        h = cfg.shared_h.stat()
+        hk = f"{h.st_size}:{int(h.st_mtime)}"
+    except OSError:
+        hk = ""
+    codes = "".join(text_sha(_member_code(cfg, r) or "") for r in recs[:50])
+    return text_sha(f"{hk}|{lessons.fingerprint(kind)}|{cfg.fix_model_used}|{len(recs)}|{codes}")[:16]
+
+
+def idea_round(cfg: Config, records: dict[str, FuncRecord], cache: dict) -> dict:
+    """One round of ideas for every stuck kind of error. Returns counts."""
+    counts = Counter()
+    if getattr(cfg, "no_ideas", False) or not cfg.fix_model_used:
+        return counts
+    groups: dict[str, list] = {}
+    for m, r in records.items():
+        if r.compiles or not r.last_error:
+            continue
+        groups.setdefault(error_kind(_first_error(r.last_error, r.file)[1]), []).append(r)
+    book = IdeaBook(cfg)
+    book.data["run"] += 1
+    run_no = book.data["run"]
+    todo = []
+    for kind, recs in sorted(groups.items(), key=lambda kv: -len(kv[1])):
+        if len(recs) < IDEA_MIN_GROUP or not kind:
+            continue
+        key = _group_key(cfg, kind, recs)
+        st = book.data["groups"].setdefault(kind, {})
+        if st.get("parked") and st.get("key") == key and run_no < st.get("until_run", 0):
+            counts["parked"] += 1
+            continue
+        todo.append((kind, recs, key))
+    if not todo:
+        book.save(cfg)
+        return counts
+    log(cfg, show=True, msg=f"  ideas: {len(todo)} kind(s) of error that {IDEA_MIN_GROUP} or more "
+                            f"functions share get ideas from the model"
+                            + (f" ({counts['parked']} parked until something changes)"
+                               if counts["parked"] else ""))
+    prog = Progress(len(todo), 0, title="ideas for kinds of error many functions share")
+    prog.extra = lambda: (f"{counts['asks']} asks, {counts['tested']} tested, {counts['adopted']} "
+                          f"adopted, {counts['repeats']} repeats, {counts['rescued']} functions fixed")
+    lessons = fix_lessons(cfg)
+    compiling = [r for r in records.values() if r.compiles and not r.quarantined]
+    try:
+        for kind, recs, key in todo:
+            prog.begin(kind, kind[:60])
+            set_phase = lambda p, k=kind: prog.set_phase(k, p)
+            try:
+                members = []
+                for r in recs:
+                    code = _member_code(cfg, r)
+                    if code is not None:
+                        members.append((r, code, r.last_error))
+                sample = []
+                for i, (r, code, _) in enumerate(members[:IDEA_SAMPLE], 1):
+                    set_phase(f"measuring {i}/{min(IDEA_SAMPLE, len(members))} examples as they are now")
+                    ok, err = _try_code(cfg, r, code)
+                    if not ok:
+                        sample.append((r, code, err))
+                if not sample:
+                    continue
+                adopted = _idea_session(cfg, book, kind, key, members, sample, compiling,
+                                        counts, set_phase)
+                st = book.data["groups"][kind]
+                if adopted:
+                    st.update(parked=False, parks=0, key=key)
+                    set_phase(f"rolling it out to {len(recs)} functions")
+                    counts["rescued"] += _roll_out(cfg, records, recs, cache, adopted, book, set_phase)
+                else:
+                    parks = st.get("parks", 0) + 1
+                    # sits out the next 1, 2, then 4 runs (sooner if something changes)
+                    st.update(parked=True, parks=parks, key=key,
+                              until_run=run_no + 1 + min(4, 2 ** (parks - 1)))
+                book.save(cfg)
+            finally:
+                prog.end(kind)
+    finally:
+        prog.close()
+        book.save(cfg)
+        lessons.save()
+    RUN_CTX["ideas"] = dict(counts)
+    log(cfg, show=True, msg=f"  ideas: {counts['asks']} asked, {counts['tested']} tested, "
+                            f"{counts['adopted']} adopted, {counts['repeats']} repeats caught, "
+                            f"{counts['rescued']} function(s) compile now. All in build/ideas.txt")
+    return counts
+
+
+def _idea_session(cfg, book, kind, key, members, sample, compiling, counts, set_phase):
+    """Up to IDEA_ASKS asks for one kind of error. The adopted idea, or None."""
+    import random
+    rnd = random.Random(kind)
+    feedback = ""
+    for ask in range(1, IDEA_ASKS + 1):
+        tried = book.for_group(kind)
+        same_state = [i for i in tried if i.get("key") == key]
+        shown = members[(ask - 1) * 3:(ask - 1) * 3 + 3] or members[:3]
+        other = {i["type"] for i in same_state if i.get("type")} if ask == 3 else set()
+        set_phase(f"asking the model ({ask}/{IDEA_ASKS})")
+        counts["asks"] += 1
+        user = _idea_prompt(cfg, kind, shown, tried, feedback, other)
+        max_out = max(400, answer_room(cfg.ctx, len(IDEA_SYS) + len(user)))
+        reply = cfg.client.chat(cfg.fix_model_used, [{"role": "system", "content": IDEA_SYS},
+                                                     {"role": "user", "content": user}],
+                                max_out=max_out, temperature=0.8 if ask == IDEA_ASKS else 0.3,
+                                timeout=cfg.model_timeout_s, fatal=False)
+        idea = _parse_idea(reply)
+        norm = _idea_norm(idea) if idea else None
+        if not norm:
+            feedback = ("Your last answer wasn't one of the four JSON forms (or its rewrite "
+                        "changed nothing). Answer with exactly one JSON object.")
+            counts["unusable"] += 1
+            continue
+        if other and idea["type"] in other:
+            feedback = (f"That is again a {idea['type']} idea; this time propose a different "
+                        f"kind: not {', '.join(sorted(other))}.")
+            counts["repeats"] += 1
+            continue
+        if idea["type"] == "typedef":
+            dm = re.match(r"\s*#\s*define\s+([A-Za-z_]\w*)", idea["line"])
+            if dm and (dm.group(1) in CPP_KEYWORDS or dm.group(1) in C_BASE_TYPES
+                       or re.search(rf"\b{re.escape(dm.group(1))}\b", cfg.shared_h.read_text())
+                       or any(re.search(rf"\b{re.escape(dm.group(1))}\b", c) for _, c, _ in members)):
+                # a macro over a name the program uses would change code that compiles today
+                feedback = (f"A macro may only define a NEW name; {dm.group(1)} is already used in "
+                            f"the program. Propose something else.")
+                counts["unusable"] += 1
+                continue
+        rule = _idea_rule(idea, kind) if idea["type"] == "rewrite" else None
+        if idea["type"] == "rewrite" and not rule:
+            feedback = ("A rewrite's 'after' may only use the function's own names (uVar1, "
+                        "param_1, local_...) that its 'before' has, and 'before' needs at least "
+                        "two tokens. Propose something else.")
+            counts["unusable"] += 1
+            continue
+        # novelty: 1) the same idea, 2) the same effect, 3) too close to a failed one
+        dup = next((i for i in same_state if i["norm"] == norm), None)
+        effect = _effect(idea, rule, sample)
+        if not dup and effect:
+            dup = next((i for i in same_state if i.get("effect") == effect), None)
+        if not dup and effect and idea["type"] == "rewrite":
+            for i in same_state:
+                if i["result"] != "adopted" and i.get("effect"):
+                    a, b = set(effect), set(i["effect"])
+                    if len(a & b) / max(1, len(a | b)) >= IDEA_SIMILAR:
+                        dup = i
+                        break
+        if dup:
+            counts["repeats"] += 1
+            book.add(group=kind, key=key, type=idea["type"], norm=norm, result="repeat",
+                     why_result=f"same as #{dup['id']}", model=cfg.fix_model_used)
+            feedback = (f"That is the same as idea #{dup['id']} ({dup['norm'][:160]}), which was "
+                        f"tried: {dup['result']}"
+                        + (f" ({dup['why_result'][:200]})" if dup.get("why_result") else "")
+                        + ". Propose something different.")
+            continue
+        if idea["type"] == "rewrite" and not effect:
+            book.add(group=kind, key=key, type="rewrite", norm=norm, result="no effect",
+                     why_result="its 'before' text isn't in any failing line of the examples",
+                     effect=[], model=cfg.fix_model_used)
+            feedback = ("That rewrite's 'before' text doesn't appear in the failing lines: copy "
+                        "it exactly from an example's failing line. Propose again.")
+            continue
+        # test it, on copies
+        regress = rnd.sample(compiling, min(IDEA_REGRESSION, len(compiling))) \
+            if idea["type"] != "rewrite" else []
+        if idea["type"] == "declare":
+            users = [r for r in compiling if re.search(rf"\b{re.escape(idea['name'])}\s*\(",
+                                                       _member_code(cfg, r) or "")][:IDEA_REGRESSION]
+            regress = users + [r for r in regress if r not in users][:max(0, IDEA_REGRESSION - len(users))]
+        counts["tested"] += 1
+        res = _test_idea(cfg, idea, rule, sample, regress, {}, set_phase)
+        good = (res["better"] >= max(2, len(sample) // 4) and res["worse"] * 4 <= res["better"]
+                and not res["broke"])
+        why = res.get("why") or (f"tested on {res['tested']}: {res['better']} better, "
+                                 f"{res['worse']} worse"
+                                 + (f", {res['broke']} compiling function(s) broke" if regress else ""))
+        entry = book.add(group=kind, key=key, type=idea["type"], norm=norm,
+                         result="adopted" if good else "rejected", why_result=why,
+                         effect=effect[:200], idea={k: v for k, v in idea.items() if k != "_old"},
+                         model=cfg.fix_model_used)
+        if good:
+            counts["adopted"] += 1
+            if idea.get("_old"):
+                entry["old_line"] = idea["_old"]
+            return entry
+        feedback = (f"Idea #{entry['id']} was tested on copies of {res['tested']} functions: "
+                    f"{res['better']} better, {res['worse']} worse"
+                    + (f", and {res['broke']} function(s) that compile today broke" if res["broke"] else "")
+                    + ". Propose something different.")
+    return None
+
+
+def _roll_out(cfg, records, recs, cache, entry: dict, book: IdeaBook, set_phase=lambda p: None) -> int:
+    """Put an adopted idea in place and give every function in its group the
+    no-model fixes again. How many compile now."""
+    idea = entry["idea"]
+    kind = entry["group"]
+    lessons = fix_lessons(cfg)
+    if idea["type"] == "rewrite":
+        rule = _idea_rule(idea, kind)
+        with lessons.lock:
+            rid = text_sha(kind + " ".join(rule["before"]) + "->" + " ".join(rule["after"]) + "|idea")[:16]
+            r = lessons.data["rules"].setdefault(rid, {**rule, "from": f"idea #{entry['id']}",
+                                                       "at": time.strftime("%Y-%m-%d %H:%M")})
+            r["ok"] = max(r["ok"], FixLessons.PROMOTE)
+            lessons.version += 1
+        lessons.save()
+    elif idea["type"] == "flag":
+        book.data["flags"].append(idea["flag"].strip())
+    elif idea["type"] == "declare":
+        book.data["protos"].append([entry["old_line"], idea["prototype"].strip()])
+    else:
+        book.data["header"].append(idea["line"].strip())
+    book.save(cfg)
+    apply_adopted_ideas(cfg)
+    fixed = 0
+    failing = [r for r in recs if not r.quarantined and not r.compiles]
+    for i, r in enumerate(failing, 1):
+        set_phase(f"rolling it out: {i}/{len(failing)} still to fix, {fixed} fixed")
+        if quick_fix(cfg, r, cache):
+            fixed += 1
+    fixed += retry_quarantined(cfg, records, cache, only={r.mangled for r in recs}, force=True,
+                               bar=False, on_each=lambda i, n: set_phase(
+                                   f"rolling it out: {i}/{n} quarantined, {fixed} fixed so far"))
+    return fixed
+
+
 def retry_quarantined(cfg: Config, records: dict[str, FuncRecord], cache: dict,
-                      limit: Optional[int] = None, busy: Optional[set] = None) -> int:
+                      limit: Optional[int] = None, busy: Optional[set] = None,
+                      only: Optional[set] = None, force: bool = False,
+                      bar: bool = True, on_each=None) -> int:
     """Quarantined functions get the fixes learned since they were quarantined:
     their original code goes back, the quick fixes (with every learned fix for its
     kind of error) run, and it's kept only if it compiles now. A function is retried
@@ -12141,11 +12715,12 @@ def retry_quarantined(cfg: Config, records: dict[str, FuncRecord], cache: dict,
     lessons = fix_lessons(cfg)
     todo = []
     for m, r in records.items():
-        if not r.quarantined or (busy and m in busy) or not r.last_error:
+        if not r.quarantined or (busy and m in busy) or not r.last_error \
+                or (only is not None and m not in only):
             continue
         kind = error_kind(_first_error(r.last_error, r.file)[1])
         fp = lessons.fingerprint(kind)
-        if fp and r.retry_key != fp and (cfg.quarantine_dir / Path(r.file).name).exists():
+        if (force or (fp and r.retry_key != fp)) and (cfg.quarantine_dir / Path(r.file).name).exists():
             todo.append((m, fp))
     if limit:
         todo = todo[:limit]
@@ -12153,10 +12728,12 @@ def retry_quarantined(cfg: Config, records: dict[str, FuncRecord], cache: dict,
         return 0
     rescued = 0
     title = "quarantined functions, with the fixes learned since"
-    prog = Progress(len(todo), 0, title=title) if limit is None else None
-    for m, fp in todo:
+    prog = Progress(len(todo), 0, title=title) if limit is None and bar else None
+    for n_done, (m, fp) in enumerate(todo, 1):
         rec = records[m]
         path = cfg.workdir / rec.file
+        if on_each:
+            on_each(n_done, len(todo))
         if prog:
             prog.begin(m, rec.name)
         try:
@@ -12209,8 +12786,13 @@ def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
     declare_missing(cfg, records)
     save_manifest(cfg, records)
     n_failing = sum(1 for r in records.values() if not r.compiles and not r.quarantined)
+    apply_adopted_ideas(cfg)
     if not n_failing:
-        retry_quarantined(cfg, records, load_cache(cfg))
+        cache = load_cache(cfg)
+        retry_quarantined(cfg, records, cache)
+        if model_check(cfg):
+            idea_round(cfg, records, cache)
+            save_cache(cfg, cache)
         save_manifest(cfg, records)
         log(cfg, show=True, msg="  nothing to fix")
         return
@@ -12238,6 +12820,7 @@ def build_recover(cfg: Config, records: dict[str, FuncRecord]) -> None:
 
 
 def build_link(cfg: Config, records: dict[str, FuncRecord]) -> bool:
+    apply_adopted_ideas(cfg)
     linked = link_pass(cfg, records)
     save_manifest(cfg, records)
     save_state(cfg, link_ok=linked)
@@ -12486,6 +13069,7 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
         callgraph_path=args.callgraph or (P.callgraph if P.callgraph.exists() else None),
         force=args.force, stub_all=args.stub_all, export_path=P.export,
         index_path=P.index, no_pseudo=args.no_pseudo, recover_later=args.recover_later,
+        no_ideas=getattr(args, "no_ideas", False),
         retry_quarantined=args.retry_quarantined,
         model_ctx_chars=args.model_ctx_chars or recovery_chars(args.ctx),
         workers=args.workers, model_timeout_s=1800, ctx=args.ctx)
@@ -13746,6 +14330,10 @@ def build_parser() -> argparse.ArgumentParser:
                    help="at link time, stub EVERY undefined symbol that has a prototype")
     g.add_argument("--no-pseudo", action="store_true",
                    help="skip rebuilding quarantined functions from pseudocode")
+    g.add_argument("--no-ideas", action="store_true",
+                   help="no idea loop: by default, when many functions share a kind of error, "
+                        "the model proposes general fixes, which are tested on copies and "
+                        "kept only if they help (build/ideas.txt)")
     g.add_argument("--recover-later", action="store_true",
                    help="don't rebuild a function from pseudocode the moment the fixer gives up "
                         "on it; leave that to the recover stage")
@@ -13803,6 +14391,7 @@ def main(argv=None) -> int:
     RUN_CTX.pop("recover_run", None)
     RUN_CTX.pop("test_run", None)
     RUN_CTX.pop("learned", None)
+    RUN_CTX.pop("ideas", None)
     RUN_CTX.pop("rescued", None)
     SHOW_ALL["on"] = bool(getattr(args, "verbose", False))
     REPORTED["done"] = False

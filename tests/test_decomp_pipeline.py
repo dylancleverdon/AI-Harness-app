@@ -1664,6 +1664,11 @@ C_PASS_CASES = [
      "{\n  undefined1 local_68 [16];\n  local_68._0_8_ = *param_1;\n  local_68._8_8_ = 5;\n"
      "  FUN_00007777((undefined8 *)local_68,1);\n  return;\n}"),
     ("FUN_00007777", "void FUN_00007777(undefined8 *p, int n)", "{\n  return;\n}"),
+    # a label before a call isn't a use of its result; x._0_4_ += 1; "a & x._0_4_" is an and
+    ("FUN_00006666", "uint FUN_00006666(undefined8 param_1)",
+     "{\n  undefined8 uVar1;\n  uint uVar2;\n  uVar1 = param_1;\n  uVar1._0_4_ += 1;\n"
+     "  uVar2 = 0xff & uVar1._0_4_;\n  if (uVar2 == 0) goto LAB_1;\n  return uVar2;\nLAB_1:\n"
+     "  FUN_001da834(0);\n  return 0;\n}"),
 ]
 
 
@@ -1689,8 +1694,8 @@ int main(void) {
   double a = 3.5, b = 1.25;
   gh16 r = FUN_0000cac4(&a, &b);
   long x = 41;
-  printf("%g %d %lld %u\n", r.d[0], FUN_00003780(10.0), (long long)FUN_00003c94(&x),
-         FUN_00005555(0x1234567800000000ULL));
+  printf("%g %d %lld %u %u\n", r.d[0], FUN_00003780(10.0), (long long)FUN_00003c94(&x),
+         FUN_00005555(0x1234567800000000ULL), FUN_00006666(0x100000005ULL));
   return 0;
 }
 ''')
@@ -1701,4 +1706,102 @@ int main(void) {
     out = subprocess.run([str(tmp_path / "t")], capture_output=True, text=True).stdout.split()
     # the double's bits kept; the caller reads the callee's double as a double
     # (10 + 20 * 0.5); the lost return value is the tail call's; the right 4 bytes
-    assert out == ["1.25", "20", "42", str(0x12345678)]
+    assert out == ["1.25", "20", "42", str(0x12345678), "6"]
+
+
+# ---- the idea loop: the model proposes fixes for a whole kind of error; each is
+# tested on copies, repeats are caught and sent back, stuck groups are parked
+
+def _idea_setup(tmp_path, monkeypatch, replies, n=10):
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path, lang="c")
+    cfg.fix_model_used = "test-model"
+    (tmp_path / "funcs").mkdir()
+    cfg.shared_h.write_text("// shared\n")
+    recs = {}
+    for i in range(n):
+        rel = f"funcs/f{i}.c"
+        (tmp_path / rel).write_text(f"long f{i}(long param_1) {{\n  long lVar{i} = param_1;\n"
+                                    f"  return lVar{i}.hi + {i};\n}}\n")
+        recs[f"f{i}"] = dp.FuncRecord(name=f"f{i}", mangled=f"f{i}", file=rel, start=0, end=0)
+    for i in range(3):                               # these compile today
+        rel = f"funcs/ok{i}.c"
+        (tmp_path / rel).write_text(f"int ok{i}(void) {{ return {i}; }}\n")
+        recs[f"ok{i}"] = dp.FuncRecord(name=f"ok{i}", mangled=f"ok{i}", file=rel, start=0, end=0,
+                                       compiles=True)
+
+    def compile_tu(cfg, rel):
+        lines = (cfg.workdir / rel).read_text().split("\n")
+        errs = [f"{cfg.workdir / rel}:{n}:3: error: member reference base type 'long' is not a structure or union"
+                for n, l in enumerate(lines, 1) if ".hi" in l]
+        return (not errs), "\n".join(errs) + ("\n1 error generated.\n" if errs else ""), []
+    monkeypatch.setattr(dp, "compile_tu", compile_tu)
+    monkeypatch.setattr(dp, "_LESSONS", {})
+    monkeypatch.setattr(dp, "save_manifest", lambda cfg, records: None)
+    asked = []
+
+    class Client:
+        def chat(self, model, messages, **kw):
+            asked.append(messages[1]["content"])
+            return replies[min(len(asked), len(replies)) - 1]
+    cfg.client = Client()
+    for r in recs.values():
+        if not r.compiles:
+            r.last_error = compile_tu(cfg, r.file)[1]
+    return cfg, recs, asked
+
+
+def test_idea_loop_retries_with_feedback_and_adopts_what_works(tmp_path, monkeypatch, capsys):
+    replies = ["I think you should fix it.",                                     # unusable
+               '{"type": "rewrite", "before": "NOPE(y)", "after": "OK(y)"}',     # matches nothing
+               '{"type": "flag", "flag": "-Wno-error=foo"}',                    # 3rd: another kind
+               '{"type": "rewrite", "before": "lVar0.hi", "after": "GH_GET(lVar0, 8, 8)"}']  # works
+    cfg, recs, asked = _idea_setup(tmp_path, monkeypatch, replies)
+    counts = dp.idea_round(cfg, recs, {})
+    assert len(asked) == 4
+    assert "wasn't one of the four JSON forms" in asked[1]
+    assert "doesn't appear in the failing lines" in asked[2]
+    assert "different KIND of idea" in asked[2] or "different KIND of idea" in asked[3]
+    assert "was tested on copies" in asked[3]                      # the flag's result, fed back
+    assert counts["adopted"] == 1 and counts["rescued"] == 10
+    assert all(recs[f"f{i}"].compiles for i in range(10))
+    assert "GH_GET(lVar3,8,8)" in (tmp_path / "funcs" / "f3.c").read_text().replace(" ", "")  # each its own names
+    book = json.loads((tmp_path / "ideas.json").read_text())
+    assert [i["result"] for i in book["ideas"]] == ["no effect", "rejected", "adopted"]
+    text = (tmp_path / "ideas.txt").read_text()
+    assert "[adopted]" in text and "[rejected]" in text
+    assert "ideas for kinds of error many functions share" in capsys.readouterr().out   # the bar
+
+
+def test_idea_loop_catches_repeats_and_parks_a_stuck_group(tmp_path, monkeypatch):
+    same = '{"type": "rewrite", "before": "lVar0.hi", "after": "(lVar0).hi"}'      # changes nothing useful
+    cfg, recs, asked = _idea_setup(tmp_path, monkeypatch, [same, same, same, same])
+    counts = dp.idea_round(cfg, recs, {})
+    assert counts["tested"] == 1 and counts["adopted"] == 0
+    assert counts["repeats"] >= 2                                  # caught, not tested again
+    assert any("the same as idea #1" in a for a in asked[1:])
+    book = json.loads((tmp_path / "ideas.json").read_text())
+    g = next(iter(book["groups"].values()))
+    assert g["parked"] and g["until_run"] == 3          # sits out the next run
+    # nothing changed: parked, the model isn't asked again
+    asked.clear()
+    assert dp.idea_round(cfg, recs, {})["parked"] == 1 and not asked
+
+
+def test_header_ideas_must_not_break_what_compiles(tmp_path, monkeypatch):
+    cfg, recs, asked = _idea_setup(tmp_path, monkeypatch, ['{"type": "typedef", "line": "#define hi lo"}',
+                                                           '{"type": "typedef", "line": "typedef long hi_t;"}'])
+    real = dp.compile_tu
+
+    def compile_tu(cfg, rel):                        # the header idea "fixes" BAD but breaks ok1
+        if "hi_t" in cfg.shared_h.read_text():
+            if "ok1" in rel:
+                return False, f"{cfg.workdir / rel}:1:1: error: broken\n", []
+            return True, "", []
+        return real(cfg, rel)
+    monkeypatch.setattr(dp, "compile_tu", compile_tu)
+    counts = dp.idea_round(cfg, recs, {})
+    assert counts["adopted"] == 0
+    assert "A macro may only define a NEW name" in asked[1]      # "hi" is used: refused, re-asked
+    assert "hi_t" not in cfg.shared_h.read_text()                # put back after the test
+    book = json.loads((tmp_path / "ideas.json").read_text())
+    assert "compiling function(s) broke" in book["ideas"][0]["why_result"]
