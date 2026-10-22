@@ -302,16 +302,21 @@ function paintStatus(v) {  // draws one script's state into the shared header, b
 
 // ---- console input: type into a running script, or run a shell command --------
 const term = { hist: [], i: 0 };
+// phone and tablet keyboards have no Shift+Enter: there Enter adds a line and Send runs it
+const touchKeys = () => matchMedia('(pointer: coarse)').matches;
+function fitTerm() { const t = $('#term-input'); t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
+$('#term-input').addEventListener('input', fitTerm);
 try { term.hist = JSON.parse(localStorage.getItem('termHist') || '[]'); } catch { }
 const isRunning = () => { const v = curView(); return !!v && v.status === 'running'; };
 function updateTermUI() {
   $('#eof-btn').classList.toggle('hidden', !isRunning());
-  $('#term-input').placeholder = isRunning() ? 'Type here to answer the running script (Enter to send)…' : 'Type a shell command (cd, ls, python, pip…)';
+  const nl = touchKeys() ? 'Send to run it' : 'Shift+Enter for a new line';
+  $('#term-input').placeholder = isRunning() ? `Type here to answer the running script (${touchKeys() ? 'Send' : 'Enter'} to send)…` : `Type a shell command (cd, ls, python, pip…) · ${nl}`;
   $('#term-prompt').textContent = isRunning() ? '›' : ((state.status?.term_cwd || '~').replace(/^.*\/AIHarness/, '~/AIHarness') + ' $');
 }
 $('#term-form').onsubmit = async e => {
   e.preventDefault(); const t = $('#term-input').value; if (!t.trim() && !isRunning()) return;
-  $('#term-input').value = '';
+  $('#term-input').value = ''; fitTerm();
   if (t.trim()) { term.hist = [...term.hist.filter(x => x !== t), t].slice(-100); term.i = term.hist.length; try { localStorage.setItem('termHist', JSON.stringify(term.hist)); } catch { } }
   try {
     const v = curView(); if (!v) return;
@@ -326,8 +331,14 @@ $('#term-form').onsubmit = async e => {
   } catch (err) { appendLine({ s: 'err', x: err.message }); }
 };
 $('#term-input').onkeydown = e => {
-  if (e.key === 'ArrowUp' && term.i > 0) { e.preventDefault(); $('#term-input').value = term.hist[--term.i]; }
-  if (e.key === 'ArrowDown') { e.preventDefault(); term.i = Math.min(term.i + 1, term.hist.length); $('#term-input').value = term.hist[term.i] || ''; }
+  const ta = e.target, before = ta.value.slice(0, ta.selectionStart), after = ta.value.slice(ta.selectionEnd);
+  // Enter sends (Shift+Enter: a new line); on a touch keyboard Enter is a new line and Send sends
+  if (e.key === 'Enter' && !e.isComposing && (e.metaKey || e.ctrlKey || (!e.shiftKey && !touchKeys()))) {
+    e.preventDefault(); $('#term-form').requestSubmit(); return;
+  }
+  // history: Up on the first line, Down on the last
+  if (e.key === 'ArrowUp' && !before.includes('\n') && term.i > 0) { e.preventDefault(); ta.value = term.hist[--term.i]; fitTerm(); }
+  if (e.key === 'ArrowDown' && !after.includes('\n')) { e.preventDefault(); term.i = Math.min(term.i + 1, term.hist.length); ta.value = term.hist[term.i] || ''; fitTerm(); }
   if (e.key === 'd' && e.ctrlKey && isRunning() && !$('#term-input').value) { e.preventDefault(); $('#eof-btn').click(); }
 };
 $('#eof-btn').onclick = () => { const v = curView(); v && v.run && api(`/runs/${v.run.id}/input`, { method: 'POST', body: { eof: true } }); };

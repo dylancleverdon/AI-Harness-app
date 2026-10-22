@@ -1815,3 +1815,103 @@ def test_ideas_run_twice_a_run_without_counting_two_runs(tmp_path, monkeypatch):
     # the round after the one-by-one fixes, same run, nothing changed: still parked
     assert dp.idea_round(cfg, recs, {}, new_run=False)["parked"] == 1 and not asked
     assert json.loads((tmp_path / "ideas.json").read_text())["run"] == 1
+
+
+
+C_PASS_CASES_2 = [
+    # a 16-byte variable given a plain 64-bit value
+    ("FUN_0000a1d8", "uint64_t FUN_0000a1d8(long *p, long n)", "{\n  return (uint64_t)(*p + n);\n}"),
+    ("FUN_000659a0", "long FUN_000659a0(long param_1)",
+     "{\n  undefined1 auVar2 [16];\n  long lStack_40;\n  lStack_40 = param_1;\n"
+     "  auVar2 = FUN_0000a1d8(&lStack_40,0x10);\n  return auVar2._0_8_;\n}"),
+    # a piece inside a store's value; pieces of an array element
+    ("FUN_0009083c", "uint FUN_0009083c(undefined8 *param_1)",
+     "{\n  undefined1 local_b0 [16];\n  undefined1 local_68 [16];\n  undefined8 uStack_28;\n"
+     "  undefined8 local_60 [2];\n  local_60[0] = 0x0000000700000009;\n  uStack_28 = 0x0000000500000003;\n"
+     "  local_b0._8_4_ = 11;\n  local_68._8_4_ = local_b0._8_4_;\n  local_68._12_4_ = uStack_28._4_4_;\n"
+     "  return local_68._8_4_ + local_68._12_4_ + local_60[0]._0_4_;\n}"),
+    # a 16-byte value cast to a number, and passed as a 16-byte parameter
+    ("FUN_00079e9c", "long FUN_00079e9c(long v)", "{\n  return v * 2;\n}"),
+    ("FUN_0006a52c", "undefined8 FUN_0006a52c(undefined1 param_1 [16], double param_2)",
+     "{\n  return param_1._0_8_ + (long)param_2;\n}"),
+    ("FUN_000795e8", "long FUN_000795e8(long x)",
+     "{\n  undefined1 local_50 [16];\n  local_50._0_8_ = x;\n  local_50._8_8_ = 0;\n"
+     "  return FUN_00079e9c((long)local_50) + FUN_0006a52c(local_50, 1.0);\n}"),
+    # a 128-bit number and 16 bytes of memory returned as a 16-byte value
+    ("FUN_00065024", "undefined1  [16] FUN_00065024(void)", "{\n  return ZEXT816(0);\n}"),
+    ("FUN_0007a35c", "undefined1  [16] FUN_0007a35c(long param_1)",
+     "{\n  return *(undefined1 (*) [16])(param_1 + 0x18);\n}"),
+    # a destructor; a name that's a type and a function; a switch on a pointer
+    ("runtime_error_dtor", "void __thiscall std::runtime_error::~runtime_error_dtor(runtime_error *this)",
+     "{\n  return;\n}"),
+    ("bad_cast", "long bad_cast(bad_cast *this)", "{\n  return 3;\n}"),
+    ("FUN_0013e3ec", "long FUN_0013e3ec(bad_cast *this)",
+     "{\n  long uVar1;\n  uVar1 = bad_cast(this);\n  return uVar1;\n}"),
+    ("FUN_0008fecc", "int FUN_0008fecc(long *plVar6)",
+     "{\n  switch(plVar6) {\n  case (long *)0x0:\n    return 10;\n  case (long *)0x1:\n    return 11;\n  }\n"
+     "  return 12;\n}"),
+]
+
+
+def test_c_mode_passes_second_round_cases_from_a_real_run(tmp_path):
+    import subprocess
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        pytest.skip("no C compiler")
+    entries = [{"tag": "", "head": h, "body": b, "name": n} for n, h, b in C_PASS_CASES_2]
+    known = set(re.findall(r"\btypedef\b[^;]*?\b([A-Za-z_]\w*)\s*;", dp.GHIDRA_INTRINS_H))
+    res = dp.c_mode_passes(entries, known)
+    heads = {e["name"]: e["head"] for e in entries}
+    assert heads["runtime_error_dtor"].startswith("void runtime_error_dtor(")      # no ~
+    assert "gh16 param_1" in heads["FUN_0006a52c"] and "struct bad_cast *this" in heads["bad_cast"]
+    src = (dp.GHIDRA_INTRINS_H + "\n" + res["opaque"] + "\n"
+           + "\n".join(e["head"] + ";" for e in entries) + "\n"
+           + "\n".join(e["head"] + "\n" + e["body"] for e in entries) + r"""
+#include <stdio.h>
+int main(void) {
+  unsigned char mem[0x30] = {0}; mem[0x18] = 0x2a;
+  gh16 z = FUN_00065024(), r = FUN_0007a35c((long)mem);
+  printf("%ld %u %ld %llu %u %ld %d\n", FUN_000659a0(5), FUN_0009083c(0), FUN_000795e8(4),
+         (unsigned long long)(z.q[0] + z.q[1]), (unsigned)r.b[0], FUN_0013e3ec(0), FUN_0008fecc((long *)1));
+  return 0;
+}
+""")
+    (tmp_path / "t.c").write_text(src)
+    r = subprocess.run([cc, "-x", "c", "-std=gnu11", "-w", *dp.C_LENIENT, str(tmp_path / "t.c"),
+                        "-o", str(tmp_path / "t")], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    out = subprocess.run([str(tmp_path / "t")], capture_output=True, text=True).stdout.split()
+    assert out == ["21", "25", "13", "0", "42", "3", "11"]
+
+
+def test_phantom_variables_only_when_the_function_doesnt_declare_them():
+    src = "void f(void)\n{\n  undefined4 extraout_s0;\n  g(extraout_s0, unaff_x19);\n}\n"
+    out = dp.deghidra_text(src)
+    assert "uint64_t unaff_x19 = 0;" in out and "uint64_t extraout_s0" not in out
+
+
+def test_data_the_code_calls_through_is_a_function_pointer(tmp_path):
+    import base64
+    P = dp.Paths(tmp_path)
+    P.make()
+    data = {"blocks": [{"name": "__data", "start": "2000", "size": 16, "bytes": base64.b64encode(bytes(16)).decode()}],
+            "symbols": [{"addr": "2000", "name": "DAT_00002000", "type": "undefined8", "size": 8},
+                        {"addr": "2008", "name": "DAT_00002008", "type": "undefined8", "size": 8}]}
+    h, c, macros, _ = dp.data_sources(P, data, {}, {"DAT_00002000", "DAT_00002008"},
+                                      frozenset({"DAT_00002000"}))
+    assert "#define GD_DAT_00002000 (*(uint64_t (**)())(g_block_0 + 0x0))" in h
+    assert "#define GD_DAT_00002008 (*(undefined8 *)(g_block_0 + 0x8))" in h      # a plain value as before
+
+
+def test_c_mode_a_data_type_that_is_also_a_function_keeps_its_struct_tag(tmp_path, model):
+    # like "struct stat" and stat(): Ghidra's type Pair, and a function called Pair
+    pseudo = {**C_PSEUDO,
+              "10c0": ("Pair", "long Pair(Pair *param_1)\n\n{\n  return (long)param_1->first;\n}\n"),
+              "10d0": ("FUN_000010d0", "long FUN_000010d0(Pair *param_1)\n\n{\n  long lVar1;\n"
+                                       "  lVar1 = Pair(param_1);\n  return lVar1;\n}\n")}
+    write_export(tmp_path, pseudo)
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    src = (tmp_path / "rewrite" / "pseudocode.c").read_text()
+    assert "typedef struct Pair Pair;" not in src and "long Pair(struct Pair *param_1)" in src
+    names = {r["name"]: r for r in json.loads((tmp_path / "build_c" / "manifest.json").read_text()).values()}
+    assert names["Pair"]["compiles"] and names["FUN_000010d0"]["compiles"]

@@ -277,7 +277,8 @@ def terminal(body: dict = Body(...)):
     cmd = str(body.get("command", "")).strip()
     if not cmd:
         raise HTTPException(400, "empty command")
-    if cmd == "cd" or cmd.startswith("cd "):
+    # a lone "cd" changes the console's folder; in a multi-line script it's part of the script
+    if "\n" not in cmd and (cmd == "cd" or cmd.startswith("cd ")):
         ok, msg = runs.change_dir(cmd[3:].strip().strip("\"'") if cmd != "cd" else "")
         return {"cd": ok, "message": msg, "cwd": str(runs.term_cwd)}
     return {"run": runs.start_command(cmd).summary(), "cwd": str(runs.term_cwd)}

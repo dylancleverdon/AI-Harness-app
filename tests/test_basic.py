@@ -712,3 +712,17 @@ def test_a_run_adds_up_the_heat_given_off_while_it_ran():
     finally:
         c.post(f"/api/runs/{rid}/stop")
     assert rn.fmt_energy(1500) == "1.50 kWh (5,118 BTU)" and rn.fmt_energy(2.5) == "2.5 Wh (9 BTU)"
+
+
+def test_console_runs_a_multi_line_shell_script():
+    from harness.server import app, runs
+    c = TestClient(app, headers={"x-harness": "1"})
+    r = c.post("/api/terminal", json={"command": "cd /tmp\necho one\necho two-$((1+1))"}).json()
+    assert "run" in r and "more line" in r["run"]["script"]          # one run, not a folder change
+    rid = r["run"]["id"]
+    for _ in range(50):
+        d = c.get(f"/api/runs/{rid}").json()
+        if d["status"] != "running":
+            break
+        time.sleep(0.1)
+    assert "one" in d["output"] and "two-2" in d["output"]

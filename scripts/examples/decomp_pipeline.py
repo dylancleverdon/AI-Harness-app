@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.3"
+PIPELINE_VERSION = "2026-10-22.4"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3297,7 +3297,8 @@ def datatypes_to_c(types: list, wanted: set) -> str:
 GD_NAME = re.compile(r"^(?:DAT|PTR|UNK|s|u|_DAT|BYTE|WORD|DWORD|QWORD|PTR_DAT|PTR_FUN)_\w+$")
 
 
-def data_sources(P: Paths, data: dict, cname: dict, used_names: set) -> tuple[str, str, dict, int]:
+def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
+                 fn_ptrs: frozenset = frozenset()) -> tuple[str, str, dict, int]:
     """(ghidra_data.h, ghidra_data.c, {Ghidra data name: GD_ macro}) from Ghidra's
     data export: every data block embedded byte for byte, each labelled location
     the code uses as a typed macro at its exact spot (GD_<name>, so it can't clash
@@ -3351,6 +3352,9 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set) -> tuple[st
             t = t or "uint8_t"
         m = "GD_" + name
         macros[name] = m
+        if name in fn_ptrs and not arr and size in (0, 8):   # the code calls through it
+            h.append(f"#define {m} (*(uint64_t (**)())(g_block_{i} + {off:#x}))")
+            continue
         h.append(f"#define {m} (*({t} (*){arr})(g_block_{i} + {off:#x}))" if arr
                  else f"#define {m} (*({t} *)(g_block_{i} + {off:#x}))")
     # pointers stored in data
@@ -3431,7 +3435,7 @@ C_QUAL = re.compile(r"(?<![\w.>])(?:[A-Za-z_]\w*(?:<[^<>;{}()]*(?:<[^<>;{}()]*>[
                     r"(?=~?[A-Za-z_])")
 C_TYPE_WORDS = {"const", "volatile", "unsigned", "signed", "struct", "union", "enum", "static",
                 "inline", "extern", "register", "short", "long"}
-PIECE = re.compile(r"(?<![\w.>])([A-Za-z_]\w*)\._(\d+)_(\d+)_(?!\w)")
+PIECE = re.compile(r"(?<![\w.>])([A-Za-z_]\w*(?:\[[^\[\]]+\])?)\._(\d+)_(\d+)_(?!\w)")
 FLOAT_HINT = re.compile(r"\b\d+\.\d*(?:[eE][-+]?\d+)?\b|\b\d+[eE][-+]?\d+\b")
 
 
@@ -3442,6 +3446,8 @@ def _c_head(head: str) -> str:
     head = C_QUAL.sub("", head)
     head = re.sub(r"\)\s*const\s*$", ")", head.rstrip())
     head = re.sub(r"\bundefined1?\s*\[\s*16\s*\]\s*", "gh16 ", head)
+    head = re.sub(r"\bundefined1?\s+([A-Za-z_]\w*)\s*\[\s*16\s*\]", r"gh16 \1", head)   # parameters
+    head = re.sub(r"~\s*(?=[A-Za-z_]\w*\s*\()", "", head)      # a destructor: it has its own name
     return head
 
 
@@ -3515,9 +3521,20 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
     """Rewrites entries ({"head", "body", "name"}) in place; returns counts.
     tick() is called once per function per pass (C_PASSES passes)."""
     stats = Counter()
-    # 1) heads and bodies without C++ syntax
+    # 1) heads and bodies without C++ syntax; a switch on a pointer switches on its value
     for e in entries:
         tick()
+        if "switch" in e["body"]:
+            ptrs = set(re.findall(r"^\s*[A-Za-z_]\w*\s*\*+\s*([A-Za-z_]\w*)\s*;", e["body"], re.M))
+            ptrs |= set(re.findall(r"\*\s*([A-Za-z_]\w*)\s*[,)]", e["head"]))
+            b0 = e["body"]
+            e["body"] = re.sub(r"\bswitch\s*\(\s*([A-Za-z_]\w*)\s*\)",
+                               lambda m: f"switch((intptr_t)({m.group(1)}))" if m.group(1) in ptrs
+                               else m.group(0), e["body"])
+            e["body"] = re.sub(r"\bcase\s*\(\s*[A-Za-z_][\w\s]*\*+\s*\)\s*(-?(?:0x[0-9a-fA-F]+|\d+))\s*:",
+                               r"case \1:", e["body"])
+            if e["body"] != b0:
+                stats["switches on a pointer (on its value)"] += 1
         h = _c_head(e["head"])
         if h != e["head"]:
             stats["C++/Objective-C names in definitions"] += 1
@@ -3531,14 +3548,17 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
 
     # 2) types C doesn't know: opaque (used through pointers) or register-sized
     unknown: dict = {}
+    tagged: set = set()
 
     def note_type(tstr: str):
         idents = [w for w in re.findall(r"[A-Za-z_]\w*", tstr) if w not in C_TYPE_WORDS]
         if len(idents) != 1:
             return
         w = idents[0]
-        if w in known_types or w in C_BASE_TYPES or w in CPP_KEYWORDS or w in functions \
-                or w.startswith(("GD_", "gh16")):
+        if w in functions:
+            tagged.add(w)                      # also a function: the type is "struct w"
+            return
+        if w in known_types or w in C_BASE_TYPES or w in CPP_KEYWORDS or w.startswith(("GD_", "gh16")):
             return
         unknown[w] = unknown.get(w, False) or "*" not in tstr   # used by value somewhere?
     for e in entries:
@@ -3556,6 +3576,16 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
                 note_type(m.group(1) + " " + m.group(2))
     opaque = [f"typedef uint64_t {w};" if by_value else f"typedef struct {w} {w};"
               for w, by_value in sorted(unknown.items())]
+    for w in tagged:                         # pointer uses and declarations, not its calls
+        rx = re.compile(rf"(?<![\w.>])(?<!struct ){re.escape(w)}\b(?=\s*\*)|"
+                        rf"(?m:^(\s*)){re.escape(w)}(?=\s+[A-Za-z_]\w*\s*;)")
+        for e in entries:
+            e["head"] = rx.sub(lambda m: (m.group(1) or "") + f"struct {w}", e["head"])
+            e["body"] = rx.sub(lambda m: (m.group(1) or "") + f"struct {w}", e["body"])
+    # declared once up front: a struct first named in a parameter list would be a
+    # different type in every declaration
+    opaque += [f"struct {w};" for w in sorted(tagged)]
+    stats["types that are also functions (as struct tags)"] = len(tagged)
     stats["types C didn't know (declared opaque)"] = len(opaque)
 
     # 3) 16-byte register values: "undefined1 v [16]" -> gh16 where it's used as a value
@@ -3572,6 +3602,26 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
             body = re.sub(rf"(?<![\w.>]){v}\s*\[", f"{v}.b[", body)
             body = re.sub(rf"(\(\s*[A-Za-z_][\w\s]*\*+\s*\))\s*{v}\b(?!\s*[.\[])", rf"\1&{v}", body)
             stats["16-byte register values (as gh16)"] += 1
+        # every 16-byte variable (locals and parameters): what's assigned to it whole
+        # can be any value; a cast to a number reads its low 8 bytes
+        hp = _head_parts(e["head"])
+        g16 = set(re.findall(r"^\s*gh16\s+([A-Za-z_]\w*)\s*;", body, re.M))
+        g16 |= {re.match(r"gh16\s+([A-Za-z_]\w*)$", p).group(1) for p in (hp[2] if hp else [])
+                if re.match(r"gh16\s+([A-Za-z_]\w*)$", p)}
+        for v in g16:
+            out, i = [], 0
+            for m in re.finditer(rf"(?<![\w.>]){v}\s*=(?!=)\s*", body):
+                if m.start() < i:
+                    continue
+                end = _expr_end(body, m.end())
+                val = body[m.end():end].strip()
+                out.append(body[i:m.end()] + (val if val.startswith("GH16(") else f"GH16({val})"))
+                i = end
+            body = "".join(out) + body[i:]
+            body = re.sub(rf"(\(\s*(?!gh16\b)[A-Za-z_][\w ]*\s*\))\s*{v}\b(?!\s*[.\[])",
+                          rf"\1GH_GET({v}, 0, 8)", body)
+        if hp and hp[0].strip() == "gh16":       # returns a 16-byte value: return any value as one
+            body = re.sub(r"\breturn\s+(?!GH16\()([^;]+);", r"return GH16(\1);", body)
         e["body"] = body
 
     # 4) return values Ghidra lost: void functions whose result is used
@@ -3641,7 +3691,12 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
     #    where the code shows it: a float next to it, a double variable or parameter,
     #    or a piece the function it came from stored a double in)
     dbl_slots: dict = {}            # function -> offsets of the 16 bytes it returns that hold a double
+    int_cast = re.compile(r"\(\s*(?:unsigned\s+|signed\s+)?(?:long(?:\s+long)?|int|short|char|u?int\d+_t|"
+                          r"undefined\d?|u?long|uint|ushort|uchar|byte|word|dword|qword|size_t)\s*\)\s*"
+                          r"\*?[A-Za-z_]\w*")
+
     def float_expr(expr: str, fvars: set) -> bool:
+        expr = int_cast.sub("0", expr)       # (long)dVar: an integer there, whatever it was
         return bool(FLOAT_HINT.search(expr) or re.search(r"\((?:double|float)\)", expr)
                     or any(re.search(rf"(?<![\w.>]){re.escape(v)}\b", expr) for v in fvars))
 
@@ -3676,66 +3731,70 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
             continue
         fv = float_vars(e)
         dslots = set()               # (variable, offset) holding a double
-        for m in re.finditer(r"(?<![\w.>])([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\s*\(", body):
+        for m in re.finditer(r"(?<![\w.>])([A-Za-z_]\w*)\s*=\s*(?:GH16\(\s*)?([A-Za-z_]\w*)\s*\(", body):
             for off in dbl_slots.get(m.group(2), ()):
                 dslots.add((m.group(1), off))
         for m in re.finditer(r"(?<![\w.>])([A-Za-z_]\w*)\._(\d+)_8_\s*=(?!=)\s*", body):
             end = _expr_end(body, m.end())
             if float_expr(body[m.end():end], fv):
                 dslots.add((m.group(1), int(m.group(2))))
-        out, i = [], 0
-        for m in PIECE.finditer(body):
-            v, off, size = m.group(1), int(m.group(2)), int(m.group(3))
-            if m.start() < i:
-                continue
-            out.append(body[i:m.start()])
-            rest = body[m.end():]
-            am = re.match(r"\s*(<<|>>|[+\-*/%&|^])?=(?!=)\s*", rest)
-            if am:                                   # a store: the exact bytes of the value
-                vs = m.end() + am.end()
-                ve = _expr_end(body, vs)
-                val = body[vs:ve].strip()
-                if am.group(1):                      # x._0_4_ += e
-                    val = f"GH_GET({v}, {off}, {size}) {am.group(1)} ({val})"
-                out.append(f"GH_SET({v}, {off}, {size}, {val})")
-                i = ve
+        for _round in range(4):          # a piece inside a store's value: another round
+            if not PIECE.search(body):
+                break
+            out, i = [], 0
+            for m in PIECE.finditer(body):
+                v, off, size = m.group(1), int(m.group(2)), int(m.group(3))
+                if m.start() < i:
+                    continue
+                out.append(body[i:m.start()])
+                rest = body[m.end():]
+                am = re.match(r"\s*(<<|>>|[+\-*/%&|^])?=(?!=)\s*", rest)
+                if am:                                   # a store: the exact bytes of the value
+                    vs = m.end() + am.end()
+                    ve = _expr_end(body, vs)
+                    val = body[vs:ve].strip()
+                    if am.group(1):                      # x._0_4_ += e
+                        val = f"GH_GET({v}, {off}, {size}) {am.group(1)} ({val})"
+                    out.append(f"GH_SET({v}, {off}, {size}, {val})")
+                    i = ve
+                    stats["pieces of variables (v._0_8_)"] += 1
+                    continue
+                if out and re.search(r"(?:^|[=(,;{}\[!?:+\-*/%<>|^~]|\breturn)\s*&\s*$", out[-1]) \
+                        and not out[-1].rstrip().endswith("&&"):   # &v._0_8_: an address, not "a & b"
+                    out[-1] = out[-1].rstrip()[:-1]
+                    out.append(f"GH_ADDR({v}, {off})")
+                    i = m.end()
+                    continue
+                s, en = _stmt_bounds(body, m.start())
+                stmt = body[s:en]
+                dbl = size == 8 and ((v, off) in dslots or float_expr(stmt.replace(m.group(0), ""), fv))
+                if dbl:
+                    # passed where an integer is expected, or assigned to an integer: bits
+                    am2 = re.match(r"\s*([A-Za-z_]\w*)\s*=", stmt)
+                    if am2 and am2.group(1) not in fv and not FLOAT_HINT.search(stmt) \
+                            and (v, off) not in dslots:
+                        dbl = False
+                cm = None
+                for c in re.finditer(r"([A-Za-z_]\w*)\s*\(", body[s:m.start()]):
+                    cm = c
+                if cm and cm.group(1) in ptypes:          # an argument: the parameter's type decides
+                    argno = body[s + cm.end():m.start()].count(",")
+                    pts = ptypes[cm.group(1)]
+                    if argno < len(pts) and pts[argno] in ("double", "float"):
+                        dbl = True
+                    elif argno < len(pts) and pts[argno] not in ("...", ""):
+                        dbl = dbl and (v, off) in dslots
+                if size == 4 and float_expr(stmt.replace(m.group(0), ""), fv):
+                    out.append(f"GH_GETF({v}, {off})")
+                elif dbl:
+                    out.append(f"GH_GETD({v}, {off})")
+                else:
+                    out.append(f"GH_GET({v}, {off}, {size})")
                 stats["pieces of variables (v._0_8_)"] += 1
-                continue
-            if out and re.search(r"(?:^|[=(,;{}\[!?:+\-*/%<>|^~]|\breturn)\s*&\s*$", out[-1]) \
-                    and not out[-1].rstrip().endswith("&&"):   # &v._0_8_: an address, not "a & b"
-                out[-1] = out[-1].rstrip()[:-1]
-                out.append(f"GH_ADDR({v}, {off})")
                 i = m.end()
-                continue
-            s, en = _stmt_bounds(body, m.start())
-            stmt = body[s:en]
-            dbl = size == 8 and ((v, off) in dslots or float_expr(stmt.replace(m.group(0), ""), fv))
-            if dbl:
-                # passed where an integer is expected, or assigned to an integer: bits
-                am2 = re.match(r"\s*([A-Za-z_]\w*)\s*=", stmt)
-                if am2 and am2.group(1) not in fv and not FLOAT_HINT.search(stmt) \
-                        and (v, off) not in dslots:
-                    dbl = False
-            cm = None
-            for c in re.finditer(r"([A-Za-z_]\w*)\s*\(", body[s:m.start()]):
-                cm = c
-            if cm and cm.group(1) in ptypes:          # an argument: the parameter's type decides
-                argno = body[s + cm.end():m.start()].count(",")
-                pts = ptypes[cm.group(1)]
-                if argno < len(pts) and pts[argno] in ("double", "float"):
-                    dbl = True
-                elif argno < len(pts) and pts[argno] not in ("...", ""):
-                    dbl = dbl and (v, off) in dslots
-            if size == 4 and float_expr(stmt.replace(m.group(0), ""), fv):
-                out.append(f"GH_GETF({v}, {off})")
-            elif dbl:
-                out.append(f"GH_GETD({v}, {off})")
-            else:
-                out.append(f"GH_GET({v}, {off}, {size})")
-            stats["pieces of variables (v._0_8_)"] += 1
-            i = m.end()
-        out.append(body[i:])
-        e["body"] = "".join(out)
+            out.append(body[i:])
+            body = "".join(out)
+        e["body"] = body
     return {"stats": stats, "opaque": "\n".join(opaque)}
 
 
@@ -3802,8 +3861,11 @@ def run_pseudo_source(P: Paths, args) -> dict:
     types = datatypes_to_c(data.get("datatypes") or [], {_c_ident(w) for w in wanted})
     data_note = ""
     placeholders: list = []
+    # data the code calls through, "(*DAT_...)(...)": it holds a function pointer
+    fn_ptrs = frozenset(re.findall(r"\(\s*\*\s*([A-Za-z_]\w*)\s*\)\s*\(",
+                                   "\n".join(e["body"] for e in entries)))
     if gdata.get("blocks"):
-        dh, dc, macros, n_fix = data_sources(P, gdata, cname, wanted)
+        dh, dc, macros, n_fix = data_sources(P, gdata, cname, wanted, fn_ptrs)
         if macros:
             rx = re.compile(r"(?<![\w.>])(" + "|".join(re.escape(k) for k in
                                                      sorted(macros, key=len, reverse=True)) + r")\b")
@@ -3815,8 +3877,9 @@ def run_pseudo_source(P: Paths, args) -> dict:
         missing = sorted({w for e in entries for w in re.findall(r"(?<![\w.>])([A-Za-z_]\w*)", e["body"])
                           if GD_NAME.match(w) and w not in defined_names and not w.startswith("GD_")})
         for w in missing:
-            dh += f"extern uint64_t {w};   // not in the data export: a placeholder\n"
-            dc += f"uint64_t {w};\n"
+            decl = f"uint64_t (*{w})()" if w in fn_ptrs else f"uint64_t {w}"
+            dh += f"extern {decl};   // not in the data export: a placeholder\n"
+            dc += f"{decl};\n"
             placeholders.append(w)
         write_atomic(P.rewrite / "ghidra_data.h", dh)
         write_atomic(P.rewrite / "ghidra_data.c", dc)
@@ -3840,6 +3903,26 @@ def run_pseudo_source(P: Paths, args) -> dict:
     for what, n in sorted(passes["stats"].items(), key=lambda kv: -kv[1]):
         if n:
             plog(P, show=True, msg=f"    {what}: {n}")
+    called = set(re.findall(r"(?<![\w.>~])([A-Za-z_]\w*)\s*\(", "\n".join(e["body"] for e in entries)))
+    opaque = passes["opaque"]
+    clash = {n: k for k, n in re.findall(r"^typedef (struct|union) ([A-Za-z_]\w*) \2;$",
+                                         types + "\n" + opaque, re.M) if n in called}
+    clash.update({n: "" for n in re.findall(r"^typedef uint64_t ([A-Za-z_]\w*);$", opaque, re.M)
+                  if n in called})
+    for n, kind in clash.items():
+        drop = re.compile(rf"^typedef (?:struct|union) {re.escape(n)} {re.escape(n)};\n?|"
+                          rf"^typedef uint64_t {re.escape(n)};\n?", re.M)
+        types, opaque = drop.sub("", types), drop.sub("", opaque)
+        if kind:
+            use = re.compile(rf"(?<![\w.>])(?<!struct )(?<!union ){re.escape(n)}\b(?!\s*\()")
+            types = use.sub(f"{kind} {n}", types)
+            for e in entries:
+                e["head"] = use.sub(f"{kind} {n}", e["head"])
+                e["body"] = use.sub(f"{kind} {n}", e["body"])
+    if clash:
+        plog(P, show=True, msg=f"    names that are a type and also a function (the type keeps its "
+                               f"struct tag): {len(clash)}")
+    passes["opaque"] = opaque
     codes = [f"{e['tag']}\n{e['head']}\n{e['body']}" for e in entries]
     write_atomic(P.rewritten, types + "\n" + passes["opaque"] + "\n\n" + "\n\n".join(codes) + "\n")
     write_atomic(P.index, json.dumps(index, indent=0))
@@ -4040,7 +4123,7 @@ def run_privacy(P: Paths, args) -> dict:
     write_atomic(priv / "privacy_report.txt", "\n".join(rep) + "\n")
     total = sum(counts.values())
     plog(P, show=True, msg=f"  privacy: {total} replacement(s) in Ghidra's export ("
-                           + ", ".join(f"{len(m)} {k}{'s' if len(m) != 1 else ''}"
+                           + ", ".join(f"{len(m)} {k}{('es' if k.endswith('s') else 's') if len(m) != 1 else ''}"
                                        for k, m in mapping.items())
                            + (f"; {len(auto)} name(s) found automatically and added to "
                               f"privacy_blocklist.txt" if auto else "")
@@ -5129,6 +5212,17 @@ static inline float gh_get_f(const void *p, int off) { float v; memcpy(&v, (cons
 #define GH_GETD(v, off) gh_get_d(&(v), off)
 #define GH_GETF(v, off) gh_get_f(&(v), off)
 #define GH_ADDR(v, off) ((void *)((char *)&(v) + (off)))
+// any value as a 16-byte register value: a number or pointer in the low 8 bytes
+// (a double or float as its bits), a 128-bit number or 16 bytes in memory whole
+static inline gh16 gh_from_i(uint64_t v) { gh16 r; memset(&r, 0, 16); r.q[0] = v; return r; }
+static inline gh16 gh_from_d(double v) { gh16 r; memset(&r, 0, 16); r.d[0] = v; return r; }
+static inline gh16 gh_from_f(float v) { gh16 r; memset(&r, 0, 16); r.f[0] = v; return r; }
+static inline gh16 gh_from_16(gh16 v) { return v; }
+static inline gh16 gh_from_u128(unsigned __int128 v) { gh16 r; memcpy(&r, &v, 16); return r; }
+static inline gh16 gh_from_mem(const void *p) { gh16 r; memcpy(&r, p, 16); return r; }
+#define GH16(e) _Generic((e), gh16: gh_from_16, double: gh_from_d, float: gh_from_f, \
+    unsigned __int128: gh_from_u128, __int128: gh_from_u128, unsigned char *: gh_from_mem, \
+    default: gh_from_i)(e)
 #endif
 #ifdef __cplusplus
 typedef uint64_t  code(...);   // Ghidra's "code *": a pointer to some function
@@ -6379,7 +6473,9 @@ def deghidra_text(src: str) -> str:
         out = re.sub(pat, repl, out)
     # declare phantom vars locally as 0-initialized so the TU at least compiles;
     # these get flagged for review (they indicate incomplete lifting).
-    phantoms = sorted(set(PHANTOM_VAR_RE.findall(out)))
+    phantoms = sorted(p for p in set(PHANTOM_VAR_RE.findall(out))
+                      if not re.search(rf"^\s*[A-Za-z_][\w\s*]*?\b{re.escape(p)}\s*(?:\[[^\]]*\])?\s*;",
+                                       out, re.M))       # declared already: Ghidra's own C does
     if phantoms:
         decls = "".join(f"    uint64_t {p} = 0; // TODO: phantom var (incomplete lift)\n"
                         for p in phantoms)
@@ -7994,11 +8090,12 @@ def rates_lines(P: "Paths", records: Optional[dict], st: dict) -> list[str]:
             ("ideas_adopted", "ideas adopted/tested"),
             ("test_pass_pct", "test pass %")]
     rows = hist[-4:] + [now]
+    width = {k: max(19, len(h) + 2) for k, h in cols}
     out = ["rates (this run last; earlier runs above it):",
-           "  " + f"{'run':12}" + "".join(f"{h:>19}" for _, h in cols)]
+           "  " + f"{'run':12}" + "".join(f"{h:>{width[k]}}" for k, h in cols)]
     for h in rows:
         out.append("  " + f"{h.get('at', '?'):12}" + "".join(
-            f"{('-' if h.get(k) is None else h.get(k)):>19}" for k, _ in cols))
+            f"{('-' if h.get(k) is None else h.get(k)):>{width[k]}}" for k, _ in cols))
     return out
 
 

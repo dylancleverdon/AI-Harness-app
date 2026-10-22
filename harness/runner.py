@@ -201,7 +201,10 @@ class RunManager:
     def start_command(self, command):
         """Run a shell command in the terminal's current folder, with the scripts' Python first on PATH
         so `python` and `pip` here are the same ones scripts use."""
-        run = Run(f"$ {command[:60]}", "")
+        lines = command.strip().splitlines() or [""]
+        label = lines[0][:60] + (f" … (+{len(lines) - 1} more line{'s' if len(lines) > 2 else ''})"
+                                 if len(lines) > 1 else "")
+        run = Run(f"$ {label}", "")
         env = self.run_env(run)
         py_dir = os.path.dirname(script_python())
         if py_dir and os.path.isdir(py_dir):
