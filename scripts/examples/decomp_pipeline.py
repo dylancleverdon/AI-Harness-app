@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.8"
+PIPELINE_VERSION = "2026-10-22.9"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3180,7 +3180,8 @@ def open_ghidra(P: Paths, args, live_ok=True) -> GhidraCache:
 C_BASE_TYPES = set("""void char short int long float double signed unsigned bool _Bool
 int8_t int16_t int32_t int64_t uint8_t uint16_t uint32_t uint64_t size_t ssize_t
 uintptr_t intptr_t ptrdiff_t wchar_t undefined undefined1 undefined2 undefined4 undefined8
-byte word dword qword uint ushort uchar ulong longlong ulonglong sbyte code""".split())
+byte word dword qword uint ushort uchar ulong longlong ulonglong sbyte code
+uint3 int3 undefined3 uint5 uint6 uint7 int5 int6 int7 undefined5 undefined6 undefined7""".split())
 
 
 def _c_ident(name: str) -> str:
@@ -3278,7 +3279,7 @@ def datatypes_to_c(types: list, wanted: set, system: Optional[dict] = None) -> s
     taken = system["typedefs"] | set(system["tags"]) | system["functions"]
     for t in types or []:
         if isinstance(t, dict) and t.get("name") and t.get("kind") in ("struct", "union", "enum", "typedef"):
-            if _c_ident(t["name"]) in taken:
+            if _c_ident(t["name"]) in taken or _c_ident(t["name"]) in C_BASE_TYPES:
                 continue                    # the system headers define it: theirs is the real one
             by_name.setdefault(_c_ident(t["name"]), t)
     # everything reachable from what the code uses
@@ -3362,14 +3363,17 @@ GD_NAME = re.compile(r"^(?:DAT|PTR|UNK|s|u|_DAT|BYTE|WORD|DWORD|QWORD|PTR_DAT|PT
 
 
 def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
-                 fn_ptrs: frozenset = frozenset(), by_address: frozenset = frozenset()
-                 ) -> tuple[str, str, dict, int]:
+                 fn_ptrs: frozenset = frozenset(), by_address: frozenset = frozenset(),
+                 typed: frozenset = frozenset(), known: frozenset = frozenset(),
+                 tags: Optional[dict] = None) -> tuple[str, str, dict, int]:
     """(ghidra_data.h, ghidra_data.c, {Ghidra data name: GD_ macro}) from Ghidra's
     data export: every data block embedded byte for byte, each labelled location
     the code uses as a typed macro at its exact spot (GD_<name>, so it can't clash
     with anything), and the pointers stored in data fixed up when the plugin
     loads: to the rebuilt function, the right spot in the data, or the system
-    library function."""
+    library function. typed: the names the code reads fields of (name.field) —
+    those get their struct type (known: the type names shared.h has; tags: the
+    system's struct tags), everything else plain bytes or a number."""
     import base64
     blocks = [b for b in data.get("blocks") or [] if b.get("size")]
     ddir = P.rewrite / "data"
@@ -3408,7 +3412,8 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
             continue
         i, off = loc
         size = int(sym.get("size") or 0)
-        t, arr = _ghidra_type_to_c(sym.get("type", ""), types_known)
+        t, arr = (_ghidra_type_to_c(sym.get("type", ""), set(known), tags) if name in typed
+                  else _ghidra_type_to_c(sym.get("type", ""), types_known))
         if sym.get("pointer") and not t:
             t = "void *"
         if not t or arr:
@@ -3432,8 +3437,12 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
         i, off = loc
         m = "GD_" + name
         macros[name] = m
+        tm = re.match(r"^([A-Za-z]\w*?)_[0-9a-fA-F]{8,16}$", name)
+        st = _ghidra_type_to_c(tm.group(1), set(known), tags)[0] if tm and name in typed else ""
         if name in fn_ptrs:
             h.append(f"#define {m} (*(uint64_t (**)())(g_block_{i} + {off:#x}))")
+        elif st and st not in C_BASE_TYPES:            # named after its type: section_000003d8
+            h.append(f"#define {m} (*({st} *)(g_block_{i} + {off:#x}))")
         elif re.match(r"^(?:s|u)_", name):            # a string: an array, like Ghidra's
             h.append(f"#define {m} (*(char (*)[1])(g_block_{i} + {off:#x}))")
         else:
@@ -3488,6 +3497,50 @@ __attribute__((constructor)) static void gd_relocate(void) {{
     }}
 }}""")
     return "\n".join(h) + "\n", "\n".join(c) + "\n", macros, len(relocs) + len(ext_relocs)
+
+
+def _system_type_fields(entries: list, datatypes: list, clash: set, system: dict) -> int:
+    """Ghidra's copy of a system type (CGSize) is dropped for the system's, whose
+    fields have other names (width, not field0_0x0). Ghidra's own field names
+    (fieldN_0xOFF) on a variable of such a type become the bytes at that offset,
+    as the field's type: (*(double *)GH_ADDR(v, 0x8)). Returns how many."""
+    fields: dict = {}                       # type -> {field: (off, ctype)}
+    for t in datatypes:
+        if not isinstance(t, dict) or _c_ident(t.get("name") or "") not in clash or \
+                t.get("kind") not in ("struct", "union"):
+            continue
+        for f in t.get("fields") or []:
+            fn = f.get("name") or ""
+            if re.fullmatch(r"field\d+_0x[0-9a-fA-F]+", fn):
+                c, arr = _ghidra_type_to_c(f.get("type", ""), set(system["typedefs"]), system["tags"])
+                if c and not arr:
+                    fields.setdefault(_c_ident(t["name"]), {})[fn] = (int(f.get("off", 0)), c)
+    if not fields:
+        return 0
+    n = 0
+    tnames = "|".join(re.escape(k) for k in fields)
+    decl = re.compile(rf"(?:^|[(,{{;])\s*(?:const\s+)?(?:struct\s+)?({tnames})\s+(\**)\s*([A-Za-z_]\w*)\s*(?=[;,)=\[])", re.M)
+    for e in entries:
+        text = e["head"] + e["body"]
+        if not re.search(r"\bfield\d+_0x", text):
+            continue
+        var_type = {m.group(3): (m.group(1), len(m.group(2))) for m in decl.finditer(text)}
+
+        def sub(m):
+            nonlocal n
+            v, op, fn = m.group(1), m.group(2), m.group(3)
+            if v not in var_type:
+                return m.group(0)
+            tname, stars = var_type[v]
+            got = fields[tname].get(fn)
+            if not got or stars != (1 if op == "->" else 0):
+                return m.group(0)
+            n += 1
+            off, c = got
+            return (f"(*({c} *)GH_ADDR({v}, {off:#x}))" if op == "." else
+                    f"(*({c} *)((char *)({v}) + {off:#x}))")
+        e["body"] = re.sub(r"(?<![\w.>])([A-Za-z_]\w*)\s*(\.|->)\s*(field\d+_0x[0-9a-fA-F]+)\b", sub, e["body"])
+    return n
 
 
 def _is_thunk(name: str, body: str) -> bool:
@@ -3624,7 +3677,11 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
         b = C_QUAL.sub("", e["body"])
         if b != e["body"]:
             stats["C++ qualified names in code"] += 1
-        e["body"] = b
+        # Ghidra's NAN(x) is "x is not a number"; math.h's NAN is the constant
+        b2 = re.sub(r"(?<![\w.>])NAN\s*\(", "isnan(", b)
+        if b2 != b:
+            stats["NAN(x) tests (as isnan)"] += 1
+        e["body"] = b2
     parts = {e["name"]: _head_parts(e["head"]) for e in entries}
     functions = set(parts)
 
@@ -3657,15 +3714,22 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
                              e["body"], re.M):
             if m.group(1) not in CPP_KEYWORDS:
                 note_type(m.group(1) + " " + m.group(2))
+        for m in re.finditer(r"\(\s*([A-Za-z_]\w*)\s*\*+\s*\)", e["body"]):   # (sigaction *)0x0
+            if m.group(1) in system_tags and m.group(1) not in known_types:
+                tagged.add(m.group(1))
     opaque = [f"typedef uint64_t {w};" if by_value else f"typedef struct {w} {w};"
               for w, by_value in sorted(unknown.items())]
     for w in tagged:                         # pointer uses and declarations, not its calls
         kw = system_tags.get(w, "struct")
         rx = re.compile(rf"(?<![\w.>])(?<!struct )(?<!union ){re.escape(w)}\b(?=\s*\*)|"
                         rf"(?m:^(\s*)){re.escape(w)}(?=\s+[A-Za-z_]\w*\s*(?:\[[^\]]*\])?\s*;)")
+        # a variable of it (not a pointer): the system's struct is complete, a type
+        # that's only a function's name has no fields here, so it's a register value
+        whole = f"{kw} {w}" if w in system_tags else "uint64_t"
         for e in entries:
             e["head"] = rx.sub(lambda m, k=kw: (m.group(1) or "") + f"{k} {w}", e["head"])
-            e["body"] = rx.sub(lambda m, k=kw: (m.group(1) or "") + f"{k} {w}", e["body"])
+            e["body"] = rx.sub(lambda m, k=kw: (m.group(1) + whole) if m.group(1) is not None
+                               else f"{k} {w}", e["body"])
     # declared once up front: a struct first named in a parameter list would be a
     # different type in every declaration
     opaque += [f"{system_tags.get(w, 'struct')} {w};" for w in sorted(tagged)]
@@ -3698,6 +3762,16 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
             body = body.replace(m.group(0), f"{m.group(1)}gh16 {v};", 1)
             body = re.sub(rf"(?<![\w.>]){v}\s*\[", f"{v}.b[", body)
             body = re.sub(rf"(\(\s*[A-Za-z_][\w\s]*\*+\s*\))\s*{v}\b(?!\s*[.\[])", rf"\1&{v}", body)
+            stats["16-byte register values (as gh16)"] += 1
+        # rows of 16-byte values, "undefined1 v [2] [16]", a row assigned whole: gh16 v[2]
+        for m in list(re.finditer(r"^(\s*)(?:undefined1?|unsigned\s+char|uchar|byte|uint8_t)\s+"
+                                  r"([A-Za-z_]\w*)\s*\[\s*(\d+)\s*\]\s*\[\s*16\s*\]\s*;", body, re.M)):
+            v = m.group(2)
+            rest = body.replace(m.group(0), "", 1)
+            if not re.search(rf"(?<![\w.>]){v}\s*\[[^\]]*\]\s*=(?!=)", rest) or \
+                    re.search(rf"(?<![\w.>]){v}\s*\[[^\]]*\]\s*\[", rest):
+                continue                    # never assigned a row, or read byte by byte
+            body = body.replace(m.group(0), f"{m.group(1)}gh16 {v}[{m.group(3)}];", 1)
             stats["16-byte register values (as gh16)"] += 1
         # every 16-byte variable (locals and parameters): what's assigned to it whole
         # can be any value; a cast to a number reads its low 8 bytes
@@ -3775,14 +3849,17 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
                      body.rfind("}", 0, prev_end)) + 1
             prev = body[ps:prev_end + 1] if prev_end >= 0 and body[prev_end] == ";" else ""
             cm = re.match(r"^\s*([A-Za-z_]\w*)\s*\(.*\)\s*;\s*$", prev, re.S)
-            if cm and (returns(cm.group(1)) or "void").strip() not in ("void", ""):
+            rt = (returns(cm.group(1)) or "void").strip() if cm else "void"
+            if rt not in ("void", ""):
+                if "gh16" in rt or "[16]" in rt:      # a 16-byte register: its low 8 bytes
+                    return "return GH_AS(uint64_t, " + prev.strip()[:-1].strip() + ");"
                 return "return (uint64_t)" + prev.strip()[:-1].strip() + ";"
             return "return 0;"
         new = []
         last = 0
         for m in re.finditer(r"\breturn\s*;", e["body"]):
             r = ret(m)
-            if r.startswith("return (uint64_t)"):
+            if r.startswith(("return (uint64_t)", "return GH_AS(")):
                 # the tail call becomes the return value
                 s, _ = _stmt_bounds(e["body"], m.start())
                 prev_end = s - 1
@@ -3978,8 +4055,30 @@ def run_pseudo_source(P: Paths, args) -> dict:
                         "body": body, "name": cname[a]})
         index[cname[a]] = {"ghidra": f.get("name"), "addr": a, "status": "done"}
     wanted = set(re.findall(r"[A-Za-z_]\w*", "\n".join(e["head"] + e["body"] for e in entries)))
+    gdata_types = {_c_ident(t["name"]) for t in data.get("datatypes") or []
+                   if isinstance(t, dict) and t.get("name")}
+    # data the code reads fields of (MACH_HEADER.magic, section_000003d8.align): it
+    # gets its struct type, so the type has to be there too
+    field_used = {w for e in entries for w in
+                  re.findall(r"(?<![\w.>])([A-Za-z_]\w*)\.(?!_\d+_\d+_)[A-Za-z_]", e["body"])}
+    for s in (gdata.get("symbols") or []):
+        if s.get("name") in field_used:
+            wanted.update(re.findall(r"[A-Za-z_]\w*", s.get("type") or ""))
+    for w in field_used:
+        tm = re.match(r"^([A-Za-z]\w*?)_[0-9a-fA-F]{8,16}$", w)
+        if tm:
+            wanted.add(tm.group(1))
     system = system_names(COMPILER.get("cmd") or COMPILER.get("found") or shutil.which("clang")
                           or shutil.which("cc"))
+    # a function the program has under a system function's name (setbuf, objc_msgSend):
+    # both can't be defined; calls go to the system's, which is what it was a copy of
+    shadow = [e for e in entries if e["name"] in system["functions"]]
+    if shadow:
+        entries = [e for e in entries if e["name"] not in system["functions"]]
+        for e in shadow:
+            index.pop(e["name"], None)
+        plog(P, show=True, msg=f"    functions with a system function's name (the system's is used): "
+                               f"{len(shadow)}: " + ", ".join(e["name"] for e in shadow[:8]))
     types = datatypes_to_c(data.get("datatypes") or [], {_c_ident(w) for w in wanted}, system)
     clash_sys = sorted(_c_ident(t["name"]) for t in data.get("datatypes") or []
                        if isinstance(t, dict) and t.get("name") and _c_ident(t["name"]) in
@@ -3987,29 +4086,55 @@ def run_pseudo_source(P: Paths, args) -> dict:
     if clash_sys:
         plog(P, show=True, msg=f"    Ghidra's copies of types the system headers define (the system's are "
                                f"used): {len(clash_sys)}, e.g. {', '.join(clash_sys[:6])}")
+    n_sys_fields = _system_type_fields(entries, data.get("datatypes") or [], set(clash_sys), system)
+    if n_sys_fields:
+        plog(P, show=True, msg=f"    fields Ghidra named that the system's type calls something else "
+                               f"(read at their offset): {n_sys_fields}")
     data_note = ""
     placeholders: list = []
     # data the code calls through, "(*DAT_...)(...)": it holds a function pointer
     fn_ptrs = frozenset(re.findall(r"\(\s*\*\s*([A-Za-z_]\w*)\s*\)\s*\(",
                                    "\n".join(e["body"] for e in entries)))
+    type_names = gdata_types | system["typedefs"] | set(system["tags"])
+
+    def named_by_type(w):            # section_000003d8: data Ghidra named after its type
+        tm = re.match(r"^([A-Za-z]\w*?)_[0-9a-fA-F]{8,16}$", w)
+        return bool(tm) and _c_ident(tm.group(1)) in type_names and not w.startswith(
+            ("in_", "unaff_", "extraout_", "local_"))
     data_names = frozenset(w for e in entries for w in re.findall(r"(?<![\w.>])([A-Za-z_]\w*)", e["body"])
-                           if GD_NAME.match(w) and w not in cname.values())
+                           if (GD_NAME.match(w) or (w in field_used and named_by_type(w)))
+                           and w not in cname.values())
     if gdata.get("blocks"):
         known_labels = {s.get("name") for s in gdata.get("symbols") or []}
-        dh, dc, macros, n_fix = data_sources(P, gdata, cname, wanted, fn_ptrs, data_names)
+        type_known = frozenset(re.findall(r"\btypedef\b[^;]*?\b([A-Za-z_]\w*)\s*;", types)) | \
+            frozenset(system["typedefs"])
+        dh, dc, macros, n_fix = data_sources(P, gdata, cname, wanted, fn_ptrs, data_names,
+                                             frozenset(field_used), type_known, system["tags"])
         n_by_addr = sum(1 for n in data_names if n in macros and n not in known_labels)
         if n_by_addr:
             plog(P, show=True, msg=f"    data found by its address (not in Ghidra's label list): {n_by_addr}")
         if macros:
             rx = re.compile(r"(?<![\w.>])(" + "|".join(re.escape(k) for k in
                                                      sorted(macros, key=len, reverse=True)) + r")\b")
+            # a label with a type's name (Name1215vst3Window), where it's the type: a
+            # declaration "T *v;" or a cast "(T *)" keeps the type
+            as_type = re.compile(r"\s*\*+\s*(?:[A-Za-z_]\w*\s*[;,=\[]|\))")
+
+            def label(m, body):
+                n = m.group(1)
+                if _c_ident(n) in gdata_types and as_type.match(body, m.end()) and (
+                        body[max(0, m.start() - 1):m.start()] == "(" or
+                        re.search(r"(?:^|[;{}])\s*$", body[max(0, m.start() - 200):m.start()])):
+                    return n
+                return macros[n]
             for e in entries:          # in the code only: never in a function's own name
-                e["body"] = rx.sub(lambda m: macros[m.group(1)], e["body"])
+                e["body"] = rx.sub(lambda m, b=e["body"]: label(m, b), e["body"])
         # data the code names that the export doesn't have (outside its blocks):
         # a placeholder, so it compiles; listed, because it won't hold the real value
         defined_names = set(macros) | set(cname.values())
         missing = sorted({w for e in entries for w in re.findall(r"(?<![\w.>])([A-Za-z_]\w*)", e["body"])
-                          if GD_NAME.match(w) and w not in defined_names and not w.startswith("GD_")})
+                          if (GD_NAME.match(w) or w in data_names) and w not in defined_names
+                          and not w.startswith("GD_")})
         spans = sorted((int(b["start"], 16), int(b["start"], 16) + int(b["size"]), b.get("name", ""))
                        for b in gdata["blocks"] if b.get("size"))
 
@@ -4024,9 +4149,14 @@ def run_pseudo_source(P: Paths, args) -> dict:
         lines = ["Data the code names that the data export doesn't have: each gets a zero-filled",
                  "placeholder (it compiles, but reads zeros). Where it is, to see what the export misses:", ""]
         for w in missing:
-            decl = f"uint64_t (*{w})()" if w in fn_ptrs else f"uint64_t {w}"
+            st = "" if GD_NAME.match(w) else _ghidra_type_to_c(
+                re.sub(r"_[0-9a-fA-F]{8,16}$", "", w), set(type_known), system["tags"])[0]
+            decl = (f"uint64_t (*{w})()" if w in fn_ptrs else f"{st} {w}" if st and st not in C_BASE_TYPES
+                    else f"uint64_t {w}")
             dh += f"extern {decl};   // not in the data export: a placeholder\n"
-            dc += f"{decl};\n"
+            # a struct's placeholder: zeroed bytes under its name (the type isn't defined here)
+            dc += (f"__attribute__((aligned(16))) uint8_t {w}[4096];\n" if st and st not in C_BASE_TYPES and w not in fn_ptrs
+                   else f"{decl};\n")
             placeholders.append(w)
             am = re.search(r"_([0-9a-fA-F]{4,16})$", w)
             lines.append(f"{w}: {nearest(int(am.group(1), 16) if am else None)}")
@@ -4056,6 +4186,7 @@ def run_pseudo_source(P: Paths, args) -> dict:
         if n:
             plog(P, show=True, msg=f"    {what}: {n}")
     called = set(re.findall(r"(?<![\w.>~])([A-Za-z_]\w*)\s*\(", "\n".join(e["body"] for e in entries)))
+    called |= {e["name"] for e in entries}        # defined: a type of that name clashes too
     opaque = passes["opaque"]
     clash = {n: k for k, n in re.findall(r"^typedef (struct|union) ([A-Za-z_]\w*) \2;$",
                                          types + "\n" + opaque, re.M) if n in called}
@@ -5344,6 +5475,11 @@ typedef uint8_t   undefined1;
 typedef uint16_t  undefined2;
 typedef uint32_t  undefined4;
 typedef uint64_t  undefined8;
+// Ghidra's odd-sized integers (3, 5, 6, 7 bytes), held in the next size up
+typedef uint32_t uint3; typedef int32_t int3; typedef uint32_t undefined3;
+typedef uint64_t uint5; typedef uint64_t uint6; typedef uint64_t uint7;
+typedef int64_t int5; typedef int64_t int6; typedef int64_t int7;
+typedef uint64_t undefined5; typedef uint64_t undefined6; typedef uint64_t undefined7;
 #ifndef __cplusplus
 // --- Ghidra's 16-byte register values and its piece syntax (C mode) ---
 // Ghidra shows a 16-byte register as "undefined1 v[16]" and reads bytes O..O+S-1
@@ -5382,6 +5518,20 @@ static inline gh16 gh_from_mem(const void *p) { gh16 r; memcpy(&r, p, 16); retur
 #define GH16(e) _Generic((e), gh16: gh_from_16, double: gh_from_d, float: gh_from_f, \
     unsigned __int128: gh_from_u128, __int128: gh_from_u128, unsigned char *: gh_from_mem, \
     default: gh_from_i)(e)
+// any value at all (a struct too) as 16 bytes: its own bytes, the rest zero
+#define GH16_ANY(e) ({ __typeof__(e) gh_a_ = (e); gh16 gh_r_; memset(&gh_r_, 0, 16); \
+    memcpy(&gh_r_, &gh_a_, sizeof(gh_a_) < 16 ? sizeof(gh_a_) : 16); gh_r_; })
+// a 16-byte value as a 128-bit number, for Ghidra's arithmetic on whole registers
+static inline unsigned __int128 gh_u128(gh16 v) { unsigned __int128 r; memcpy(&r, &v, 16); return r; }
+#define GH_U128(e) gh_u128(GH16(e))
+// a double with these bits (a register that held a pointer, used as a double)
+static inline double gh_bitsd(uint64_t u) { double d; memcpy(&d, &u, 8); return d; }
+#define GH_BITSD(u) gh_bitsd((uint64_t)(uintptr_t)(u))
+// the first bytes of any value (a 16-byte register a call returned, a struct like
+// __sincosf_stret's, a pointer) as type T: what a cast means in Ghidra's code when
+// C can't convert (the register's low bytes); works on calls, not just variables
+#define GH_AS(T, e) ({ __typeof__(e) gh_s_ = (e); T gh_d_; memset(&gh_d_, 0, sizeof gh_d_); \
+    memcpy(&gh_d_, &gh_s_, sizeof gh_s_ < sizeof gh_d_ ? sizeof gh_s_ : sizeof gh_d_); gh_d_; })
 #endif
 #ifdef __cplusplus
 typedef uint64_t  code(...);   // Ghidra's "code *": a pointer to some function
@@ -7598,9 +7748,10 @@ def _keeps_meaning(before: str, after: str) -> bool:
     if not a or a.startswith(("//", "/*")):
         return False
     calls = lambda s: {c for c in re.findall(r"\b([A-Za-z_]\w*)\s*\)?\s*\(", s)
-                       if c not in CPP_KEYWORDS}             # also ((type)name)(args)
+                       if c not in CPP_KEYWORDS and not re.match(r"GH(?:16|_)", c)}
+    # (also ((type)name)(args); the GH16/GH_ byte helpers aren't the program's calls)
     nums = lambda s: Counter(re.findall(r"\b0[xX][0-9a-fA-F]+|\b\d+(?:\.\d+)?\b", s))
-    assigns = lambda s: len(re.findall(r"(?<![=!<>+\-*/%&|^])=(?!=)", s))
+    assigns = lambda s: len(re.findall(r"(?<![=!<>+\-*/%&|^])=(?!=)|\bGH_SET\s*\(|\bmemcpy\s*\(", s))
     return (calls(before) <= calls(after) and not (nums(before) - nums(after))
             and assigns(after) >= assigns(before))
 
@@ -7781,10 +7932,18 @@ class FixLessons:
         with self.lock:
             return any(t["sha"] == sha for t in self.data["tried"].get(rel, []))
 
-    def prompt(self, kind: str, rel: str) -> str:
-        """Examples for this kind of error, and edits not to make again."""
+    def prompt(self, kind: str, rel: str, src: str = "") -> str:
+        """Examples for this kind of error, and edits not to make again. With src,
+        only examples whose names this function has too: a small model copies an
+        example's variables (param_1[0x68]) into code that has no such thing."""
         with self.lock:
-            ex = list(self.data["examples"].get(kind, []))[-3:]
+            ex = list(self.data["examples"].get(kind, []))
+        if src:
+            have = set(re.findall(r"[A-Za-z_]\w*", src))
+            ex = [e for e in ex if all(w in have for w in re.findall(
+                r"\b(?:param_\d+|local_\w+|[a-z]{1,3}Var\d+|GD_\w+|FUN_\w+|DAT_\w+)\b", e["after"]))]
+        with self.lock:
+            ex = ex[-3:]
             bad = [t for t in self.data["tried"].get(rel, []) if t["after"]][-3:]
         out = []
         if ex:
@@ -7900,10 +8059,11 @@ def compile_fix_edit(cfg: Config, rec: FuncRecord, src: str, err: str) -> Option
         _FIXCTX["ctx"] = ctx
     ctx.model = cfg.fix_model_used
     decls = gather_declarations(cfg, extract_error_symbols(err))
-    learned = fix_lessons(cfg).prompt(error_kind(msg), rec.file)
+    learned = fix_lessons(cfg).prompt(error_kind(msg), rec.file, src)
     context = "\n".join(x for x in (
         f"Declarations the program already has (use them, don't redefine them):\n{decls}"
-        if decls else "", learned) if x)
+        if decls else "", learned,
+        GH_HELP if getattr(cfg, "lang", "") == "c" else "") if x)
     notes = error_notes(err, rec.file)
     if notes:
         msg += " (" + "; ".join(notes) + ")"
@@ -7919,8 +8079,12 @@ def compile_fix_edit(cfg: Config, rec: FuncRecord, src: str, err: str) -> Option
             context += ("\nThe original (Ghidra's pseudocode) calls these functions; use these "
                         "names and match their declarations:\n" + "\n".join(
                             f"  {n}: {_proto_for(cfg, n) or '(no declaration)'}" for n in calls))
+    # a small model asked the same thing gives the same answer: each later try on a
+    # function samples more widely, so it plans something different
+    temp = min(0.9, 0.2 + 0.1 * rec.attempts)
     new = ctx.line_edit(rec, src, line, f"The compiler says: {msg}. Fix it without changing "
-                        f"what the code does; don't rename the function.", context=context)
+                        f"what the code does; don't rename the function.", context=context,
+                        temperature=temp)
     _FIX_TL.plan = ctx.last_plan
     MODEL_STATS["calls"] += 1
     if new is None:
@@ -8152,10 +8316,12 @@ def _convert(expr: str, frm: str, to: str) -> Optional[str]:
     if not expr or frm == to:
         return None
     if to == "gh16":
-        return f"GH16({expr})"
-    if frm == "gh16":
-        return (f"GH_GETD({expr}, 0)" if to == "double" else f"GH_GETF({expr}, 0)" if to == "float"
-                else f"({to})GH_GET({expr}, 0, 8)")
+        return f"GH16_ANY({expr})" if frm.startswith(("struct ", "union ")) else f"GH16({expr})"
+    if frm == "gh16" or frm.startswith(("struct ", "union ")) or frm in ("CFUUIDBytes", "CGPoint", "CGSize"):
+        # a 16-byte register or a struct used as a number: its first bytes (works on calls too)
+        return f"GH_AS({to}, {expr})" if "[" not in to else None
+    if to.startswith(("struct ", "union ")) and frm in ("uint64_t", "long", "unsigned long", "int"):
+        return f"GH_AS({to}, (uint64_t)({expr}))"
     if frm in ("double", "float") and "*" in to:
         return f"({to})GH_DBITS({expr})"
     if re.fullmatch(r"(?:const )?\w+\s*\[\d+\]", frm) and "*" not in to:   # a small byte array as a number
@@ -8198,6 +8364,8 @@ def candidate_fixes(cfg: Config, rel: str, src: str, err: str) -> list[tuple[str
     line = lines[ln - 1]
     i = max(0, min(col - 1, len(line)))
     out: list[tuple[str, str]] = []
+    if line.strip().startswith("```"):           # a model reply's fence that got into the code
+        return [("a stray ``` line removed", "\n".join(lines[:ln - 1] + lines[ln:]))]
 
     def put(what, new_line):
         if new_line is not None and new_line != line:
@@ -8210,6 +8378,9 @@ def candidate_fixes(cfg: Config, rel: str, src: str, err: str) -> list[tuple[str
             put("a value converted to the type it's used as", (lambda r: None if r is None else
                                                                line[:i] + r + line[e:])(make(line[i:e])))
     if m := re.match(r"passing '([^']*)'.* to parameter of incompatible type '([^']*)'", msg):
+        g = re.search(r"\bGH16\(\s*$", line[:i])
+        if g:                                   # a struct as 16 bytes: its own bytes, whole
+            put("a struct as a 16-byte value (its bytes)", line[:g.start()] + "GH16_ANY(" + line[g.end():])
         at_operand(lambda x: _convert(x, m.group(1), m.group(2)))
     elif m := re.match(r"(?:initializing|returning) '([^']*)'.* (?:with an expression of|from a function with) "
                        r"incompatible (?:type|result type) '([^']*)'", msg):
@@ -8227,10 +8398,39 @@ def candidate_fixes(cfg: Config, rel: str, src: str, err: str) -> list[tuple[str
                 put("a value converted to the type it's assigned to", line[:s] + " " + r + line[e:])
     elif m := re.match(r"(?:operand of type|used type) '([^']*)'.* where arithmetic or pointer type is required", msg):
         t = m.group(1)
-        if t == "gh16" or re.fullmatch(r"(?:const )?\w+\s*\[\d+\]", t):
+        cast = re.search(r"\(\s*([A-Za-z_][\w ]*?\s*\**)\s*\)\s*$", line[:i])
+        whole = t == "gh16" or "struct" in msg or "union" in msg       # not an array
+        if cast and whole and ("*" in cast.group(1) or cast.group(1).split()[-1] in C_BASE_TYPES):
+            # (float)__sincosf_stret(x), (uint64_t)FUN_x(...): the value's first bytes as that type
+            e = _operand_end(line, i)
+            if e > i:
+                put("a value's first bytes as the type it's cast to",
+                    line[:cast.start()] + f"GH_AS({cast.group(1).strip()}, {line[i:e].strip()})" + line[e:])
+        if t == "gh16" and not cast:
+            at_operand(lambda x: f"GH_AS(uint64_t, {x.strip()})")
+        am = re.match(r"\(\s*\w[\w ]*?\s*\[(\d+)\]\s*\)\s*", line[i:])
+        if am:                                  # a cast to an array type: (char [8])x, (undefined1 [4])0
+            n = int(am.group(1))
+            lhs = re.search(r"([A-Za-z_]\w*(?:\[[^\]]*\])?)\s*(=|==|!=)\s*$", line[:i])
+            ve = _expr_end(line, i + am.end())
+            val = line[i + am.end():ve].strip()
+            if lhs and lhs.group(2) == "=" and n <= 16:
+                put("a value stored into an array as its bytes",
+                    line[:lhs.start()] + f"GH_SET({lhs.group(1)}, 0, {n}, {val})" + line[ve:])
+            elif lhs and n <= 8:
+                put("an array compared as the number its bytes hold",
+                    line[:lhs.start()] + f"GH_GET({lhs.group(1)}, 0, {n}) {lhs.group(2)} {val}" + line[ve:])
+        elif t == "gh16" or re.fullmatch(r"(?:const )?\w+\s*\[\d+\]", t):
             n = int(re.search(r"\[(\d+)\]", t).group(1)) if "[" in t else 8
             if n <= 8:
                 at_operand(lambda x: f"GH_GET({x.strip()}, 0, {n})")
+    elif m := re.match(r"pointer cannot be cast to type '(double|float)'", msg):
+        cm = re.match(r"\(\s*(?:double|float)\s*\)\s*", line[i:])       # the column at the cast
+        cb = re.search(r"\(\s*(?:double|float)\s*\)\s*$", line[:i])     # or at what it casts
+        s, c0 = (i + cm.end(), i) if cm else (i, cb.start() if cb else i)
+        e = _operand_end(line, s)
+        if e > s:
+            put("a pointer's bits as a " + m.group(1), line[:c0] + f"GH_AS({m.group(1)}, {line[s:e].strip()})" + line[e:])
     elif msg.startswith("operand of type 'double' cannot be cast to a pointer type") or \
             msg.startswith("operand of type 'float' cannot be cast to a pointer type"):
         at_operand(lambda x: f"GH_DBITS({x.strip()})")
@@ -8249,8 +8449,22 @@ def candidate_fixes(cfg: Config, rel: str, src: str, err: str) -> list[tuple[str
             else:
                 put("a piece of a value, as its exact bytes",
                     line[:s] + f"GH_GET({base}, {pm.group(1)}, {pm.group(2)})" + line[pm.end():])
-    elif re.match(r"array type '[^']*'.* is not assignable", msg):
+    elif re.match(r"array type '[^']*'.* is not assignable", msg) or \
+            msg.startswith("array initializer must be an initializer list"):
         am = re.match(r"^(\s*)(.+?)\s*=(?!=)\s*(.+?);\s*$", line)
+        if am and "gh_t_" in line:                # an earlier byte copy through a temporary: undo it
+            cm = re.search(r"memcpy\(&\((.+?)\), &gh_t_", line)
+            tm = re.search(r"__typeof__\((.+?)\) gh_t_ = ", line)
+            if cm and tm:
+                lhs, rhs = cm.group(1), tm.group(1)
+                ind = re.match(r"\s*", line).group(0)
+                put("an array copied from an array", f"{ind}memcpy(&({lhs}), &({rhs}), "
+                    f"sizeof({lhs}) < sizeof({rhs}) ? sizeof({lhs}) : sizeof({rhs}));")
+            am = None
+        if am and not re.search(r"[A-Za-z_]\w*\s*\(", am.group(3)):   # no call: it has an address
+            lhs, rhs = am.group(2), am.group(3)
+            put("an array copied from an array", f"{am.group(1)}memcpy(&({lhs}), &({rhs}), "
+                f"sizeof({lhs}) < sizeof({rhs}) ? sizeof({lhs}) : sizeof({rhs}));")
         if am:
             put("an array assigned whole: its bytes copied",
                 f"{am.group(1)}{{ __typeof__({am.group(3)}) gh_t_ = ({am.group(3)}); memcpy(&({am.group(2)}), &gh_t_, "
@@ -8260,6 +8474,59 @@ def candidate_fixes(cfg: Config, rel: str, src: str, err: str) -> list[tuple[str
         if star >= 0:
             for w in ("uint64_t", "uint32_t", "uint8_t"):
                 put(f"an integer used as a pointer ({w} *)", line[:star + 1] + f"({w} *)" + line[star + 1:])
+    elif (m := re.match(r"invalid operands to binary expression \('([^']*)'.*? and '([^']*)'", msg)) and \
+            ("gh16" in (m.group(1), m.group(2)) or "[" in m.group(1) + m.group(2)):
+        om = re.match(r"<<|>>|==|!=|<=|>=|[-+*/%&|^<>]", line[i:])
+        if om:
+            le = i
+            while le > 0 and line[le - 1] in " \t":
+                le -= 1
+            ls = _operand_start(line, le)
+            rs = i + om.end()
+            while rs < len(line) and line[rs] in " \t":
+                rs += 1
+            re_ = _operand_end(line, rs)
+            a, b, op = line[ls:le], line[rs:re_], om.group(0)
+            ta, tb = m.group(1), m.group(2)
+            if a and b:
+                def num(x, tx):
+                    if tx == "gh16":
+                        return f"GH_U128({x})"
+                    if re.fullmatch(r"\w+\s*\[(\d+)\]", tx):
+                        k = int(re.search(r"\d+", tx).group())
+                        return f"GH_GET({x}, 0, {min(k, 8)})"
+                    return x
+                if op in "+-" and (ta == "gh16" or "[" in ta) and tb != "gh16":
+                    # Ghidra's register-as-array plus a number: an address in it
+                    put("a 16-byte value's address plus a number", line[:ls] + f"((uint8_t *)&({a}) {op} {b})" + line[re_:])
+                put("16-byte values as 128-bit numbers", line[:ls] + f"{num(a, ta)} {op} {num(b, tb)}" + line[re_:])
+    elif msg.startswith(("subscripted value is not an array", "subscript of pointer to function type")):
+        # a register that holds an address, indexed (Ghidra's long param_1; param_1[0x68]):
+        # the value as a pointer, its element the size the line implies
+        b = line.find("[", i)
+        if b > i - 1:
+            s = _operand_start(line, b)
+            cm = re.match(r"\(\s*[A-Za-z_][\w ]*\**\s*\)\s*(?=[A-Za-z_])", line[s:b])
+            if cm:                              # (long)param_1[0x68]: the cast is of the element
+                s += cm.end()
+            base = line[s:b].strip()
+            if base:
+                rhs = re.match(r"\[[^\]]*\]\s*=(?!=)\s*\((char|byte|uchar|undefined1?|uint8_t|bool|code)\)", line[b:])
+                elems = ["uint8_t", "uint64_t"] if rhs else ["uint64_t", "uint8_t"]
+                for el in elems:
+                    put(f"a value used as a pointer to {el}",
+                        line[:s] + f"(({el} *)(uintptr_t)({base}))" + line[b:])
+    elif m := re.match(r"redefinition of '([A-Za-z_]\w*)'", msg):
+        v = m.group(1)
+        dm = re.match(rf"^(\s*)((?:const\s+)?(?:struct\s+)?[A-Za-z_]\w*\s*\**)\s*{v}\s*(\[[^\]]*\])?\s*(?:=\s*(.+?))?;\s*$", line)
+        if dm and "redefinition of" in msg and not msg.startswith(f"redefinition of '{v}' as"):
+            if dm.group(4) is None:            # declared twice: the second one goes
+                out.append(("a second declaration dropped", "\n".join(lines[:ln - 1] + lines[ln:])))
+            elif not dm.group(3):              # declared again with a value: just the value
+                val = dm.group(4).strip()
+                if val.startswith("{"):
+                    val = f"({dm.group(2).strip()}){val}"
+                put("a second declaration made an assignment", f"{dm.group(1)}{v} = {val};")
     elif msg.startswith("duplicate case value"):
         put("a duplicate case label dropped", re.sub(r"\bcase\s+[^:]+:\s*", "", line, count=1))
     elif re.match(r"too (?:many|few) arguments to function call", msg):
@@ -8283,16 +8550,28 @@ def try_candidates(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str) -
     """The candidate fixes for the first error, plus clang's fix-its: the first one
     that makes progress is kept (and learned). True if one was."""
     first = _first_error(err, rel)
-    cands = candidate_fixes(cfg, rel, src, err)
+    cands = [(w, n, first[1]) for w, n in candidate_fixes(cfg, rel, src, err)]
     lessons = fix_lessons(cfg)
     if not cands:
-        cands = _fixit_candidates(cfg, rel, src)
-    for what, new in cands:
+        cands = [(w, n, first[1]) for w, n in _fixit_candidates(cfg, rel, src)]
+    if not cands:
+        # nothing for the first error: the next few (fixing one of those can be what
+        # the first needed, and it's progress either way)
+        name = Path(rel).name
+        later = [l for l in err.splitlines() if (m := DIAG_RE.match(l.strip())) and
+                 "error" in m.group("sev") and Path(m.group("file")).name == name][1:4]
+        for l in later:
+            cands += [(w, n, _first_error_col(l, rel)[2]) for w, n in candidate_fixes(cfg, rel, src, l)]
+    old_lines = src.split("\n")
+    for what, new, emsg in cands:
         if new == src or lessons.is_repeat(rel, new):
             continue
-        old_line = src.split("\n")[first[0] - 1] if first[0] else ""
-        new_line = new.split("\n")[first[0] - 1] if first[0] and first[0] <= len(new.split("\n")) else ""
-        label_only = what.startswith("a duplicate case label")    # a label, not code
+        new_lines = new.split("\n")
+        k = next((j for j, (a, b) in enumerate(zip(old_lines, new_lines)) if a != b), None)
+        old_line = old_lines[k] if k is not None else ""
+        new_line = new_lines[k] if k is not None else ""
+        label_only = what.startswith(("a duplicate case label", "a second declaration dropped",
+                                      "a stray ``` line"))    # a label or a declaration, not code
         if old_line and not label_only and not _keeps_meaning(old_line, new_line) and "memcpy(" not in new_line:
             continue
         phase(f"trying: {what}")
@@ -8307,7 +8586,7 @@ def try_candidates(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str) -
                 c[what] += 1
             write_note(cfg, rel, f"[compile] {first[1][:100]} — fixed by a candidate fix: {what}"
                                  + (" — compiles now." if ok else "."))
-            lessons.learned(error_kind(first[1]), first[1], src, new, rec.name)
+            lessons.learned(error_kind(emsg), emsg, src, new, rec.name)
             rec.compiles = ok
             if not ok:
                 rec.last_error = keep_error(err2)
@@ -8327,6 +8606,7 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
     # they stop and the model gets the function
     model_tries = 0
     seen: set = set()
+    best = None                              # (errors, code): the closest it got
     no_model_fixes = True
     for _step in range(60):
         phase("compiling")
@@ -8335,13 +8615,20 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             rec.compiles = True
             return True
         rec.last_error = keep_error(err)
-        state = text_sha((cfg.workdir / rel).read_text())
+        cur = (cfg.workdir / rel).read_text()
+        state = text_sha(cur)
+        if best is None or n_errors(err) < best[0]:
+            best = (n_errors(err), cur)
         if state in seen and no_model_fixes:
             no_model_fixes = False
             struggle("fix", "fixes that undid each other (the cycle was stopped and the model "
                             "got the function)", rec.name, handled=True)
             write_note(cfg, rel, "[compile] the no-model fixes went round in circles — "
-                                 "stopped; the model gets it.")
+                                 "stopped; the model gets the best version they reached.")
+            if best[1] != cur:              # back to the fewest errors, not wherever the cycle was
+                (cfg.workdir / rel).write_text(best[1])
+                seen.add(state)
+                continue
         seen.add(state)
 
         # 0) if this failure comes from a shared header, fix the HEADER, not the
@@ -8992,6 +9279,19 @@ def _stub_for(kind: str, line: str, name: str, c: bool = False) -> Optional[str]
     return decl + " { return {}; }"
 
 
+def _asm_named(stub: str, name: str) -> str:
+    """A C stand-in defined under a private name that links as `name` (an asm
+    label): a type or a variable of the same name in shared.h can't clash with it."""
+    m = re.search(rf"(?<![\w.>]){re.escape(name)}\s*\(", stub)
+    brace = stub.find("{")
+    if not m or brace < 0 or m.start() > brace:
+        return stub
+    private = f"gh_stub_{name}"
+    label = ("_" if sys.platform == "darwin" else "") + name
+    head = stub[:m.start()] + private + stub[m.end() - 1:brace].rstrip()
+    return f'{head} __asm__("{label}");\n' + stub[:m.start()] + private + stub[m.end() - 1:]
+
+
 SELECTOR_NAME = re.compile(r"^[a-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*_$")
 
 
@@ -9109,7 +9409,9 @@ def _rename_defined_func(src: str, newname: str) -> str:
     if i < 0:
         return src
     head = src[:i]
-    m = re.search(r"([A-Za-z_]\w*)\s*\(", head)
+    # a C++ operator (operator=, operator<<, operator()): the whole operator is the name
+    m = re.search(r"((?:[A-Za-z_]\w*::)*~?operator\s*(?:\(\s*\)|[^\s(]+))\s*\(", head) or \
+        re.search(r"([A-Za-z_]\w*)\s*\(", head)
     if not m:
         return src
     return head[:m.start(1)] + newname + head[m.end(1):] + src[i:]
@@ -9646,6 +9948,8 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
             stub = _stub_for(cands[0][0], cands[0][1], base, c_mode) if cands else None
             if stub is None and c_mode and re.fullmatch(r"[A-Za-z_]\w*", base):
                 stub = f"uint64_t {base}() {{ return 0; }}"     # no declaration: any arguments
+            if stub and c_mode:
+                stub = _asm_named(stub, base)
             if stub:
                 stubs[base] = stub
                 why = ("quarantined" if base in qnames else "never defined" if GHIDRA_AUTONAME_RE.match(base)
@@ -10658,7 +10962,7 @@ class ImproveCtx:
                 if r.compiles and not r.quarantined and not getattr(r, "duplicate_of", "")]
 
     # -- the model
-    def ask(self, system: str, user: str, max_out=300) -> Optional[str]:
+    def ask(self, system: str, user: str, max_out=300, temperature: float = 0.2) -> Optional[str]:
         if not self.model:
             return None
         # every task gets the room the context leaves: a thinking model capped at a
@@ -10666,7 +10970,7 @@ class ImproveCtx:
         max_out = max(max_out, answer_room(self.cfg.ctx, len(system) + len(user)))
         return self.cfg.client.chat(self.model, [{"role": "system", "content": system},
                                                  {"role": "user", "content": user}],
-                                    max_out=max_out, temperature=0.2,
+                                    max_out=max_out, temperature=temperature,
                                     timeout=self.cfg.model_timeout_s, fatal=False)
 
     def goal(self, rec, text) -> str:
@@ -10682,7 +10986,7 @@ class ImproveCtx:
         return g
 
     def line_edit(self, rec, text: str, line_no: int, task: str, span=None,
-                  context: str = "") -> Optional[str]:
+                  context: str = "", temperature: float = 0.2) -> Optional[str]:
         """Plan one small edit, then rewrite only the lines it covers (1-based)."""
         lines = text.split("\n")
         if span is None:
@@ -10698,18 +11002,19 @@ class ImproveCtx:
                 + (f"Notes from earlier attempts:\n" + "\n".join(f"- {n}" for n in notes) + "\n"
                    if notes else "")
                 + f"Task: {task}\n" + (f"{context}\n" if context else ""))
-        plan = self.ask(PLAN_SYS, info + f"\nLines:\n{shown}", 160) or ""
+        plan = self.ask(PLAN_SYS, info + f"\nLines:\n{shown}", 160, temperature) or ""
         self.last_plan = " ".join(plan.split())[:300]
         reply = self.ask(FIX_EDIT_SYS, info + f"Plan: {self.last_plan}\n\n"
                          f"Replace ONLY these line(s):\n```cpp\n{window}\n```",
-                         min(900, max(200, (hi - lo) * 60)))
+                         min(900, max(200, (hi - lo) * 60)), min(temperature, 0.5))
         if not reply:
             return None
         new, _ = parse_reply(reply)
         if new is None:
             new = reply.strip()
+        # never the reply's own markup: an #include, or a ``` fence line
         new = "\n".join(l for l in new.split("\n")
-                        if not l.lstrip().startswith("#include")).rstrip()
+                        if not l.lstrip().startswith(("#include", "```"))).rstrip()
         if not new.strip() or new.strip() == window.strip():
             return None
         if brace_balance(new) != brace_balance(window):
@@ -12889,11 +13194,23 @@ fixes this error in all of them. Answer with JSON only, in one of these forms:
 {"type": "rewrite", "before": "<text copied exactly from one example's failing line>", "after": "<what that text becomes>", "why": "...", "different": "..."}
 {"type": "declare", "name": "<a function>", "prototype": "<its full C prototype, ending in ;>", "why": "...", "different": "..."}
 {"type": "typedef", "line": "<one C declaration line: a typedef, struct or macro>", "why": "...", "different": "..."}
-{"type": "flag", "flag": "-Wno-error=<warning name>", "why": "...", "different": "..."}
 A rewrite is applied wherever its "before" text appears in a failing line (names
 stand for any name). Never change what the code does: keep every call, number and
 assignment, and don't comment code out. "different" says how this idea differs
-from the ones already tried."""
+from the ones already tried.
+""" + "{GH_HELP}"
+
+
+# the byte helpers every C build has, for a small model that can't know them: it
+# picks the right one far more often than it invents something that compiles
+GH_HELP = """Helpers the code can use (they copy exact bytes, like the machine):
+  GH_AS(T, e)            the first bytes of ANY value e (a call's 16-byte result, a struct, a pointer) as type T
+  GH_GET(v, off, size)   bytes off..off+size-1 of variable v as a number; GH_GETD(v, off) as a double
+  GH_SET(v, off, size, e)  store e into those bytes of v
+  GH16(e)                any number/double/pointer as a 16-byte gh16 value; GH16_ANY(e) for a struct
+  GH_U128(e)             a 16-byte value as a 128-bit number (for <<, >>, *, +)
+  GH_ADDR(v, off)        the address of byte off of v"""
+IDEA_SYS = IDEA_SYS.replace("{GH_HELP}", GH_HELP)
 
 
 class IdeaBook:
@@ -13505,6 +13822,7 @@ def repair_loop(cfg: Config, records: dict[str, FuncRecord], cache: dict) -> int
     end = time.time() + minutes * 60
     rescued_total = 0
     use_model = bool(cfg.fix_model_used or model_check(cfg))
+    empty = 0
     for n in range(1, 50):
         last_free = last_model = 0
         for with_model in ((False, True) if use_model else (False,)):
@@ -13562,8 +13880,11 @@ def repair_loop(cfg: Config, records: dict[str, FuncRecord], cache: dict) -> int
                 last_free = rescued[0]
         if time.time() >= end or not any(r.quarantined for r in records.values()):
             break
-        if (last_free if not use_model else last_free + last_model) == 0:
-            break                                   # a whole pass rescued nothing: done
+        # a pass that rescued nothing: done without the model; with it, one more pass,
+        # since each try on a function samples the model more widely than the last
+        empty = empty + 1 if (last_free + last_model) == 0 else 0
+        if empty >= (2 if use_model else 1):
+            break
     RUN_CTX["rescued"] = RUN_CTX.get("rescued", 0) + rescued_total
     log(cfg, show=True, msg=f"  repair loop: {rescued_total} quarantined function(s) rescued")
     return rescued_total

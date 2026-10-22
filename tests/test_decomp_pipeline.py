@@ -2092,6 +2092,29 @@ CANDIDATE_CASES = {
     "toomany": "uint64_t toomany(long a) {\n  return two(a, a, a);\n}\n",
     # a double that held a pointer
     "dptr": "long dptr(double d) {\n  return *(long *)d;\n}\n",
+    # from the third round of a real run: a call's 16-byte value cast to a number
+    "callcast": "uint64_t callcast(void) {\n  return (uint64_t)give16();\n}\n",
+    # ... returned as one
+    "callret": "uint64_t callret(void) {\n  return give16();\n}\n",
+    # a struct cast to its first field's type ((float)__sincosf_stret(x))
+    "structcast": "float structcast(float x) {\n  return (float)pair_of(x);\n}\n",
+    # 16-byte values in arithmetic
+    "shift16": "gh16 shift16(gh16 a) {\n  return GH16(a << 0x20);\n}\n",
+    # a register that holds an address, indexed
+    "regindex": "long regindex(long param_1) {\n  return (long)param_1[0x68] + 0x20;\n}\n",
+    # a pointer cast to double
+    "ptrdouble": "double ptrdouble(long *p) {\n  return (double)p;\n}\n",
+    # a cast to an array type, assigned and compared
+    "arrset": "uint64_t arrset(uint64_t x) {\n  char acStack_b8[8];\n  acStack_b8 = (char [8])x;\n  return (uint8_t)acStack_b8[0];\n}\n",
+    "arrcmp": "int arrcmp(void) {\n  unsigned char local_9c[4] = {0};\n  return local_9c == (unsigned char [4])0x0;\n}\n",
+    # an array copied from an array
+    "arrcopy": "uint64_t arrcopy(void) {\n  unsigned char a[12] = {1};\n  unsigned char b[12];\n  b = a;\n  return b[0];\n}\n",
+    # a variable declared twice
+    "redecl": "double redecl(double a) {\n  double v = a;\n  double v = a + 1;\n  return v;\n}\n",
+    # a model reply's fence left in the code
+    "fence": "uint64_t fence(void) {\n  ```cpp\n  return 1;\n}\n",
+    # a 16-byte struct as a 16-byte value
+    "struct16": "gh16 struct16(void) {\n  gh16 v;\n  v = GH16(bytes16());\n  return v;\n}\n",
 }
 
 
@@ -2105,7 +2128,9 @@ def test_candidate_fixes_repair_real_kinds_of_error_without_the_model(tmp_path, 
         '#pragma once\n#include <stdint.h>\n#include <string.h>\n#include "ghidra_intrins.h"\n'
         "struct holder { uint64_t f; };\n"
         "uint64_t take16(gh16 a, double b);\ndouble takeD(double d);\ngh16 give16(void);\n"
-        "uint64_t two(long a, long b);\n")
+        "uint64_t two(long a, long b);\n"
+        "struct pair { float s, c; };\nstruct pair pair_of(float x);\n"
+        "struct b16 { uint8_t b[16]; };\nstruct b16 bytes16(void);\n")
     (tmp_path / "funcs").mkdir()
     monkeypatch.setattr(dp, "_LESSONS", {})
     fixed = {}
@@ -2117,7 +2142,14 @@ def test_candidate_fixes_repair_real_kinds_of_error_without_the_model(tmp_path, 
         fixed[name] = dp.quick_fix(cfg, rec, {})
     assert all(fixed.values()), {k: v for k, v in fixed.items() if not v}
     text = {n: (tmp_path / f"funcs/{n}.c").read_text() for n in CANDIDATE_CASES}
-    assert "GH16(extraout_q0)" in text["pass16"] and "GH_GETD(v, 0)" in text["passd"]
+    assert "GH16(extraout_q0)" in text["pass16"] and "GH_AS(double, v)" in text["passd"]
+    assert "GH_AS(uint64_t, give16())" in text["callcast"] and "GH_AS(uint64_t, give16())" in text["callret"]
+    assert "GH_AS(float, pair_of(x))" in text["structcast"] and "GH_U128(a) << 0x20" in text["shift16"]
+    assert "((uint64_t *)(uintptr_t)(param_1))[0x68]" in text["regindex"]
+    assert "GH_AS(double, p)" in text["ptrdouble"] and "GH_SET(acStack_b8, 0, 8, x)" in text["arrset"]
+    assert "GH_GET(local_9c, 0, 4) == 0x0" in text["arrcmp"] and "memcpy(&(b), &(a)" in text["arrcopy"]
+    assert "  v = a + 1;" in text["redecl"] and "```" not in text["fence"]
+    assert "GH16_ANY(bytes16())" in text["struct16"]
     assert "memcpy(&(local_c)" in text["arr12"] and "GH_GET(p->f, 4, 4)" in text["piece"]
     assert "((uint64_t (*)())two)(a, a, a)" in text["toomany"] and "GH_DBITS(d)" in text["dptr"]
     assert text["dupcase"].count("case 0:") == 1
@@ -2154,8 +2186,9 @@ def test_repair_loop_passes_over_quarantined_functions_until_one_rescues_nothing
     assert dp.repair_loop(cfg, recs, {}) == 3
     assert [r.name for r in recs.values() if r.quarantined] == ["q3", "q4", "q5"]
     assert (tmp_path / "funcs" / "q4.c").read_text() == "// stub\n"          # put back
-    # pass 1: 6 free + 4 model; pass 2: 3 free + 3 model, rescues nothing: stops
-    assert calls == {"free": 9, "model": 7}
+    # pass 1: 6 free + 4 model; passes 2 and 3: 3 free + 3 model each, rescue nothing:
+    # two empty passes in a row (the model samples more widely each time) and it stops
+    assert calls == {"free": 12, "model": 10}
 
 
 def test_a_learned_fix_and_its_opposite_are_both_retired(tmp_path):
@@ -2169,3 +2202,140 @@ def test_a_learned_fix_and_its_opposite_are_both_retired(tmp_path):
     assert not L.rules_for(k1) and not L.rules_for(k2)
     L.save()
     assert not dp.FixLessons(cfg).rules_for(k1)                          # still retired when loaded
+
+
+C_PASS_CASES_3 = [
+    # from the third round of a real run
+    ("FUN_a", "undefined1 [16] FUN_a(void)", "{\n  gh16 r;\n  r.q[0] = 7;\n  r.q[1] = 9;\n  return r;\n}"),
+    # Ghidra lost the return value of a call whose result is 16 bytes
+    ("FUN_b", "void FUN_b(void)", "{\n  FUN_a();\n  return;\n}"),
+    ("FUN_c", "long FUN_c(void)", "{\n  long lVar1;\n  lVar1 = FUN_b();\n  return lVar1;\n}"),
+    # Ghidra's NAN(x) test
+    ("FUN_d", "int FUN_d(double x)", "{\n  return NAN(x);\n}"),
+    # rows of 16-byte values, a row assigned whole
+    ("FUN_e", "long FUN_e(void)",
+     "{\n  undefined1 local_60 [2] [16];\n  local_60[1] = FUN_a();\n  return *(long *)((long)local_60 + 0x18);\n}"),
+    # Ghidra's odd-sized integers
+    ("FUN_f", "uint FUN_f(uint param_1)", "{\n  uint3 uVar1;\n  uVar1 = (uint3)param_1;\n  return (uint)uVar1 + 1;\n}"),
+    # a cast to a system struct that is also a function's name
+    ("FUN_g", "int FUN_g(void)", "{\n  return sigaction(10,(sigaction *)0x0,(sigaction *)0x0);\n}"),
+]
+
+
+def test_c_mode_passes_third_round_cases_from_a_real_run(tmp_path):
+    import subprocess
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        pytest.skip("no C compiler")
+    entries = [{"tag": "", "head": h, "body": b, "name": n} for n, h, b in C_PASS_CASES_3]
+    known = set(re.findall(r"\btypedef\b[^;]*?\b([A-Za-z_]\w*)\s*;", dp.GHIDRA_INTRINS_H)) | dp.C_BASE_TYPES
+    res = dp.c_mode_passes(entries, known, system_tags={"sigaction": "struct"})
+    body = {e["name"]: e["body"] for e in entries}
+    assert "return GH_AS(uint64_t, FUN_a());" in body["FUN_b"] and "isnan(x)" in body["FUN_d"]
+    assert "gh16 local_60[2];" in body["FUN_e"] and "(struct sigaction *)0x0" in body["FUN_g"]
+    src = ("#include <signal.h>\n#include <math.h>\n" + dp.GHIDRA_INTRINS_H + "\n" + res["opaque"] + "\n"
+           + "\n".join(e["head"] + ";" for e in entries) + "\n"
+           + "\n".join(e["head"] + "\n" + e["body"] for e in entries) + r"""
+#include <stdio.h>
+int main(void) {
+  printf("%ld %d %d %ld %u\n", FUN_c(), FUN_d(NAN) != 0, FUN_d(1.0) != 0, FUN_e(), FUN_f(4));
+  return 0;
+}
+""")
+    (tmp_path / "t.c").write_text(src)
+    r = subprocess.run([cc, "-x", "c", "-std=gnu11", "-w", *dp.C_LENIENT, str(tmp_path / "t.c"),
+                        "-o", str(tmp_path / "t")], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    out = subprocess.run([str(tmp_path / "t")], capture_output=True, text=True).stdout.split()
+    assert out == ["7", "1", "0", "9", "5"]
+
+
+def test_byte_helpers_keep_the_values_ghidra_means(tmp_path):
+    import subprocess
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        pytest.skip("no C compiler")
+    src = dp.GHIDRA_INTRINS_H + r"""
+#include <stdio.h>
+struct pair { float s, c; };
+static struct pair pair_of(float x) { struct pair p = {x * 2, 1}; return p; }
+static gh16 give(void) { gh16 r; r.q[0] = 0x1122; r.q[1] = 5; return r; }
+struct b16 { uint8_t b[16]; };
+int main(void) {
+  gh16 a = give();
+  struct b16 s; memset(&s, 7, 16);
+  gh16 w = GH16_ANY(s);
+  long x = 0x3ff0000000000000;
+  printf("%llx %g %llu %u %g\n", (unsigned long long)GH_AS(uint64_t, give()), GH_AS(float, pair_of(1.5f)),
+         (unsigned long long)(GH_U128(a) >> 64), (unsigned)w.b[15], GH_AS(double, (long *)x));
+  return 0;
+}
+"""
+    (tmp_path / "h.c").write_text(src)
+    r = subprocess.run([cc, "-x", "c", "-std=gnu11", "-w", str(tmp_path / "h.c"), "-o", str(tmp_path / "h")],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    out = subprocess.run([str(tmp_path / "h")], capture_output=True, text=True).stdout.split()
+    assert out == ["1122", "3", "5", "7", "1"]
+
+
+def test_data_whose_fields_the_code_reads_gets_its_struct_type(tmp_path):
+    import base64
+    P = dp.Paths(tmp_path)
+    P.make()
+    data = {"blocks": [{"name": "__TEXT", "start": "0", "size": 0x1000,
+                        "bytes": base64.b64encode(bytes(0x1000)).decode()}],
+            "symbols": [{"addr": "0", "name": "MACH_HEADER", "type": "mach_header", "size": 32},
+                        {"addr": "40", "name": "OTHER", "type": "mach_header", "size": 32}]}
+    h, c, macros, _ = dp.data_sources(P, data, {}, {"MACH_HEADER", "OTHER"}, frozenset(),
+                                      frozenset({"section_000003d8"}),
+                                      typed=frozenset({"MACH_HEADER", "section_000003d8"}),
+                                      known=frozenset({"mach_header"}), tags={"section": "struct"})
+    assert "#define GD_MACH_HEADER (*(mach_header *)(g_block_0 + 0x0))" in h
+    assert "#define GD_section_000003d8 (*(struct section *)(g_block_0 + 0x3d8))" in h
+    assert "#define GD_OTHER (*(uint8_t (*)[32])(g_block_0 + 0x40))" in h       # no fields read: bytes
+
+
+def test_ghidras_field_names_on_a_system_type_are_read_at_their_offset():
+    datatypes = [{"kind": "struct", "name": "CGSize", "size": 16,
+                  "fields": [{"off": 0, "size": 8, "name": "field0_0x0", "type": "double"},
+                             {"off": 8, "size": 8, "name": "field1_0x8", "type": "double"}]}]
+    entries = [{"name": "f", "head": "void f(double a,CGSize *p)",
+                "body": "{\n  CGSize CVar1;\n  CVar1.field1_0x8 = a;\n  p->field0_0x0 = CVar1.field1_0x8;\n}"}]
+    n = dp._system_type_fields(entries, datatypes, {"CGSize"}, {"typedefs": {"CGSize"}, "tags": {}})
+    assert n == 3
+    assert "(*(double *)GH_ADDR(CVar1, 0x8)) = a;" in entries[0]["body"]
+    assert "(*(double *)((char *)(p) + 0x0)) = (*(double *)GH_ADDR(CVar1, 0x8));" in entries[0]["body"]
+
+
+def test_operators_and_stand_ins_get_names_c_can_use():
+    out = dp._rename_defined_func("void string::operator=(string *this,string *param_1)\n{\n}\n", "func_385e88")
+    assert out.startswith("void func_385e88(string *this")
+    out = dp._rename_defined_func("void operator<<(ostream *this,ulong param_1)\n{\n}\n", "func_385ec4")
+    assert out.startswith("void func_385ec4(ostream *this")
+    stub = dp._asm_named("void length_error(struct length_error *this) {}", "length_error")
+    label = ("_" if sys.platform == "darwin" else "") + "length_error"
+    assert f'void gh_stub_length_error(struct length_error *this) __asm__("{label}");' in stub
+    assert stub.endswith("void gh_stub_length_error(struct length_error *this) {}")
+
+
+def test_c_mode_drops_functions_with_a_system_functions_name(tmp_path, model):
+    pseudo = {**C_PSEUDO,
+              "10e0": ("setbuf", "void setbuf(char *param_1,long param_2)\n\n{\n  return;\n}\n"),
+              "10f0": ("operator=", "void operator=(Pair *this,Pair *param_1)\n\n{\n"
+                                    "  this->first = param_1->first;\n  return;\n}\n")}
+    write_export(tmp_path, pseudo)
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    src = (tmp_path / "rewrite" / "pseudocode.c").read_text()
+    assert "void setbuf(" not in src
+    assert src.split("//@ghidra 10f0")[1].split("\n")[1].startswith("void operator_(Pair *this")
+
+
+def test_model_edits_lose_fences_and_examples_from_other_functions(tmp_path):
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path)
+    lessons = dp.FixLessons(cfg)
+    lessons.data["examples"]["k"] = [
+        {"error": "e", "before": "x = param_1;", "after": "x = (long)param_1[0x68];"},
+        {"error": "e", "before": "y = a;", "after": "y = (long)local_99;"}]
+    shown = lessons.prompt("k", "funcs/f.c", "long f(long param_1) { long x; x = param_1; }")
+    assert "param_1[0x68]" in shown and "local_99" not in shown
