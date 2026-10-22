@@ -63,7 +63,6 @@ def main():
     # server itself still only answers this Mac and signed-in Tailscale devices
     host = "0.0.0.0" if settings.get("remote_access") and remote.has_password() else "127.0.0.1"
     if host != "127.0.0.1":
-        import os
         os.environ["AIHARNESS_REMOTE"] = "1"
     uvicorn.run("harness.server:app", host=host, port=args.port, log_level="warning")
 

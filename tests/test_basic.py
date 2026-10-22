@@ -747,3 +747,23 @@ def test_restarts_natively_only_under_rosetta_on_apple_silicon(monkeypatch):
     answers["sysctl.proc_translated"] = "1"
     monkeypatch.setenv("AIHARNESS_NATIVE_TRIED", "1")   # tried once already: never loops
     assert hm.native_restart_argv() is None
+
+
+def test_main_restarts_natively_when_it_should(monkeypatch):
+    # runs main() itself: an "import os" further down it once made the restart crash
+    from harness import __main__ as hm
+
+    class Restarted(Exception):
+        pass
+    seen = {}
+    monkeypatch.setattr(hm, "native_restart_argv", lambda: ["/usr/bin/arch", "-arm64", "py", "-m", "harness"])
+
+    def execv(path, argv):
+        seen.update(path=path, argv=argv, tried=hm.os.environ.get("AIHARNESS_NATIVE_TRIED"))
+        raise Restarted
+    monkeypatch.setattr(hm.os, "execv", execv)
+    monkeypatch.delenv("AIHARNESS_NATIVE_TRIED", raising=False)
+    import pytest
+    with pytest.raises(Restarted):
+        hm.main()
+    assert seen["path"] == "/usr/bin/arch" and seen["tried"] == "1"
