@@ -1,11 +1,11 @@
-# Diagnostics — fastpass 3 — 2026-10-22 00:06:03
+# Diagnostics — fastpass 3 — 2026-10-22 00:07:26
 
 
 ## Run
 
 ```
 script: decomp_pipeline 2026-10-22.4 (build 2026-10-18.1)
-command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from fix --to fix --headless-export --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
+command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from fix --to link --headless-export --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
 python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
 compile flags: -Wno-c++11-narrowing
@@ -23,11 +23,11 @@ fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-  10-21 20:03                90.7                3.0               1893                  -                  -                  -                  -                  -                  -                  -                     -                  -
   10-21 20:50                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                     -                  -
   10-21 20:52                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                     -                  -
   10-21 21:47                95.9                1.0                933                394               25.6                589                  -                  -                  -                  -                     -                  -
   10-22 00:06                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+  10-22 00:07                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
 couldn't handle:
   fix         195 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_0000365c, FUN_00003a04, FUN_00005eb0   [also in the last 5 run(s)]
   fix          43 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_0009d658, FUN_0009f7f8, FUN_000a17d0   [also in the last 5 run(s)]
@@ -36,35 +36,35 @@ couldn't handle:
   fix          31 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_000532f4, FUN_00053364, FUN_000b091c   [also in the last 5 run(s)]
   fix          30 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_000d44e8, FUN_000d56dc, FUN_000feb20   [also in the last 5 run(s)]
   fix          19 × quarantined: redefinition of 'X'   e.g. FUN_000fdd50, setFrame_display_169580, conversationIdentifier   [also in the last 5 run(s)]
-  fix          11 × quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')   e.g. FUN_0002e28c, FUN_000461e4, FUN_0004ab0c   [also in the last 1 run(s)]
+  fix          11 × quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')   e.g. FUN_0002e28c, FUN_000461e4, FUN_0004ab0c   [also in the last 2 run(s)]
   fix           9 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_001fa360, FUN_00212fd0, FUN_002135c0   [also in the last 5 run(s)]
   fix           9 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_0007ebe0, FUN_001b0ad0, FUN_0027eb88   [also in the last 5 run(s)]
-  fix           6 × quarantined: passing 'X' to parameter of incompatible type 'X'   e.g. FUN_0001b2dc, FUN_000349a0, FUN_0005c368   [also in the last 1 run(s)]
+  fix           6 × quarantined: passing 'X' to parameter of incompatible type 'X'   e.g. FUN_0001b2dc, FUN_000349a0, FUN_0005c368   [also in the last 2 run(s)]
   fix           5 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00267a58, FUN_0027ed14, FUN_0028f408   [also in the last 5 run(s)]
-  fix           4 × quarantined: operand of type 'X' cannot be cast to a pointer type   e.g. FUN_0004b344, FUN_002fb9a8, FUN_0032ccd4   [also in the last 1 run(s)]
-  fix           4 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0011bcf4, FUN_0011d17c, FUN_0014cf68
-  fix           4 × quarantined: array type 'X' is not assignable   e.g. FUN_000ac208, FUN_0029eef4, FUN_00379ad0
-  fix           3 × quarantined: too few arguments to function call, single argument 'X' was not specified   e.g. FUN_0026d190, FUN_0026e104, FUN_00273b58
-  fix           3 × quarantined: integer constant expression must have integer type, not 'X'   e.g. FUN_0025d944, FUN_0025fa3c, FUN_0025fe64
-  fix           3 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_002a22b4, FUN_003010ac, FUN_003828a4
-  fix           2 × quarantined: variable has incomplete type 'X'   e.g. func_385e88, func_385ec4
-  fix           2 × quarantined: too few arguments to function call, expected N, have N   e.g. FUN_000305a8, FUN_0028fb48
+  fix           4 × quarantined: operand of type 'X' cannot be cast to a pointer type   e.g. FUN_0004b344, FUN_002fb9a8, FUN_0032ccd4   [also in the last 2 run(s)]
+  fix           4 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0011bcf4, FUN_0011d17c, FUN_0014cf68   [also in the last 1 run(s)]
+  fix           4 × quarantined: array type 'X' is not assignable   e.g. FUN_000ac208, FUN_0029eef4, FUN_00379ad0   [also in the last 1 run(s)]
+  fix           3 × quarantined: too few arguments to function call, single argument 'X' was not specified   e.g. FUN_0026d190, FUN_0026e104, FUN_00273b58   [also in the last 1 run(s)]
+  fix           3 × quarantined: integer constant expression must have integer type, not 'X'   e.g. FUN_0025d944, FUN_0025fa3c, FUN_0025fe64   [also in the last 1 run(s)]
+  fix           3 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_002a22b4, FUN_003010ac, FUN_003828a4   [also in the last 1 run(s)]
+  fix           2 × quarantined: variable has incomplete type 'X'   e.g. func_385e88, func_385ec4   [also in the last 1 run(s)]
+  fix           2 × quarantined: too few arguments to function call, expected N, have N   e.g. FUN_000305a8, FUN_0028fb48   [also in the last 1 run(s)]
   fix           2 × quarantined: redefinition of 'X' as different kind of symbol   e.g. length_error, out_of_range   [also in the last 5 run(s)]
-  fix           2 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_001b5d5c, FUN_001b6164
+  fix           2 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_001b5d5c, FUN_001b6164   [also in the last 1 run(s)]
   fix           2 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize, setContentSize_5ff4c   [also in the last 5 run(s)]
-  fix           2 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. setMarkedText_selectedRange, FUN_00177824
-  fix           2 × quarantined: conflicting types for 'X'   e.g. setbuf, objc_msgSend
-  fix           1 × quarantined: used type 'X' where arithmetic or pointer type is required   e.g. FUN_0013ec40
-  fix           1 × quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00270228
+  fix           2 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. setMarkedText_selectedRange, FUN_00177824   [also in the last 1 run(s)]
+  fix           2 × quarantined: conflicting types for 'X'   e.g. setbuf, objc_msgSend   [also in the last 1 run(s)]
+  fix           1 × quarantined: used type 'X' where arithmetic or pointer type is required   e.g. FUN_0013ec40   [also in the last 1 run(s)]
+  fix           1 × quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00270228   [also in the last 1 run(s)]
   fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_000500b8   [also in the last 5 run(s)]
-  fix           1 × quarantined: too many arguments provided to function-like macro invocation   e.g. FUN_000a890c
-  fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44
-  fix           1 × quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'   e.g. FUN_002c6934
+  fix           1 × quarantined: too many arguments provided to function-like macro invocation   e.g. FUN_000a890c   [also in the last 1 run(s)]
+  fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 1 run(s)]
+  fix           1 × quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'   e.g. FUN_002c6934   [also in the last 1 run(s)]
   fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_0005db14   [also in the last 5 run(s)]
-  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_00308124
+  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_00308124   [also in the last 1 run(s)]
   fix           1 × quarantined: expected 'X'   e.g. FUN_00295a94   [also in the last 5 run(s)]
   fix           1 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001c49dc   [also in the last 5 run(s)]
-  fix           1 × quarantined: array initializer must be an initializer list or string literal   e.g. FUN_001c4c28
+  fix           1 × quarantined: array initializer must be an initializer list or string literal   e.g. FUN_001c4c28   [also in the last 1 run(s)]
   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
                     → tried again next run
 ```
@@ -72,58 +72,58 @@ couldn't handle:
 ## Log of this run (pipeline.log)
 
 ```
-[00:05:31] decomp_pipeline 2026-10-22.4: /Users/admin/glitchdecomp/fastpass 3 — stages fix → fix
-[00:05:31]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[00:05:31] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
-[00:06:03] 
-[00:06:03] ━━━━ what the script struggled with this run ━━━━
-[00:06:03] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[00:06:03] rates (this run last; earlier runs above it):
-[00:06:03]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-[00:06:03]   10-21 20:03                90.7                3.0               1893                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[00:06:03]   10-21 20:50                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[00:06:03]   10-21 20:52                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[00:06:03]   10-21 21:47                95.9                1.0                933                394               25.6                589                  -                  -                  -                  -                     -                  -
-[00:06:03]   10-22 00:06                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[00:06:03] couldn't handle:
-[00:06:03]   fix         195 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_0000365c, FUN_00003a04, FUN_00005eb0   [also in the last 5 run(s)]
-[00:06:03]   fix          43 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_0009d658, FUN_0009f7f8, FUN_000a17d0   [also in the last 5 run(s)]
-[00:06:03]   fix          38 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_0000cbac, FUN_0009d600, FUN_000c99b8   [also in the last 5 run(s)]
-[00:06:03]   fix          36 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_000bbafc, FUN_000c5e58, FUN_000cb6b0   [also in the last 5 run(s)]
-[00:06:03]   fix          31 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_000532f4, FUN_00053364, FUN_000b091c   [also in the last 5 run(s)]
-[00:06:03]   fix          30 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_000d44e8, FUN_000d56dc, FUN_000feb20   [also in the last 5 run(s)]
-[00:06:03]   fix          19 × quarantined: redefinition of 'X'   e.g. FUN_000fdd50, setFrame_display_169580, conversationIdentifier   [also in the last 5 run(s)]
-[00:06:03]   fix          11 × quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')   e.g. FUN_0002e28c, FUN_000461e4, FUN_0004ab0c   [also in the last 1 run(s)]
-[00:06:03]   fix           9 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_001fa360, FUN_00212fd0, FUN_002135c0   [also in the last 5 run(s)]
-[00:06:03]   fix           9 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_0007ebe0, FUN_001b0ad0, FUN_0027eb88   [also in the last 5 run(s)]
-[00:06:03]   fix           6 × quarantined: passing 'X' to parameter of incompatible type 'X'   e.g. FUN_0001b2dc, FUN_000349a0, FUN_0005c368   [also in the last 1 run(s)]
-[00:06:03]   fix           5 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00267a58, FUN_0027ed14, FUN_0028f408   [also in the last 5 run(s)]
-[00:06:03]   fix           4 × quarantined: operand of type 'X' cannot be cast to a pointer type   e.g. FUN_0004b344, FUN_002fb9a8, FUN_0032ccd4   [also in the last 1 run(s)]
-[00:06:03]   fix           4 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0011bcf4, FUN_0011d17c, FUN_0014cf68
-[00:06:03]   fix           4 × quarantined: array type 'X' is not assignable   e.g. FUN_000ac208, FUN_0029eef4, FUN_00379ad0
-[00:06:03]   fix           3 × quarantined: too few arguments to function call, single argument 'X' was not specified   e.g. FUN_0026d190, FUN_0026e104, FUN_00273b58
-[00:06:03]   fix           3 × quarantined: integer constant expression must have integer type, not 'X'   e.g. FUN_0025d944, FUN_0025fa3c, FUN_0025fe64
-[00:06:03]   fix           3 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_002a22b4, FUN_003010ac, FUN_003828a4
-[00:06:03]   fix           2 × quarantined: variable has incomplete type 'X'   e.g. func_385e88, func_385ec4
-[00:06:03]   fix           2 × quarantined: too few arguments to function call, expected N, have N   e.g. FUN_000305a8, FUN_0028fb48
-[00:06:03]   fix           2 × quarantined: redefinition of 'X' as different kind of symbol   e.g. length_error, out_of_range   [also in the last 5 run(s)]
-[00:06:03]   fix           2 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_001b5d5c, FUN_001b6164
-[00:06:03]   fix           2 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize, setContentSize_5ff4c   [also in the last 5 run(s)]
-[00:06:03]   fix           2 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. setMarkedText_selectedRange, FUN_00177824
-[00:06:03]   fix           2 × quarantined: conflicting types for 'X'   e.g. setbuf, objc_msgSend
-[00:06:03]   fix           1 × quarantined: used type 'X' where arithmetic or pointer type is required   e.g. FUN_0013ec40
-[00:06:03]   fix           1 × quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00270228
-[00:06:03]   fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_000500b8   [also in the last 5 run(s)]
-[00:06:03]   fix           1 × quarantined: too many arguments provided to function-like macro invocation   e.g. FUN_000a890c
-[00:06:03]   fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44
-[00:06:03]   fix           1 × quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'   e.g. FUN_002c6934
-[00:06:03]   fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_0005db14   [also in the last 5 run(s)]
-[00:06:03]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_00308124
-[00:06:03]   fix           1 × quarantined: expected 'X'   e.g. FUN_00295a94   [also in the last 5 run(s)]
-[00:06:03]   fix           1 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001c49dc   [also in the last 5 run(s)]
-[00:06:03]   fix           1 × quarantined: array initializer must be an initializer list or string literal   e.g. FUN_001c4c28
-[00:06:03]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
-[00:06:03]                     → tried again next run
+[00:06:25] decomp_pipeline 2026-10-22.4: /Users/admin/glitchdecomp/fastpass 3 — stages fix → link
+[00:06:25]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[00:06:25] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
+[00:07:26] 
+[00:07:26] ━━━━ what the script struggled with this run ━━━━
+[00:07:26] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[00:07:26] rates (this run last; earlier runs above it):
+[00:07:26]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
+[00:07:26]   10-21 20:50                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[00:07:26]   10-21 20:52                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[00:07:26]   10-21 21:47                95.9                1.0                933                394               25.6                589                  -                  -                  -                  -                     -                  -
+[00:07:26]   10-22 00:06                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[00:07:26]   10-22 00:07                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[00:07:26] couldn't handle:
+[00:07:26]   fix         195 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_0000365c, FUN_00003a04, FUN_00005eb0   [also in the last 5 run(s)]
+[00:07:26]   fix          43 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_0009d658, FUN_0009f7f8, FUN_000a17d0   [also in the last 5 run(s)]
+[00:07:26]   fix          38 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_0000cbac, FUN_0009d600, FUN_000c99b8   [also in the last 5 run(s)]
+[00:07:26]   fix          36 × quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')   e.g. FUN_000bbafc, FUN_000c5e58, FUN_000cb6b0   [also in the last 5 run(s)]
+[00:07:26]   fix          31 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_000532f4, FUN_00053364, FUN_000b091c   [also in the last 5 run(s)]
+[00:07:26]   fix          30 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')   e.g. FUN_000d44e8, FUN_000d56dc, FUN_000feb20   [also in the last 5 run(s)]
+[00:07:26]   fix          19 × quarantined: redefinition of 'X'   e.g. FUN_000fdd50, setFrame_display_169580, conversationIdentifier   [also in the last 5 run(s)]
+[00:07:26]   fix          11 × quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')   e.g. FUN_0002e28c, FUN_000461e4, FUN_0004ab0c   [also in the last 2 run(s)]
+[00:07:26]   fix           9 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_001fa360, FUN_00212fd0, FUN_002135c0   [also in the last 5 run(s)]
+[00:07:26]   fix           9 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_0007ebe0, FUN_001b0ad0, FUN_0027eb88   [also in the last 5 run(s)]
+[00:07:26]   fix           6 × quarantined: passing 'X' to parameter of incompatible type 'X'   e.g. FUN_0001b2dc, FUN_000349a0, FUN_0005c368   [also in the last 2 run(s)]
+[00:07:26]   fix           5 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00267a58, FUN_0027ed14, FUN_0028f408   [also in the last 5 run(s)]
+[00:07:26]   fix           4 × quarantined: operand of type 'X' cannot be cast to a pointer type   e.g. FUN_0004b344, FUN_002fb9a8, FUN_0032ccd4   [also in the last 2 run(s)]
+[00:07:26]   fix           4 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0011bcf4, FUN_0011d17c, FUN_0014cf68   [also in the last 1 run(s)]
+[00:07:26]   fix           4 × quarantined: array type 'X' is not assignable   e.g. FUN_000ac208, FUN_0029eef4, FUN_00379ad0   [also in the last 1 run(s)]
+[00:07:26]   fix           3 × quarantined: too few arguments to function call, single argument 'X' was not specified   e.g. FUN_0026d190, FUN_0026e104, FUN_00273b58   [also in the last 1 run(s)]
+[00:07:26]   fix           3 × quarantined: integer constant expression must have integer type, not 'X'   e.g. FUN_0025d944, FUN_0025fa3c, FUN_0025fe64   [also in the last 1 run(s)]
+[00:07:26]   fix           3 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_002a22b4, FUN_003010ac, FUN_003828a4   [also in the last 1 run(s)]
+[00:07:26]   fix           2 × quarantined: variable has incomplete type 'X'   e.g. func_385e88, func_385ec4   [also in the last 1 run(s)]
+[00:07:26]   fix           2 × quarantined: too few arguments to function call, expected N, have N   e.g. FUN_000305a8, FUN_0028fb48   [also in the last 1 run(s)]
+[00:07:26]   fix           2 × quarantined: redefinition of 'X' as different kind of symbol   e.g. length_error, out_of_range   [also in the last 5 run(s)]
+[00:07:26]   fix           2 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_001b5d5c, FUN_001b6164   [also in the last 1 run(s)]
+[00:07:26]   fix           2 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize, setContentSize_5ff4c   [also in the last 5 run(s)]
+[00:07:26]   fix           2 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. setMarkedText_selectedRange, FUN_00177824   [also in the last 1 run(s)]
+[00:07:26]   fix           2 × quarantined: conflicting types for 'X'   e.g. setbuf, objc_msgSend   [also in the last 1 run(s)]
+[00:07:26]   fix           1 × quarantined: used type 'X' where arithmetic or pointer type is required   e.g. FUN_0013ec40   [also in the last 1 run(s)]
+[00:07:26]   fix           1 × quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00270228   [also in the last 1 run(s)]
+[00:07:26]   fix           1 × quarantined: unexpected type name 'X': expected expression   e.g. FUN_000500b8   [also in the last 5 run(s)]
+[00:07:26]   fix           1 × quarantined: too many arguments provided to function-like macro invocation   e.g. FUN_000a890c   [also in the last 1 run(s)]
+[00:07:26]   fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 1 run(s)]
+[00:07:26]   fix           1 × quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'   e.g. FUN_002c6934   [also in the last 1 run(s)]
+[00:07:26]   fix           1 × quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'   e.g. FUN_0005db14   [also in the last 5 run(s)]
+[00:07:26]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')   e.g. FUN_00308124   [also in the last 1 run(s)]
+[00:07:26]   fix           1 × quarantined: expected 'X'   e.g. FUN_00295a94   [also in the last 5 run(s)]
+[00:07:26]   fix           1 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001c49dc   [also in the last 5 run(s)]
+[00:07:26]   fix           1 × quarantined: array initializer must be an initializer list or string literal   e.g. FUN_001c4c28   [also in the last 1 run(s)]
+[00:07:26]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
+[00:07:26]                     → tried again next run
 ```
 
 ## Build status
@@ -49572,8 +49572,8 @@ happened to each (newest last). 'adopted' ones are in the build.
     },
     "fix": {
       "done": false,
-      "started": "2026-10-22 00:05:31",
-      "at": "2026-10-22 00:05:31",
+      "started": "2026-10-22 00:06:25",
+      "at": "2026-10-22 00:06:25",
       "seconds": 4512,
       "model": "qwen2.5-coder-3b-instruct-mlx",
       "model_busy": 92
@@ -49604,52 +49604,6 @@ happened to each (newest last). 'adopted' ones are in the build.
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-21 20:03:33",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: operand of type 'X' where arithmetic or pointer type is required": 221,
-        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 188,
-        "fix|quarantined: redefinition of 'X'": 73,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 62,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 59,
-        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 57,
-        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 49,
-        "fix|quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier": 35,
-        "fix|quarantined: member reference base type 'X' is not a structure or union": 23,
-        "fix|quarantined: expected 'X' after expression": 19,
-        "fix|quarantined: expected 'X'": 19,
-        "fix|quarantined: expected 'X' after top level declarator": 16,
-        "fix|quarantined: use of undeclared identifier 'X'": 11,
-        "fix|quarantined: variable has incomplete type 'X'": 8,
-        "fix|quarantined: subscripted value is not an array, pointer, or vector": 8,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X'": 7,
-        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 7,
-        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 6,
-        "fix|quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'": 5,
-        "fix|quarantined: unknown type name 'X'": 4,
-        "fix|quarantined: expected identifier or 'X'": 4,
-        "fix|quarantined: redefinition of 'X' as different kind of symbol": 3,
-        "fix|quarantined: pointer cannot be cast to type 'X'": 3,
-        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 3,
-        "fix|quarantined: expression is not assignable": 3,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 2,
-        "fix|quarantined: no member named 'X' in 'X'": 2,
-        "fix|quarantined: initializing 'X' with an expression of incompatible type 'X'": 2,
-        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 2,
-        "fix|quarantined: array type 'X' is not assignable": 2,
-        "fix|quarantined: unexpected type name 'X': expected expression": 1,
-        "fix|quarantined: too many arguments to function call, expected N, have N": 1,
-        "fix|quarantined: subscript of pointer to function type 'X'": 1,
-        "fix|quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'": 1,
-        "fix|quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required": 1,
-        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')": 1,
-        "fix|quarantined: extraneous 'X' before 'X'": 1,
-        "fix|quarantined: expected expression": 1,
-        "fix|not compiling yet (not reached before the run ended)": 1893,
-        "fix|the model repeated an edit that had already failed (skipped)": 3
-      }
-    },
     {
       "at": "2026-10-21 20:50:45",
       "keys": {
@@ -49826,16 +49780,51 @@ happened to each (newest last). 'adopted' ones are in the build.
         "fix|quarantined: assigning to 'X' from incompatible type 'X'": 1,
         "fix|quarantined: array initializer must be an initializer list or string literal": 1
       }
+    },
+    {
+      "at": "2026-10-22 00:07:26",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "fix|quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'": 195,
+        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 43,
+        "fix|quarantined: operand of type 'X' where arithmetic or pointer type is required": 38,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 36,
+        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 31,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 30,
+        "fix|quarantined: redefinition of 'X'": 19,
+        "fix|quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')": 11,
+        "fix|quarantined: too many arguments to function call, expected N, have N": 9,
+        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 9,
+        "fix|quarantined: passing 'X' to parameter of incompatible type 'X'": 6,
+        "fix|quarantined: subscripted value is not an array, pointer, or vector": 5,
+        "fix|quarantined: operand of type 'X' cannot be cast to a pointer type": 4,
+        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 4,
+        "fix|quarantined: array type 'X' is not assignable": 4,
+        "fix|quarantined: too few arguments to function call, single argument 'X' was not specified": 3,
+        "fix|quarantined: integer constant expression must have integer type, not 'X'": 3,
+        "fix|quarantined: called object type 'X' is not a function or function pointer": 3,
+        "fix|quarantined: variable has incomplete type 'X'": 2,
+        "fix|quarantined: too few arguments to function call, expected N, have N": 2,
+        "fix|quarantined: redefinition of 'X' as different kind of symbol": 2,
+        "fix|quarantined: pointer cannot be cast to type 'X'": 2,
+        "fix|quarantined: no member named 'X' in 'X'": 2,
+        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))": 2,
+        "fix|quarantined: conflicting types for 'X'": 2,
+        "fix|quarantined: used type 'X' where arithmetic or pointer type is required": 1,
+        "fix|quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required": 1,
+        "fix|quarantined: unexpected type name 'X': expected expression": 1,
+        "fix|quarantined: too many arguments provided to function-like macro invocation": 1,
+        "fix|quarantined: subscript of pointer to function type 'X'": 1,
+        "fix|quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'": 1,
+        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 1,
+        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')": 1,
+        "fix|quarantined: expected 'X'": 1,
+        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 1,
+        "fix|quarantined: array initializer must be an initializer list or string literal": 1
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-21 19:50",
-      "functions": 30176,
-      "compile_pct": 90.9,
-      "quarantined_pct": 2.5,
-      "to_fix": 1986
-    },
     {
       "at": "10-21 20:03",
       "functions": 30176,
@@ -49873,6 +49862,13 @@ happened to each (newest last). 'adopted' ones are in the build.
       "compile_pct": 98.4,
       "quarantined_pct": 1.6,
       "to_fix": 0
+    },
+    {
+      "at": "10-22 00:07",
+      "functions": 30176,
+      "compile_pct": 98.4,
+      "quarantined_pct": 1.6,
+      "to_fix": 0
     }
   ]
 }
@@ -49882,8 +49878,8 @@ happened to each (newest last). 'adopted' ones are in the build.
 
 ```json
 {
-  "generated": "2026-10-21 21:47:41",
-  "pipeline_version": "2026-10-22.2",
+  "generated": "2026-10-22 00:06:03",
+  "pipeline_version": "2026-10-22.4",
   "workdir": "/Users/admin/glitchdecomp/fastpass 3",
   "export": {
     "functions": 30489,
@@ -49917,12 +49913,11 @@ happened to each (newest last). 'adopted' ones are in the build.
   },
   "build": {
     "functions": 30176,
-    "compile": 28950,
-    "quarantined": 293,
-    "fixed_by_model": 102,
-    "rederived": 3,
+    "compile": 29698,
+    "quarantined": 478,
+    "fixed_by_model": 148,
+    "rederived": 2,
     "rederived_by": {
-      "rewrite": 1,
       "window-patch": 1,
       "faithful-pseudocode": 1
     }
@@ -49941,52 +49936,53 @@ happened to each (newest last). 'adopted' ones are in the build.
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-21 20:53:07",
-      "at": "2026-10-21 20:53:21",
-      "seconds": 14,
+      "started": "2026-10-21 22:07:13",
+      "at": "2026-10-21 22:07:21",
+      "seconds": 8,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-21 20:53:23",
-      "at": "2026-10-21 20:54:25",
-      "seconds": 62,
+      "started": "2026-10-21 22:07:23",
+      "at": "2026-10-21 22:08:36",
+      "seconds": 73,
       "model": "",
       "note": "30176/30489 rewritten",
       "model_busy": 12
     },
     "split": {
       "done": true,
-      "started": "2026-10-21 20:54:25",
-      "at": "2026-10-21 21:02:54",
-      "seconds": 509,
-      "note": "28793/30176 compile after the sweep"
+      "started": "2026-10-21 22:08:36",
+      "at": "2026-10-21 22:13:46",
+      "seconds": 310,
+      "note": "29556/30176 compile after the sweep"
     },
     "fix": {
       "done": false,
-      "started": "2026-10-21 21:02:54",
-      "at": "2026-10-21 21:02:54",
-      "seconds": 86,
-      "model": "qwen2.5-coder-0.5b-instruct-mlx"
+      "started": "2026-10-22 00:05:31",
+      "at": "2026-10-22 00:05:31",
+      "seconds": 4512,
+      "model": "qwen2.5-coder-3b-instruct-mlx",
+      "model_busy": 92
     },
     "recover": {
       "done": true,
-      "started": "2026-10-21 19:41:26",
-      "at": "2026-10-21 19:41:27",
+      "started": "2026-10-21 23:28:58",
+      "at": "2026-10-21 23:28:58",
       "seconds": 0,
-      "model": ""
+      "model": "qwen2.5-coder-3b-instruct-mlx"
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-21 20:53:21",
-      "at": "2026-10-21 20:53:23",
+      "started": "2026-10-21 22:07:21",
+      "at": "2026-10-21 22:07:23",
       "seconds": 2,
       "note": "1141 replacement(s)"
     },
     "link": {
       "done": false,
-      "started": "2026-10-21 20:15:31",
-      "at": "2026-10-21 20:15:31"
+      "started": "2026-10-21 23:28:58",
+      "at": "2026-10-21 23:28:58"
     }
   }
 }
