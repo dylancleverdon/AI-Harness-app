@@ -726,3 +726,24 @@ def test_console_runs_a_multi_line_shell_script():
             break
         time.sleep(0.1)
     assert "one" in d["output"] and "two-2" in d["output"]
+
+
+def test_restarts_natively_only_under_rosetta_on_apple_silicon(monkeypatch):
+    import subprocess as sp
+    from harness import __main__ as hm
+    answers = {"sysctl.proc_translated": "1", "hw.optional.arm64": "1"}
+    monkeypatch.setattr(hm, "_sysctl", lambda name: answers[name])
+    monkeypatch.setattr(hm.sys, "platform", "darwin")
+    monkeypatch.delenv("AIHARNESS_NATIVE_TRIED", raising=False)
+    runs_native = {"ok": 0}
+    monkeypatch.setattr(hm.subprocess, "run", lambda *a, **k: sp.CompletedProcess(a, runs_native["ok"]))
+    argv = hm.native_restart_argv()
+    assert argv[:2] == ["/usr/bin/arch", "-arm64"] and argv[3:5] == ["-m", "harness"]
+    runs_native["ok"] = 1                        # this Python has no Apple Silicon code: stays as is
+    assert hm.native_restart_argv() is None
+    runs_native["ok"] = 0
+    answers["sysctl.proc_translated"] = "0"      # already native
+    assert hm.native_restart_argv() is None
+    answers["sysctl.proc_translated"] = "1"
+    monkeypatch.setenv("AIHARNESS_NATIVE_TRIED", "1")   # tried once already: never loops
+    assert hm.native_restart_argv() is None

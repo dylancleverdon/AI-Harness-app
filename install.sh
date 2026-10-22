@@ -45,6 +45,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleVersion</key><string>1</string>
 <key>LSUIElement</key><false/>
+<key>LSArchitecturePriority</key><array><string>arm64</string><string>x86_64</string></array>
 </dict></plist>
 PLIST
 cat > "$APP/Contents/MacOS/launch" <<LAUNCH
@@ -62,7 +63,13 @@ if ! ping; then
     timeout 20 git -C "\$APP_HOME" pull --rebase --autostash --quiet 2>/dev/null || true
   fi
   cd "\$APP_HOME"
-  nohup "\$APP_HOME/.venv/bin/python" -m harness >> "\$DATA_DIR/harness.log" 2>&1 &
+  # macOS starts a script-based app like this one under Rosetta (as Intel) on Apple
+  # Silicon; start Python natively, so the app and what it runs (the compiler) aren't Intel
+  NATIVE=()
+  if [ "\$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ] && /usr/bin/arch -arm64 "\$APP_HOME/.venv/bin/python" -c "pass" 2>/dev/null; then
+    NATIVE=(/usr/bin/arch -arm64)
+  fi
+  nohup "\${NATIVE[@]}" "\$APP_HOME/.venv/bin/python" -m harness >> "\$DATA_DIR/harness.log" 2>&1 &
   for i in \$(seq 1 80); do ping && break; sleep 0.25; done
 fi
 
