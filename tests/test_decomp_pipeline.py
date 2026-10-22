@@ -1578,3 +1578,19 @@ def test_quarantined_functions_get_fixes_learned_after_them(tmp_path, monkeypatc
     # the same learned fixes again: not retried
     calls.clear()
     assert dp.retry_quarantined(cfg, recs, {}) == 0 and not calls
+
+
+def test_link_fixes_functions_that_dont_compile_with_a_live_bar(tmp_path, model, capsys):
+    write_export(tmp_path, C_PSEUDO)
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    m = json.loads((tmp_path / "build_c" / "manifest.json").read_text())
+    rec = next(r for r in m.values() if not r["quarantined"])
+    path = tmp_path / "build_c" / rec["file"]
+    path.write_text(path.read_text() + "\nint broken_here(void) { return undeclared_thing; }\n")
+    capsys.readouterr()
+    assert run(tmp_path, model, "--lang", "c", "--from", "link", "--to", "link", "--no-pseudo") == 0
+    out = capsys.readouterr().out
+    assert "1 file(s) didn't compile; the fixer works on them" in out
+    assert "fixing functions that don't compile" in out                 # the bar
+    assert re.search(rf"{re.escape(rec['name'])} -> (fixed|quarantined)", out)
+    assert re.search(r"link round 1: \d fixed, \d quarantined; compiling again", out)

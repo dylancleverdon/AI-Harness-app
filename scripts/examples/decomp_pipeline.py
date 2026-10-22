@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-21.3"
+PIPELINE_VERSION = "2026-10-22.1"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -8406,7 +8406,9 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
         failed = [(src, e) for src, o, e in built if e]
 
         if failed:
-            log(cfg, f"  link round {round_no}: {len(failed)} file(s) failed to compile")
+            log(cfg, show=True, msg=f"  link round {round_no}: {len(failed)} file(s) didn't compile; "
+                                    f"the fixer works on them (quick fixes, then small model edits)")
+            to_repair = []
             for src, e in failed:
                 if src in (cfg.globals_cpp, stubs_cpp):
                     rel = src.name
@@ -8429,8 +8431,37 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
                 rec = records[m]
                 rec.compiles = False
                 rec.last_error = e[-4000:]
-                if not repair_tu(cfg, rec, cache):
-                    report.append(f"quarantined {rec.name}: stopped compiling at link time")
+                to_repair.append(m)
+            if to_repair:
+                # in parallel, with a live bar: what's being fixed, how fast, how long
+                rfixed, rquar = [0], [0]
+                ruse = ModelUse()
+                rprog = Progress(len(to_repair), 0, title=f"link round {round_no}: fixing "
+                                                          f"functions that don't compile")
+                rprog.extra = lambda: f"{rfixed[0]} fixed, {rquar[0]} quarantined | {ruse.text()}"
+
+                def link_repair(m):
+                    rec = records[m]
+                    t1 = time.time()
+                    rprog.begin(m, rec.name)
+                    try:
+                        ok = repair_tu(cfg, rec, cache)
+                    finally:
+                        rprog.end(m)
+                    with _STRUGGLE_LOCK:
+                        (rfixed if ok else rquar)[0] += 1
+                        if not ok:
+                            report.append(f"quarantined {rec.name}: didn't compile at link time")
+                    log(cfg, show=True, msg=f"    {rec.name} -> {'fixed' if ok else 'quarantined'} "
+                                            f"({fmt_duration(time.time() - t1)})")
+                try:
+                    work_pool(cfg.workers, to_repair, link_repair, 25,
+                              lambda: (save_manifest(cfg, records), save_cache(cfg, cache)))
+                finally:
+                    rprog.close()
+                save_manifest(cfg, records)
+                log(cfg, show=True, msg=f"  link round {round_no}: {rfixed[0]} fixed, {rquar[0]} "
+                                        f"quarantined; compiling again")
             continue
 
         objs = [str(o) for _, o, _ in built]
