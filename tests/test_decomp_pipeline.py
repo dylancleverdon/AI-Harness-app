@@ -1938,3 +1938,47 @@ def test_many_object_files_are_linked_through_a_response_file(tmp_path):
     assert r.returncode == 0, r.stderr
     syms = subprocess.run(["nm", "-g", str(out)], capture_output=True, text=True).stdout
     assert all(f"f{i}" in syms for i in range(3))
+
+
+def test_ghidras_copies_of_system_types_give_way_to_the_systems():
+    system = {"typedefs": {"FILE", "pthread_mutex_t"}, "tags": {"timespec": "struct"}, "functions": {"stat"}}
+    types = [{"kind": "struct", "name": "FILE", "size": 8, "fields": []},
+             {"kind": "struct", "name": "timespec", "size": 16, "fields": []},
+             {"kind": "struct", "name": "Clock", "size": 24,
+              "fields": [{"off": 0, "size": 16, "name": "ts", "type": "timespec"},
+                         {"off": 16, "size": 8, "name": "log", "type": "FILE *"}]}]
+    out = dp.datatypes_to_c(types, {"Clock", "FILE", "timespec"}, system)
+    assert "struct FILE {" not in out and "struct timespec {" not in out      # the system's are used
+    assert "struct timespec ts;" in out and "FILE * log;" in out.replace("FILE *log", "FILE * log")
+    entries = [{"tag": "", "name": "f", "head": "long f(timespec *t)",
+                "body": "{\n  timespec local_20;\n  local_20 = *t;\n  return local_20.tv_sec;\n}"}]
+    dp.c_mode_passes(entries, set(), system_tags={"timespec": "struct"})
+    assert entries[0]["head"] == "long f(struct timespec *t)"
+    assert "struct timespec local_20;" in entries[0]["body"]
+
+
+def test_data_named_by_its_address_is_found_in_the_data(tmp_path):
+    import base64
+    P = dp.Paths(tmp_path)
+    P.make()
+    data = {"blocks": [{"name": "__const", "start": "1400", "size": 0x100,
+                        "bytes": base64.b64encode(bytes(0x100)).decode()}], "symbols": []}
+    h, c, macros, _ = dp.data_sources(P, data, {}, set(), frozenset(),
+                                      frozenset({"DAT_00001440", "s_Hello_00001450", "DAT_00009999"}))
+    assert "#define GD_DAT_00001440 (*(uint64_t *)(g_block_0 + 0x40))" in h
+    assert "#define GD_s_Hello_00001450 (*(char (*)[1])(g_block_0 + 0x50))" in h
+    assert "DAT_00009999" not in macros                    # outside every block: a placeholder later
+
+
+def test_a_crash_still_writes_the_report_with_where_it_happened(tmp_path, model, monkeypatch):
+    write_export(tmp_path, C_PSEUDO)
+
+    def boom(cfg, records):
+        raise OSError(7, "Argument list too long", "/usr/bin/clang++")
+    monkeypatch.setattr(dp, "build_link", boom)
+    with pytest.raises(OSError):
+        run(tmp_path, model, "--lang", "c", "--to", "link")
+    report = (tmp_path / "diagnostics" / "latest.md").read_text()
+    assert "The run CRASHED in the link stage" in report and "Argument list too long" in report
+    assert "Traceback" in report and "the run crashed: OSError" in report
+    assert (tmp_path / "build_c" / "manifest.json").exists()             # progress kept

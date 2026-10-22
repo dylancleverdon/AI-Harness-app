@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.5"
+PIPELINE_VERSION = "2026-10-22.6"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3188,10 +3188,18 @@ def _c_ident(name: str) -> str:
     return ("f_" + n) if not n or n[0].isdigit() else n
 
 
-def _ghidra_type_to_c(t: str, known: set) -> tuple[str, str]:
+def _ghidra_type_to_c(t: str, known: set, tags: Optional[dict] = None) -> tuple[str, str]:
     """(type, array suffix) for a Ghidra field type, or ("", "") if it can't be
-    expressed (then the bytes are kept as a uint8_t array of the same size)."""
+    expressed (then the bytes are kept as a uint8_t array of the same size).
+    tags: struct/union tags the system headers define without a typedef."""
     t = (t or "").strip()
+    if tags:
+        b = re.sub(r"^(struct|union|enum)\s+", "", t.replace("*", "").replace("const ", "")).strip()
+        b = re.sub(r"\s*(\[\d+\])+$", "", b)
+        if b in tags:
+            m = re.match(r"^(.*?)\s*((?:\[\d+\])+)$", t)
+            arr = m.group(2) if m else ""
+            return f"{tags[b]} {b}" + (" " + "*" * t.count("*") if "*" in t else ""), arr
     arr = ""
     m = re.match(r"^(.*?)\s*((?:\[\d+\])+)$", t)
     if m:
@@ -3209,14 +3217,61 @@ def _ghidra_type_to_c(t: str, known: set) -> tuple[str, str]:
     return "", ""
 
 
-def datatypes_to_c(types: list, wanted: set) -> str:
+def system_names(cc: Optional[str]) -> dict:
+    """What the system headers the C build includes define: {"typedefs", "tags"
+    (struct/union tag -> keyword), "functions"}. Ghidra exports its own copies of
+    some of them (FILE, pthread_mutex_t, CGRect, struct timespec...); both together
+    are "redefinition" errors. Empty if there's no compiler to ask."""
+    out = {"typedefs": set(), "tags": {}, "functions": set()}
+    if not cc:
+        return out
+    includes = STD_INCLUDES_C + (DARWIN_INCLUDES_C if sys.platform == "darwin" else [])
+    try:
+        r = subprocess.run([cc, "-E", "-P", "-x", "c", "-w", "-"], capture_output=True, text=True,
+                           input="\n".join(f"#include {h}" for h in includes) + "\n", timeout=180)
+    except (OSError, subprocess.TimeoutExpired):
+        return out
+    text = re.sub(r"__attribute__\s*\(\((?:[^()]|\([^()]*\))*\)\)", "", r.stdout)
+    for m in re.finditer(r"\b(struct|union)\s+([A-Za-z_]\w*)\s*\{", text):
+        out["tags"].setdefault(m.group(2), m.group(1))
+    # typedef names: the last name before the ';' that ends the typedef (braces skipped)
+    for m in re.finditer(r"\btypedef\b", text):
+        depth, j = 0, m.end()
+        while j < len(text):
+            ch = text[j]
+            if ch in "{(":
+                depth += 1
+            elif ch in "})":
+                depth -= 1
+            elif ch == ";" and depth == 0:
+                break
+            j += 1
+        decl = text[m.end():j]
+        fp = re.search(r"\(\s*\^?\*?\s*([A-Za-z_]\w*)\s*\)\s*\(", decl)
+        nm = fp.group(1) if fp else (re.findall(r"([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*$", decl.strip()) or [None])[0]
+        if nm:
+            out["typedefs"].add(nm)
+    for m in re.finditer(r"^[^#{}()]*?\b([A-Za-z_]\w*)\s*\([^;{}]*\)\s*(?:__asm\w*\([^)]*\)\s*)?;", text, re.M):
+        if not text[max(0, m.start() - 1):m.start()].strip():
+            out["functions"].add(m.group(1))
+    for k in list(out["tags"]):
+        if k in out["typedefs"]:
+            del out["tags"][k]              # used through its typedef: no keyword needed
+    return out
+
+
+def datatypes_to_c(types: list, wanted: set, system: Optional[dict] = None) -> str:
     """C definitions for Ghidra's data types that the code uses (and the ones they
     contain), with Ghidra's exact layout: packed, every field at its offset, gaps
     kept as bytes, and a size check, so a type that comes out wrong fails to
     compile (and is switched off) instead of being silently wrong."""
     by_name = {}
+    system = system or {"typedefs": set(), "tags": {}, "functions": set()}
+    taken = system["typedefs"] | set(system["tags"]) | system["functions"]
     for t in types or []:
         if isinstance(t, dict) and t.get("name") and t.get("kind") in ("struct", "union", "enum", "typedef"):
+            if _c_ident(t["name"]) in taken:
+                continue                    # the system headers define it: theirs is the real one
             by_name.setdefault(_c_ident(t["name"]), t)
     # everything reachable from what the code uses
     need, todo = set(), [n for n in wanted if n in by_name]
@@ -3231,7 +3286,8 @@ def datatypes_to_c(types: list, wanted: set) -> str:
             for w in re.findall(r"[A-Za-z_]\w*", r or ""):
                 if _c_ident(w) in by_name and _c_ident(w) not in need:
                     todo.append(_c_ident(w))
-    known = set(need)
+    known = set(need) | system["typedefs"]
+    tags = system["tags"]
     out = ["// ---- Ghidra's data types (exact layout) ----"]
     for n in sorted(need):
         t = by_name[n]
@@ -3263,7 +3319,7 @@ def datatypes_to_c(types: list, wanted: set) -> str:
             vals = ", ".join(f"{_c_ident(k)} = {v}" for k, v in (t.get("values") or {}).items())
             out.append(f"typedef enum {{ {vals} }} {n};" if vals else f"typedef int {n};")
         elif t["kind"] == "typedef":
-            c, arr = _ghidra_type_to_c(t.get("type", ""), known - {n})
+            c, arr = _ghidra_type_to_c(t.get("type", ""), known - {n}, tags)
             if c and not arr and c != n:
                 out.append(f"typedef {c} {n};")
         else:
@@ -3279,7 +3335,7 @@ def datatypes_to_c(types: list, wanted: set) -> str:
                 while fname in used:
                     fname += "_"
                 used.add(fname)
-                c, arr = _ghidra_type_to_c(f.get("type", ""), known)
+                c, arr = _ghidra_type_to_c(f.get("type", ""), known, tags)
                 lines.append(f"    {c} {fname}{arr};" if c else f"    uint8_t {fname}[{fs}];")
                 if t["kind"] == "struct":
                     pos = off + fs
@@ -3298,7 +3354,8 @@ GD_NAME = re.compile(r"^(?:DAT|PTR|UNK|s|u|_DAT|BYTE|WORD|DWORD|QWORD|PTR_DAT|PT
 
 
 def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
-                 fn_ptrs: frozenset = frozenset()) -> tuple[str, str, dict, int]:
+                 fn_ptrs: frozenset = frozenset(), by_address: frozenset = frozenset()
+                 ) -> tuple[str, str, dict, int]:
     """(ghidra_data.h, ghidra_data.c, {Ghidra data name: GD_ macro}) from Ghidra's
     data export: every data block embedded byte for byte, each labelled location
     the code uses as a typed macro at its exact spot (GD_<name>, so it can't clash
@@ -3357,6 +3414,22 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
             continue
         h.append(f"#define {m} (*({t} (*){arr})(g_block_{i} + {off:#x}))" if arr
                  else f"#define {m} (*({t} *)(g_block_{i} + {off:#x}))")
+    # names the code uses that Ghidra's label list didn't have: its names end in their
+    # address (DAT_00001440, s_Hello_00401230), so inside a block they're found anyway
+    for name in sorted(by_address - set(macros)):
+        am = re.search(r"_([0-9a-fA-F]{4,16})$", name)
+        loc = where(int(am.group(1), 16)) if am else None
+        if not loc:
+            continue
+        i, off = loc
+        m = "GD_" + name
+        macros[name] = m
+        if name in fn_ptrs:
+            h.append(f"#define {m} (*(uint64_t (**)())(g_block_{i} + {off:#x}))")
+        elif re.match(r"^(?:s|u)_", name):            # a string: an array, like Ghidra's
+            h.append(f"#define {m} (*(char (*)[1])(g_block_{i} + {off:#x}))")
+        else:
+            h.append(f"#define {m} (*(uint64_t *)(g_block_{i} + {off:#x}))")
     # pointers stored in data
     targets, tindex, relocs, externals, ext_relocs, fn_decls = [], {}, [], [], [], set()
     by_addr = dict(cname)
@@ -3517,7 +3590,8 @@ def _expr_end(text: str, i: int) -> int:
 C_PASSES = 5          # passes over every function (for the progress bar)
 
 
-def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> dict:
+def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
+                  system_tags: Optional[dict] = None) -> dict:
     """Rewrites entries ({"head", "body", "name"}) in place; returns counts.
     tick() is called once per function per pass (C_PASSES passes)."""
     stats = Counter()
@@ -3549,14 +3623,15 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
     # 2) types C doesn't know: opaque (used through pointers) or register-sized
     unknown: dict = {}
     tagged: set = set()
+    system_tags = system_tags or {}
 
     def note_type(tstr: str):
         idents = [w for w in re.findall(r"[A-Za-z_]\w*", tstr) if w not in C_TYPE_WORDS]
         if len(idents) != 1:
             return
         w = idents[0]
-        if w in functions:
-            tagged.add(w)                      # also a function: the type is "struct w"
+        if w in functions or w in system_tags:
+            tagged.add(w)                      # also a function, or a system struct tag: "struct w"
             return
         if w in known_types or w in C_BASE_TYPES or w in CPP_KEYWORDS or w.startswith(("GD_", "gh16")):
             return
@@ -3577,14 +3652,15 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> d
     opaque = [f"typedef uint64_t {w};" if by_value else f"typedef struct {w} {w};"
               for w, by_value in sorted(unknown.items())]
     for w in tagged:                         # pointer uses and declarations, not its calls
-        rx = re.compile(rf"(?<![\w.>])(?<!struct ){re.escape(w)}\b(?=\s*\*)|"
-                        rf"(?m:^(\s*)){re.escape(w)}(?=\s+[A-Za-z_]\w*\s*;)")
+        kw = system_tags.get(w, "struct")
+        rx = re.compile(rf"(?<![\w.>])(?<!struct )(?<!union ){re.escape(w)}\b(?=\s*\*)|"
+                        rf"(?m:^(\s*)){re.escape(w)}(?=\s+[A-Za-z_]\w*\s*(?:\[[^\]]*\])?\s*;)")
         for e in entries:
-            e["head"] = rx.sub(lambda m: (m.group(1) or "") + f"struct {w}", e["head"])
-            e["body"] = rx.sub(lambda m: (m.group(1) or "") + f"struct {w}", e["body"])
+            e["head"] = rx.sub(lambda m, k=kw: (m.group(1) or "") + f"{k} {w}", e["head"])
+            e["body"] = rx.sub(lambda m, k=kw: (m.group(1) or "") + f"{k} {w}", e["body"])
     # declared once up front: a struct first named in a parameter list would be a
     # different type in every declaration
-    opaque += [f"struct {w};" for w in sorted(tagged)]
+    opaque += [f"{system_tags.get(w, 'struct')} {w};" for w in sorted(tagged)]
     stats["types that are also functions (as struct tags)"] = len(tagged)
     stats["types C didn't know (declared opaque)"] = len(opaque)
 
@@ -3859,14 +3935,28 @@ def run_pseudo_source(P: Paths, args) -> dict:
                         "body": body, "name": cname[a]})
         index[cname[a]] = {"ghidra": f.get("name"), "addr": a, "status": "done"}
     wanted = set(re.findall(r"[A-Za-z_]\w*", "\n".join(e["head"] + e["body"] for e in entries)))
-    types = datatypes_to_c(data.get("datatypes") or [], {_c_ident(w) for w in wanted})
+    system = system_names(COMPILER.get("cmd") or COMPILER.get("found") or shutil.which("clang")
+                          or shutil.which("cc"))
+    types = datatypes_to_c(data.get("datatypes") or [], {_c_ident(w) for w in wanted}, system)
+    clash_sys = sorted(_c_ident(t["name"]) for t in data.get("datatypes") or []
+                       if isinstance(t, dict) and t.get("name") and _c_ident(t["name"]) in
+                       (system["typedefs"] | set(system["tags"]) | system["functions"]))
+    if clash_sys:
+        plog(P, show=True, msg=f"    Ghidra's copies of types the system headers define (the system's are "
+                               f"used): {len(clash_sys)}, e.g. {', '.join(clash_sys[:6])}")
     data_note = ""
     placeholders: list = []
     # data the code calls through, "(*DAT_...)(...)": it holds a function pointer
     fn_ptrs = frozenset(re.findall(r"\(\s*\*\s*([A-Za-z_]\w*)\s*\)\s*\(",
                                    "\n".join(e["body"] for e in entries)))
+    data_names = frozenset(w for e in entries for w in re.findall(r"(?<![\w.>])([A-Za-z_]\w*)", e["body"])
+                           if GD_NAME.match(w) and w not in cname.values())
     if gdata.get("blocks"):
-        dh, dc, macros, n_fix = data_sources(P, gdata, cname, wanted, fn_ptrs)
+        known_labels = {s.get("name") for s in gdata.get("symbols") or []}
+        dh, dc, macros, n_fix = data_sources(P, gdata, cname, wanted, fn_ptrs, data_names)
+        n_by_addr = sum(1 for n in data_names if n in macros and n not in known_labels)
+        if n_by_addr:
+            plog(P, show=True, msg=f"    data found by its address (not in Ghidra's label list): {n_by_addr}")
         if macros:
             rx = re.compile(r"(?<![\w.>])(" + "|".join(re.escape(k) for k in
                                                      sorted(macros, key=len, reverse=True)) + r")\b")
@@ -3877,14 +3967,29 @@ def run_pseudo_source(P: Paths, args) -> dict:
         defined_names = set(macros) | set(cname.values())
         missing = sorted({w for e in entries for w in re.findall(r"(?<![\w.>])([A-Za-z_]\w*)", e["body"])
                           if GD_NAME.match(w) and w not in defined_names and not w.startswith("GD_")})
+        spans = sorted((int(b["start"], 16), int(b["start"], 16) + int(b["size"]), b.get("name", ""))
+                       for b in gdata["blocks"] if b.get("size"))
+
+        def nearest(addr):
+            if addr is None:
+                return "no address in its name"
+            before = [s for s in spans if s[1] <= addr]
+            after = [s for s in spans if s[0] > addr]
+            return ("not in any exported block; nearest: "
+                    + (f"{before[-1][2]} ends at {before[-1][1]:#x}" if before else "nothing before")
+                    + ", " + (f"{after[0][2]} starts at {after[0][0]:#x}" if after else "nothing after"))
+        lines = ["Data the code names that the data export doesn't have: each gets a zero-filled",
+                 "placeholder (it compiles, but reads zeros). Where it is, to see what the export misses:", ""]
         for w in missing:
             decl = f"uint64_t (*{w})()" if w in fn_ptrs else f"uint64_t {w}"
             dh += f"extern {decl};   // not in the data export: a placeholder\n"
             dc += f"{decl};\n"
             placeholders.append(w)
+            am = re.search(r"_([0-9a-fA-F]{4,16})$", w)
+            lines.append(f"{w}: {nearest(int(am.group(1), 16) if am else None)}")
         write_atomic(P.rewrite / "ghidra_data.h", dh)
         write_atomic(P.rewrite / "ghidra_data.c", dc)
-        write_atomic(P.rewrite / "data_placeholders.txt", "\n".join(placeholders) + "\n")
+        write_atomic(P.rewrite / "data_placeholders.txt", "\n".join(lines) + "\n")
         data_note = (f", the program's data ({len(gdata['blocks'])} block(s), {len(macros)} "
                      f"labelled location(s) used, {n_fix} pointer fix-up(s)"
                      + (f", {len(placeholders)} placeholder(s) for data outside the export: "
@@ -3898,7 +4003,10 @@ def run_pseudo_source(P: Paths, args) -> dict:
                    | set(re.findall(r"\b(?:struct|union|enum)\s+([A-Za-z_]\w*)", types)))
     bar = Progress(C_PASSES * len(entries), 0, title="making Ghidra's C compile (whole-program passes)")
     try:
-        passes = c_mode_passes(entries, known_types, tick=lambda: bar.end(None))
+        passes = c_mode_passes(entries, known_types | system["typedefs"], tick=lambda: bar.end(None),
+                           system_tags={**{f: "struct" for f in system["functions"]
+                                           if f in system["tags"] or f in clash_sys},
+                                        **system["tags"]})
     finally:
         bar.close()
     for what, n in sorted(passes["stats"].items(), key=lambda kv: -kv[1]):
@@ -8149,6 +8257,9 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
         except Exception:
             pass
     section("Run", "\n".join(env))
+    if RUN_CTX.get("crash"):
+        c = RUN_CTX["crash"]
+        section(f"The run CRASHED in the {c['stage']} stage", c["traceback"])
     section("What the script struggled with", "\n".join(struggles))
     section("Log of this run (pipeline.log)", _read(P.log, RUN_CTX.get("log_start", 0)))
 
@@ -8226,6 +8337,10 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
         f = P.build / name
         if f.exists():
             section(f"build/{name}", _read(f))
+    for name in ("data_placeholders.txt", "functions_without_code.txt"):
+        f = P.rewrite / name
+        if f.exists():
+            section(f"rewrite/{name}", _read(f)[:60000])
     section("Build log of this run (build/worklist.log)",
             _read(P.build / "worklist.log", RUN_CTX.get("worklist_start", 0)))
     for f in (P.state, P.root / "report.json", P.build / "build_state.json"):
@@ -14324,6 +14439,31 @@ def run_pipeline(args) -> int:
             save_manifest(cfg, records)
         write_report(P)
         raise
+    except Exception as e:
+        # a crash: say where, keep what was done, and still write (and send) the report
+        import traceback
+        if BAR["p"] is not None:
+            BAR["p"].close()
+        tb = traceback.format_exc()
+        RUN_CTX["crash"] = {"stage": locals().get("stage", "?"), "error": f"{type(e).__name__}: {e}",
+                            "traceback": tb}
+        plog(P, show=True, msg=f"CRASHED in the {RUN_CTX['crash']['stage']} stage: {type(e).__name__}: "
+                               f"{str(e)[:300]}")
+        for line in tb.rstrip().splitlines()[-12:]:
+            plog(P, line)
+        struggle(RUN_CTX["crash"]["stage"], f"the run crashed: {type(e).__name__}: {str(e)[:160]}",
+                 hint="the traceback is in the diagnostics report")
+        try:
+            if records is not None:
+                save_manifest(cfg, records)
+        except Exception:
+            pass
+        try:
+            write_report(P)
+            struggle_report(P, records, cfg)
+        except Exception:
+            pass
+        raise
     data = write_report(P)
     bd, lk = data.get("build") or {}, data.get("link") or {}
     plog(P, "=" * 60)
@@ -14519,6 +14659,7 @@ def main(argv=None) -> int:
     RUN_CTX.pop("quick_done", None)
     RUN_CTX.pop("recover_run", None)
     RUN_CTX.pop("test_run", None)
+    RUN_CTX.pop("crash", None)
     RUN_CTX.pop("learned", None)
     RUN_CTX.pop("ideas", None)
     RUN_CTX.pop("rescued", None)
