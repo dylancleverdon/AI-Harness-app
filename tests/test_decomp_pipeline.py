@@ -1594,3 +1594,111 @@ def test_link_fixes_functions_that_dont_compile_with_a_live_bar(tmp_path, model,
     assert "fixing functions that don't compile" in out                 # the bar
     assert re.search(rf"{re.escape(rec['name'])} -> (fixed|quarantined)", out)
     assert re.search(r"link round 1: \d fixed, \d quarantined; compiling again", out)
+
+
+def test_fixes_that_undo_each_other_stop_and_the_model_still_gets_its_tries(tmp_path, monkeypatch):
+    # from a real run: two learned fixes turned "(void *)f()" into "(long)f()" and
+    # back, each swap used up an attempt, and the function was quarantined without
+    # the model ever seeing it
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path, max_model_attempts=2)
+    (tmp_path / "funcs").mkdir()
+    rel = "funcs/f.c"
+    (tmp_path / rel).write_text("p = (void *)g();\n")
+    rec = dp.FuncRecord(name="f", mangled="f", file=rel, start=0, end=0)
+
+    def compile_tu(cfg, r):
+        text = (tmp_path / r).read_text()
+        if "fixed" in text:
+            return True, "", []
+        msg = ("operand of type 'void' where arithmetic or pointer type is required"
+               if "(long)" in text else "assigning to 'void *' from incompatible type 'void'")
+        return False, f"{tmp_path / r}:1:5: error: {msg}\n1 error generated.\n", []
+
+    def flip(cfg, rec, rel, src, err, line, kind, lessons):
+        text = src.replace("(void *)", "(long)") if "(void *)" in src else src.replace("(long)", "(void *)")
+        (cfg.workdir / rel).write_text(text)
+        return True
+    asked = []
+
+    def model(cfg, rec, src, err):
+        asked.append(src)
+        return "p = fixed();\n"
+    monkeypatch.setattr(dp, "compile_tu", compile_tu)
+    monkeypatch.setattr(dp, "_rule_fix", flip)
+    monkeypatch.setattr(dp, "templated_fix", lambda cfg, rel, err: False)
+    monkeypatch.setattr(dp, "compile_fix_edit", model)
+    monkeypatch.setattr(dp, "_cast_args_fix", lambda *a: False)
+    monkeypatch.setattr(dp, "header_implicated", lambda err: False)
+    monkeypatch.setattr(dp, "_LESSONS", {})
+    assert dp.repair_tu(cfg, rec, {}) is True
+    assert len(asked) == 1 and rec.compiles                   # the model got it, and fixed it
+
+
+# ---- C mode: what C can't say in Ghidra's pseudocode, rewritten once for every
+# function (real cases from a run), checked by compiling and running the result
+
+C_PASS_CASES = [
+    ("FUN_00003c94", "void FUN_00003c94(long *param_1)", "{\n  FUN_00009999(param_1);\n  return;\n}"),
+    ("FUN_00009999", "long FUN_00009999(long *param_1)", "{\n  return *param_1 + 1;\n}"),
+    ("FUN_00003cb4", "void FUN_00003cb4(long *param_1)",
+     "{\n  void *pvVar1;\n\n  pvVar1 = (void *)FUN_00003c94(param_1);\n  FUN_001da834(pvVar1);\n  return;\n}"),
+    ("FUN_001da834", "void FUN_001da834(void *p)", "{\n  return;\n}"),
+    ("FUN_0000cac4", "undefined1  [16] FUN_0000cac4(double *param_1,double *param_2)",
+     "{\n  undefined1 auVar1 [16];\n\n  if (*param_2 <= *param_1) {\n    param_1 = param_2;\n  }\n"
+     "  auVar1._8_8_ = 0;\n  auVar1._0_8_ = *param_1;\n  return auVar1;\n}"),
+    ("FUN_00004574", "undefined1  [16] FUN_00004574(long param_1)",
+     "{\n  undefined1 auVar1 [16];\n  auVar1._8_8_ = 0;\n  auVar1._0_8_ = (double)param_1 * 2.0;\n"
+     "  return auVar1;\n}"),
+    ("FUN_00004560", "int FUN_00004560(double param_1)", "{\n  return (int)param_1;\n}"),
+    ("FUN_00003780", "int FUN_00003780(double param_1)",
+     "{\n  int iVar1;\n  undefined1 auVar2 [16];\n\n  auVar2 = FUN_00004574((long)param_1);\n"
+     "  iVar1 = FUN_00004560(param_1 + auVar2._0_8_ * 0.5);\n  return iVar1;\n}"),
+    ("FUN_00005555", "uint FUN_00005555(undefined8 param_1)",
+     "{\n  uint uVar1;\n  long lVar2;\n  lVar2 = param_1;\n  uVar1 = lVar2._4_4_;\n  return uVar1;\n}"),
+    ("runtime_error_385dbc",
+     "void __thiscall std::runtime_error::runtime_error_385dbc(runtime_error *this,string *param_1)",
+     "{\n  FUN_001da834(this);\n  return;\n}"),
+    ("CGColorSpace", "ID __objc_msgSend_stub objc_stub::CGColorSpace(undefined8 self,...)",
+     "{\n  ID IVar1;\n  IVar1 = (ID)self;\n  return IVar1;\n}"),
+    ("FUN_0000a02c", "void FUN_0000a02c(undefined8 *param_1)",
+     "{\n  undefined1 local_68 [16];\n  local_68._0_8_ = *param_1;\n  local_68._8_8_ = 5;\n"
+     "  FUN_00007777((undefined8 *)local_68,1);\n  return;\n}"),
+    ("FUN_00007777", "void FUN_00007777(undefined8 *p, int n)", "{\n  return;\n}"),
+]
+
+
+def test_c_mode_passes_make_ghidras_c_compile_and_keep_its_values(tmp_path):
+    import subprocess
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        pytest.skip("no C compiler")
+    entries = [{"tag": "", "head": h, "body": b, "name": n} for n, h, b in C_PASS_CASES]
+    known = set(re.findall(r"\btypedef\b[^;]*?\b([A-Za-z_]\w*)\s*;", dp.GHIDRA_INTRINS_H))
+    res = dp.c_mode_passes(entries, known)
+    heads = {e["name"]: e["head"] for e in entries}
+    assert heads["runtime_error_385dbc"].startswith("void runtime_error_385dbc(")    # no std::, no __thiscall
+    assert heads["CGColorSpace"].startswith("ID CGColorSpace(")
+    assert heads["FUN_0000cac4"].startswith("gh16 ") and heads["FUN_00003c94"].startswith("uint64_t ")
+    assert heads["FUN_001da834"].startswith("void ")          # its result is never used: left alone
+    assert "typedef struct string string;" in res["opaque"] and "typedef uint64_t ID;" in res["opaque"]
+    src = (dp.GHIDRA_INTRINS_H + "\n" + res["opaque"] + "\n"
+           + "\n".join(e["head"] + ";" for e in entries) + "\n"
+           + "\n".join(e["head"] + "\n" + e["body"] for e in entries) + r'''
+#include <stdio.h>
+int main(void) {
+  double a = 3.5, b = 1.25;
+  gh16 r = FUN_0000cac4(&a, &b);
+  long x = 41;
+  printf("%g %d %lld %u\n", r.d[0], FUN_00003780(10.0), (long long)FUN_00003c94(&x),
+         FUN_00005555(0x1234567800000000ULL));
+  return 0;
+}
+''')
+    (tmp_path / "t.c").write_text(src)
+    r = subprocess.run([cc, "-x", "c", "-std=gnu11", "-w", *dp.C_LENIENT, str(tmp_path / "t.c"),
+                        "-o", str(tmp_path / "t")], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    out = subprocess.run([str(tmp_path / "t")], capture_output=True, text=True).stdout.split()
+    # the double's bits kept; the caller reads the callee's double as a double
+    # (10 + 20 * 0.5); the lost return value is the tail call's; the right 4 bytes
+    assert out == ["1.25", "20", "42", str(0x12345678)]

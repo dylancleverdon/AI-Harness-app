@@ -1572,6 +1572,8 @@ def run_headless_export(P: Paths, args, refresh=False):
     return True
 
 
+DATA_EXPORT_VERSION = 2       # raised when the data export takes in more: older ones are redone
+
 GHIDRA_DATA_SCRIPT = r"""
 // GhidraDataExport.java - written by decomp_pipeline.py. Exports the program's
 // DATA (no decompiling, so it's quick): the bytes of every non-code memory block,
@@ -1625,11 +1627,16 @@ public class GhidraDataExport extends GhidraScript {
         ReferenceManager refs = currentProgram.getReferenceManager();
         SymbolTable st = currentProgram.getSymbolTable();
         Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8));
-        w.write("{\"version\":1,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
+        w.write("{\"version\":2,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
         AddressSet dataSet = new AddressSet();
         boolean first = true;
         for (MemoryBlock b : mem.getBlocks()) {
-            if (b.isExecute() || b.isExternalBlock() || b.isOverlay()) continue;
+            if (b.isExternalBlock() || b.isOverlay()) continue;
+            // constants and strings also live in executable sections (Mach-O's
+            // __TEXT,__const / __cstring): only the code itself is left out
+            String bn = b.getName();
+            if (b.isExecute() && (bn.equals("__text") || bn.equals(".text") || bn.contains("stub")
+                    || bn.equals(".plt") || bn.equals("__init") || bn.equals(".init"))) continue;
             long size = b.getSize();
             if (size <= 0 || size > Integer.MAX_VALUE) continue;
             dataSet.addRange(b.getStart(), b.getEnd());
@@ -3406,6 +3413,326 @@ def _is_thunk(name: str, body: str) -> bool:
     return name.startswith("_") and "PTR_" in inner and inner.count(";") <= 3
 
 
+# ---------------------------------------------------------------- C mode: whole-program passes
+# Ghidra's pseudocode has a few things C can't say, each the same in thousands of
+# functions. They're rewritten here, once, before the split, so the fixer (and the
+# model) never see them:
+#   - C++ / Objective-C names and calling conventions in a definition
+#     ("void __thiscall std::runtime_error::runtime_error(...)")
+#   - types only C++ knows (std::string *) -> opaque types
+#   - Ghidra's piece syntax (x._0_8_: bytes 0..7 of x) and its 16-byte register
+#     values (undefined1 v[16], functions returning "undefined1 [16]")
+#   - return values Ghidra lost: a function it says returns void, whose callers
+#     use what it returns
+
+C_CALLCONV = re.compile(r"\b__(?:thiscall|cdecl|stdcall|fastcall|vectorcall|pascal|regcall|"
+                        r"clrcall|swiftcall|\w+_stub)\b\s*")
+C_QUAL = re.compile(r"(?<![\w.>])(?:[A-Za-z_]\w*(?:<[^<>;{}()]*(?:<[^<>;{}()]*>[^<>;{}()]*)*>)?\s*::\s*)+"
+                    r"(?=~?[A-Za-z_])")
+C_TYPE_WORDS = {"const", "volatile", "unsigned", "signed", "struct", "union", "enum", "static",
+                "inline", "extern", "register", "short", "long"}
+PIECE = re.compile(r"(?<![\w.>])([A-Za-z_]\w*)\._(\d+)_(\d+)_(?!\w)")
+FLOAT_HINT = re.compile(r"\b\d+\.\d*(?:[eE][-+]?\d+)?\b|\b\d+[eE][-+]?\d+\b")
+
+
+def _c_head(head: str) -> str:
+    """A definition's head as C: no Class:: qualifiers, no calling-convention
+    words, no trailing C++ 'const'; Ghidra's 16-byte return type as gh16."""
+    head = C_CALLCONV.sub("", head)
+    head = C_QUAL.sub("", head)
+    head = re.sub(r"\)\s*const\s*$", ")", head.rstrip())
+    head = re.sub(r"\bundefined1?\s*\[\s*16\s*\]\s*", "gh16 ", head)
+    return head
+
+
+def _split_params(params: str) -> list[str]:
+    out, depth, cur = [], 0, ""
+    for ch in params:
+        if ch in "([<":
+            depth += 1
+        elif ch in ")]>":
+            depth -= 1
+        if ch == "," and depth == 0:
+            out.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    if cur.strip():
+        out.append(cur)
+    return [p.strip() for p in out]
+
+
+def _head_parts(head: str):
+    """(return type, name, [param strings]) of a C head, or None."""
+    m = re.match(r"^\s*(.*?)\b([A-Za-z_]\w*)\s*\((.*)\)\s*$", head, re.S)
+    if not m:
+        return None
+    return m.group(1).strip(), m.group(2), _split_params(m.group(3))
+
+
+def _param_type(p: str) -> str:
+    """The type part of one parameter ("double *param_1" -> "double *")."""
+    p = p.strip()
+    if p in ("...", "void", ""):
+        return p
+    m = re.match(r"^(.*?)([A-Za-z_]\w*)\s*(\[[^\]]*\])?$", p)
+    return (m.group(1).strip() if m and m.group(1).strip() else p)
+
+
+def _stmt_bounds(body: str, i: int) -> tuple[int, int]:
+    """The statement around position i: from after the previous ; { } to the next ;"""
+    s = max(body.rfind(";", 0, i), body.rfind("{", 0, i), body.rfind("}", 0, i)) + 1
+    e = body.find(";", i)
+    return s, (e if e >= 0 else len(body))
+
+
+def _expr_end(text: str, i: int) -> int:
+    """End of the expression starting at i (stops at ; or a , or ) at depth 0)."""
+    depth = 0
+    while i < len(text):
+        ch = text[i]
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            if depth == 0:
+                return i
+            depth -= 1
+        elif ch in ";," and depth == 0:
+            return i
+        elif ch in "\"'":
+            q = ch
+            i += 1
+            while i < len(text) and text[i] != q:
+                i += 2 if text[i] == "\\" else 1
+        i += 1
+    return i
+
+
+C_PASSES = 5          # passes over every function (for the progress bar)
+
+
+def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None) -> dict:
+    """Rewrites entries ({"head", "body", "name"}) in place; returns counts.
+    tick() is called once per function per pass (C_PASSES passes)."""
+    stats = Counter()
+    # 1) heads and bodies without C++ syntax
+    for e in entries:
+        tick()
+        h = _c_head(e["head"])
+        if h != e["head"]:
+            stats["C++/Objective-C names in definitions"] += 1
+        e["head"] = h
+        b = C_QUAL.sub("", e["body"])
+        if b != e["body"]:
+            stats["C++ qualified names in code"] += 1
+        e["body"] = b
+    parts = {e["name"]: _head_parts(e["head"]) for e in entries}
+    functions = set(parts)
+
+    # 2) types C doesn't know: opaque (used through pointers) or register-sized
+    unknown: dict = {}
+
+    def note_type(tstr: str):
+        idents = [w for w in re.findall(r"[A-Za-z_]\w*", tstr) if w not in C_TYPE_WORDS]
+        if len(idents) != 1:
+            return
+        w = idents[0]
+        if w in known_types or w in C_BASE_TYPES or w in CPP_KEYWORDS or w in functions \
+                or w.startswith(("GD_", "gh16")):
+            return
+        unknown[w] = unknown.get(w, False) or "*" not in tstr   # used by value somewhere?
+    for e in entries:
+        tick()
+        hp = parts[e["name"]]
+        if not hp:
+            continue
+        note_type(hp[0])
+        for p in hp[2]:
+            if p not in ("...", "void"):
+                note_type(_param_type(p))
+        for m in re.finditer(r"^\s*([A-Za-z_]\w*)\s+(\**)\s*[A-Za-z_]\w*\s*(?:\[\d+\])?\s*;",
+                             e["body"], re.M):
+            if m.group(1) not in CPP_KEYWORDS:
+                note_type(m.group(1) + " " + m.group(2))
+    opaque = [f"typedef uint64_t {w};" if by_value else f"typedef struct {w} {w};"
+              for w, by_value in sorted(unknown.items())]
+    stats["types C didn't know (declared opaque)"] = len(opaque)
+
+    # 3) 16-byte register values: "undefined1 v [16]" -> gh16 where it's used as a value
+    for e in entries:
+        tick()
+        body = e["body"]
+        for m in list(re.finditer(r"^(\s*)undefined1?\s+([A-Za-z_]\w*)\s*\[\s*16\s*\]\s*;", body, re.M)):
+            v = m.group(2)
+            whole = re.search(rf"(?<![\w.>]){v}\s*=(?!=)|return\s+{v}\s*;|(?<![\w.>]){v}\._\d+_\d+_",
+                              body)
+            if not whole:
+                continue
+            body = body.replace(m.group(0), f"{m.group(1)}gh16 {v};", 1)
+            body = re.sub(rf"(?<![\w.>]){v}\s*\[", f"{v}.b[", body)
+            body = re.sub(rf"(\(\s*[A-Za-z_][\w\s]*\*+\s*\))\s*{v}\b(?!\s*[.\[])", rf"\1&{v}", body)
+            stats["16-byte register values (as gh16)"] += 1
+        e["body"] = body
+
+    # 4) return values Ghidra lost: void functions whose result is used
+    def returns(name):
+        hp = parts.get(name)
+        return hp[0] if hp else None
+    void_fns = {n for n in functions if (returns(n) or "").strip() == "void"}
+    value_use = re.compile(r"(?:[=,(+\-*/%&|^<>!?:\[]|\breturn|\)\s*)\s*$")
+    cast_before = re.compile(r"\(\s*[A-Za-z_][\w\s]*\**\s*\)\s*$")
+    used = set()
+    if void_fns:
+        for e in entries:
+            tick()
+            for m in re.finditer(r"(?<![\w.>])([A-Za-z_]\w*)\s*\(", e["body"]):
+                if m.group(1) not in void_fns:
+                    continue
+                before = e["body"][max(0, m.start() - 80):m.start()]
+                if not value_use.search(before):
+                    continue
+                if before.rstrip().endswith(")") and not cast_before.search(before):
+                    continue                # "if (x) f();" — not a value
+                used.add(m.group(1))
+    for e in entries:
+        if e["name"] not in used:
+            continue
+        hp = parts[e["name"]]
+        e["head"] = re.sub(r"^\s*void\b", "uint64_t", e["head"], count=1)
+        parts[e["name"]] = (("uint64_t",) + hp[1:]) if hp else hp
+
+        def ret(m, body=e["body"]):
+            s, _ = _stmt_bounds(body, m.start())
+            prev_end = s - 1
+            ps = max(body.rfind(";", 0, prev_end), body.rfind("{", 0, prev_end),
+                     body.rfind("}", 0, prev_end)) + 1
+            prev = body[ps:prev_end + 1] if prev_end >= 0 and body[prev_end] == ";" else ""
+            cm = re.match(r"^\s*([A-Za-z_]\w*)\s*\(.*\)\s*;\s*$", prev, re.S)
+            if cm and (returns(cm.group(1)) or "void").strip() not in ("void", ""):
+                return "return (uint64_t)" + prev.strip()[:-1].strip() + ";"
+            return "return 0;"
+        new = []
+        last = 0
+        for m in re.finditer(r"\breturn\s*;", e["body"]):
+            r = ret(m)
+            if r.startswith("return (uint64_t)"):
+                # the tail call becomes the return value
+                s, _ = _stmt_bounds(e["body"], m.start())
+                prev_end = s - 1
+                ps = max(e["body"].rfind(";", 0, prev_end), e["body"].rfind("{", 0, prev_end),
+                         e["body"].rfind("}", 0, prev_end)) + 1
+                new.append(e["body"][last:ps])
+                new.append(e["body"][ps:s].replace(e["body"][ps:prev_end + 1].strip(), "", 1))
+                new.append(e["body"][s:m.start()])
+            else:
+                new.append(e["body"][last:m.start()])
+            new.append(r)
+            last = m.end()
+        new.append(e["body"][last:])
+        e["body"] = "".join(new)
+        stats["functions Ghidra said return nothing, whose callers use the result"] += 1
+    if not void_fns:
+        for _ in entries:
+            tick()
+
+    # 5) Ghidra's piece syntax: v._O_S_ -> exact bytes (doubles read as doubles
+    #    where the code shows it: a float next to it, a double variable or parameter,
+    #    or a piece the function it came from stored a double in)
+    dbl_slots: dict = {}            # function -> offsets of the 16 bytes it returns that hold a double
+    def float_expr(expr: str, fvars: set) -> bool:
+        return bool(FLOAT_HINT.search(expr) or re.search(r"\((?:double|float)\)", expr)
+                    or any(re.search(rf"(?<![\w.>]){re.escape(v)}\b", expr) for v in fvars))
+
+    def float_vars(e) -> set:
+        hp = parts.get(e["name"])
+        fv = set()
+        for p in (hp[2] if hp else []):
+            pm = re.match(r"^(?:const\s+)?(double|float)\s*(\*?)\s*([A-Za-z_]\w*)$", p)
+            if pm:
+                fv.add(("*" if pm.group(2) else "") + pm.group(3))
+        for m in re.finditer(r"^\s*(?:double|float)\s+([A-Za-z_]\w*)\s*;", e["body"], re.M):
+            fv.add(m.group(1))
+        return fv
+    for e in entries:                # what each 16-byte-returning function stores as doubles
+        hp = parts.get(e["name"])
+        if not hp or "gh16" not in hp[0]:
+            continue
+        fv = float_vars(e)
+        rm = re.search(r"\breturn\s+([A-Za-z_]\w*)\s*;", e["body"])
+        if not rm:
+            continue
+        v = rm.group(1)
+        for m in re.finditer(rf"(?<![\w.>]){v}\._(\d+)_8_\s*=(?!=)\s*", e["body"]):
+            end = _expr_end(e["body"], m.end())
+            if float_expr(e["body"][m.end():end], fv):
+                dbl_slots.setdefault(e["name"], set()).add(int(m.group(1)))
+    ptypes = {n: [_param_type(p) for p in hp[2]] for n, hp in parts.items() if hp}
+    for e in entries:
+        tick()
+        body = e["body"]
+        if "._" not in body:
+            continue
+        fv = float_vars(e)
+        dslots = set()               # (variable, offset) holding a double
+        for m in re.finditer(r"(?<![\w.>])([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\s*\(", body):
+            for off in dbl_slots.get(m.group(2), ()):
+                dslots.add((m.group(1), off))
+        for m in re.finditer(r"(?<![\w.>])([A-Za-z_]\w*)\._(\d+)_8_\s*=(?!=)\s*", body):
+            end = _expr_end(body, m.end())
+            if float_expr(body[m.end():end], fv):
+                dslots.add((m.group(1), int(m.group(2))))
+        out, i = [], 0
+        for m in PIECE.finditer(body):
+            v, off, size = m.group(1), int(m.group(2)), int(m.group(3))
+            if m.start() < i:
+                continue
+            out.append(body[i:m.start()])
+            rest = body[m.end():]
+            am = re.match(r"\s*=(?!=)\s*", rest)
+            if am:                                   # a store: the exact bytes of the value
+                vs = m.end() + am.end()
+                ve = _expr_end(body, vs)
+                out.append(f"GH_SET({v}, {off}, {size}, {body[vs:ve].strip()})")
+                i = ve
+                stats["pieces of variables (v._0_8_)"] += 1
+                continue
+            if out and out[-1].rstrip().endswith("&") and not out[-1].rstrip().endswith("&&"):
+                out[-1] = out[-1].rstrip()[:-1]
+                out.append(f"GH_ADDR({v}, {off})")
+                i = m.end()
+                continue
+            s, en = _stmt_bounds(body, m.start())
+            stmt = body[s:en]
+            dbl = size == 8 and ((v, off) in dslots or float_expr(stmt.replace(m.group(0), ""), fv))
+            if dbl:
+                # passed where an integer is expected, or assigned to an integer: bits
+                am2 = re.match(r"\s*([A-Za-z_]\w*)\s*=", stmt)
+                if am2 and am2.group(1) not in fv and not FLOAT_HINT.search(stmt) \
+                        and (v, off) not in dslots:
+                    dbl = False
+            cm = None
+            for c in re.finditer(r"([A-Za-z_]\w*)\s*\(", body[s:m.start()]):
+                cm = c
+            if cm and cm.group(1) in ptypes:          # an argument: the parameter's type decides
+                argno = body[s + cm.end():m.start()].count(",")
+                pts = ptypes[cm.group(1)]
+                if argno < len(pts) and pts[argno] in ("double", "float"):
+                    dbl = True
+                elif argno < len(pts) and pts[argno] not in ("...", ""):
+                    dbl = dbl and (v, off) in dslots
+            if size == 4 and float_expr(stmt.replace(m.group(0), ""), fv):
+                out.append(f"GH_GETF({v}, {off})")
+            elif dbl:
+                out.append(f"GH_GETD({v}, {off})")
+            else:
+                out.append(f"GH_GET({v}, {off}, {size})")
+            stats["pieces of variables (v._0_8_)"] += 1
+            i = m.end()
+        out.append(body[i:])
+        e["body"] = "".join(out)
+    return {"stats": stats, "opaque": "\n".join(opaque)}
+
+
 def run_pseudo_source(P: Paths, args) -> dict:
     """The C source of the whole program from Ghidra's (swept) pseudocode."""
     data = json.loads(P.export.read_text())
@@ -3441,7 +3768,7 @@ def run_pseudo_source(P: Paths, args) -> dict:
     call_rx = re.compile(r"(?<![\w.>])(?:[A-Za-z_]\w*::)*(" + "|".join(
         re.escape(k) for k in sorted(call_map, key=len, reverse=True)) + r")(?=\s*\()") if call_map else None
     defined = set(cname.values())
-    codes, index = [], {}
+    entries, index = [], {}
     for f in funcs:
         a = f["addr"]
         if a not in cname:
@@ -3449,6 +3776,8 @@ def run_pseudo_source(P: Paths, args) -> dict:
         text = strip_comments(pseudo[a]).strip()
         text = _rename_defined_func(text, cname[a])
         i = text.find("{")
+        if i < 0:
+            continue
         head, body = text[:i], text[i:]
         if call_rx:
             body = call_rx.sub(lambda m: call_map[m.group(1)], body)
@@ -3460,32 +3789,59 @@ def run_pseudo_source(P: Paths, args) -> dict:
         # library calls Ghidra writes with Mach-O's leading underscore (_memcpy)
         body = re.sub(r"(?<![\w.>])_([A-Za-z_]\w*)(?=\s*\()",
                       lambda m: m.group(0) if m.group(0) in defined else m.group(1), body)
-        codes.append(f"//@ghidra {a} {f.get('name')}\n{head.strip()}\n{body}")
+        entries.append({"tag": f"//@ghidra {a} {f.get('name')}", "head": head.strip(),
+                        "body": body, "name": cname[a]})
         index[cname[a]] = {"ghidra": f.get("name"), "addr": a, "status": "done"}
-    wanted = set(re.findall(r"[A-Za-z_]\w*", "\n".join(codes)))
+    wanted = set(re.findall(r"[A-Za-z_]\w*", "\n".join(e["head"] + e["body"] for e in entries)))
     types = datatypes_to_c(data.get("datatypes") or [], {_c_ident(w) for w in wanted})
     data_note = ""
+    placeholders: list = []
     if gdata.get("blocks"):
         dh, dc, macros, n_fix = data_sources(P, gdata, cname, wanted)
         if macros:
             rx = re.compile(r"(?<![\w.>])(" + "|".join(re.escape(k) for k in
                                                      sorted(macros, key=len, reverse=True)) + r")\b")
-            codes = [rx.sub(lambda m: macros[m.group(1)], code) for code in codes]
+            for e in entries:          # in the code only: never in a function's own name
+                e["body"] = rx.sub(lambda m: macros[m.group(1)], e["body"])
+        # data the code names that the export doesn't have (outside its blocks):
+        # a placeholder, so it compiles; listed, because it won't hold the real value
+        defined_names = set(macros) | set(cname.values())
+        missing = sorted({w for e in entries for w in re.findall(r"(?<![\w.>])([A-Za-z_]\w*)", e["body"])
+                          if GD_NAME.match(w) and w not in defined_names and not w.startswith("GD_")})
+        for w in missing:
+            dh += f"extern uint64_t {w};   // not in the data export: a placeholder\n"
+            dc += f"uint64_t {w};\n"
+            placeholders.append(w)
         write_atomic(P.rewrite / "ghidra_data.h", dh)
         write_atomic(P.rewrite / "ghidra_data.c", dc)
+        write_atomic(P.rewrite / "data_placeholders.txt", "\n".join(placeholders) + "\n")
         data_note = (f", the program's data ({len(gdata['blocks'])} block(s), {len(macros)} "
-                     f"labelled location(s) used, {n_fix} pointer fix-up(s))")
+                     f"labelled location(s) used, {n_fix} pointer fix-up(s)"
+                     + (f", {len(placeholders)} placeholder(s) for data outside the export: "
+                        f"rewrite/data_placeholders.txt" if placeholders else "") + ")")
     else:
         for f in ("ghidra_data.h", "ghidra_data.c"):
             (P.rewrite / f).unlink(missing_ok=True)
         data_note = " — no data export: globals are empty placeholders, so it won't run correctly"
-    write_atomic(P.rewritten, types + "\n" + "\n\n".join(codes) + "\n")
+    # what C can't say, rewritten once for every function
+    known_types = (set(re.findall(r"\btypedef\b[^;]*?\b([A-Za-z_]\w*)\s*;", types + GHIDRA_INTRINS_H))
+                   | set(re.findall(r"\b(?:struct|union|enum)\s+([A-Za-z_]\w*)", types)))
+    bar = Progress(C_PASSES * len(entries), 0, title="making Ghidra's C compile (whole-program passes)")
+    try:
+        passes = c_mode_passes(entries, known_types, tick=lambda: bar.end(None))
+    finally:
+        bar.close()
+    for what, n in sorted(passes["stats"].items(), key=lambda kv: -kv[1]):
+        if n:
+            plog(P, show=True, msg=f"    {what}: {n}")
+    codes = [f"{e['tag']}\n{e['head']}\n{e['body']}" for e in entries]
+    write_atomic(P.rewritten, types + "\n" + passes["opaque"] + "\n\n" + "\n\n".join(codes) + "\n")
     write_atomic(P.index, json.dumps(index, indent=0))
-    plog(P, show=True, msg=f"  C source from Ghidra's pseudocode: {len(codes)} function(s), "
+    plog(P, show=True, msg=f"  C source from Ghidra's pseudocode: {len(entries)} function(s), "
                            f"{len(thunks)} library stub(s) called directly, "
                            f"{types.count('_Static_assert')} data type(s) with Ghidra's layout"
                            f"{data_note} -> {P.rewritten.name}")
-    return {"done": len(codes), "functions": len(funcs), "stop": False, "model": ""}
+    return {"done": len(entries), "functions": len(funcs), "stop": False, "model": ""}
 
 
 # ============================================================================
@@ -3704,7 +4060,21 @@ def run_export(P: Paths, args, redo: set) -> dict:
     refresh = "export" in redo
     if args.lang == "c":
         gd, gdo = P.ghidra / "ghidra_data.json", P.ghidra / "ghidra_data.original.json"
-        if refresh or not (gd.exists() or gdo.exists()):
+        old = False
+        for f in (gdo, gd):
+            if f.exists():
+                try:
+                    old = int(json.loads(f.read_text()).get("version", 1)) < DATA_EXPORT_VERSION
+                except Exception:
+                    old = True
+                break
+        if old and not (find_analyze_headless(args.ghidra_home) and args.project):
+            plog(P, show=True, msg="  !! the data export is from an older version, which left out "
+                                   "constants in executable sections; data it doesn't have gets "
+                                   "placeholders. Run with --ghidra-home and --project once to "
+                                   "export the data again (quick: nothing is decompiled)")
+            old = False
+        if refresh or old or not (gd.exists() or gdo.exists()):
             if gdo.exists():
                 snapshot(P, "redo-data-export", [gdo])
                 gdo.unlink()
@@ -4725,6 +5095,34 @@ typedef uint8_t   undefined1;
 typedef uint16_t  undefined2;
 typedef uint32_t  undefined4;
 typedef uint64_t  undefined8;
+#ifndef __cplusplus
+// --- Ghidra's 16-byte register values and its piece syntax (C mode) ---
+// Ghidra shows a 16-byte register as "undefined1 v[16]" and reads bytes O..O+S-1
+// of any variable as "v._O_S_". The C source uses gh16 for the first and
+// GH_SET / GH_GET for the second: they copy the exact bytes (little-endian, like
+// the machine), so a double stored in a piece keeps its bits.
+typedef union { uint8_t b[16]; uint16_t h[8]; uint32_t w[4]; uint64_t q[2]; float f[4]; double d[2]; } gh16;
+static inline void gh_put_bits(void *p, int off, int size, const void *src, int n) {
+    uint8_t tmp[16] = {0};
+    memcpy(tmp, src, n < 16 ? n : 16);
+    memcpy((char *)p + off, tmp, size < 16 ? size : 16);
+}
+static inline void gh_put_i(void *p, int off, int size, int64_t v) { gh_put_bits(p, off, size, &v, 8); }
+static inline void gh_put_d(void *p, int off, int size, double v) { gh_put_bits(p, off, size, &v, 8); }
+static inline void gh_put_f(void *p, int off, int size, float v) { gh_put_bits(p, off, size, &v, 4); }
+static inline void gh_put_16(void *p, int off, int size, gh16 v) { gh_put_bits(p, off, size, &v, 16); }
+static inline uint64_t gh_get_u(const void *p, int off, int size) {
+    uint64_t v = 0; memcpy(&v, (const char *)p + off, size < 8 ? size : 8); return v;
+}
+static inline double gh_get_d(const void *p, int off) { double v; memcpy(&v, (const char *)p + off, 8); return v; }
+static inline float gh_get_f(const void *p, int off) { float v; memcpy(&v, (const char *)p + off, 4); return v; }
+#define GH_SET(v, off, size, e) _Generic((e), double: gh_put_d, float: gh_put_f, gh16: gh_put_16, \
+    default: gh_put_i)(&(v), off, size, (e))
+#define GH_GET(v, off, size) gh_get_u(&(v), off, size)
+#define GH_GETD(v, off) gh_get_d(&(v), off)
+#define GH_GETF(v, off) gh_get_f(&(v), off)
+#define GH_ADDR(v, off) ((void *)((char *)&(v) + (off)))
+#endif
 #ifdef __cplusplus
 typedef uint64_t  code(...);   // Ghidra's "code *": a pointer to some function
 #else
@@ -7290,8 +7688,13 @@ def _rule_fix(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str, line: 
         phase(f"a fix learned from other functions ({lessons.tier(rule)})")
         (cfg.workdir / rel).write_text(new)
         ok, err2, _ = compile_tu(cfg, rel)
-        first = _first_error(err, rel)
-        if ok or (n_errors(err2) <= n_errors(err) and first not in _all_errors(err2, rel)):
+        first, first2 = _first_error(err, rel), _first_error(err2, rel)
+        # real progress only: fewer errors, or as many with the first one further
+        # down (swapping one error for another on the same line is how two learned
+        # fixes undid each other over and over)
+        if ok or n_errors(err2) < n_errors(err) or (
+                n_errors(err2) == n_errors(err) and first[0] and first2[0] > first[0]
+                and first not in _all_errors(err2, rel)):
             lessons.rule_result(rid, True)
             write_note(cfg, rel, f"[compile] {first[1][:100]} — fixed with a learned rule"
                                  + (" — compiles now." if ok else "."))
@@ -7310,13 +7713,27 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
     rel = rec.file
     header_fix_tries = 0
     original = (cfg.workdir / rel).read_text()
-    for attempt in range(cfg.max_model_attempts + 1):
+    # the fixes that need no model don't use up the model's attempts; if they take
+    # the code back to a version it already had (two fixes undoing each other),
+    # they stop and the model gets the function
+    model_tries = 0
+    seen: set = set()
+    no_model_fixes = True
+    for _step in range(60):
         phase("compiling")
         ok, err, _ = compile_tu(cfg, rel)
         if ok:
             rec.compiles = True
             return True
         rec.last_error = keep_error(err)
+        state = text_sha((cfg.workdir / rel).read_text())
+        if state in seen and no_model_fixes:
+            no_model_fixes = False
+            struggle("fix", "fixes that undid each other (the cycle was stopped and the model "
+                            "got the function)", rec.name, handled=True)
+            write_note(cfg, rel, "[compile] the no-model fixes went round in circles — "
+                                 "stopped; the model gets it.")
+        seen.add(state)
 
         # 0) if this failure comes from a shared header, fix the HEADER, not the
         #    body — otherwise we rewrite a fine function that can never pass.
@@ -7329,41 +7746,40 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             repair_header(cfg, "shared.h")
             continue
 
-        # 1) templated / deterministic
-        phase("quick deterministic fixes")
-        if templated_fix(cfg, rel, err):
-            continue
-
-        # 2) cache
         src = (cfg.workdir / rel).read_text()
         key = cache_key(src, err)
-        if key in cache:
-            (cfg.workdir / rel).write_text(cache[key])
-            ok2, _, _ = compile_tu(cfg, rel)
-            if ok2:
-                rec.compiles = True
-                return True
-
-        # 2a) an argument that doesn't match the declared parameter: cast it
-        if _cast_args_fix(cfg, rec, rel, src, err):
-            if rec.compiles:
-                return True
-            continue
-
-        # 2b) fixes learned from other functions (no model needed)
         lessons = fix_lessons(cfg)
         eline, emsg = _first_error(err, rel)
         kind = error_kind(emsg)
-        if eline and _rule_fix(cfg, rec, rel, src, err, eline, kind, lessons):
-            if rec.compiles:
-                return True
-            continue
+        if no_model_fixes:
+            # 1) templated / deterministic
+            phase("quick deterministic fixes")
+            if templated_fix(cfg, rel, err):
+                continue
+
+            # 2) cache
+            if key in cache and cache[key] != src:
+                (cfg.workdir / rel).write_text(cache[key])
+                continue
+
+            # 2a) an argument that doesn't match the declared parameter: cast it
+            if _cast_args_fix(cfg, rec, rel, src, err):
+                if rec.compiles:
+                    return True
+                continue
+
+            # 2b) fixes learned from other functions (no model needed)
+            if eline and _rule_fix(cfg, rec, rel, src, err, eline, kind, lessons):
+                if rec.compiles:
+                    return True
+                continue
 
         # 3) the model: ONE small edit to the line the compiler flags (planned
         #    first, with the notes from earlier tries), never a whole new function
-        if attempt >= cfg.max_model_attempts:
+        if model_tries >= cfg.max_model_attempts:
             break
-        phase(f"small edit by the model ({attempt + 1}/{cfg.max_model_attempts})")
+        model_tries += 1
+        phase(f"small edit by the model ({model_tries}/{cfg.max_model_attempts})")
         new_text = compile_fix_edit(cfg, rec, src, err)
         rec.attempts += 1
         if new_text and lessons.is_repeat(rel, new_text):
@@ -11655,12 +12071,24 @@ def quick_fix(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
     rules. True if the function compiles now. Never quarantines."""
     rel = rec.file
     lessons = fix_lessons(cfg)
+    seen: set = set()
+    best = None                              # (errors, code, compiler output)
     for _ in range(30):                      # one error per round; stops when none applies
         ok, err, _ = compile_tu(cfg, rel)
         if ok:
             rec.compiles = True
             return True
         rec.last_error = keep_error(err)
+        cur = (cfg.workdir / rel).read_text()
+        if best is None or n_errors(err) < best[0]:
+            best = (n_errors(err), cur, err)
+        if text_sha(cur) in seen:            # fixes undoing each other: keep the best version
+            (cfg.workdir / rel).write_text(best[1])
+            rec.last_error = keep_error(best[2])
+            struggle("fix", "fixes that undid each other (the cycle was stopped)", rec.name,
+                     handled=True)
+            break
+        seen.add(text_sha(cur))
         if templated_fix(cfg, rel, err):
             continue
         src = (cfg.workdir / rel).read_text()
