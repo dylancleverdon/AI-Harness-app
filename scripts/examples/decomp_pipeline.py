@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.6"
+PIPELINE_VERSION = "2026-10-22.7"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3188,6 +3188,14 @@ def _c_ident(name: str) -> str:
     return ("f_" + n) if not n or n[0].isdigit() else n
 
 
+def _c_func(name: str) -> str:
+    """A function's C name: like _c_ident, but a trailing underscore stays (Ghidra
+    names Objective-C message stubs after their selector, setTitle: -> setTitle_,
+    and calls them by that name)."""
+    n = re.sub(r"\W+", "_", name or "").lstrip("_")
+    return ("f_" + n) if not n or n[0].isdigit() else n
+
+
 def _ghidra_type_to_c(t: str, known: set, tags: Optional[dict] = None) -> tuple[str, str]:
     """(type, array suffix) for a Ghidra field type, or ("", "") if it can't be
     expressed (then the bytes are kept as a uint8_t array of the same size).
@@ -3892,7 +3900,7 @@ def run_pseudo_source(P: Paths, args) -> dict:
         if _is_thunk(n, body):
             thunks[n] = n[1:]                  # call the library function itself
             continue
-        c = _c_ident(n)
+        c = _c_func(n)
         if c in used or c in reserved or names[n] > 1:
             c = f"{c}_{a}"
         used.add(c)
@@ -3910,6 +3918,7 @@ def run_pseudo_source(P: Paths, args) -> dict:
     call_rx = re.compile(r"(?<![\w.>])(?:[A-Za-z_]\w*::)*(" + "|".join(
         re.escape(k) for k in sorted(call_map, key=len, reverse=True)) + r")(?=\s*\()") if call_map else None
     defined = set(cname.values())
+    mapped = set(call_map.values())
     entries, index = [], {}
     for f in funcs:
         a = f["addr"]
@@ -3928,9 +3937,12 @@ def run_pseudo_source(P: Paths, args) -> dict:
             n = name_of.get(ca)
             if n and names[n] > 1 and ca in cname:
                 body = re.sub(rf"(?<![\w.>])(?:[A-Za-z_]\w*::)*{re.escape(n)}(?=\s*\()", cname[ca], body)
-        # library calls Ghidra writes with Mach-O's leading underscore (_memcpy)
+        # library calls Ghidra writes with Mach-O's leading underscore (_memcpy): one
+        # underscore off, never twice (a stub's call above has already lost it:
+        # ___cxa_throw -> __cxa_throw, not _cxa_throw)
         body = re.sub(r"(?<![\w.>])_([A-Za-z_]\w*)(?=\s*\()",
-                      lambda m: m.group(0) if m.group(0) in defined else m.group(1), body)
+                      lambda m: m.group(0) if m.group(0) in defined or m.group(0) in mapped
+                      else m.group(1), body)
         entries.append({"tag": f"//@ghidra {a} {f.get('name')}", "head": head.strip(),
                         "body": body, "name": cname[a]})
         index[cname[a]] = {"ghidra": f.get("name"), "addr": a, "status": "done"}
@@ -5437,6 +5449,40 @@ def _ghidra_helper_funcs(have: str) -> str:
     return "\n".join(out) + "\n"
 
 
+GHIDRA_INTRINS_H += r"""
+// --- more of Ghidra's pseudo-operations (as functions it would call) ---
+#ifndef ABS
+#define ABS(x) ((x) < 0 ? -(x) : (x))
+#endif
+#define SQRT(x) __builtin_sqrt((double)(x))
+#define builtin_strncpy(d, s, n) strncpy((d), (s), (n))
+#define builtin_memcpy(d, s, n) memcpy((d), (s), (n))
+#define builtin_memset(d, c, n) memset((d), (c), (n))
+#define SoftwareBreakpoint(...) __builtin_trap()
+#define halt_baddata(...) __builtin_trap()
+#define halt_unimplemented(...) __builtin_trap()
+// ARM load-acquire / store-release markers: ordering only
+#define LOAcquire(...) __atomic_thread_fence(__ATOMIC_ACQUIRE)
+#define LORelease(...) __atomic_thread_fence(__ATOMIC_RELEASE)
+// a few NEON operations Ghidra leaves by name, on scalar values
+#define NEON_fminnm(a, b, ...) __builtin_fmin((a), (b))
+#define NEON_fmaxnm(a, b, ...) __builtin_fmax((a), (b))
+#define NEON_fmov(x, ...) (x)
+#define NEON_ucvtf(x, ...) ((double)(uint64_t)(x))
+#define NEON_scvtf(x, ...) ((double)(int64_t)(x))
+static inline uint64_t gh_neon_cnt(uint64_t v) {       /* bits set in each byte */
+    uint64_t r = 0;
+    for (int i = 0; i < 8; i++) r |= (uint64_t)__builtin_popcount((unsigned)((v >> (8 * i)) & 0xff)) << (8 * i);
+    return r;
+}
+static inline uint64_t gh_neon_uaddlv(uint64_t v) {    /* the bytes added up */
+    uint64_t r = 0;
+    for (int i = 0; i < 8; i++) r += (v >> (8 * i)) & 0xff;
+    return r;
+}
+#define NEON_cnt(v, ...) gh_neon_cnt((uint64_t)(v))
+#define NEON_uaddlv(v, ...) gh_neon_uaddlv((uint64_t)(v))
+"""
 GHIDRA_INTRINS_H += _ghidra_helper_funcs(GHIDRA_INTRINS_H)
 
 
@@ -5468,8 +5514,9 @@ def c_link_flags(cfg) -> list[str]:
     if getattr(cfg, "lang", "c++") != "c" or sys.platform != "darwin":
         return []
     fw = ["CoreFoundation", "Foundation", "AudioToolbox", "CoreAudio", "AudioUnit",
-          "Accelerate", "AppKit", "CoreGraphics", "CoreServices", "IOKit", "Security"]
-    return [x for f in fw for x in ("-framework", f)] + ["-lobjc", "-lc++"]
+          "Accelerate", "AppKit", "CoreGraphics", "CoreServices", "IOKit", "Security",
+          "Carbon", "Metal", "QuartzCore"]
+    return [x for f in fw for x in ("-framework", f)] + ["-lobjc", "-lc++", "-lz"]
 
 
 def lang_args(cfg, header: bool = False) -> list[str]:
@@ -6620,6 +6667,27 @@ def apply_deghidra_pass(cfg: Config, records: dict[str, FuncRecord]) -> None:
 # Position-independent code: default on macOS; on Linux it has to be passed,
 # and the PCH is only accepted when every compile uses the same setting.
 PIC_FLAGS: list[str] = [] if sys.platform == "darwin" else ["-fPIC"]
+
+
+def _check_target(cfg: Config) -> None:
+    """Objects and the precompiled header built for another target (an Intel build
+    before an Apple Silicon one) can't be linked with this one: cleared."""
+    mark = cfg.workdir / ".target"
+    want = " ".join(f for f in PIC_FLAGS if f != "-fPIC") or "default"
+    try:
+        have = mark.read_text().strip() if mark.exists() else None
+    except OSError:
+        have = None
+    if have == want or not cfg.workdir.exists():
+        if not mark.exists() and cfg.workdir.exists():
+            mark.write_text(want + "\n")
+        return
+    if have is not None or (cfg.workdir / "obj").exists():
+        shutil.rmtree(cfg.workdir / "obj", ignore_errors=True)
+        _pch_path(cfg).unlink(missing_ok=True)
+        log(cfg, show=True, msg=f"  the build target changed ({have or 'unknown'} -> {want}): compiled "
+                                f"objects and the precompiled header are rebuilt")
+    mark.write_text(want + "\n")
 
 
 def _pch_path(cfg: Config) -> Path:
@@ -8473,8 +8541,31 @@ def fixer_loop(cfg: Config, records: dict[str, FuncRecord], order: list[str]) ->
             n = retry_quarantined(cfg, records, cache, limit=40, busy=busy)
             if n:
                 fixed[0] += n
+    # in batches: after each, if a kind of error picked up IDEA_MIN_GROUP or more new
+    # quarantines (or several learned fixes were proven), the idea loop gets a round
+    # for the groups that changed, and the fixer carries on
+    items = list(enumerate(failing, 1))
+    batch = max(50, cfg.workers * 4)
+
+    def quarantined_by_kind():
+        return Counter(error_kind(_first_error(r.last_error, r.file)[1]) for r in records.values()
+                       if r.quarantined and r.last_error)
+    seen_q, seen_proven = quarantined_by_kind(), lessons.counts()["proven"]
     try:
-        work_pool(cfg.workers, list(enumerate(failing, 1)), one, 25, checkpoint)
+        for s in range(0, len(items), batch):
+            work_pool(cfg.workers, items[s:s + batch], one, 25, checkpoint)
+            if s + batch >= len(items) or getattr(cfg, "no_ideas", False):
+                continue
+            now_q, proven = quarantined_by_kind(), lessons.counts()["proven"]
+            grew = [k for k, n in now_q.items() if n - seen_q.get(k, 0) >= IDEA_MIN_GROUP]
+            if grew or proven - seen_proven >= 5:
+                checkpoint()
+                done_n = s + batch
+                idea_round(cfg, records, cache, new_run=False,
+                           when=f"mid-run, after {done_n} of {total} functions")
+                seen_q, seen_proven = quarantined_by_kind(), lessons.counts()["proven"]
+                prog = Progress(total, done_n, title="repairing functions (callees first)")
+                prog.extra = lambda: f"{fixed[0]} fixed | {use.text()}"
     finally:
         prog.close()
         lessons.save()
@@ -8565,20 +8656,40 @@ def _enabled_header_lines(cfg: Config) -> list[tuple[str, str, str]]:
     return out
 
 
-def _stub_for(kind: str, line: str, name: str) -> Optional[str]:
+def _stub_for(kind: str, line: str, name: str, c: bool = False) -> Optional[str]:
     """Turn a prototype / extern line from shared.h into a placeholder
-    definition that returns / holds a zero value."""
+    definition that returns / holds a zero value (c: in C's syntax, not C++'s)."""
     if kind == "global":
         if not line.startswith("extern ") or line.startswith('extern "C"'):
             return None
-        return line[len("extern "):].rstrip(";").rstrip() + "{};"
+        return line[len("extern "):].rstrip(";").rstrip() + (" = {0};" if c else "{};")
     decl = line.rstrip(";").rstrip()
     head = decl[:decl.find(name + "(")] if (name + "(") in decl else ""
     if re.search(r"&\s*$", head):
         return None            # returns a reference: no safe placeholder
     if re.match(r'^(extern "C"\s+)?void\s+$', head):
         return decl + " {}"
+    if c:
+        ret = re.sub(r"^\s*(?:extern|static|inline)\s+", "", head).strip()
+        if not ret or "(" in ret:
+            return decl + " { return 0; }"
+        return decl + f" {{ return ({ret}){{0}}; }}"
     return decl + " { return {}; }"
+
+
+SELECTOR_NAME = re.compile(r"^[a-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*_$")
+
+
+def objc_send_stub(name: str) -> str:
+    """A definition for an Objective-C message stub Ghidra names after its selector
+    (setTitle_ = [obj setTitle:x]): it sends that message. Integer and pointer
+    arguments are passed on; floating-point ones (CGRect...) need a real prototype."""
+    sel = name.replace("_", ":")
+    args = ", ".join(f"uint64_t a{i}" for i in range(1, 7))
+    return (f"uint64_t {name}(uint64_t self, {args}) {{\n"
+            f"    static SEL s;\n    if (!s) s = sel_registerName(\"{sel}\");\n"
+            f"    return ((uint64_t (*)(uint64_t, SEL, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, "
+            f"uint64_t))objc_msgSend)(self, s, a1, a2, a3, a4, a5, a6);\n}}")
 
 
 # ----------------------------------------------------------------------------
@@ -9025,6 +9136,16 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
     obj_dir.mkdir(exist_ok=True)
     stubs_cpp = cfg.workdir / "stubs.cpp"
     stubs: dict[str, str] = {}          # name -> stub definition
+    c_mode = getattr(cfg, "lang", "c++") == "c"
+    objc_c = cfg.workdir / "objc_messages.c"
+    objc_sends: dict[str, str] = {}     # Objective-C message stubs: name -> definition
+
+    def write_objc():
+        objc_c.write_text("// Objective-C messages the code sends through stubs Ghidra named after their\n"
+                          "// selector (generated: don't edit)\n#include <stdint.h>\n#include <objc/runtime.h>\n"
+                          "#include <objc/message.h>\n\n" + "\n\n".join(objc_sends[k] for k in sorted(objc_sends))
+                          + "\n")
+    objc_c.unlink(missing_ok=True)
     report: list[str] = []
     if sys.platform == "darwin":
         out = cfg.workdir / "program.dylib"
@@ -9053,7 +9174,7 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
         if o.exists() and o.stat().st_mtime >= max(src.stat().st_mtime,
                                                    cfg.shared_h.stat().st_mtime):
             return src, o, ""
-        own = src.name == "ghidra_data.c"      # stands alone: no shared.h
+        own = src.name in ("ghidra_data.c", "objc_messages.c")   # stand alone: no shared.h
         pch = [] if own else _pch_flags(cfg)
         cmd = [cfg.cxx, *(["-x", "c", "-std=gnu11"] if own else lang_args(cfg)), f"-I{cfg.workdir}",
                "-w", "-c", *PIC_FLAGS, *pch, *cfg.extra_flags, str(src), "-o", str(o)]
@@ -9074,6 +9195,8 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
             sources.append(stubs_cpp)
         if (cfg.workdir / "ghidra_data.c").exists():
             sources.append(cfg.workdir / "ghidra_data.c")
+        if objc_sends:
+            sources.append(objc_c)
         prog = Progress(len(sources), 0, title=f"round {round_no}: compiling objects")
         try:
             with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -9186,8 +9309,16 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
                 external.append(readable)       # class method / namespaced: not stubbed
                 continue
             base = readable.split("(")[0].strip()
-            owned = base in qnames or bool(GHIDRA_AUTONAME_RE.match(base)) or cfg.stub_all
-            if not owned or base in stubs:
+            if c_mode and sys.platform == "darwin" and SELECTOR_NAME.match(base) \
+                    and base not in qnames and base not in objc_sends:
+                objc_sends[base] = objc_send_stub(base)
+                report.append(f"{base}: an Objective-C message ({base.replace('_', ':')}), sent for real")
+                changed = True
+                continue
+            # C mode: anything else still undefined gets a placeholder too, so the
+            # plugin links and can be tested; each is listed in link_report.txt
+            owned = base in qnames or bool(GHIDRA_AUTONAME_RE.match(base)) or cfg.stub_all or c_mode
+            if not owned or base in stubs or base in objc_sends:
                 external.append(readable)
                 continue
             cands = [(k, l) for k, lbl, l in header if lbl == base]
@@ -9197,16 +9328,21 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
                          if re.sub(r"\s+", "", l[l.find(base + "(") + len(base):]
                                    ).rstrip(";").startswith(want)]
                 cands = exact or cands[:1]
-            stub = _stub_for(cands[0][0], cands[0][1], base) if cands else None
+            stub = _stub_for(cands[0][0], cands[0][1], base, c_mode) if cands else None
+            if stub is None and c_mode and re.fullmatch(r"[A-Za-z_]\w*", base):
+                stub = f"uint64_t {base}() {{ return 0; }}"     # no declaration: any arguments
             if stub:
                 stubs[base] = stub
-                why = "quarantined" if base in qnames else "never defined"
+                why = ("quarantined" if base in qnames else "never defined" if GHIDRA_AUTONAME_RE.match(base)
+                       else "not in the program or the system libraries: a placeholder")
                 report.append(f"stubbed {readable} ({why})")
                 changed = True
             else:
                 external.append(readable)
         if changed:
             write_stubs()
+            if objc_sends:
+                write_objc()
             log(cfg, f"  link round {round_no}: {len(undefined)} undefined, {len(dups)} "
                      f"duplicate symbol(s) — stubbed/quarantined, relinking")
             continue
@@ -13816,8 +13952,32 @@ def _archs(path: Path) -> list[str]:
         return []
 
 
+def apple_silicon() -> bool:
+    """An Apple Silicon Mac, also when this Python runs under Rosetta (then it
+    reports x86_64 for itself)."""
+    if sys.platform != "darwin":
+        return False
+    try:
+        return subprocess.run(["sysctl", "-n", "hw.optional.arm64"], capture_output=True, text=True,
+                              timeout=10).stdout.strip() == "1"
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
+def under_rosetta() -> bool:
+    try:
+        return subprocess.run(["sysctl", "-n", "sysctl.proc_translated"], capture_output=True, text=True,
+                              timeout=10).stdout.strip() == "1"
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
 def _native_arch() -> str:
+    """The machine's own architecture (an Apple Silicon Mac is arm64 even when this
+    Python runs under Rosetta)."""
     import platform
+    if apple_silicon():
+        return "arm64"
     m = platform.machine()
     return "arm64" if m in ("arm64", "aarch64") else m
 
@@ -14316,7 +14476,15 @@ def run_pipeline(args) -> int:
     plog(P, show=True, msg=f"decomp_pipeline {PIPELINE_VERSION}: {P.root} — stages "
             f"{run_stages[0]} → {run_stages[-1]}"
             + (f" (redo: {', '.join(sorted(redo))})" if redo else ""))
+    # on an Apple Silicon Mac, build for it (arm64), also when this Python runs
+    # under Rosetta, where the compiler would otherwise build Intel code
+    if apple_silicon() and "-arch" not in PIC_FLAGS:
+        PIC_FLAGS.extend(["-arch", "arm64"])
+        if under_rosetta():
+            plog(P, show=True, msg="  this Python runs under Rosetta (as Intel): building for Apple Silicon "
+                                   "(arm64) anyway")
     cfg = make_build_config(P, args, client, cxx or "clang++")
+    _check_target(cfg)
     plog(P, f"  --ctx {args.ctx}: pieces up to {piece_chars(args.ctx, 3000)} characters, recover "
             f"stage up to {cfg.model_ctx_chars}"
             + (" (set by --model-ctx-chars)" if args.model_ctx_chars else ""))

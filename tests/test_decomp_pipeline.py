@@ -1982,3 +1982,92 @@ def test_a_crash_still_writes_the_report_with_where_it_happened(tmp_path, model,
     assert "The run CRASHED in the link stage" in report and "Argument list too long" in report
     assert "Traceback" in report and "the run crashed: OSError" in report
     assert (tmp_path / "build_c" / "manifest.json").exists()             # progress kept
+
+
+# ---- link in C mode: everything gets a definition so the plugin can be tested
+
+def test_c_placeholders_and_objective_c_messages_are_c(tmp_path):
+    import subprocess
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        pytest.skip("no C compiler")
+    stubs = [dp._stub_for("proto", "uint64_t FUN_1(int a);", "FUN_1", c=True),
+             dp._stub_for("proto", "double *FUN_2(void);", "FUN_2", c=True),
+             dp._stub_for("proto", "void FUN_3(long x);", "FUN_3", c=True),
+             dp._stub_for("global", "extern uint64_t DAT_4;", "DAT_4", c=True)]
+    assert "{}" not in stubs[0] and "return (uint64_t){0};" in stubs[0]
+    (tmp_path / "s.c").write_text("#include <stdint.h>\n" + "\n".join(stubs) + "\n")
+    r = subprocess.run([cc, "-x", "c", "-std=gnu11", "-fsyntax-only", str(tmp_path / "s.c")],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    s = dp.objc_send_stub("initWithTitle_action_keyEquivalent_")
+    assert 'sel_registerName("initWithTitle:action:keyEquivalent:")' in s
+    assert dp.SELECTOR_NAME.match("setTitle_") and not dp.SELECTOR_NAME.match("FUN_00001000")
+
+
+def test_c_mode_library_names_lose_one_underscore_and_selector_names_keep_theirs(tmp_path, model):
+    pseudo = {**C_PSEUDO,
+              # a stub to the C++ runtime, called through the stub and directly
+              "1090": ("___cxa_throw", "void ___cxa_throw(void *p)\n\n{\n  (*(code *)PTR____cxa_throw_00004010)(p);\n  return;\n}\n"),
+              "10a0": ("FUN_000010a0", "void FUN_000010a0(void *p)\n\n{\n  ___cxa_throw(p);\n  _memcpy(p,p,0);\n"
+                                       "  setTitle_(p,p);\n  return;\n}\n"),
+              "10b0": ("setTitle_", "void setTitle_(void *self,void *t)\n\n{\n  return;\n}\n")}
+    write_export(tmp_path, pseudo)
+    assert run(tmp_path, model, "--lang", "c", "--to", "rewrite") == 0
+    src = (tmp_path / "rewrite" / "pseudocode.c").read_text()
+    assert "__cxa_throw(p);" in src and "_cxa_throw(p)" not in src.replace("__cxa_throw(p)", "")
+    assert "memcpy(p,p,0);" in src and "_memcpy(" not in src
+    assert "void setTitle_(" in src and "setTitle_(p,p);" in src
+
+
+def test_c_mode_links_with_a_placeholder_for_anything_undefined(tmp_path, model):
+    pseudo = {**C_PSEUDO,
+              "10c0": ("FUN_000010c0", "long FUN_000010c0(long a)\n\n{\n  long lVar1;\n"
+                                       "  lVar1 = mysteryFromNowhere(a);\n  return lVar1;\n}\n")}
+    write_export(tmp_path, pseudo)
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    rep = (tmp_path / "build_c" / "link_report.txt").read_text()
+    assert "mysteryFromNowhere" in rep and "placeholder" in rep
+    assert list((tmp_path / "build_c").glob("program.*"))
+
+
+def test_objects_from_another_target_are_cleared(tmp_path):
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path)
+    (tmp_path / "obj").mkdir()
+    (tmp_path / "obj" / "a.o").write_text("x")
+    (tmp_path / "shared.h.pch").write_text("x")
+    (tmp_path / ".target").write_text("-arch x86_64\n")
+    dp._check_target(cfg)
+    assert not (tmp_path / "obj").exists() and not (tmp_path / "shared.h.pch").exists()
+    (tmp_path / "obj").mkdir()
+    dp._check_target(cfg)                                 # same target now: nothing cleared
+    assert (tmp_path / "obj").exists()
+
+
+def test_the_idea_loop_gets_a_round_mid_run_when_a_kind_of_error_piles_up(tmp_path, monkeypatch):
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path, lang="c", std="gnu11",
+                    no_pseudo=True, workers=4)
+    (tmp_path / "funcs").mkdir()
+    recs = {}
+    for i in range(120):
+        rel = f"funcs/f{i}.c"
+        (tmp_path / rel).write_text(f"int f{i}(void) {{ return 0; }}\n")
+        recs[f"f{i}"] = dp.FuncRecord(name=f"f{i}", mangled=f"f{i}", file=rel, start=0, end=0)
+
+    def repair(cfg, rec, cache):                      # every one fails the same way
+        rec.quarantined = True
+        rec.last_error = f"{cfg.workdir / rec.file}:1:1: error: the same thing\n"
+        return False
+    rounds = []
+    monkeypatch.setattr(dp, "quick_fix", lambda cfg, rec, cache: False)
+    monkeypatch.setattr(dp, "repair_tu", repair)
+    monkeypatch.setattr(dp, "idea_round", lambda cfg, records, cache, **kw: rounds.append(kw.get("when")) or {})
+    monkeypatch.setattr(dp, "retry_quarantined", lambda *a, **k: 0)
+    monkeypatch.setattr(dp, "save_manifest", lambda cfg, records: None)
+    monkeypatch.setattr(dp, "write_fix_report", lambda cfg, records: None)
+    monkeypatch.setattr(dp, "_load_pseudocode", lambda cfg: ({}, {}))
+    monkeypatch.setattr(dp, "_LESSONS", {})
+    dp.fixer_loop(cfg, recs, list(recs))
+    mid = [w for w in rounds if w and w.startswith("mid-run")]
+    assert rounds[0] == "before the one-by-one fixes" and rounds[-1] == "after the one-by-one fixes"
+    assert mid == ["mid-run, after 50 of 120 functions", "mid-run, after 100 of 120 functions"]
