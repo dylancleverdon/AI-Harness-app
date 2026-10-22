@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.4"
+PIPELINE_VERSION = "2026-10-22.5"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3806,11 +3806,12 @@ def run_pseudo_source(P: Paths, args) -> dict:
     from collections import Counter
     names = Counter(f.get("name") for f in funcs)
     reserved = set(CPP_KEYWORDS) | LIB_CALLS | set(re.findall(r"[A-Za-z_]\w*", GHIDRA_INTRINS_H))
-    cname, used, thunks = {}, set(), {}
+    cname, used, thunks, no_body = {}, set(), {}, []
     for f in funcs:
         a, n = f["addr"], f.get("name") or f"FUN_{f['addr']}"
         body = pseudo.get(a)
-        if not body:
+        if not body or "{" not in strip_comments(body):
+            no_body.append(f"{n} ({a})")
             continue
         if _is_thunk(n, body):
             thunks[n] = n[1:]                  # call the library function itself
@@ -3926,6 +3927,12 @@ def run_pseudo_source(P: Paths, args) -> dict:
     codes = [f"{e['tag']}\n{e['head']}\n{e['body']}" for e in entries]
     write_atomic(P.rewritten, types + "\n" + passes["opaque"] + "\n\n" + "\n\n".join(codes) + "\n")
     write_atomic(P.index, json.dumps(index, indent=0))
+    if no_body:
+        write_atomic(P.rewrite / "functions_without_code.txt", "\n".join(no_body) + "\n")
+        plog(P, show=True, msg=f"  {len(no_body)} function(s) have no code in Ghidra's pseudocode (it "
+                               f"couldn't decompile them), so they're left out: "
+                               + ", ".join(no_body[:5]) + (" …" if len(no_body) > 5 else "")
+                               + " (all in rewrite/functions_without_code.txt)")
     plog(P, show=True, msg=f"  C source from Ghidra's pseudocode: {len(entries)} function(s), "
                            f"{len(thunks)} library stub(s) called directly, "
                            f"{types.count('_Static_assert')} data type(s) with Ghidra's layout"
@@ -8870,6 +8877,18 @@ def pseudocode_recovery(cfg: Config, records: dict[str, FuncRecord]) -> None:
         (cfg.workdir / "rederived.txt").write_text("\n".join(sorted(rederived)) + "\n")
 
 
+def objects_arg(paths: list[str], rsp: Path, limit: int = 100_000) -> list[str]:
+    """The object files for a link command. Many of them go in a response file
+    (@file, read by clang) instead: a command line is limited (about 1 MB on macOS),
+    and 30,000 paths are more than that. Each path is quoted (folders can have
+    spaces in their names)."""
+    if sum(len(p) + 1 for p in paths) < limit:
+        return list(paths)
+    rsp.write_text("\n".join('"' + p.replace("\\", "\\\\").replace('"', '\\"') + '"'
+                             for p in paths) + "\n")
+    return [f"@{rsp}"]
+
+
 def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
     """Compile every TU to an object (parallel, incremental, with the PCH) and
     link a shared library. Problems are handled deterministically:
@@ -9012,8 +9031,8 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
 
         objs = [str(o) for _, o, _ in built]
         log(cfg, f"  link round {round_no}: linking {len(objs)} objects ...")
-        cmd = [cfg.cxx, *lib_flags, *PIC_FLAGS, *cfg.extra_flags, *objs, *c_link_flags(cfg),
-               "-o", str(out)]
+        cmd = [cfg.cxx, *lib_flags, *PIC_FLAGS, *cfg.extra_flags,
+               *objects_arg(objs, cfg.workdir / "link_objects.rsp"), *c_link_flags(cfg), "-o", str(out)]
         proc = subprocess.run(cmd, capture_output=True, text=True)
         if proc.returncode == 0:
             if stubs:
@@ -11870,7 +11889,8 @@ def _build_final(cfg: "Config", out: Path) -> tuple[bool, bool, str]:
                                                         if "error" in l), r.stderr[:200])
         objs.append(str(o))
     lib = ["-dynamiclib"] if sys.platform == "darwin" else ["-shared", "-Wl,--no-undefined"]
-    r = subprocess.run([cfg.cxx, *lib, *PIC_FLAGS, *cfg.extra_flags, *objs, "-o",
+    r = subprocess.run([cfg.cxx, *lib, *PIC_FLAGS, *cfg.extra_flags,
+                        *objects_arg(objs, obj / "link_objects.rsp"), "-o",
                         str(obj / ("program.dylib" if sys.platform == "darwin" else "program.so"))],
                        capture_output=True, text=True)
     return True, r.returncode == 0, "" if r.returncode == 0 else r.stderr[:300]

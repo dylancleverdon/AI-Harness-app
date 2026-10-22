@@ -1915,3 +1915,26 @@ def test_c_mode_a_data_type_that_is_also_a_function_keeps_its_struct_tag(tmp_pat
     assert "typedef struct Pair Pair;" not in src and "long Pair(struct Pair *param_1)" in src
     names = {r["name"]: r for r in json.loads((tmp_path / "build_c" / "manifest.json").read_text()).values()}
     assert names["Pair"]["compiles"] and names["FUN_000010d0"]["compiles"]
+
+
+def test_many_object_files_are_linked_through_a_response_file(tmp_path):
+    # 30,000 object paths are more than macOS allows on one command line
+    import subprocess
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        pytest.skip("no C compiler")
+    d = tmp_path / "fast pass 3"                    # a space in the folder name, like a real one
+    d.mkdir()
+    objs = []
+    for i in range(3):
+        (d / f"f{i}.c").write_text(f"int f{i}(void) {{ return {i}; }}\n")
+        subprocess.run([cc, "-c", "-fPIC", str(d / f"f{i}.c"), "-o", str(d / f"f{i}.o")], check=True)
+        objs.append(str(d / f"f{i}.o"))
+    assert dp.objects_arg(objs, d / "objs.rsp") == objs                  # few: on the command line
+    args = dp.objects_arg(objs, d / "objs.rsp", limit=10)
+    assert args == [f"@{d / 'objs.rsp'}"]
+    out = d / "lib.so"
+    r = subprocess.run([cc, "-shared", *args, "-o", str(out)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    syms = subprocess.run(["nm", "-g", str(out)], capture_output=True, text=True).stdout
+    assert all(f"f{i}" in syms for i in range(3))
