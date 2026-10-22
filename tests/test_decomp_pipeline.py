@@ -2071,3 +2071,101 @@ def test_the_idea_loop_gets_a_round_mid_run_when_a_kind_of_error_piles_up(tmp_pa
     mid = [w for w in rounds if w and w.startswith("mid-run")]
     assert rounds[0] == "before the one-by-one fixes" and rounds[-1] == "after the one-by-one fixes"
     assert mid == ["mid-run, after 50 of 120 functions", "mid-run, after 100 of 120 functions"]
+
+
+# ---- candidate fixes: the script's own trial and error for one error at a time
+
+CANDIDATE_CASES = {
+    # a 16-byte array passed where a 16-byte value is expected
+    "pass16": "uint64_t pass16(void) {\n  unsigned char extraout_q0[16] = {0};\n  return take16(extraout_q0, 1.0);\n}\n",
+    # a 16-byte value passed where a double is expected
+    "passd": "double passd(gh16 v) {\n  return takeD(v);\n}\n",
+    # a byte array of another size assigned whole
+    "arr12": "uint64_t arr12(void) {\n  unsigned char local_c[12];\n  local_c = give16();\n  return local_c[0];\n}\n",
+    # a piece of a field
+    "piece": "uint32_t piece(struct holder *p) {\n  return p->f._4_4_;\n}\n",
+    # an integer used as a pointer
+    "deref": "uint64_t deref(long lVar2) {\n  uint64_t v;\n  v = *lVar2;\n  return v;\n}\n",
+    # a duplicate case label
+    "dupcase": "int dupcase(int x) {\n  switch (x) {\n  case 0:\n    return 1;\n  case 0:\n    return 2;\n  }\n  return 3;\n}\n",
+    # more arguments than the declaration has
+    "toomany": "uint64_t toomany(long a) {\n  return two(a, a, a);\n}\n",
+    # a double that held a pointer
+    "dptr": "long dptr(double d) {\n  return *(long *)d;\n}\n",
+}
+
+
+def test_candidate_fixes_repair_real_kinds_of_error_without_the_model(tmp_path, monkeypatch):
+    cc = shutil.which("clang")
+    if not cc:
+        pytest.skip("needs clang")
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path, cxx=cc, lang="c", std="gnu11")
+    (tmp_path / "ghidra_intrins.h").write_text(dp.GHIDRA_INTRINS_H)
+    (tmp_path / "shared.h").write_text(
+        '#pragma once\n#include <stdint.h>\n#include <string.h>\n#include "ghidra_intrins.h"\n'
+        "struct holder { uint64_t f; };\n"
+        "uint64_t take16(gh16 a, double b);\ndouble takeD(double d);\ngh16 give16(void);\n"
+        "uint64_t two(long a, long b);\n")
+    (tmp_path / "funcs").mkdir()
+    monkeypatch.setattr(dp, "_LESSONS", {})
+    fixed = {}
+    for name, code in CANDIDATE_CASES.items():
+        rel = f"funcs/{name}.c"
+        (tmp_path / rel).write_text('#include "shared.h"\n\n' + code)
+        rec = dp.FuncRecord(name=name, mangled=name, file=rel, start=0, end=0)
+        assert not dp.compile_tu(cfg, rel)[0], name                    # it really fails first
+        fixed[name] = dp.quick_fix(cfg, rec, {})
+    assert all(fixed.values()), {k: v for k, v in fixed.items() if not v}
+    text = {n: (tmp_path / f"funcs/{n}.c").read_text() for n in CANDIDATE_CASES}
+    assert "GH16(extraout_q0)" in text["pass16"] and "GH_GETD(v, 0)" in text["passd"]
+    assert "memcpy(&(local_c)" in text["arr12"] and "GH_GET(p->f, 4, 4)" in text["piece"]
+    assert "((uint64_t (*)())two)(a, a, a)" in text["toomany"] and "GH_DBITS(d)" in text["dptr"]
+    assert text["dupcase"].count("case 0:") == 1
+
+
+def test_repair_loop_passes_over_quarantined_functions_until_one_rescues_nothing(tmp_path, monkeypatch):
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path, lang="c", workers=2, repair_minutes=5)
+    cfg.fix_model_used = "m"
+    (tmp_path / "funcs").mkdir()
+    cfg.quarantine_dir.mkdir(parents=True)
+    recs = {}
+    for i in range(6):
+        rel = f"funcs/q{i}.c"
+        (tmp_path / rel).write_text("// stub\n")
+        (cfg.quarantine_dir / f"q{i}.c").write_text(f"ORIGINAL {i}\n")
+        recs[f"q{i}"] = dp.FuncRecord(name=f"q{i}", mangled=f"q{i}", file=rel, start=0, end=0, quarantined=True)
+    calls = {"free": 0, "model": 0}
+
+    def quick(cfg, rec, cache):                     # the no-model fixes rescue q0, q1
+        calls["free"] += 1
+        assert (cfg.workdir / rec.file).read_text().startswith("ORIGINAL")
+        return rec.name in ("q0", "q1")
+
+    def model(cfg, rec, cache):                     # the model rescues q2; the rest go back
+        calls["model"] += 1
+        if rec.name == "q2":
+            return True
+        rec.quarantined = True
+        (cfg.workdir / rec.file).write_text("// stub\n")
+        return False
+    monkeypatch.setattr(dp, "quick_fix", quick)
+    monkeypatch.setattr(dp, "repair_tu", model)
+    monkeypatch.setattr(dp, "save_manifest", lambda cfg, records: None)
+    assert dp.repair_loop(cfg, recs, {}) == 3
+    assert [r.name for r in recs.values() if r.quarantined] == ["q3", "q4", "q5"]
+    assert (tmp_path / "funcs" / "q4.c").read_text() == "// stub\n"          # put back
+    # pass 1: 6 free + 4 model; pass 2: 3 free + 3 model, rescues nothing: stops
+    assert calls == {"free": 9, "model": 7}
+
+
+def test_a_learned_fix_and_its_opposite_are_both_retired(tmp_path):
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path)
+    L = dp.FixLessons(cfg)
+    k1 = "assigning to 'X' from incompatible type 'X'"
+    k2 = "operand of type 'X' where arithmetic or pointer type is required"
+    L.learned(k1, "m", "x = f(a);", "x = (void*)f(a);", "f1")
+    assert any(L.tier(r) == "candidate" for _, r in L.rules_for(k1))
+    L.learned(k2, "m", "x = (void*)f(a);", "x = f(a);", "f2")          # its exact opposite
+    assert not L.rules_for(k1) and not L.rules_for(k2)
+    L.save()
+    assert not dp.FixLessons(cfg).rules_for(k1)                          # still retired when loaded

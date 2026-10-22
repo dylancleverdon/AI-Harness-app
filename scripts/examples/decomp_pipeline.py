@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.7"
+PIPELINE_VERSION = "2026-10-22.8"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3672,15 +3672,28 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
     stats["types that are also functions (as struct tags)"] = len(tagged)
     stats["types C didn't know (declared opaque)"] = len(opaque)
 
-    # 3) 16-byte register values: "undefined1 v [16]" -> gh16 where it's used as a value
+    # 3) 16-byte register values: "undefined1 v [16]" -> gh16 where it's used as a value:
+    #    assigned whole, returned, read in pieces, or passed where a 16-byte value is expected
+    ptypes16 = {n: [_param_type(p) for p in hp[2]] for n, hp in parts.items() if hp}
+
+    def passed_as_16(body, v):
+        for c in re.finditer(r"(?<![\w.>])([A-Za-z_]\w*)\s*\(", body):
+            pts = ptypes16.get(c.group(1))
+            if not pts or "gh16" not in pts:
+                continue
+            for k, (a, b) in enumerate(_arg_spans(body, c.end() - 1)):
+                if body[a:b].strip() == v and k < len(pts) and pts[k] == "gh16":
+                    return True
+        return False
     for e in entries:
         tick()
         body = e["body"]
-        for m in list(re.finditer(r"^(\s*)undefined1?\s+([A-Za-z_]\w*)\s*\[\s*16\s*\]\s*;", body, re.M)):
+        for m in list(re.finditer(r"^(\s*)(?:undefined1?|unsigned\s+char|uchar|byte|uint8_t)\s+"
+                                  r"([A-Za-z_]\w*)\s*\[\s*16\s*\]\s*;", body, re.M)):
             v = m.group(2)
             whole = re.search(rf"(?<![\w.>]){v}\s*=(?!=)|return\s+{v}\s*;|(?<![\w.>]){v}\._\d+_\d+_",
                               body)
-            if not whole:
+            if not whole and not passed_as_16(body, v):
                 continue
             body = body.replace(m.group(0), f"{m.group(1)}gh16 {v};", 1)
             body = re.sub(rf"(?<![\w.>]){v}\s*\[", f"{v}.b[", body)
@@ -3704,6 +3717,24 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
             body = "".join(out) + body[i:]
             body = re.sub(rf"(\(\s*(?!gh16\b)[A-Za-z_][\w ]*\s*\))\s*{v}\b(?!\s*[.\[])",
                           rf"\1GH_GET({v}, 0, 8)", body)
+        # a 16-byte value passed where a number is expected: its low bytes, as that type
+        if g16:
+            out, i = [], 0
+            for c in re.finditer(r"(?<![\w.>])([A-Za-z_]\w*)\s*\(", body):
+                pts = ptypes16.get(c.group(1))
+                if not pts or c.start() < i:
+                    continue
+                for k, (a, b) in enumerate(_arg_spans(body, c.end() - 1)):
+                    arg = body[a:b].strip()
+                    if arg in g16 and k < len(pts) and pts[k] not in ("gh16", "...", ""):
+                        pt = pts[k]
+                        new = (f"GH_GETD({arg}, 0)" if pt == "double" else f"GH_GETF({arg}, 0)" if pt == "float"
+                               else f"({pt})GH_GET({arg}, 0, 8)")
+                        lead = body[a:b][:len(body[a:b]) - len(body[a:b].lstrip())]
+                        out.append(body[i:a] + lead + new)
+                        i = b
+                out.append("")
+            body = "".join(out) + body[i:]
         if hp and hp[0].strip() == "gh16":       # returns a 16-byte value: return any value as one
             body = re.sub(r"\breturn\s+(?!GH16\()([^;]+);", r"return GH16(\1);", body)
         e["body"] = body
@@ -5258,6 +5289,7 @@ class Config:
     no_pseudo: bool = False           # skip the pseudocode recovery stage
     recover_later: bool = False       # don't rebuild a function from pseudocode as soon as the fixer gives up
     no_ideas: bool = False            # no idea loop (the model proposing fixes for whole kinds of error)
+    repair_minutes: int = 30          # the repair loop after the fix stage (0: off)
     # where files about to be replaced are copied first (None: don't)
     snapshot_dir: object = field(default_factory=lambda: (lambda: None))
     workers: int = 1                  # functions worked on at once (CPU side)
@@ -5458,9 +5490,13 @@ GHIDRA_INTRINS_H += r"""
 #define builtin_strncpy(d, s, n) strncpy((d), (s), (n))
 #define builtin_memcpy(d, s, n) memcpy((d), (s), (n))
 #define builtin_memset(d, c, n) memset((d), (c), (n))
-#define SoftwareBreakpoint(...) __builtin_trap()
-#define halt_baddata(...) __builtin_trap()
-#define halt_unimplemented(...) __builtin_trap()
+// traps; Ghidra sometimes uses what they "return", so they're expressions with a value
+#define SoftwareBreakpoint(...) (__builtin_trap(), (uint64_t)0)
+#define halt_baddata(...) (__builtin_trap(), (uint64_t)0)
+#define halt_unimplemented(...) (__builtin_trap(), (uint64_t)0)
+// the bits of a double (Ghidra reuses a register that held one, as a pointer or number)
+static inline uint64_t gh_dbits(double d) { uint64_t u; memcpy(&u, &d, 8); return u; }
+#define GH_DBITS(d) gh_dbits((double)(d))
 // ARM load-acquire / store-release markers: ordering only
 #define LOAcquire(...) __atomic_thread_fence(__ATOMIC_ACQUIRE)
 #define LORelease(...) __atomic_thread_fence(__ATOMIC_RELEASE)
@@ -7561,8 +7597,8 @@ def _keeps_meaning(before: str, after: str) -> bool:
     a = after.strip()
     if not a or a.startswith(("//", "/*")):
         return False
-    calls = lambda s: {c for c in re.findall(r"\b([A-Za-z_]\w*)\s*\(", s)
-                       if c not in CPP_KEYWORDS}
+    calls = lambda s: {c for c in re.findall(r"\b([A-Za-z_]\w*)\s*\)?\s*\(", s)
+                       if c not in CPP_KEYWORDS}             # also ((type)name)(args)
     nums = lambda s: Counter(re.findall(r"\b0[xX][0-9a-fA-F]+|\b\d+(?:\.\d+)?\b", s))
     assigns = lambda s: len(re.findall(r"(?<![=!<>+\-*/%&|^])=(?!=)", s))
     return (calls(before) <= calls(after) and not (nums(before) - nums(after))
@@ -7628,9 +7664,22 @@ class FixLessons:
         self.tried_rules = 0
         self.new_rules = 0
         self.version = 0                # goes up whenever a rule is added or proven
+        self._mark_inverses()
+
+    def _mark_inverses(self) -> None:
+        """A fix and its exact opposite (add a cast / take it away again) only undo
+        each other: their success counts mean nothing, and both are retired."""
+        by_change = {(tuple(r["before"]), tuple(r["after"])): rid for rid, r in self.data["rules"].items()}
+        for (b, a), rid in by_change.items():
+            other = by_change.get((a, b))
+            if other and other != rid:
+                self.data["rules"][rid]["inverse"] = True
+                self.data["rules"][other]["inverse"] = True
 
     @classmethod
     def tier(cls, r: dict) -> str:
+        if r.get("inverse"):
+            return "retired"
         if r["bad"] >= 5 and r["bad"] > 3 * r["ok"]:
             return "retired"
         if r["ok"] >= cls.PROMOTE and r["ok"] > 2 * r["bad"]:
@@ -7654,6 +7703,7 @@ class FixLessons:
                                            "at": time.strftime("%Y-%m-%d %H:%M")}
             self.new_rules += 1
             self.version += 1
+            self._mark_inverses()
         was = self.tier(r)
         r["ok"] += 1
         if was != "proven" and self.tier(r) == "proven":
@@ -7803,7 +7853,8 @@ class FixLessons:
             out.append(f"== {tier}: {len(rs)}")
             for r in rs[:300]:
                 out.append(f"[{r['ok']} worked, {r['bad']} didn't] {r['kind']}"
-                           + (" (part of a line)" if r.get("span") else ""))
+                           + (" (part of a line)" if r.get("span") else "")
+                           + (" — retired: it and its opposite only undo each other" if r.get("inverse") else ""))
                 out.append(f"    {_join_tokens(r['before'])}")
                 out.append(f"  → {_join_tokens(r['after'])}")
             out.append("")
@@ -8008,6 +8059,264 @@ def _rule_fix(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str, line: 
     return False
 
 
+# ----------------------------------------------------------------------------
+# Candidate fixes: the script's own trial and error, no model
+# ----------------------------------------------------------------------------
+#
+# For a function's first error, the script writes the edits that error suggests,
+# from what the compiler says: clang's own fix-its; for a value of the wrong type,
+# the type it should have (the parameter's, the variable's, the return type), with
+# the exact-bytes helpers for 16-byte values and doubles; an untyped call when the
+# argument count is wrong; a byte copy for an array assigned whole; a pointer cast
+# for an integer used as one; a duplicate case label dropped. Each is compiled and
+# kept only if the function then compiles, or has fewer errors (or the first one
+# moved further down) and the line still does what it did (same calls, numbers,
+# assignments). What works becomes a learned fix for every function with that error.
+
+def _first_error_col(err: str, rel: str) -> tuple[int, int, str]:
+    name = Path(rel).name
+    for l in err.splitlines():
+        m = DIAG_RE.match(l.strip())
+        if m and "error" in m.group("sev") and Path(m.group("file")).name == name:
+            return int(m.group("line")), int(m.group("col")), m.group("msg")
+    return 0, 0, ""
+
+
+def _operand_end(s: str, i: int) -> int:
+    """End of the postfix expression starting at s[i] (a name, a parenthesised
+    group, then any [..], (..), .x, ->x after it)."""
+    n = len(s)
+    while i < n and s[i] in " \t":
+        i += 1
+    if i < n and s[i] in "*&-!~":                 # a unary operator: take what it applies to
+        return _operand_end(s, i + 1)
+    if i < n and s[i] == "(":
+        depth = 0
+        while i < n:
+            depth += s[i] == "("
+            depth -= s[i] == ")"
+            i += 1
+            if depth == 0:
+                break
+        if i < n and (s[i].isalnum() or s[i] in "_(*&"):   # a cast: then what it casts
+            return _operand_end(s, i)
+    else:
+        while i < n and (s[i].isalnum() or s[i] == "_"):
+            i += 1
+    while i < n:
+        if s[i] in "[(":
+            close = "]" if s[i] == "[" else ")"
+            depth = 0
+            while i < n:
+                depth += s[i] in "[("
+                depth -= s[i] in "])"
+                i += 1
+                if depth == 0:
+                    break
+        elif s.startswith("->", i) or (s[i] == "." and not re.match(r"\._\d+_\d+_", s[i:])):
+            i += 2 if s[i] == "-" else 1
+            while i < n and (s[i].isalnum() or s[i] == "_"):
+                i += 1
+        else:
+            break
+    return i
+
+
+def _operand_start(s: str, end: int) -> int:
+    """Start of the postfix expression that ends at s[end] (exclusive)."""
+    i = end
+    while i > 0:
+        ch = s[i - 1]
+        if ch in ")]":
+            depth = 0
+            while i > 0:
+                depth += s[i - 1] in ")]"
+                depth -= s[i - 1] in "(["
+                i -= 1
+                if depth == 0:
+                    break
+        elif ch.isalnum() or ch == "_":
+            i -= 1
+        elif ch == ">" and i > 1 and s[i - 2] == "-":
+            i -= 2
+        elif ch == ".":
+            i -= 1
+        else:
+            break
+    return i
+
+
+def _convert(expr: str, frm: str, to: str) -> Optional[str]:
+    """expr (of type frm) as type to, keeping its bits where C can't convert."""
+    expr = expr.strip()
+    if not expr or frm == to:
+        return None
+    if to == "gh16":
+        return f"GH16({expr})"
+    if frm == "gh16":
+        return (f"GH_GETD({expr}, 0)" if to == "double" else f"GH_GETF({expr}, 0)" if to == "float"
+                else f"({to})GH_GET({expr}, 0, 8)")
+    if frm in ("double", "float") and "*" in to:
+        return f"({to})GH_DBITS({expr})"
+    if re.fullmatch(r"(?:const )?\w+\s*\[\d+\]", frm) and "*" not in to:   # a small byte array as a number
+        n = int(re.search(r"\[(\d+)\]", frm).group(1))
+        return f"({to})GH_GET({expr}, 0, {min(n, 8)})" if n <= 8 else None
+    return f"({to})({expr})"
+
+
+def _fixit_candidates(cfg: Config, rel: str, src: str) -> list[tuple[str, str]]:
+    """clang's own suggested edits (-fdiagnostics-parseable-fixits)."""
+    cmd = [cfg.cxx, *lang_args(cfg), f"-I{cfg.workdir}", "-fsyntax-only", "-w", "-ferror-limit=5",
+           "-fdiagnostics-parseable-fixits", *PIC_FLAGS, *_pch_flags(cfg, rebuild=False),
+           *cfg.extra_flags, str(cfg.workdir / rel)]
+    try:
+        with HEADER_LOCK.read():
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    except (OSError, subprocess.TimeoutExpired):
+        return []
+    out = []
+    lines = src.split("\n")
+    for m in re.finditer(r'^fix-it:"([^"]+)":\{(\d+):(\d+)-(\d+):(\d+)\}:"((?:[^"\\]|\\.)*)"', r.stderr, re.M):
+        if Path(m.group(1)).name != Path(rel).name:
+            continue
+        l1, c1, l2, c2 = (int(m.group(k)) for k in range(2, 6))
+        if l1 != l2 or not 1 <= l1 <= len(lines):
+            continue
+        rep = bytes(m.group(6), "utf-8").decode("unicode_escape")
+        line = lines[l1 - 1]
+        new = line[:c1 - 1] + rep + line[c2 - 1:]
+        out.append(("clang's fix-it", "\n".join(lines[:l1 - 1] + [new] + lines[l1:])))
+    return out[:3]
+
+
+def candidate_fixes(cfg: Config, rel: str, src: str, err: str) -> list[tuple[str, str]]:
+    """(what, new code) for the first error: edits worth one compile each."""
+    ln, col, msg = _first_error_col(err, rel)
+    lines = src.split("\n")
+    if not ln or ln > len(lines):
+        return []
+    line = lines[ln - 1]
+    i = max(0, min(col - 1, len(line)))
+    out: list[tuple[str, str]] = []
+
+    def put(what, new_line):
+        if new_line is not None and new_line != line:
+            out.append((what, "\n".join(lines[:ln - 1] + [new_line] + lines[ln:])))
+    types = re.findall(r"'([^']*)'", msg)
+
+    def at_operand(make):
+        e = _operand_end(line, i)
+        if e > i:
+            put("a value converted to the type it's used as", (lambda r: None if r is None else
+                                                               line[:i] + r + line[e:])(make(line[i:e])))
+    if m := re.match(r"passing '([^']*)'.* to parameter of incompatible type '([^']*)'", msg):
+        at_operand(lambda x: _convert(x, m.group(1), m.group(2)))
+    elif m := re.match(r"(?:initializing|returning) '([^']*)'.* (?:with an expression of|from a function with) "
+                       r"incompatible (?:type|result type) '([^']*)'", msg):
+        frm, to = (m.group(2), m.group(1)) if msg.startswith("initializing") else (m.group(1), m.group(2))
+        e = _expr_end(line, i)
+        put("a value converted to the type it's used as", (lambda r: None if r is None else
+                                                           line[:i] + r + line[e:])(_convert(line[i:e], frm, to)))
+    elif m := re.match(r"assigning to '([^']*)'.* from incompatible type '([^']*)'", msg):
+        eq = line.find("=", i if line[i:i + 1] == "=" else max(0, i - 2))
+        if eq >= 0:
+            s = eq + 1
+            e = _expr_end(line, s)
+            r = _convert(line[s:e], m.group(2), m.group(1))
+            if r:
+                put("a value converted to the type it's assigned to", line[:s] + " " + r + line[e:])
+    elif m := re.match(r"(?:operand of type|used type) '([^']*)'.* where arithmetic or pointer type is required", msg):
+        t = m.group(1)
+        if t == "gh16" or re.fullmatch(r"(?:const )?\w+\s*\[\d+\]", t):
+            n = int(re.search(r"\[(\d+)\]", t).group(1)) if "[" in t else 8
+            if n <= 8:
+                at_operand(lambda x: f"GH_GET({x.strip()}, 0, {n})")
+    elif msg.startswith("operand of type 'double' cannot be cast to a pointer type") or \
+            msg.startswith("operand of type 'float' cannot be cast to a pointer type"):
+        at_operand(lambda x: f"GH_DBITS({x.strip()})")
+    elif msg.startswith("member reference base type"):
+        pm = re.compile(r"\._(\d+)_(\d+)_(?!\w)").search(line, i)
+        if pm:
+            s = _operand_start(line, pm.start())
+            base = line[s:pm.start()]
+            rest = line[pm.end():]
+            am = re.match(r"\s*=(?!=)\s*", rest)
+            if am:
+                ve = _expr_end(line, pm.end() + am.end())
+                put("a piece of a value, as its exact bytes",
+                    line[:s] + f"GH_SET({base}, {pm.group(1)}, {pm.group(2)}, {line[pm.end() + am.end():ve].strip()})"
+                    + line[ve:])
+            else:
+                put("a piece of a value, as its exact bytes",
+                    line[:s] + f"GH_GET({base}, {pm.group(1)}, {pm.group(2)})" + line[pm.end():])
+    elif re.match(r"array type '[^']*'.* is not assignable", msg):
+        am = re.match(r"^(\s*)(.+?)\s*=(?!=)\s*(.+?);\s*$", line)
+        if am:
+            put("an array assigned whole: its bytes copied",
+                f"{am.group(1)}{{ __typeof__({am.group(3)}) gh_t_ = ({am.group(3)}); memcpy(&({am.group(2)}), &gh_t_, "
+                f"sizeof({am.group(2)}) < sizeof(gh_t_) ? sizeof({am.group(2)}) : sizeof(gh_t_)); }}")
+    elif msg.startswith("indirection requires pointer operand"):
+        star = line.rfind("*", 0, i + 1)
+        if star >= 0:
+            for w in ("uint64_t", "uint32_t", "uint8_t"):
+                put(f"an integer used as a pointer ({w} *)", line[:star + 1] + f"({w} *)" + line[star + 1:])
+    elif msg.startswith("duplicate case value"):
+        put("a duplicate case label dropped", re.sub(r"\bcase\s+[^:]+:\s*", "", line, count=1))
+    elif re.match(r"too (?:many|few) arguments to function call", msg):
+        k = line.rfind("(", 0, i + 1)
+        while k > 0:
+            nm = re.search(r"([A-Za-z_]\w*)\s*$", line[:k])
+            if nm and nm.group(1) not in CPP_KEYWORDS:
+                put("a call with the arguments Ghidra saw (untyped)",
+                    line[:nm.start(1)] + f"((uint64_t (*)()){nm.group(1)})" + line[nm.end(1):])
+                break
+            k = line.rfind("(", 0, k)
+    elif m := re.match(r"called object type '([^']*)' is not a function or function pointer", msg):
+        e = _operand_end(line, i)
+        if e > i:
+            put("a value called as the function it holds", line[:i] + f"((uint64_t (*)())(uintptr_t)({line[i:e].strip()}))"
+                + line[e:])
+    return out
+
+
+def try_candidates(cfg: Config, rec: FuncRecord, rel: str, src: str, err: str) -> bool:
+    """The candidate fixes for the first error, plus clang's fix-its: the first one
+    that makes progress is kept (and learned). True if one was."""
+    first = _first_error(err, rel)
+    cands = candidate_fixes(cfg, rel, src, err)
+    lessons = fix_lessons(cfg)
+    if not cands:
+        cands = _fixit_candidates(cfg, rel, src)
+    for what, new in cands:
+        if new == src or lessons.is_repeat(rel, new):
+            continue
+        old_line = src.split("\n")[first[0] - 1] if first[0] else ""
+        new_line = new.split("\n")[first[0] - 1] if first[0] and first[0] <= len(new.split("\n")) else ""
+        label_only = what.startswith("a duplicate case label")    # a label, not code
+        if old_line and not label_only and not _keeps_meaning(old_line, new_line) and "memcpy(" not in new_line:
+            continue
+        phase(f"trying: {what}")
+        (cfg.workdir / rel).write_text(new)
+        ok, err2, _ = compile_tu(cfg, rel)
+        first2 = _first_error(err2, rel)
+        if ok or n_errors(err2) < n_errors(err) or (
+                n_errors(err2) == n_errors(err) and first[0] and first2[0] > first[0]
+                and first not in _all_errors(err2, rel)):
+            with _STRUGGLE_LOCK:
+                c = RUN_CTX.setdefault("candidates", Counter())
+                c[what] += 1
+            write_note(cfg, rel, f"[compile] {first[1][:100]} — fixed by a candidate fix: {what}"
+                                 + (" — compiles now." if ok else "."))
+            lessons.learned(error_kind(first[1]), first[1], src, new, rec.name)
+            rec.compiles = ok
+            if not ok:
+                rec.last_error = keep_error(err2)
+            return True
+        (cfg.workdir / rel).write_text(src)
+        lessons.failed(rel, src, new)
+    return False
+
+
 def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
     """Drive one TU to compile. Returns True if it compiles, False if quarantined."""
     rel = rec.file
@@ -8070,6 +8379,12 @@ def repair_tu(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
 
             # 2b) fixes learned from other functions (no model needed)
             if eline and _rule_fix(cfg, rec, rel, src, err, eline, kind, lessons):
+                if rec.compiles:
+                    return True
+                continue
+
+            # 2c) the script's own candidate fixes for this error (no model needed)
+            if eline and try_candidates(cfg, rec, rel, src, err):
                 if rec.compiles:
                     return True
                 continue
@@ -12506,6 +12821,10 @@ def quick_fix(cfg: Config, rec: FuncRecord, cache: dict) -> bool:
             if rec.compiles:
                 return True
             continue
+        if line and try_candidates(cfg, rec, rel, src, err):
+            if rec.compiles:
+                return True
+            continue
         break
     return False
 
@@ -12602,7 +12921,7 @@ class IdeaBook:
                        f"adopted" + (f"; parked until something changes (or run "
                                      f"{st.get('until_run')})" if st.get("parked") else ""))
             for i in ideas[-40:]:
-                out.append(f"   #{i['id']} [{i['result']}] {i['norm'][:160]}")
+                out.append(f"   #{i['id']} [{i['result']}] {(i.get('shown') or i['norm'])[:160]}")
                 if i.get("why_result"):
                     out.append(f"        {i['why_result'][:220]}")
             out.append("")
@@ -12647,6 +12966,20 @@ def _idea_norm(idea: dict) -> Optional[str]:
     except (KeyError, TypeError):
         return None
     return None
+
+
+def _idea_shown(idea: dict) -> str:
+    """An idea as the model wrote it (real code), for showing it the ideas tried."""
+    t = idea.get("type")
+    if t == "rewrite":
+        return f'rewrite "{str(idea.get("before"))[:150]}" -> "{str(idea.get("after"))[:150]}"'
+    if t == "declare":
+        return f"declare {str(idea.get('prototype'))[:200]}"
+    if t == "typedef":
+        return f"header line {str(idea.get('line'))[:200]}"
+    if t == "flag":
+        return f"flag {idea.get('flag')}"
+    return json.dumps(idea)[:200]
 
 
 def _parse_idea(reply: Optional[str]) -> Optional[dict]:
@@ -12837,7 +13170,7 @@ def _idea_prompt(cfg: Config, kind: str, members: list, tried: list, feedback: s
     if tried:
         parts.append("Ideas already tried for this error (don't repeat them):")
         for i in tried[-8:]:
-            parts.append(f"  #{i['id']} {i['norm'][:200]} -> {i['result']}"
+            parts.append(f"  #{i['id']} {i.get('shown') or i['norm'][:200]} -> {i['result']}"
                          + (f": {i['why_result'][:160]}" if i.get("why_result") else ""))
         parts.append("")
     if other_type:
@@ -13006,8 +13339,8 @@ def _idea_session(cfg, book, kind, key, members, sample, compiling, counts, set_
         if dup:
             counts["repeats"] += 1
             book.add(group=kind, key=key, type=idea["type"], norm=norm, result="repeat",
-                     why_result=f"same as #{dup['id']}", model=cfg.fix_model_used)
-            feedback = (f"That is the same as idea #{dup['id']} ({dup['norm'][:160]}), which was "
+                     why_result=f"same as #{dup['id']}", model=cfg.fix_model_used, shown=_idea_shown(idea))
+            feedback = (f"That is the same as idea #{dup['id']} ({dup.get('shown') or dup['norm'][:160]}), which was "
                         f"tried: {dup['result']}"
                         + (f" ({dup['why_result'][:200]})" if dup.get("why_result") else "")
                         + ". Propose something different.")
@@ -13015,7 +13348,7 @@ def _idea_session(cfg, book, kind, key, members, sample, compiling, counts, set_
         if idea["type"] == "rewrite" and not effect:
             book.add(group=kind, key=key, type="rewrite", norm=norm, result="no effect",
                      why_result="its 'before' text isn't in any failing line of the examples",
-                     effect=[], model=cfg.fix_model_used)
+                     effect=[], model=cfg.fix_model_used, shown=_idea_shown(idea))
             feedback = ("That rewrite's 'before' text doesn't appear in the failing lines: copy "
                         "it exactly from an example's failing line. Propose again.")
             continue
@@ -13036,7 +13369,7 @@ def _idea_session(cfg, book, kind, key, members, sample, compiling, counts, set_
         entry = book.add(group=kind, key=key, type=idea["type"], norm=norm,
                          result="adopted" if good else "rejected", why_result=why,
                          effect=effect[:200], idea={k: v for k, v in idea.items() if k != "_old"},
-                         model=cfg.fix_model_used)
+                         model=cfg.fix_model_used, shown=_idea_shown(idea))
         if good:
             counts["adopted"] += 1
             if idea.get("_old"):
@@ -13160,6 +13493,82 @@ def report_learned(cfg: Config, lessons: "FixLessons") -> None:
     RUN_CTX["learned"] = {"tried": lessons.tried_rules, "kept": lessons.applied, **c}
 
 
+def repair_loop(cfg: Config, records: dict[str, FuncRecord], cache: dict) -> int:
+    """After the fix stage: passes over everything quarantined, each from its
+    original code: first every fix that needs no model (learned fixes and the
+    candidate fixes, in parallel), then the model's small edits on what's left
+    (with the fixes learned since). It stops when a pass rescues nothing, or after
+    --repair-minutes. How many functions it rescued."""
+    minutes = getattr(cfg, "repair_minutes", 30) or 0
+    if minutes <= 0:
+        return 0
+    end = time.time() + minutes * 60
+    rescued_total = 0
+    use_model = bool(cfg.fix_model_used or model_check(cfg))
+    for n in range(1, 50):
+        last_free = last_model = 0
+        for with_model in ((False, True) if use_model else (False,)):
+            targets = [m for m, r in records.items() if r.quarantined
+                       and (cfg.quarantine_dir / Path(r.file).name).exists()]
+            if not targets or time.time() >= end:
+                break
+            rescued = [0]
+            left = lambda: max(0, int((end - time.time()) / 60))
+            prog = Progress(len(targets), 0, title=f"repair loop, pass {n} "
+                                                   f"({'the model' if with_model else 'no model'})")
+            prog.extra = lambda: f"{rescued[0]} rescued | {left()} min left of {minutes}"
+
+            def one(m, with_model=with_model):
+                rec = records[m]
+                if time.time() >= end:
+                    prog.end(m)
+                    return
+                prog.begin(m, rec.name)
+                path = cfg.workdir / rec.file
+                try:
+                    stub = path.read_text()
+                    path.write_text((cfg.quarantine_dir / Path(rec.file).name).read_text())
+                    rec.compiles = False
+                    if with_model:
+                        rec.quarantined = False
+                        ok = repair_tu(cfg, rec, cache)          # quarantines it again if not
+                    else:
+                        ok = quick_fix(cfg, rec, cache)
+                        if not ok:
+                            path.write_text(stub)
+                    if ok:
+                        rec.quarantined, rec.compiles = False, True
+                        rec.recovery = "repair loop" + (" (model)" if with_model else "")
+                        with _STRUGGLE_LOCK:
+                            rescued[0] += 1
+                        log(cfg, show=True, msg=f"    {rec.name} -> fixed in the repair loop"
+                                                + (" (model)" if with_model else ""))
+                except OSError:
+                    pass
+                finally:
+                    prog.end(m)
+            try:
+                work_pool(cfg.workers if with_model else max(cfg.workers, (os.cpu_count() or 2) - 1),
+                          targets, one, 25, lambda: save_manifest(cfg, records))
+            finally:
+                prog.close()
+            save_manifest(cfg, records)
+            rescued_total += rescued[0]
+            log(cfg, show=True, msg=f"  repair loop pass {n} ({'model' if with_model else 'no model'}): "
+                                    f"{rescued[0]} of {len(targets)} rescued")
+            if with_model:
+                last_model = rescued[0]
+            else:
+                last_free = rescued[0]
+        if time.time() >= end or not any(r.quarantined for r in records.values()):
+            break
+        if (last_free if not use_model else last_free + last_model) == 0:
+            break                                   # a whole pass rescued nothing: done
+    RUN_CTX["rescued"] = RUN_CTX.get("rescued", 0) + rescued_total
+    log(cfg, show=True, msg=f"  repair loop: {rescued_total} quarantined function(s) rescued")
+    return rescued_total
+
+
 def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
     write_intrinsics(cfg)            # --from fix skips the split: bring the helpers up to date
     restore_missing_files(cfg, records)
@@ -13173,6 +13582,7 @@ def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
         if model_check(cfg):
             idea_round(cfg, records, cache, new_run=True)
             save_cache(cfg, cache)
+        repair_loop(cfg, records, cache)
         save_manifest(cfg, records)
         log(cfg, show=True, msg="  nothing to fix")
         return
@@ -13189,6 +13599,7 @@ def build_fix(cfg: Config, records: dict[str, FuncRecord]) -> None:
     log(cfg, "  » dependency order + fixer loop")
     order = build_dep_order(cfg, records)
     fixer_loop(cfg, records, order)
+    repair_loop(cfg, records, load_cache(cfg))
     save_manifest(cfg, records)
 
 
@@ -13449,7 +13860,7 @@ def make_build_config(P: Paths, args, client: ModelClient, cxx: str) -> Config:
         callgraph_path=args.callgraph or (P.callgraph if P.callgraph.exists() else None),
         force=args.force, stub_all=args.stub_all, export_path=P.export,
         index_path=P.index, no_pseudo=args.no_pseudo, recover_later=args.recover_later,
-        no_ideas=getattr(args, "no_ideas", False),
+        no_ideas=getattr(args, "no_ideas", False), repair_minutes=getattr(args, "repair_minutes", 30),
         retry_quarantined=args.retry_quarantined,
         model_ctx_chars=args.model_ctx_chars or recovery_chars(args.ctx),
         workers=args.workers, model_timeout_s=1800, ctx=args.ctx)
@@ -14767,6 +15178,10 @@ def build_parser() -> argparse.ArgumentParser:
                    help="at link time, stub EVERY undefined symbol that has a prototype")
     g.add_argument("--no-pseudo", action="store_true",
                    help="skip rebuilding quarantined functions from pseudocode")
+    g.add_argument("--repair-minutes", type=int, default=30,
+                   help="after the fix stage, passes over everything quarantined (fixes that need no "
+                        "model, then the model) until one rescues nothing, for at most this many "
+                        "minutes (0: off)")
     g.add_argument("--no-ideas", action="store_true",
                    help="no idea loop: by default, when many functions share a kind of error, "
                         "the model proposes general fixes, which are tested on copies and "
