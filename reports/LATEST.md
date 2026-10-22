@@ -1,4 +1,4 @@
-# Diagnostics — fastpass 3 — 2026-10-22 01:17:08
+# Diagnostics — fastpass 3 — 2026-10-22 09:57:05
 
 
 ## Run
@@ -10,9 +10,9 @@ python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
 compile flags: -Wno-c++11-narrowing
 --ctx 8192, chars per token 2.06
-model: qwen2.5-coder-3b-instruct-mlx
+model: ?
 model requests turned down this run: 0, thinking-only answers: 0
-fix stage model edits: {'calls': 792, 'no_answer': 21, 'rejected': 0}
+fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 ```
 
 ## What the script struggled with
@@ -23,165 +23,112 @@ fix stage model edits: {'calls': 792, 'no_answer': 21, 'rejected': 0}
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-  10-21 20:52                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                     -                  -
   10-21 21:47                95.9                1.0                933                394               25.6                589                  -                  -                  -                  -                     -                  -
   10-22 00:06                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
   10-22 00:07                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
   10-22 01:17                98.7                1.3                  0                399                4.0                441                  -                144               52.5                  -                  0/24                  -
+  10-22 09:57                98.7                1.3                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
 couldn't handle:
   fix         194 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_0000365c, FUN_00003a04, FUN_00005eb0   [also in the last 5 run(s)]
   fix          38 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_0000cbac, FUN_0009d600, FUN_000c99b8   [also in the last 5 run(s)]
   fix          33 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_000a35a4, FUN_000cd198, FUN_00124c90   [also in the last 5 run(s)]
   fix          31 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_000532f4, FUN_00053364, FUN_000b091c   [also in the last 5 run(s)]
-  fix          11 × quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')   e.g. FUN_0002e28c, FUN_000461e4, FUN_0004ab0c   [also in the last 3 run(s)]
+  fix          11 × quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')   e.g. FUN_0002e28c, FUN_000461e4, FUN_0004ab0c   [also in the last 4 run(s)]
   fix           8 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00212fd0, FUN_002135c0, FUN_00213964   [also in the last 5 run(s)]
   fix           8 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_0007ebe0, FUN_001b0ad0, FUN_0027eb88   [also in the last 5 run(s)]
-  fix           7 × quarantined: passing 'X' to parameter of incompatible type 'X'   e.g. FUN_0001b2dc, FUN_000349a0, FUN_000500b8   [also in the last 3 run(s)]
-  fix           4 × quarantined: operand of type 'X' cannot be cast to a pointer type   e.g. FUN_0004b344, FUN_0026e104, FUN_002fb9a8   [also in the last 3 run(s)]
-  fix           4 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0011bcf4, FUN_0011d17c, FUN_0014cf68   [also in the last 2 run(s)]
-  fix           4 × quarantined: array type 'X' is not assignable   e.g. FUN_000ac208, FUN_0029eef4, FUN_00379ad0   [also in the last 2 run(s)]
-  fix           3 × quarantined: variable has incomplete type 'X'   e.g. FUN_002088cc, func_385e88, func_385ec4   [also in the last 2 run(s)]
+  fix           7 × quarantined: passing 'X' to parameter of incompatible type 'X'   e.g. FUN_0001b2dc, FUN_000349a0, FUN_000500b8   [also in the last 4 run(s)]
+  fix           4 × quarantined: operand of type 'X' cannot be cast to a pointer type   e.g. FUN_0004b344, FUN_0026e104, FUN_002fb9a8   [also in the last 4 run(s)]
+  fix           4 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0011bcf4, FUN_0011d17c, FUN_0014cf68   [also in the last 3 run(s)]
+  fix           4 × quarantined: array type 'X' is not assignable   e.g. FUN_000ac208, FUN_0029eef4, FUN_00379ad0   [also in the last 3 run(s)]
+  fix           3 × quarantined: variable has incomplete type 'X'   e.g. FUN_002088cc, func_385e88, func_385ec4   [also in the last 3 run(s)]
   fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize, setContentSize_5ff4c, initWithContentRect_styleMask_backing_defer_168d74   [also in the last 5 run(s)]
-  fix           3 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. close_169730, createLayerTextureWithSize_16cb94, setMarkedText_selectedRange   [also in the last 2 run(s)]
-  fix           3 × quarantined: duplicate case value 'X'   e.g. FUN_0025d944, FUN_0025fa3c, FUN_0025fe64
-  fix           2 × quarantined: too few arguments to function call, single argument 'X' was not specified   e.g. FUN_0026d190, FUN_00273b58   [also in the last 2 run(s)]
-  fix           2 × quarantined: too few arguments to function call, expected N, have N   e.g. FUN_000305a8, FUN_0028fb48   [also in the last 2 run(s)]
+  fix           3 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. close_169730, createLayerTextureWithSize_16cb94, setMarkedText_selectedRange   [also in the last 3 run(s)]
+  fix           3 × quarantined: duplicate case value 'X'   e.g. FUN_0025d944, FUN_0025fa3c, FUN_0025fe64   [also in the last 1 run(s)]
+  fix           2 × quarantined: too few arguments to function call, single argument 'X' was not specified   e.g. FUN_0026d190, FUN_00273b58   [also in the last 3 run(s)]
+  fix           2 × quarantined: too few arguments to function call, expected N, have N   e.g. FUN_000305a8, FUN_0028fb48   [also in the last 3 run(s)]
   fix           2 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00267a58, FUN_0027ed14   [also in the last 5 run(s)]
   fix           2 × quarantined: redefinition of 'X' as different kind of symbol   e.g. length_error, out_of_range   [also in the last 5 run(s)]
-  fix           2 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_001b5d5c, FUN_001b6164   [also in the last 2 run(s)]
-  fix           2 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00177824, FUN_00308124
+  fix           2 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_001b5d5c, FUN_001b6164   [also in the last 3 run(s)]
+  fix           2 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00177824, FUN_00308124   [also in the last 1 run(s)]
   fix           2 × quarantined: expected 'X'   e.g. FUN_000feb20, FUN_00295a94   [also in the last 5 run(s)]
-  fix           2 × quarantined: conflicting types for 'X'   e.g. setbuf, objc_msgSend   [also in the last 2 run(s)]
-  fix           2 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_002a22b4, FUN_003828a4   [also in the last 2 run(s)]
+  fix           2 × quarantined: conflicting types for 'X'   e.g. setbuf, objc_msgSend   [also in the last 3 run(s)]
+  fix           2 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_002a22b4, FUN_003828a4   [also in the last 3 run(s)]
   fix           2 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001c49dc, FUN_001c4c28   [also in the last 5 run(s)]
-  fix           1 × quarantined: used type 'X' where arithmetic or pointer type is required   e.g. FUN_0013ec40   [also in the last 2 run(s)]
-  fix           1 × quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00270228   [also in the last 2 run(s)]
-  fix           1 × quarantined: use of undeclared identifier 'X'   e.g. FUN_00383b10
-  fix           1 × quarantined: too many arguments to function call, expected single argument 'X', have N arguments   e.g. FUN_001fa360
-  fix           1 × quarantined: too many arguments provided to function-like macro invocation   e.g. FUN_000a890c   [also in the last 2 run(s)]
-  fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 2 run(s)]
-  fix           1 × quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'   e.g. FUN_002c6934   [also in the last 2 run(s)]
-  fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0024126c
-  fix           1 × quarantined: expected expression   e.g. FUN_00124ab8
-  link          1 × link didn't finish within its rounds
-                    → see build/link_errors.txt
+  fix           1 × quarantined: used type 'X' where arithmetic or pointer type is required   e.g. FUN_0013ec40   [also in the last 3 run(s)]
+  fix           1 × quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00270228   [also in the last 3 run(s)]
+  fix           1 × quarantined: use of undeclared identifier 'X'   e.g. FUN_00383b10   [also in the last 1 run(s)]
+  fix           1 × quarantined: too many arguments to function call, expected single argument 'X', have N arguments   e.g. FUN_001fa360   [also in the last 1 run(s)]
+  fix           1 × quarantined: too many arguments provided to function-like macro invocation   e.g. FUN_000a890c   [also in the last 3 run(s)]
+  fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 3 run(s)]
+  fix           1 × quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'   e.g. FUN_002c6934   [also in the last 3 run(s)]
+  fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0024126c   [also in the last 1 run(s)]
+  fix           1 × quarantined: expected expression   e.g. FUN_00124ab8   [also in the last 1 run(s)]
   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
                     → tried again next run
-  split      1414 × declarations in stubs.cpp that didn't compile (switched off)
-                    → list in stubs_repair_report.txt; functions using them fail in fix
-  split         2 × declarations in shared.h that didn't compile (switched off)
-                    → list in header_repair_report.txt; functions using them fail in fix
-  test          1 × no rebuilt library
-                    → see build/test/test_report.txt
-worked around (cost time, nothing lost):
-  fix         246 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. FUN_001f9ca8, FUN_0012c1e0, FUN_0007ebe0
-  fix         242 × the model repeated an edit that had already failed (skipped)   e.g. FUN_001f9ca8, FUN_0012c1e0, FUN_0011d17c
-  fix         126 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4
-  fix          21 × small edits the model couldn't give a usable answer for
-  split         2 × functions libclang didn't list (var decl), cut out by marker
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[00:09:25] decomp_pipeline 2026-10-22.6: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
-[00:09:25]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[00:09:25] ━━━━ Stage 1/10 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
-[00:09:25]   using the existing ghidra_export.json (Ghidra not needed)
-[00:09:33]   callgraph.json: 22076 functions with internal calls
-[00:09:33]   export: 30489/30489 functions have pseudocode, 205 data types, 30489 signatures
-[00:09:33] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
-[00:09:35]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
-[00:09:35]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
-[00:09:35] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
-[00:10:03]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
-[00:10:06]     data found by its address (not in Ghidra's label list): 461
-[00:11:08]     pieces of variables (v._0_8_): 6357
-[00:11:08]     functions Ghidra said return nothing, whose callers use the result: 2948
-[00:11:08]     16-byte register values (as gh16): 1509
-[00:11:08]     C++/Objective-C names in definitions: 1287
-[00:11:08]     C++ qualified names in code: 191
-[00:11:08]     types C didn't know (declared opaque): 24
-[00:11:08]     types that are also functions (as struct tags): 17
-[00:11:08]     switches on a pointer (on its value): 11
-[00:11:11]     names that are a type and also a function (the type keeps its struct tag): 10
-[00:11:11]   C source from Ghidra's pseudocode: 30176 function(s), 311 library stub(s) called directly, 26 data type(s) with Ghidra's layout, the program's data (34 block(s), 2962 labelled location(s) used, 33319 pointer fix-up(s), 31 placeholder(s) for data outside the export: rewrite/data_placeholders.txt) -> pseudocode.c
-[00:11:11] ━━━━ Stage 4/10 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
-[00:16:27] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
-[01:11:46]   fix: 1641 model request(s); the model was busy 91% of the stage's 55m
-[01:11:46] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
-[01:11:46] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
-[01:17:08] ━━━━ Stage 8/10 · test ━━━━ the rebuilt plugin and the original (--plugin) render the same test signals in a small test host; their outputs are compared sample by sample
-[01:17:08]   test: there's no rebuilt program to test (/Users/user?/glitchdecomp/fastpass 3/build_c/program.dylib is missing): run the link stage first (it builds it)
-[01:17:08]   test: everything it saw is in /Users/admin/glitchdecomp/fastpass 3/build_c/test/test_report.txt
-[01:17:08] ━━━━ Stage 9/10 · improve ━━━━ checks find small problems, worst functions first; each is fixed by a rule or one small planned edit, and kept only if it still compiles and behaves like Ghidra's version
-[01:17:08]   improve: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
-[01:17:08] ━━━━ Stage 10/10 · organize ━━━━ the improved code is arranged into modules and classes, checked for anything identifying, and written to final/ as a project that builds
-[01:17:08]   organize: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
-[01:17:08] ============================================================
-[01:17:08] SUMMARY: 29793/30176 functions compile, 383 quarantined, 2 re-derived, link=INCOMPLETE
-[01:17:08] Report: /Users/admin/glitchdecomp/fastpass 3/REPORT.md
-[01:17:08] 
-[01:17:08] ━━━━ what the script struggled with this run ━━━━
-[01:17:08] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[01:17:08] rates (this run last; earlier runs above it):
-[01:17:08]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-[01:17:08]   10-21 20:52                91.1                4.7               1277                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[01:17:08]   10-21 21:47                95.9                1.0                933                394               25.6                589                  -                  -                  -                  -                     -                  -
-[01:17:08]   10-22 00:06                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[01:17:08]   10-22 00:07                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[01:17:08]   10-22 01:17                98.7                1.3                  0                399                4.0                441                  -                144               52.5                  -                  0/24                  -
-[01:17:08] couldn't handle:
-[01:17:08]   fix         194 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_0000365c, FUN_00003a04, FUN_00005eb0   [also in the last 5 run(s)]
-[01:17:08]   fix          38 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_0000cbac, FUN_0009d600, FUN_000c99b8   [also in the last 5 run(s)]
-[01:17:08]   fix          33 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_000a35a4, FUN_000cd198, FUN_00124c90   [also in the last 5 run(s)]
-[01:17:08]   fix          31 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_000532f4, FUN_00053364, FUN_000b091c   [also in the last 5 run(s)]
-[01:17:08]   fix          11 × quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')   e.g. FUN_0002e28c, FUN_000461e4, FUN_0004ab0c   [also in the last 3 run(s)]
-[01:17:08]   fix           8 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00212fd0, FUN_002135c0, FUN_00213964   [also in the last 5 run(s)]
-[01:17:08]   fix           8 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_0007ebe0, FUN_001b0ad0, FUN_0027eb88   [also in the last 5 run(s)]
-[01:17:08]   fix           7 × quarantined: passing 'X' to parameter of incompatible type 'X'   e.g. FUN_0001b2dc, FUN_000349a0, FUN_000500b8   [also in the last 3 run(s)]
-[01:17:08]   fix           4 × quarantined: operand of type 'X' cannot be cast to a pointer type   e.g. FUN_0004b344, FUN_0026e104, FUN_002fb9a8   [also in the last 3 run(s)]
-[01:17:08]   fix           4 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0011bcf4, FUN_0011d17c, FUN_0014cf68   [also in the last 2 run(s)]
-[01:17:08]   fix           4 × quarantined: array type 'X' is not assignable   e.g. FUN_000ac208, FUN_0029eef4, FUN_00379ad0   [also in the last 2 run(s)]
-[01:17:08]   fix           3 × quarantined: variable has incomplete type 'X'   e.g. FUN_002088cc, func_385e88, func_385ec4   [also in the last 2 run(s)]
-[01:17:08]   fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize, setContentSize_5ff4c, initWithContentRect_styleMask_backing_defer_168d74   [also in the last 5 run(s)]
-[01:17:08]   fix           3 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. close_169730, createLayerTextureWithSize_16cb94, setMarkedText_selectedRange   [also in the last 2 run(s)]
-[01:17:08]   fix           3 × quarantined: duplicate case value 'X'   e.g. FUN_0025d944, FUN_0025fa3c, FUN_0025fe64
-[01:17:08]   fix           2 × quarantined: too few arguments to function call, single argument 'X' was not specified   e.g. FUN_0026d190, FUN_00273b58   [also in the last 2 run(s)]
-[01:17:08]   fix           2 × quarantined: too few arguments to function call, expected N, have N   e.g. FUN_000305a8, FUN_0028fb48   [also in the last 2 run(s)]
-[01:17:08]   fix           2 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00267a58, FUN_0027ed14   [also in the last 5 run(s)]
-[01:17:08]   fix           2 × quarantined: redefinition of 'X' as different kind of symbol   e.g. length_error, out_of_range   [also in the last 5 run(s)]
-[01:17:08]   fix           2 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_001b5d5c, FUN_001b6164   [also in the last 2 run(s)]
-[01:17:08]   fix           2 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00177824, FUN_00308124
-[01:17:08]   fix           2 × quarantined: expected 'X'   e.g. FUN_000feb20, FUN_00295a94   [also in the last 5 run(s)]
-[01:17:08]   fix           2 × quarantined: conflicting types for 'X'   e.g. setbuf, objc_msgSend   [also in the last 2 run(s)]
-[01:17:08]   fix           2 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_002a22b4, FUN_003828a4   [also in the last 2 run(s)]
-[01:17:08]   fix           2 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001c49dc, FUN_001c4c28   [also in the last 5 run(s)]
-[01:17:08]   fix           1 × quarantined: used type 'X' where arithmetic or pointer type is required   e.g. FUN_0013ec40   [also in the last 2 run(s)]
-[01:17:08]   fix           1 × quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00270228   [also in the last 2 run(s)]
-[01:17:08]   fix           1 × quarantined: use of undeclared identifier 'X'   e.g. FUN_00383b10
-[01:17:08]   fix           1 × quarantined: too many arguments to function call, expected single argument 'X', have N arguments   e.g. FUN_001fa360
-[01:17:08]   fix           1 × quarantined: too many arguments provided to function-like macro invocation   e.g. FUN_000a890c   [also in the last 2 run(s)]
-[01:17:08]   fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 2 run(s)]
-[01:17:08]   fix           1 × quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'   e.g. FUN_002c6934   [also in the last 2 run(s)]
-[01:17:08]   fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0024126c
-[01:17:08]   fix           1 × quarantined: expected expression   e.g. FUN_00124ab8
-[01:17:08]   link          1 × link didn't finish within its rounds
-[01:17:08]                     → see build/link_errors.txt
-[01:17:08]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
-[01:17:08]                     → tried again next run
-[01:17:08]   split      1414 × declarations in stubs.cpp that didn't compile (switched off)
-[01:17:08]                     → list in stubs_repair_report.txt; functions using them fail in fix
-[01:17:08]   split         2 × declarations in shared.h that didn't compile (switched off)
-[01:17:08]                     → list in header_repair_report.txt; functions using them fail in fix
-[01:17:08]   test          1 × no rebuilt library
-[01:17:08]                     → see build/test/test_report.txt
-[01:17:08] worked around (cost time, nothing lost):
-[01:17:08]   fix         246 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. FUN_001f9ca8, FUN_0012c1e0, FUN_0007ebe0
-[01:17:08]   fix         242 × the model repeated an edit that had already failed (skipped)   e.g. FUN_001f9ca8, FUN_0012c1e0, FUN_0011d17c
-[01:17:08]   fix         126 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4
-[01:17:08]   fix          21 × small edits the model couldn't give a usable answer for
-[01:17:08]   split         2 × functions libclang didn't list (var decl), cut out by marker
+[09:56:08] decomp_pipeline 2026-10-22.6: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
+[09:56:08]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[09:56:08] ━━━━ Stage 1/10 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
+[09:56:08]   using the existing ghidra_export.json (Ghidra not needed)
+[09:56:15]   callgraph.json: 22076 functions with internal calls
+[09:56:15]   export: 30489/30489 functions have pseudocode, 205 data types, 30489 signatures
+[09:56:15] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
+[09:56:18]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
+[09:56:18]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
+[09:56:18] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
+[09:56:46]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
+[09:56:49]     data found by its address (not in Ghidra's label list): 461
+[09:57:05] 
+[09:57:05] ━━━━ what the script struggled with this run ━━━━
+[09:57:05] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[09:57:05] rates (this run last; earlier runs above it):
+[09:57:05]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
+[09:57:05]   10-21 21:47                95.9                1.0                933                394               25.6                589                  -                  -                  -                  -                     -                  -
+[09:57:05]   10-22 00:06                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[09:57:05]   10-22 00:07                98.4                1.6                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[09:57:05]   10-22 01:17                98.7                1.3                  0                399                4.0                441                  -                144               52.5                  -                  0/24                  -
+[09:57:05]   10-22 09:57                98.7                1.3                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[09:57:05] couldn't handle:
+[09:57:05]   fix         194 × quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'   e.g. FUN_0000365c, FUN_00003a04, FUN_00005eb0   [also in the last 5 run(s)]
+[09:57:05]   fix          38 × quarantined: operand of type 'X' where arithmetic or pointer type is required   e.g. FUN_0000cbac, FUN_0009d600, FUN_000c99b8   [also in the last 5 run(s)]
+[09:57:05]   fix          33 × quarantined: member reference base type 'X' (aka 'X') is not a structure or union   e.g. FUN_000a35a4, FUN_000cd198, FUN_00124c90   [also in the last 5 run(s)]
+[09:57:05]   fix          31 × quarantined: array type 'X' (aka 'X') is not assignable   e.g. FUN_000532f4, FUN_00053364, FUN_000b091c   [also in the last 5 run(s)]
+[09:57:05]   fix          11 × quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')   e.g. FUN_0002e28c, FUN_000461e4, FUN_0004ab0c   [also in the last 4 run(s)]
+[09:57:05]   fix           8 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_00212fd0, FUN_002135c0, FUN_00213964   [also in the last 5 run(s)]
+[09:57:05]   fix           8 × quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)   e.g. FUN_0007ebe0, FUN_001b0ad0, FUN_0027eb88   [also in the last 5 run(s)]
+[09:57:05]   fix           7 × quarantined: passing 'X' to parameter of incompatible type 'X'   e.g. FUN_0001b2dc, FUN_000349a0, FUN_000500b8   [also in the last 4 run(s)]
+[09:57:05]   fix           4 × quarantined: operand of type 'X' cannot be cast to a pointer type   e.g. FUN_0004b344, FUN_0026e104, FUN_002fb9a8   [also in the last 4 run(s)]
+[09:57:05]   fix           4 × quarantined: invalid operands to binary expression ('X' and 'X')   e.g. FUN_0011bcf4, FUN_0011d17c, FUN_0014cf68   [also in the last 3 run(s)]
+[09:57:05]   fix           4 × quarantined: array type 'X' is not assignable   e.g. FUN_000ac208, FUN_0029eef4, FUN_00379ad0   [also in the last 3 run(s)]
+[09:57:05]   fix           3 × quarantined: variable has incomplete type 'X'   e.g. FUN_002088cc, func_385e88, func_385ec4   [also in the last 3 run(s)]
+[09:57:05]   fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize, setContentSize_5ff4c, initWithContentRect_styleMask_backing_defer_168d74   [also in the last 5 run(s)]
+[09:57:05]   fix           3 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. close_169730, createLayerTextureWithSize_16cb94, setMarkedText_selectedRange   [also in the last 3 run(s)]
+[09:57:05]   fix           3 × quarantined: duplicate case value 'X'   e.g. FUN_0025d944, FUN_0025fa3c, FUN_0025fe64   [also in the last 1 run(s)]
+[09:57:05]   fix           2 × quarantined: too few arguments to function call, single argument 'X' was not specified   e.g. FUN_0026d190, FUN_00273b58   [also in the last 3 run(s)]
+[09:57:05]   fix           2 × quarantined: too few arguments to function call, expected N, have N   e.g. FUN_000305a8, FUN_0028fb48   [also in the last 3 run(s)]
+[09:57:05]   fix           2 × quarantined: subscripted value is not an array, pointer, or vector   e.g. FUN_00267a58, FUN_0027ed14   [also in the last 5 run(s)]
+[09:57:05]   fix           2 × quarantined: redefinition of 'X' as different kind of symbol   e.g. length_error, out_of_range   [also in the last 5 run(s)]
+[09:57:05]   fix           2 × quarantined: pointer cannot be cast to type 'X'   e.g. FUN_001b5d5c, FUN_001b6164   [also in the last 3 run(s)]
+[09:57:05]   fix           2 × quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00177824, FUN_00308124   [also in the last 1 run(s)]
+[09:57:05]   fix           2 × quarantined: expected 'X'   e.g. FUN_000feb20, FUN_00295a94   [also in the last 5 run(s)]
+[09:57:05]   fix           2 × quarantined: conflicting types for 'X'   e.g. setbuf, objc_msgSend   [also in the last 3 run(s)]
+[09:57:05]   fix           2 × quarantined: called object type 'X' is not a function or function pointer   e.g. FUN_002a22b4, FUN_003828a4   [also in the last 3 run(s)]
+[09:57:05]   fix           2 × quarantined: assigning to 'X' from incompatible type 'X'   e.g. FUN_001c49dc, FUN_001c4c28   [also in the last 5 run(s)]
+[09:57:05]   fix           1 × quarantined: used type 'X' where arithmetic or pointer type is required   e.g. FUN_0013ec40   [also in the last 3 run(s)]
+[09:57:05]   fix           1 × quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required   e.g. FUN_00270228   [also in the last 3 run(s)]
+[09:57:05]   fix           1 × quarantined: use of undeclared identifier 'X'   e.g. FUN_00383b10   [also in the last 1 run(s)]
+[09:57:05]   fix           1 × quarantined: too many arguments to function call, expected single argument 'X', have N arguments   e.g. FUN_001fa360   [also in the last 1 run(s)]
+[09:57:05]   fix           1 × quarantined: too many arguments provided to function-like macro invocation   e.g. FUN_000a890c   [also in the last 3 run(s)]
+[09:57:05]   fix           1 × quarantined: subscript of pointer to function type 'X'   e.g. FUN_00086a44   [also in the last 3 run(s)]
+[09:57:05]   fix           1 × quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'   e.g. FUN_002c6934   [also in the last 3 run(s)]
+[09:57:05]   fix           1 × quarantined: extraneous 'X' before 'X'   e.g. FUN_0024126c   [also in the last 1 run(s)]
+[09:57:05]   fix           1 × quarantined: expected expression   e.g. FUN_00124ab8   [also in the last 1 run(s)]
+[09:57:05]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
+[09:57:05]                     → tried again next run
 ```
 
 ## Build status
@@ -43494,935 +43441,7 @@ PTR_operator: no address in its name
 ## Build log of this run (build/worklist.log)
 
 ```
-[00:11:11] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/pseudocode.c
-[00:11:12] Resume check (30176 functions in manifest):
-[00:11:12]   the rewrite changed since the last build — updating the split (functions whose code changed get the new code; the others keep their fixes)
-[00:11:12]   [redo] split + header: input changed — rebuilding shared.h/globals.cpp and merging with the work already done
-[00:11:12]   libclang reported 13 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
-[00:11:12]     _parse_monolith.cpp:85: cannot combine with previous 'type-name' declaration specifier
-[00:11:12]     _parse_monolith.cpp:199: static assertion failed due to requirement 'sizeof(struct section) == 80': Ghidra's size of section
-[00:11:12]     _parse_monolith.cpp:632926: variable has incomplete type 'void'
-[00:11:12]     _parse_monolith.cpp:632926: expected ')'
-[00:11:12]     _parse_monolith.cpp:632928: expected '}'
-[00:11:20]   2 function(s) libclang didn't list were cut out by their marker instead (2 var decl); the fixer will make them compile
-[00:11:20]   split -> 30176 function TUs, 67 types (+34 forward decls), 30172 prototypes, 0 globals
-[00:11:20]   0 struct field(s) with unknown types left as comments; skipped 2 globals, 2 prototypes — details in split_report.txt
-[00:11:34]     functions: 336 changed in the rewrite (new code taken), 184 already fixed by the model (kept), 29202 untouched (refreshed with the new split), 454 previously quarantined (restored for another try), 0 not in the old run
-[00:11:34]     (the replaced versions are in /Users/admin/glitchdecomp/fastpass 3/snapshots/20261022-001122-build-update)
-[00:11:34]   [redo] header check
-[00:11:34]   » validate/repair shared headers
-[00:11:35]   shared.h: repaired — disabled 2 declaration(s), dropped 0 struct field(s) (list in header_repair_report.txt)
-[00:11:35]   [redo] compile status
-[00:11:35]   » preflight diagnose (surface any systemic cause before spending model time on 30176 functions)
-[00:11:36]   preflight: sampled TUs compile — proceeding
-[00:11:36]   » isolated compile sweep
-[00:11:37]   compiling with 11 parallel worker(s)
-[00:16:27]   isolated compile: 29706/30176 TUs pass, 470 need repair (290s)
-[00:16:27]   status: 29706 compile, 470 still to fix, 0 quarantined
-[00:19:39]   declared 126 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 71 function(s) that use them again
-[00:19:40]   compiling with 11 parallel worker(s)
-[00:19:41]   isolated compile: 39/71 TUs pass, 32 need repair (1s)
-[00:19:41]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[00:19:41]   » dependency order + fixer loop
-[00:19:41]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
-[00:19:41]   callgraph: 579 callee name(s) not in our TU set (external/library calls) — ignored for ordering
-[00:19:41]   callgraph: exact deps for 21707/30176 functions
-[00:19:42]     FUN_001f9dec -> fixed without the model
-[00:19:42]     FUN_001718c0 -> fixed without the model
-[00:19:42]     FUN_00171a30 -> fixed without the model
-[00:19:42]     FUN_001736b4 -> fixed without the model
-[00:19:43]     FUN_00171cc8 -> fixed without the model
-[00:19:43]     FUN_001f3cd0 -> fixed without the model
-[00:19:43]     FUN_0005db14 -> fixed without the model
-[00:19:43]     FUN_001a2588 -> fixed without the model
-[00:19:43]     FUN_0020d83c -> fixed without the model
-[00:19:45]     FUN_00173144 -> fixed without the model
-[00:19:46]     FUN_00168374 -> fixed without the model
-[00:19:46]     FUN_00168600 -> fixed without the model
-[00:19:46]     dealloc_169244 -> fixed without the model
-[00:19:46]     keyEquivalentFromMenuEntry_16b3b0 -> fixed without the model
-[00:19:46]     buildMenuGroupEntries_entry_16bb04 -> fixed without the model
-[00:19:46]     buildMenu -> fixed without the model
-[00:19:46]     validAttributesForMarkedText -> fixed without the model
-[00:19:46]     FUN_001703c8 -> fixed without the model
-[00:19:46]     setContentSize_1a8844 -> fixed without the model
-[00:19:46]     invalidate_1a8a74 -> fixed without the model
-[00:19:47]     updateLayerInRect_16ce54 -> fixed without the model
-[00:19:47]     FUN_001728ac -> fixed without the model
-[00:19:47]     FUN_001ebd10 -> fixed without the model
-[00:19:47]     FUN_001725c4 -> fixed without the model
-[00:19:47]     drawRect_16d1bc -> fixed without the model
-[00:19:47]     FUN_002ccef8 -> fixed without the model
-[00:19:48]     FUN_002d4c34 -> fixed without the model
-[00:19:48]     FUN_002d5934 -> fixed without the model
-[00:19:48]     FUN_002d5a24 -> fixed without the model
-[00:19:48]     FUN_002d4d24 -> fixed without the model
-[00:19:48]     FUN_001a54e0 -> fixed without the model
-[00:19:48]     FUN_0027e2bc -> fixed without the model
-[00:19:49]   quick fixes (no model): 32 of 431 function(s) compile now
-[00:19:49]   ideas (before the one-by-one fixes): 7 kind(s) of error that 8 or more functions share get ideas from the model
-[00:19:54]   (precompiled header failed to build — compiling without it, slower)
-[00:19:54]   (precompiled header failed to build — compiling without it, slower)
-[00:19:55]   (precompiled header failed to build — compiling without it, slower)
-[00:19:55]   (precompiled header failed to build — compiling without it, slower)
-[00:19:56]   (precompiled header failed to build — compiling without it, slower)
-[00:19:56]   (precompiled header failed to build — compiling without it, slower)
-[00:19:56]   (precompiled header failed to build — compiling without it, slower)
-[00:19:57]   (precompiled header failed to build — compiling without it, slower)
-[00:19:57]   (precompiled header failed to build — compiling without it, slower)
-[00:19:58]   (precompiled header failed to build — compiling without it, slower)
-[00:19:58]   (precompiled header failed to build — compiling without it, slower)
-[00:19:59]   (precompiled header failed to build — compiling without it, slower)
-[00:19:59]   (precompiled header failed to build — compiling without it, slower)
-[00:19:59]   (precompiled header failed to build — compiling without it, slower)
-[00:20:00]   (precompiled header failed to build — compiling without it, slower)
-[00:20:00]   (precompiled header failed to build — compiling without it, slower)
-[00:20:01]   (precompiled header failed to build — compiling without it, slower)
-[00:20:01]   (precompiled header failed to build — compiling without it, slower)
-[00:20:02]   (precompiled header failed to build — compiling without it, slower)
-[00:20:02]   (precompiled header failed to build — compiling without it, slower)
-[00:20:02]   (precompiled header failed to build — compiling without it, slower)
-[00:20:03]   (precompiled header failed to build — compiling without it, slower)
-[00:21:49]   ideas: 28 asked, 11 tested, 0 adopted, 6 repeats caught, 0 function(s) compile now. All in build/ideas.txt
-[00:21:49]   fixer loop over 399 failing TU(s), dependency-ordered
-[00:22:54]   QUARANTINE FUN_001f9e9c: redefinition of 'auVar3'
-[00:22:54]     [4/399] FUN_001f9e9c -> quarantined (1m)
-[00:23:06]   QUARANTINE FUN_001f9ca8: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-[00:23:06]     [3/399] FUN_001f9ca8 -> quarantined (1m)
-[00:23:08]   QUARANTINE FUN_0012c1e0: returning 'gh16' from a function with incompatible result type 'uint64_t' (aka 'unsigned long long')
-[00:23:08]     [7/399] FUN_0012c1e0 -> quarantined (1m)
-[00:23:10]   QUARANTINE FUN_0011c60c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:23:10]     [11/399] FUN_0011c60c -> quarantined (1m)
-[00:23:12]   QUARANTINE FUN_0011c4f8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:23:12]     [12/399] FUN_0011c4f8 -> quarantined (1m)
-[00:23:13]   QUARANTINE FUN_0007ebe0: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[00:23:13]     [9/399] FUN_0007ebe0 -> quarantined (1m)
-[00:23:14]   QUARANTINE FUN_0011d17c: invalid operands to binary expression ('gh16' and 'int')
-[00:23:14]     [10/399] FUN_0011d17c -> quarantined (1m)
-[00:23:15]   QUARANTINE FUN_0022d63c: operand of type 'gh16' where arithmetic or pointer type is required
-[00:23:15]     [8/399] FUN_0022d63c -> quarantined (1m)
-[00:23:19]   QUARANTINE FUN_00213f0c: too many arguments to function call, expected 3, have 8
-[00:23:19]     [6/399] FUN_00213f0c -> quarantined (1m)
-[00:23:22]   QUARANTINE FUN_002135c0: expected expression
-[00:23:22]     [5/399] FUN_002135c0 -> quarantined (1m)
-[00:23:24]   QUARANTINE FUN_00213964: expected expression
-[00:23:24]     [1/399] FUN_00213964 -> quarantined (1m)
-[00:23:26]   QUARANTINE FUN_00212fd0: passing 'uint64_t' (aka 'unsigned long long') to parameter of incompatible type 'CFRange'
-[00:23:26]     [2/399] FUN_00212fd0 -> quarantined (1m)
-[00:24:21]   QUARANTINE FUN_000effac: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:24:21]     [13/399] FUN_000effac -> quarantined (1m)
-[00:24:32]   QUARANTINE FUN_000da62c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:24:32]     [14/399] FUN_000da62c -> quarantined (1m)
-[00:24:34]   QUARANTINE FUN_000e3eb4: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:24:34]     [15/399] FUN_000e3eb4 -> quarantined (1m)
-[00:24:36]   QUARANTINE FUN_00253668: operand of type 'gh16' where arithmetic or pointer type is required
-[00:24:36]     [16/399] FUN_00253668 -> quarantined (1m)
-[00:24:37]   QUARANTINE FUN_00244cc4: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[00:24:37]     [17/399] FUN_00244cc4 -> quarantined (1m)
-[00:24:38]   QUARANTINE FUN_0024327c: member reference base type 'long' is not a structure or union
-[00:24:38]     [18/399] FUN_0024327c -> quarantined (1m)
-[00:24:40]   QUARANTINE FUN_0023f740: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[00:24:40]     [19/399] FUN_0023f740 -> quarantined (1m)
-[00:24:42]     [20/399] FUN_002443ec -> fixed (1m)
-[00:24:45]   QUARANTINE FUN_0024126c: extraneous ')' before ';'
-[00:24:45]     [21/399] FUN_0024126c -> quarantined (1m)
-[00:24:48]   QUARANTINE FUN_00213b7c: passing 'uint64_t' (aka 'unsigned long long') to parameter of incompatible type 'CFRange'
-[00:24:48]     [22/399] FUN_00213b7c -> quarantined (1m)
-[00:24:50]   QUARANTINE FUN_0020f81c: operand of type 'gh16' where arithmetic or pointer type is required
-[00:24:50]     [23/399] FUN_0020f81c -> quarantined (1m)
-[00:24:51]   QUARANTINE FUN_0020f85c: returning 'gh16' from a function with incompatible result type 'uint64_t' (aka 'unsigned long long')
-[00:24:51]     [24/399] FUN_0020f85c -> quarantined (1m)
-[00:25:54]   QUARANTINE FUN_001a46e0: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:25:54]     [25/399] FUN_001a46e0 -> quarantined (1m)
-[00:26:03]   QUARANTINE FUN_001bdb68: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:26:03]     [26/399] FUN_001bdb68 -> quarantined (1m)
-[00:26:05]   QUARANTINE FUN_001bc954: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:26:05]     [27/399] FUN_001bc954 -> quarantined (1m)
-[00:26:07]   QUARANTINE FUN_001bcaec: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:26:07]     [28/399] FUN_001bcaec -> quarantined (1m)
-[00:26:09]   QUARANTINE FUN_001a40b8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:26:09]     [29/399] FUN_001a40b8 -> quarantined (1m)
-[00:26:11]   QUARANTINE FUN_001bd9e8: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:26:11]     [30/399] FUN_001bd9e8 -> quarantined (1m)
-[00:26:13]   QUARANTINE FUN_00125678: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:26:13]     [31/399] FUN_00125678 -> quarantined (1m)
-[00:26:15]   QUARANTINE FUN_001bcc84: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:26:15]     [32/399] FUN_001bcc84 -> quarantined (1m)
-[00:26:19]   QUARANTINE FUN_0000365c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:26:19]     [33/399] FUN_0000365c -> quarantined (1m)
-[00:26:21]   QUARANTINE FUN_00121fb4: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:26:21]     [34/399] FUN_00121fb4 -> quarantined (1m)
-[00:26:23]   QUARANTINE FUN_000bca84: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:26:23]     [35/399] FUN_000bca84 -> quarantined (1m)
-[00:26:24]   QUARANTINE FUN_0013ec40: assigning to 'struct streambuf' from incompatible type 'uint64_t' (aka 'unsigned long long')
-[00:26:24]     [36/399] FUN_0013ec40 -> quarantined (1m)
-[00:27:23]   QUARANTINE FUN_00141bc0: operand of type 'gh16' where arithmetic or pointer type is required
-[00:27:23]     [37/399] FUN_00141bc0 -> quarantined (1m)
-[00:27:32]   QUARANTINE FUN_00141b28: operand of type 'gh16' where arithmetic or pointer type is required
-[00:27:32]     [38/399] FUN_00141b28 -> quarantined (1m)
-[00:27:34]   QUARANTINE FUN_00141b84: operand of type 'gh16' where arithmetic or pointer type is required
-[00:27:34]     [39/399] FUN_00141b84 -> quarantined (1m)
-[00:27:36]   QUARANTINE FUN_001417e4: operand of type 'gh16' where arithmetic or pointer type is required
-[00:27:36]     [40/399] FUN_001417e4 -> quarantined (1m)
-[00:27:37]   QUARANTINE FUN_0014cf68: invalid operands to binary expression ('gh16' and 'int')
-[00:27:37]     [41/399] FUN_0014cf68 -> quarantined (1m)
-[00:27:39]   QUARANTINE FUN_0014cf04: returning 'gh16' from a function with incompatible result type 'uint64_t' (aka 'unsigned long long')
-[00:27:39]     [42/399] FUN_0014cf04 -> quarantined (1m)
-[00:27:40]   QUARANTINE FUN_002239f8: operand of type 'gh16' where arithmetic or pointer type is required
-[00:27:40]     [43/399] FUN_002239f8 -> quarantined (1m)
-[00:27:42]   QUARANTINE FUN_00223a38: operand of type 'gh16' where arithmetic or pointer type is required
-[00:27:42]     [44/399] FUN_00223a38 -> quarantined (1m)
-[00:27:46]   QUARANTINE FUN_0013cf80: operand of type 'struct streambuf' where arithmetic or pointer type is required
-[00:27:46]     [45/399] FUN_0013cf80 -> quarantined (1m)
-[00:27:48]   QUARANTINE FUN_001a7fe8: operand of type 'gh16' where arithmetic or pointer type is required
-[00:27:48]     [46/399] FUN_001a7fe8 -> quarantined (1m)
-[00:27:49]   QUARANTINE FUN_001a7f30: operand of type 'gh16' where arithmetic or pointer type is required
-[00:27:49]     [47/399] FUN_001a7f30 -> quarantined (1m)
-[00:27:51]   QUARANTINE FUN_001a7f8c: operand of type 'gh16' where arithmetic or pointer type is required
-[00:27:51]     [48/399] FUN_001a7f8c -> quarantined (1m)
-[00:28:52]   QUARANTINE FUN_001a7c28: operand of type 'gh16' where arithmetic or pointer type is required
-[00:28:52]     [49/399] FUN_001a7c28 -> quarantined (1m)
-[00:29:03]   QUARANTINE FUN_001c0a84: operand of type 'gh16' where arithmetic or pointer type is required
-[00:29:03]     [50/399] FUN_001c0a84 -> quarantined (1m)
-[00:29:04]   QUARANTINE FUN_001c09cc: operand of type 'gh16' where arithmetic or pointer type is required
-[00:29:04]     [51/399] FUN_001c09cc -> quarantined (1m)
-[00:29:06]   QUARANTINE FUN_001c0a28: operand of type 'gh16' where arithmetic or pointer type is required
-[00:29:06]     [52/399] FUN_001c0a28 -> quarantined (1m)
-[00:29:07]   QUARANTINE FUN_001c06c4: expected expression
-[00:29:07]     [53/399] FUN_001c06c4 -> quarantined (1m)
-[00:29:09]   QUARANTINE FUN_001201fc: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:29:09]     [54/399] FUN_001201fc -> quarantined (1m)
-[00:29:11]   QUARANTINE FUN_000bd18c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:29:11]     [55/399] FUN_000bd18c -> quarantined (1m)
-[00:29:13]   QUARANTINE FUN_000be780: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:29:13]     [56/399] FUN_000be780 -> quarantined (1m)
-[00:29:17]   QUARANTINE FUN_00173590: operand of type 'gh16' where arithmetic or pointer type is required
-[00:29:17]     [57/399] FUN_00173590 -> quarantined (1m)
-[00:29:19]   QUARANTINE FUN_001a374c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:29:19]     [58/399] FUN_001a374c -> quarantined (1m)
-[00:29:21]   QUARANTINE FUN_001a3a5c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:29:21]     [59/399] FUN_001a3a5c -> quarantined (1m)
-[00:29:23]   QUARANTINE FUN_001a41f8: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:29:23]     [60/399] FUN_001a41f8 -> quarantined (1m)
-[00:30:32]   QUARANTINE FUN_001be3c0: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:30:32]     [61/399] FUN_001be3c0 -> quarantined (1m)
-[00:30:42]   QUARANTINE FUN_00003a04: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:30:42]     [62/399] FUN_00003a04 -> quarantined (1m)
-[00:30:45]   QUARANTINE FUN_00005eb0: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:30:45]     [63/399] FUN_00005eb0 -> quarantined (1m)
-[00:30:46]   QUARANTINE FUN_000b186c: redefinition of 'auVar4'
-[00:30:46]     [64/399] FUN_000b186c -> quarantined (1m)
-[00:30:48]   QUARANTINE FUN_00059c94: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:30:48]     [65/399] FUN_00059c94 -> quarantined (1m)
-[00:30:50]   QUARANTINE FUN_00059f20: expected expression
-[00:30:50]     [66/399] FUN_00059f20 -> quarantined (1m)
-[00:30:53]   QUARANTINE FUN_00023e68: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:30:53]     [67/399] FUN_00023e68 -> quarantined (1m)
-[00:30:55]   QUARANTINE FUN_000e9d54: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:30:55]     [68/399] FUN_000e9d54 -> quarantined (1m)
-[00:30:59]   QUARANTINE FUN_000ea5e0: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:30:59]     [69/399] FUN_000ea5e0 -> quarantined (1m)
-[00:31:01]   QUARANTINE FUN_00038d84: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:31:01]     [70/399] FUN_00038d84 -> quarantined (1m)
-[00:31:03]   QUARANTINE FUN_00039440: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:31:03]     [71/399] FUN_00039440 -> quarantined (1m)
-[00:31:04]   QUARANTINE FUN_0003988c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:31:04]     [72/399] FUN_0003988c -> quarantined (1m)
-[00:32:03]   QUARANTINE FUN_00039d04: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:32:03]     [73/399] FUN_00039d04 -> quarantined (1m)
-[00:32:11]   QUARANTINE FUN_0004b344: operand of type 'double' cannot be cast to a pointer type
-[00:32:11]     [74/399] FUN_0004b344 -> quarantined (1m)
-[00:32:13]   QUARANTINE FUN_0004b068: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:32:13]     [75/399] FUN_0004b068 -> quarantined (1m)
-[00:32:15]   QUARANTINE FUN_0004e544: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:32:15]     [76/399] FUN_0004e544 -> quarantined (1m)
-[00:32:17]   QUARANTINE FUN_0004b6a8: expected expression
-[00:32:17]     [77/399] FUN_0004b6a8 -> quarantined (1m)
-[00:32:19]   QUARANTINE FUN_000319ac: expected expression
-[00:32:19]     [78/399] FUN_000319ac -> quarantined (1m)
-[00:32:21]   QUARANTINE FUN_000076a4: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:32:21]     [79/399] FUN_000076a4 -> quarantined (1m)
-[00:32:23]   QUARANTINE FUN_00211b84: returning 'gh16' from a function with incompatible result type 'uint64_t' (aka 'unsigned long long')
-[00:32:23]     [80/399] FUN_00211b84 -> quarantined (1m)
-[00:32:26]   QUARANTINE FUN_00211acc: operand of type 'gh16' where arithmetic or pointer type is required
-[00:32:26]     [81/399] FUN_00211acc -> quarantined (1m)
-[00:32:28]   QUARANTINE FUN_00211b28: operand of type 'gh16' where arithmetic or pointer type is required
-[00:32:28]     [82/399] FUN_00211b28 -> quarantined (1m)
-[00:32:30]   QUARANTINE FUN_002117c4: operand of type 'gh16' where arithmetic or pointer type is required
-[00:32:30]     [83/399] FUN_002117c4 -> quarantined (1m)
-[00:32:53]   QUARANTINE FUN_002088cc: variable has incomplete type 'struct mach_port_t'
-[00:32:53]     [84/399] FUN_002088cc -> quarantined (1m)
-[00:33:29]   QUARANTINE FUN_0021934c: operand of type 'gh16' where arithmetic or pointer type is required
-[00:33:29]     [85/399] FUN_0021934c -> quarantined (1m)
-[00:33:39]   QUARANTINE FUN_00219294: returning 'gh16' from a function with incompatible result type 'uint64_t' (aka 'unsigned long long')
-[00:33:39]     [86/399] FUN_00219294 -> quarantined (1m)
-[00:33:40]   QUARANTINE FUN_002192f0: returning 'gh16' from a function with incompatible result type 'uint64_t' (aka 'unsigned long long')
-[00:33:40]     [87/399] FUN_002192f0 -> quarantined (1m)
-[00:33:42]   QUARANTINE FUN_00218f68: operand of type 'gh16' where arithmetic or pointer type is required
-[00:33:42]     [88/399] FUN_00218f68 -> quarantined (1m)
-[00:33:43]   QUARANTINE FUN_00267a58: subscripted value is not an array, pointer, or vector
-[00:33:43]     [89/399] FUN_00267a58 -> quarantined (1m)
-[00:33:44]   QUARANTINE FUN_001f2970: passing 'gh16' to parameter of incompatible type 'double'
-[00:33:44]     [90/399] FUN_001f2970 -> quarantined (1m)
-[00:33:46]   QUARANTINE FUN_0000cbac: operand of type 'gh16' where arithmetic or pointer type is required
-[00:33:46]     [91/399] FUN_0000cbac -> quarantined (1m)
-[00:33:48]   QUARANTINE FUN_00014888: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:33:48]     [92/399] FUN_00014888 -> quarantined (1m)
-[00:33:52]   QUARANTINE FUN_00014a48: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:33:52]     [93/399] FUN_00014a48 -> quarantined (1m)
-[00:33:54]   QUARANTINE FUN_00014ab0: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:33:54]     [94/399] FUN_00014ab0 -> quarantined (1m)
-[00:33:56]   QUARANTINE FUN_0011d550: expected expression
-[00:33:56]     [95/399] FUN_0011d550 -> quarantined (1m)
-[00:34:22]   QUARANTINE FUN_0001b2dc: passing 'gh16' to parameter of incompatible type 'double'
-[00:34:22]     [96/399] FUN_0001b2dc -> quarantined (1m)
-[00:35:06]   QUARANTINE FUN_0002779c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:35:06]     [97/399] FUN_0002779c -> quarantined (1m)
-[00:35:17]   QUARANTINE FUN_0002806c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:35:17]     [98/399] FUN_0002806c -> quarantined (1m)
-[00:35:19]   QUARANTINE FUN_00028388: too few arguments to function call, expected 7, have 5
-[00:35:19]     [99/399] FUN_00028388 -> quarantined (1m)
-[00:35:21]   QUARANTINE FUN_0002afcc: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:35:21]     [100/399] FUN_0002afcc -> quarantined (1m)
-[00:35:23]   QUARANTINE FUN_0002b04c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:35:23]     [101/399] FUN_0002b04c -> quarantined (1m)
-[00:35:25]   QUARANTINE FUN_00113540: expected expression
-[00:35:25]     [102/399] FUN_00113540 -> quarantined (1m)
-[00:35:27]   QUARANTINE FUN_00114908: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:35:27]     [103/399] FUN_00114908 -> quarantined (1m)
-[00:35:29]   QUARANTINE FUN_00113bd0: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:35:29]     [104/399] FUN_00113bd0 -> quarantined (1m)
-[00:35:33]   QUARANTINE FUN_0002b684: expected expression
-[00:35:33]     [105/399] FUN_0002b684 -> quarantined (1m)
-[00:35:34]   QUARANTINE FUN_0002bae0: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:35:34]     [106/399] FUN_0002bae0 -> quarantined (1m)
-[00:35:36]   QUARANTINE FUN_0002b250: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:35:36]     [107/399] FUN_0002b250 -> quarantined (1m)
-[00:36:07]   QUARANTINE FUN_0002e28c: passing 'gh16' to parameter of incompatible type 'undefined8' (aka 'unsigned long long')
-[00:36:07]     [108/399] FUN_0002e28c -> quarantined (1m)
-[00:36:50]   QUARANTINE FUN_000305a8: passing 'gh16' to parameter of incompatible type 'double'
-[00:36:50]     [109/399] FUN_000305a8 -> quarantined (1m)
-[00:37:03]   QUARANTINE FUN_00031734: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:37:03]     [110/399] FUN_00031734 -> quarantined (1m)
-[00:37:05]   QUARANTINE FUN_000320c4: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:37:05]     [111/399] FUN_000320c4 -> quarantined (1m)
-[00:37:07]   QUARANTINE FUN_000349a0: passing 'gh16' to parameter of incompatible type 'double'
-[00:37:07]     [112/399] FUN_000349a0 -> quarantined (1m)
-[00:37:09]   QUARANTINE FUN_000391e0: expected expression
-[00:37:09]     [113/399] FUN_000391e0 -> quarantined (1m)
-[00:37:11]   QUARANTINE FUN_000b8f30: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:37:11]     [114/399] FUN_000b8f30 -> quarantined (1m)
-[00:37:13]   QUARANTINE FUN_000b9730: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:37:13]     [115/399] FUN_000b9730 -> quarantined (1m)
-[00:37:15]   QUARANTINE FUN_00113d5c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:37:15]     [116/399] FUN_00113d5c -> quarantined (1m)
-[00:37:19]   QUARANTINE FUN_00114b0c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:37:19]     [117/399] FUN_00114b0c -> quarantined (1m)
-[00:37:21]   QUARANTINE FUN_0003c128: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:37:21]     [118/399] FUN_0003c128 -> quarantined (1m)
-[00:37:23]   QUARANTINE FUN_000461e4: passing 'gh16' to parameter of incompatible type 'undefined8' (aka 'unsigned long long')
-[00:37:23]     [119/399] FUN_000461e4 -> quarantined (1m)
-[00:37:50]   QUARANTINE FUN_0004ab0c: passing 'gh16' to parameter of incompatible type 'undefined8' (aka 'unsigned long long')
-[00:37:50]     [120/399] FUN_0004ab0c -> quarantined (1m)
-[00:38:23]   QUARANTINE FUN_000500b8: no member named '_0_8_' in 'gh16'
-[00:38:23]     [121/399] FUN_000500b8 -> quarantined (1m)
-[00:38:34]   QUARANTINE FUN_000ff0bc: array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable
-[00:38:34]     [122/399] FUN_000ff0bc -> quarantined (1m)
-[00:38:35]   QUARANTINE FUN_000532f4: redefinition of 'auVar3'
-[00:38:35]     [123/399] FUN_000532f4 -> quarantined (1m)
-[00:38:37]   QUARANTINE FUN_00053364: redefinition of 'auVar3'
-[00:38:37]     [124/399] FUN_00053364 -> quarantined (1m)
-[00:38:39]   QUARANTINE FUN_0005af80: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:38:39]     [125/399] FUN_0005af80 -> quarantined (1m)
-[00:38:40]   QUARANTINE FUN_0005c368: passing 'gh16' to parameter of incompatible type 'double'
-[00:38:40]     [126/399] FUN_0005c368 -> quarantined (1m)
-[00:38:42]   QUARANTINE uiViewForAudioUnit_withSize: no member named 'field0_0x0' in 'struct CGRect'
-[00:38:42]     [127/399] uiViewForAudioUnit_withSize -> quarantined (1m)
-[00:38:43]   QUARANTINE setContentSize_5ff4c: no member named 'field1_0x8' in 'struct CGSize'
-[00:38:43]     [128/399] setContentSize_5ff4c -> quarantined (1m)
-[00:38:48]   QUARANTINE FUN_001a8f80: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:38:48]     [129/399] FUN_001a8f80 -> quarantined (1m)
-[00:38:49]   QUARANTINE FUN_001a9378: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:38:49]     [130/399] FUN_001a9378 -> quarantined (1m)
-[00:38:52]   QUARANTINE FUN_001a9970: expected expression
-[00:38:52]     [131/399] FUN_001a9970 -> quarantined (1m)
-[00:39:12]   QUARANTINE closeShellWindow_606b4: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:39:12]     [132/399] closeShellWindow_606b4 -> quarantined (1m)
-[00:39:47]   QUARANTINE FUN_001be084: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:39:47]     [133/399] FUN_001be084 -> quarantined (1m)
-[00:39:57]   QUARANTINE FUN_001bde04: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:39:57]     [134/399] FUN_001bde04 -> quarantined (1m)
-[00:39:58]   QUARANTINE FUN_00124ab8: expected expression
-[00:39:58]     [135/399] FUN_00124ab8 -> quarantined (1m)
-[00:39:59]   QUARANTINE FUN_00124c90: expression is not assignable
-[00:39:59]     [136/399] FUN_00124c90 -> quarantined (1m)
-[00:40:00]   QUARANTINE FUN_0026d190: too few arguments to function call, single argument 'cf' was not specified
-[00:40:00]     [137/399] FUN_0026d190 -> quarantined (1m)
-[00:40:01]   QUARANTINE FUN_0026e104: operand of type 'double' cannot be cast to a pointer type
-[00:40:01]     [138/399] FUN_0026e104 -> quarantined (1m)
-[00:40:05]   QUARANTINE FUN_00270228: used type 'undefined1[4]' (aka 'unsigned char[4]') where arithmetic or pointer type is required
-[00:40:05]     [139/399] FUN_00270228 -> quarantined (1m)
-[00:40:07]   QUARANTINE FUN_0006a6a8: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:40:07]     [140/399] FUN_0006a6a8 -> quarantined (1m)
-[00:40:10]   QUARANTINE FUN_0027ec8c: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[00:40:10]     [141/399] FUN_0027ec8c -> quarantined (1m)
-[00:40:12]   QUARANTINE FUN_0027ecf0: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[00:40:12]     [142/399] FUN_0027ecf0 -> quarantined (1m)
-[00:40:14]   QUARANTINE FUN_0027ed14: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[00:40:14]     [143/399] FUN_0027ed14 -> quarantined (1m)
-[00:40:38]   QUARANTINE FUN_00075344: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:40:38]     [144/399] FUN_00075344 -> quarantined (1m)
-[00:41:16]   QUARANTINE FUN_00075c7c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:41:16]     [145/399] FUN_00075c7c -> quarantined (1m)
-[00:41:27]   QUARANTINE FUN_00086a44: subscript of pointer to function type 'void (long *)'
-[00:41:27]     [146/399] FUN_00086a44 -> quarantined (1m)
-[00:41:29]   QUARANTINE FUN_00087190: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:41:29]     [147/399] FUN_00087190 -> quarantined (1m)
-[00:41:31]   QUARANTINE FUN_001a9c4c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:41:31]     [148/399] FUN_001a9c4c -> quarantined (1m)
-[00:41:33]   QUARANTINE FUN_00088c34: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:41:33]     [149/399] FUN_00088c34 -> quarantined (1m)
-[00:41:35]   QUARANTINE FUN_00088d48: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:41:35]     [150/399] FUN_00088d48 -> quarantined (1m)
-[00:41:37]   QUARANTINE FUN_0008938c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:41:37]     [151/399] FUN_0008938c -> quarantined (1m)
-[00:41:38]   QUARANTINE FUN_0009d600: returning 'gh16' from a function with incompatible result type 'uint64_t' (aka 'unsigned long long')
-[00:41:38]     [152/399] FUN_0009d600 -> quarantined (1m)
-[00:41:42]   QUARANTINE FUN_000c99b8: operand of type 'gh16' where arithmetic or pointer type is required
-[00:41:42]     [153/399] FUN_000c99b8 -> quarantined (1m)
-[00:41:44]   QUARANTINE FUN_000c815c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:41:44]     [154/399] FUN_000c815c -> quarantined (1m)
-[00:41:46]   QUARANTINE FUN_00091ecc: too few arguments to function call, expected 9, have 6
-[00:41:46]     [155/399] FUN_00091ecc -> quarantined (1m)
-[00:42:09]   QUARANTINE FUN_00092704: expected expression
-[00:42:09]     [156/399] FUN_00092704 -> quarantined (1m)
-[00:42:16]     [162/399] FUN_00093994 -> fixed (41s)
-[00:42:42]   QUARANTINE FUN_000cba08: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:42:42]     [157/399] FUN_000cba08 -> quarantined (1m)
-[00:42:49]   QUARANTINE FUN_000cd198: subscripted value is not an array, pointer, or vector
-[00:42:49]     [158/399] FUN_000cd198 -> quarantined (1m)
-[00:42:50]   QUARANTINE FUN_000cd140: operand of type 'gh16' where arithmetic or pointer type is required
-[00:42:50]     [159/399] FUN_000cd140 -> quarantined (1m)
-[00:42:52]   QUARANTINE FUN_00095b64: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:42:52]     [160/399] FUN_00095b64 -> quarantined (1m)
-[00:42:54]   QUARANTINE FUN_00095be4: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:42:54]     [161/399] FUN_00095be4 -> quarantined (1m)
-[00:42:57]   QUARANTINE FUN_00094144: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:42:57]     [163/399] FUN_00094144 -> quarantined (1m)
-[00:42:59]   QUARANTINE FUN_000940bc: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:42:59]     [164/399] FUN_000940bc -> quarantined (1m)
-[00:43:02]     [165/399] FUN_0009d658 -> fixed (1m)
-[00:43:03]     [166/399] FUN_0009f7f8 -> fixed (1m)
-[00:43:05]     [167/399] FUN_000a17d0 -> fixed (1m)
-[00:43:28]   QUARANTINE FUN_000a35a4: subscripted value is not an array, pointer, or vector
-[00:43:28]     [168/399] FUN_000a35a4 -> quarantined (1m)
-[00:43:38]   QUARANTINE FUN_001fa360: too many arguments to function call, expected single argument 'theDate', have 2 arguments
-[00:43:38]     [169/399] FUN_001fa360 -> quarantined (1m)
-[00:44:08]   QUARANTINE FUN_000a59c8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:44:08]     [170/399] FUN_000a59c8 -> quarantined (1m)
-[00:44:17]   QUARANTINE FUN_000a620c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:44:17]     [171/399] FUN_000a620c -> quarantined (1m)
-[00:44:19]   QUARANTINE FUN_000a63ac: too few arguments to function call, expected 11, have 7
-[00:44:19]     [172/399] FUN_000a63ac -> quarantined (1m)
-[00:44:22]   QUARANTINE FUN_000a64d4: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:44:22]     [173/399] FUN_000a64d4 -> quarantined (1m)
-[00:44:24]   QUARANTINE FUN_000a658c: too few arguments to function call, expected 11, have 8
-[00:44:24]     [174/399] FUN_000a658c -> quarantined (1m)
-[00:44:28]   QUARANTINE FUN_000a6694: expected expression
-[00:44:28]     [175/399] FUN_000a6694 -> quarantined (1m)
-[00:44:29]   QUARANTINE FUN_000a890c: too many arguments provided to function-like macro invocation
-[00:44:29]     [176/399] FUN_000a890c -> quarantined (1m)
-[00:44:32]   QUARANTINE FUN_000ac208: array type 'unsigned char[16]' is not assignable
-[00:44:32]     [177/399] FUN_000ac208 -> quarantined (1m)
-[00:44:34]   QUARANTINE FUN_000ada60: passing 'gh16' to parameter of incompatible type 'undefined8' (aka 'unsigned long long')
-[00:44:34]     [178/399] FUN_000ada60 -> quarantined (1m)
-[00:44:35]   QUARANTINE FUN_000b091c: array type 'undefined1[12]' (aka 'unsigned char[12]') is not assignable
-[00:44:35]     [179/399] FUN_000b091c -> quarantined (1m)
-[00:45:01]   QUARANTINE FUN_000af418: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:45:01]     [180/399] FUN_000af418 -> quarantined (1m)
-[00:45:09]   QUARANTINE FUN_000b1034: redefinition of 'auVar3' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-[00:45:09]     [181/399] FUN_000b1034 -> quarantined (1m)
-[00:45:38]   QUARANTINE FUN_000b755c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:45:38]     [182/399] FUN_000b755c -> quarantined (1m)
-[00:45:49]   QUARANTINE FUN_000b7074: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:45:49]     [183/399] FUN_000b7074 -> quarantined (1m)
-[00:45:51]   QUARANTINE FUN_000b75ec: operand of type 'gh16' where arithmetic or pointer type is required
-[00:45:51]     [184/399] FUN_000b75ec -> quarantined (1m)
-[00:45:53]   QUARANTINE FUN_000b8888: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:45:53]     [185/399] FUN_000b8888 -> quarantined (1m)
-[00:45:54]   QUARANTINE FUN_000b88f0: expected expression
-[00:45:54]     [186/399] FUN_000b88f0 -> quarantined (1m)
-[00:45:58]   QUARANTINE FUN_000b82e0: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:45:58]     [187/399] FUN_000b82e0 -> quarantined (1m)
-[00:45:59]   QUARANTINE FUN_000b8ba8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:45:59]     [188/399] FUN_000b8ba8 -> quarantined (1m)
-[00:46:03]   QUARANTINE FUN_000bc918: expected expression
-[00:46:03]     [189/399] FUN_000bc918 -> quarantined (1m)
-[00:46:05]   QUARANTINE FUN_000bc6c4: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:46:05]     [190/399] FUN_000bc6c4 -> quarantined (1m)
-[00:46:07]   QUARANTINE FUN_000bdae4: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:46:07]     [191/399] FUN_000bdae4 -> quarantined (1m)
-[00:46:33]   QUARANTINE FUN_000bdb6c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:46:33]     [192/399] FUN_000bdb6c -> quarantined (1m)
-[00:46:42]   QUARANTINE FUN_000be918: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:46:42]     [193/399] FUN_000be918 -> quarantined (1m)
-[00:46:49]     [201/399] FUN_001593fc -> fixed (45s)
-[00:47:12]   QUARANTINE FUN_000bea80: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:47:12]     [194/399] FUN_000bea80 -> quarantined (1m)
-[00:47:20]   QUARANTINE FUN_000beb14: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:47:20]     [195/399] FUN_000beb14 -> quarantined (1m)
-[00:47:22]   QUARANTINE FUN_000bece4: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:47:22]     [196/399] FUN_000bece4 -> quarantined (1m)
-[00:47:25]   QUARANTINE FUN_000beba8: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:47:25]     [197/399] FUN_000beba8 -> quarantined (1m)
-[00:47:26]   QUARANTINE FUN_000bf950: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:47:27]     [198/399] FUN_000bf950 -> quarantined (1m)
-[00:47:30]   QUARANTINE FUN_000bf988: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:47:30]     [199/399] FUN_000bf988 -> quarantined (1m)
-[00:47:32]   QUARANTINE FUN_000c240c: passing 'gh16' to parameter of incompatible type 'undefined8' (aka 'unsigned long long')
-[00:47:32]     [200/399] FUN_000c240c -> quarantined (1m)
-[00:47:37]   QUARANTINE FUN_001593a4: operand of type 'gh16' where arithmetic or pointer type is required
-[00:47:37]     [202/399] FUN_001593a4 -> quarantined (1m)
-[00:47:39]   QUARANTINE FUN_000d4b48: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:47:39]     [203/399] FUN_000d4b48 -> quarantined (1m)
-[00:48:02]   QUARANTINE FUN_000d5230: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:48:02]     [204/399] FUN_000d5230 -> quarantined (1m)
-[00:48:10]   QUARANTINE FUN_000c7158: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:48:10]     [205/399] FUN_000c7158 -> quarantined (1m)
-[00:48:11]     [212/399] FUN_000d1b28 -> fixed (40s)
-[00:48:17]   QUARANTINE FUN_000cc5d4: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:48:17]     [206/399] FUN_000cc5d4 -> quarantined (1m)
-[00:48:36]   QUARANTINE FUN_000ca098: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:48:36]     [207/399] FUN_000ca098 -> quarantined (1m)
-[00:48:44]   QUARANTINE FUN_0011e170: redefinition of 'auVar5' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-[00:48:44]     [208/399] FUN_0011e170 -> quarantined (1m)
-[00:48:46]   QUARANTINE FUN_0011e1f8: redefinition of 'auVar5' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-[00:48:46]     [209/399] FUN_0011e1f8 -> quarantined (1m)
-[00:48:47]   QUARANTINE FUN_000cab20: passing 'gh16' to parameter of incompatible type 'undefined8' (aka 'unsigned long long')
-[00:48:47]     [210/399] FUN_000cab20 -> quarantined (1m)
-[00:48:49]   QUARANTINE FUN_000cfa9c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:48:49]     [211/399] FUN_000cfa9c -> quarantined (1m)
-[00:48:54]   QUARANTINE FUN_000d1ad0: operand of type 'gh16' where arithmetic or pointer type is required
-[00:48:54]     [213/399] FUN_000d1ad0 -> quarantined (1m)
-[00:48:58]   QUARANTINE FUN_0011bcf4: invalid operands to binary expression ('gh16' and 'int')
-[00:48:58]     [214/399] FUN_0011bcf4 -> quarantined (1m)
-[00:49:00]   QUARANTINE FUN_000d0218: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:49:00]     [215/399] FUN_000d0218 -> quarantined (1m)
-[00:49:25]   QUARANTINE FUN_000d0b00: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:49:25]     [216/399] FUN_000d0b00 -> quarantined (1m)
-[00:49:33]   QUARANTINE FUN_000d4c88: expected expression
-[00:49:33]     [217/399] FUN_000d4c88 -> quarantined (1m)
-[00:49:35]   QUARANTINE FUN_000d5af0: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:49:35]     [218/399] FUN_000d5af0 -> quarantined (1m)
-[00:49:41]   QUARANTINE FUN_000d3d20: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:49:41]     [219/399] FUN_000d3d20 -> quarantined (1m)
-[00:50:03]   QUARANTINE FUN_0011a1f8: redefinition of 'local_e8' with a different type: 'unsigned char[8]' vs 'undefined1[8][16]' (aka 'unsigned char[8][16]')
-[00:50:03]     [220/399] FUN_0011a1f8 -> quarantined (1m)
-[00:50:14]   QUARANTINE FUN_0011ad24: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:50:14]     [221/399] FUN_0011ad24 -> quarantined (1m)
-[00:50:16]   QUARANTINE FUN_0011ab00: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:50:16]     [222/399] FUN_0011ab00 -> quarantined (1m)
-[00:50:18]   QUARANTINE FUN_0011afa8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:50:18]     [223/399] FUN_0011afa8 -> quarantined (1m)
-[00:50:19]   QUARANTINE FUN_000d3ac4: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:50:19]     [224/399] FUN_000d3ac4 -> quarantined (1m)
-[00:50:25]   QUARANTINE FUN_000d5404: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:50:25]     [225/399] FUN_000d5404 -> quarantined (1m)
-[00:50:30]   QUARANTINE FUN_000d54f0: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:50:30]     [226/399] FUN_000d54f0 -> quarantined (1m)
-[00:50:32]   QUARANTINE FUN_000d5810: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:50:32]     [227/399] FUN_000d5810 -> quarantined (1m)
-[00:50:59]   QUARANTINE FUN_000d6bec: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:50:59]     [228/399] FUN_000d6bec -> quarantined (1m)
-[00:51:08]   QUARANTINE FUN_000d7304: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:51:08]     [229/399] FUN_000d7304 -> quarantined (1m)
-[00:51:10]   QUARANTINE FUN_000d70b4: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:51:10]     [230/399] FUN_000d70b4 -> quarantined (1m)
-[00:51:16]   QUARANTINE FUN_000d70dc: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:51:16]     [231/399] FUN_000d70dc -> quarantined (1m)
-[00:51:39]   QUARANTINE FUN_000d7104: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:51:39]     [232/399] FUN_000d7104 -> quarantined (1m)
-[00:51:50]   QUARANTINE FUN_000de7e4: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:51:50]     [233/399] FUN_000de7e4 -> quarantined (1m)
-[00:51:52]   QUARANTINE FUN_000e06ac: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:51:52]     [234/399] FUN_000e06ac -> quarantined (1m)
-[00:51:53]   QUARANTINE FUN_000e641c: passing 'gh16' to parameter of incompatible type 'undefined8' (aka 'unsigned long long')
-[00:51:53]     [235/399] FUN_000e641c -> quarantined (1m)
-[00:51:55]   QUARANTINE FUN_000e8de8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:51:55]     [236/399] FUN_000e8de8 -> quarantined (1m)
-[00:52:00]   QUARANTINE FUN_000e94ac: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:52:00]     [237/399] FUN_000e94ac -> quarantined (1m)
-[00:52:06]   QUARANTINE FUN_000e9844: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:52:06]     [238/399] FUN_000e9844 -> quarantined (1m)
-[00:52:08]   QUARANTINE FUN_000e9950: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:52:08]     [239/399] FUN_000e9950 -> quarantined (1m)
-[00:52:32]   QUARANTINE FUN_000eaec8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:52:32]     [240/399] FUN_000eaec8 -> quarantined (1m)
-[00:52:40]   QUARANTINE FUN_000eacc4: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:52:40]     [241/399] FUN_000eacc4 -> quarantined (1m)
-[00:52:42]   QUARANTINE FUN_000eaad8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:52:42]     [242/399] FUN_000eaad8 -> quarantined (1m)
-[00:52:47]   QUARANTINE FUN_000ea3dc: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:52:47]     [243/399] FUN_000ea3dc -> quarantined (1m)
-[00:53:06]   QUARANTINE FUN_000ed7a4: passing 'gh16' to parameter of incompatible type 'undefined8' (aka 'unsigned long long')
-[00:53:06]     [244/399] FUN_000ed7a4 -> quarantined (1m)
-[00:53:14]   QUARANTINE FUN_000f59e8: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:53:14]     [245/399] FUN_000f59e8 -> quarantined (1m)
-[00:53:16]   QUARANTINE FUN_000f695c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:53:16]     [246/399] FUN_000f695c -> quarantined (1m)
-[00:53:18]   QUARANTINE FUN_000f5678: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:53:18]     [247/399] FUN_000f5678 -> quarantined (1m)
-[00:53:19]   QUARANTINE FUN_000f6b3c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:53:19]     [248/399] FUN_000f6b3c -> quarantined (1m)
-[00:53:23]   QUARANTINE FUN_00101df8: redefinition of 'auVar2'
-[00:53:23]     [249/399] FUN_00101df8 -> quarantined (1m)
-[00:53:27]   QUARANTINE FUN_000feb20: expected ')'
-[00:53:27]     [250/399] FUN_000feb20 -> quarantined (1m)
-[00:53:29]   QUARANTINE FUN_00101d90: redefinition of 'auVar2'
-[00:53:29]     [251/399] FUN_00101d90 -> quarantined (1m)
-[00:53:52]   QUARANTINE FUN_00101ec8: redefinition of 'auVar2' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-[00:53:52]     [252/399] FUN_00101ec8 -> quarantined (1m)
-[00:53:59]   QUARANTINE FUN_00101e60: redefinition of 'auVar2'
-[00:53:59]     [253/399] FUN_00101e60 -> quarantined (1m)
-[00:54:01]   QUARANTINE FUN_00101f38: redefinition of 'auVar2'
-[00:54:01]     [254/399] FUN_00101f38 -> quarantined (1m)
-[00:54:06]   QUARANTINE FUN_00102034: redefinition of 'auVar2'
-[00:54:06]     [255/399] FUN_00102034 -> quarantined (1m)
-[00:54:27]   QUARANTINE FUN_00102120: redefinition of 'auVar2'
-[00:54:27]     [256/399] FUN_00102120 -> quarantined (1m)
-[00:54:36]   QUARANTINE FUN_00113c8c: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:54:36]     [257/399] FUN_00113c8c -> quarantined (1m)
-[00:54:38]   QUARANTINE FUN_001161d0: passing 'gh16' to parameter of incompatible type 'undefined8' (aka 'unsigned long long')
-[00:54:38]     [258/399] FUN_001161d0 -> quarantined (1m)
-[00:54:39]   QUARANTINE FUN_00220ed0: operand of type 'gh16' where arithmetic or pointer type is required
-[00:54:39]     [259/399] FUN_00220ed0 -> quarantined (1m)
-[00:54:41]   QUARANTINE FUN_00117f18: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:54:41]     [260/399] FUN_00117f18 -> quarantined (1m)
-[00:54:46]   QUARANTINE FUN_00117f98: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:54:46]     [261/399] FUN_00117f98 -> quarantined (1m)
-[00:54:52]   QUARANTINE FUN_0011a6f4: redefinition of 'local_d8' with a different type: 'unsigned char[12]' vs 'undefined1[8][16]' (aka 'unsigned char[8][16]')
-[00:54:52]     [262/399] FUN_0011a6f4 -> quarantined (1m)
-[00:54:54]   QUARANTINE FUN_00120ae0: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:54:54]     [263/399] FUN_00120ae0 -> quarantined (1m)
-[00:55:22]   QUARANTINE FUN_00120cdc: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:55:22]     [264/399] FUN_00120cdc -> quarantined (1m)
-[00:55:31]   QUARANTINE FUN_00120e44: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:55:31]     [265/399] FUN_00120e44 -> quarantined (1m)
-[00:55:33]   QUARANTINE FUN_00120f98: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:55:33]     [266/399] FUN_00120f98 -> quarantined (1m)
-[00:55:39]   QUARANTINE FUN_00120ff0: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:55:39]     [267/399] FUN_00120ff0 -> quarantined (1m)
-[00:56:02]   QUARANTINE FUN_00121148: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:56:02]     [268/399] FUN_00121148 -> quarantined (1m)
-[00:56:12]   QUARANTINE FUN_00121198: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:56:12]     [269/399] FUN_00121198 -> quarantined (1m)
-[00:56:14]   QUARANTINE FUN_00121204: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:56:14]     [270/399] FUN_00121204 -> quarantined (1m)
-[00:56:15]   QUARANTINE FUN_0012136c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:56:15]     [271/399] FUN_0012136c -> quarantined (1m)
-[00:56:17]   QUARANTINE FUN_00121490: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:56:17]     [272/399] FUN_00121490 -> quarantined (1m)
-[00:56:22]   QUARANTINE FUN_00121644: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:56:22]     [273/399] FUN_00121644 -> quarantined (1m)
-[00:56:28]   QUARANTINE FUN_00121c74: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:56:28]     [274/399] FUN_00121c74 -> quarantined (1m)
-[00:56:30]   QUARANTINE FUN_00121d3c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:56:30]     [275/399] FUN_00121d3c -> quarantined (1m)
-[00:56:57]   QUARANTINE FUN_0013bf20: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:56:57]     [276/399] FUN_0013bf20 -> quarantined (1m)
-[00:57:06]   QUARANTINE FUN_001a6b04: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:57:06]     [277/399] FUN_001a6b04 -> quarantined (1m)
-[00:57:08]   QUARANTINE FUN_001a3f28: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:57:08]     [278/399] FUN_001a3f28 -> quarantined (1m)
-[00:57:13]   QUARANTINE FUN_00121dc8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:57:13]     [279/399] FUN_00121dc8 -> quarantined (1m)
-[00:57:34]   QUARANTINE FUN_00123078: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:57:34]     [280/399] FUN_00123078 -> quarantined (1m)
-[00:57:43]   QUARANTINE FUN_001230a0: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:57:43]     [281/399] FUN_001230a0 -> quarantined (1m)
-[00:57:45]   QUARANTINE FUN_001a6a48: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:57:45]     [282/399] FUN_001a6a48 -> quarantined (1m)
-[00:57:47]   QUARANTINE FUN_00123694: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:57:47]     [283/399] FUN_00123694 -> quarantined (1m)
-[00:57:49]   QUARANTINE FUN_00124424: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:57:49]     [284/399] FUN_00124424 -> quarantined (1m)
-[00:57:54]   QUARANTINE FUN_0013c0d0: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:57:54]     [285/399] FUN_0013c0d0 -> quarantined (1m)
-[00:57:59]   QUARANTINE FUN_001258fc: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:57:59]     [286/399] FUN_001258fc -> quarantined (1m)
-[00:58:01]   QUARANTINE FUN_0012701c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:58:01]     [287/399] FUN_0012701c -> quarantined (1m)
-[00:58:25]   QUARANTINE FUN_001aff18: redefinition of 'auVar4' with a different type: 'unsigned char[16]' vs 'undefined1[12]' (aka 'unsigned char[12]')
-[00:58:25]     [288/399] FUN_001aff18 -> quarantined (1m)
-[00:58:33]   QUARANTINE FUN_00155b50: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:58:33]     [289/399] FUN_00155b50 -> quarantined (1m)
-[00:58:35]   QUARANTINE FUN_001561a8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:58:35]     [290/399] FUN_001561a8 -> quarantined (1m)
-[00:58:40]   QUARANTINE applicationShouldTerminate_167934: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:58:40]     [291/399] applicationShouldTerminate_167934 -> quarantined (1m)
-[00:59:03]   QUARANTINE initWithContentRect_styleMask_backing_defer_168d74: no member named 'field0_0x0' in 'struct CGRect'
-[00:59:03]     [292/399] initWithContentRect_styleMask_backing_defer_168d74 -> quarantined (1m)
-[00:59:14]   QUARANTINE FUN_001a2f74: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:59:14]     [293/399] FUN_001a2f74 -> quarantined (1m)
-[00:59:16]   QUARANTINE setStyleMask_169384: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:59:16]     [294/399] setStyleMask_169384 -> quarantined (1m)
-[00:59:18]   QUARANTINE close_169730: redefinition of 'local_78' with a different type: 'uint64_t[1]' (aka 'unsigned long long[1]') vs 'uint64_t' (aka 'unsigned long long')
-[00:59:18]     [295/399] close_169730 -> quarantined (1m)
-[00:59:19]   QUARANTINE applicationDidResignActive: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[00:59:19]     [296/399] applicationDidResignActive -> quarantined (1m)
-[00:59:26]   QUARANTINE applicationDidBecomeActive: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:59:26]     [297/399] applicationDidBecomeActive -> quarantined (1m)
-[00:59:33]   QUARANTINE applicationDidHide: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:59:33]     [298/399] applicationDidHide -> quarantined (1m)
-[00:59:35]   QUARANTINE windowWillMiniaturize: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[00:59:35]     [299/399] windowWillMiniaturize -> quarantined (1m)
-[01:00:02]   QUARANTINE windowDidDeminiaturize: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[01:00:02]     [300/399] windowDidDeminiaturize -> quarantined (1m)
-[01:00:10]   QUARANTINE windowBecameKeyOrMainWindow: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[01:00:10]     [301/399] windowBecameKeyOrMainWindow -> quarantined (1m)
-[01:00:12]   QUARANTINE performClose_16aa5c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[01:00:12]     [302/399] performClose_16aa5c -> quarantined (1m)
-[01:00:13]     [309/399] FUN_0017073c -> fixed (47s)
-[01:00:19]   QUARANTINE closeButtonProxi: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[01:00:19]     [303/399] closeButtonProxi -> quarantined (1m)
-[01:00:37]   QUARANTINE sendEvent_16adcc: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[01:00:37]     [304/399] sendEvent_16adcc -> quarantined (1m)
-[01:00:46]   QUARANTINE createLayerTextureWithSize_16cb94: invalid operands to binary expression ('uint8_t[40]' (aka 'unsigned char[40]') and 'uint64_t' (aka 'unsigned long long'))
-[01:00:46]     [305/399] createLayerTextureWithSize_16cb94 -> quarantined (1m)
-[01:00:48]   QUARANTINE insertText_16d864: array type 'undefined1[16]' (aka 'unsigned char[16]') is not assignable
-[01:00:48]     [306/399] insertText_16d864 -> quarantined (1m)
-[01:00:49]   QUARANTINE setMarkedText_selectedRange: redefinition of 'local_58'
-[01:00:49]     [307/399] setMarkedText_selectedRange -> quarantined (1m)
-[01:00:51]   QUARANTINE FUN_0016f90c: expected expression
-[01:00:51]     [308/399] FUN_0016f90c -> quarantined (1m)
-[01:00:56]     [315/399] FUN_00381fc0 -> fixed (42s)
-[01:01:02]   QUARANTINE FUN_001a406c: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[01:01:02]     [310/399] FUN_001a406c -> quarantined (1m)
-[01:01:04]   QUARANTINE FUN_001723a0: passing 'unsigned char *' to parameter of incompatible type 'gh16'
-[01:01:04]     [311/399] FUN_001723a0 -> quarantined (1m)
-[01:01:26]   QUARANTINE FUN_00215ea0: passing 'gh16' to parameter of incompatible type 'const void *'
-[01:01:26]     [312/399] FUN_00215ea0 -> quarantined (1m)
-[01:01:33]   QUARANTINE FUN_00177824: operand of type 'uint3' (aka 'struct uint3') where arithmetic or pointer type is required
-[01:01:33]     [313/399] FUN_00177824 -> quarantined (1m)
-[01:01:34]   QUARANTINE FUN_003828a4: called object type 'float' is not a function or function pointer
-[01:01:34]     [314/399] FUN_003828a4 -> quarantined (1m)
-[01:01:41]   QUARANTINE viewDidMoveToWindow_1a8cf8: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[01:01:41]     [316/399] viewDidMoveToWindow_1a8cf8 -> quarantined (1m)
-[01:01:58]   QUARANTINE FUN_001a9258: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[01:01:58]     [317/399] FUN_001a9258 -> quarantined (1m)
-[01:02:06]   QUARANTINE FUN_001b5d5c: pointer cannot be cast to type 'double'
-[01:02:06]     [318/399] FUN_001b5d5c -> quarantined (1m)
-[01:02:06]   QUARANTINE FUN_001b6164: pointer cannot be cast to type 'double'
-[01:02:06]     [319/399] FUN_001b6164 -> quarantined (1m)
-[01:02:08]   QUARANTINE FUN_001b0ad0: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[01:02:08]     [320/399] FUN_001b0ad0 -> quarantined (1m)
-[01:02:10]   QUARANTINE FUN_001bc310: passing 'undefined1[16]' (aka 'unsigned char[16]') to parameter of incompatible type 'gh16'
-[01:02:10]     [321/399] FUN_001bc310 -> quarantined (1m)
-[01:02:14]   QUARANTINE FUN_001c45f0: redefinition of 'local_70' with a different type: 'unsigned char[8]' vs 'undefined1[2][16]' (aka 'unsigned char[2][16]')
-[01:02:14]     [322/399] FUN_001c45f0 -> quarantined (1m)
-[01:02:17]   QUARANTINE FUN_001c49dc: assigning to 'unsigned char' from incompatible type 'gh16'
-[01:02:17]     [323/399] FUN_001c49dc -> quarantined (1m)
-[01:02:19]   QUARANTINE FUN_001c4c28: assigning to 'unsigned char' from incompatible type 'gh16'
-[01:02:19]     [324/399] FUN_001c4c28 -> quarantined (1m)
-[01:02:39]   QUARANTINE FUN_001c6d78: redefinition of 'local_78' with a different type: 'unsigned char[12]' vs 'undefined1[2][16]' (aka 'unsigned char[2][16]')
-[01:02:39]     [325/399] FUN_001c6d78 -> quarantined (1m)
-[01:02:45]   QUARANTINE FUN_00255658: operand of type 'gh16' where arithmetic or pointer type is required
-[01:02:45]     [326/399] FUN_00255658 -> quarantined (1m)
-[01:02:46]   QUARANTINE FUN_00257790: passing 'gh16' to parameter of incompatible type 'double'
-[01:02:46]     [327/399] FUN_00257790 -> quarantined (1m)
-[01:02:50]   QUARANTINE FUN_0025fa3c: duplicate case value '0'
-[01:02:50]     [328/399] FUN_0025fa3c -> quarantined (1m)
-[01:03:08]   QUARANTINE FUN_0025fe64: duplicate case value '0'
-[01:03:08]     [329/399] FUN_0025fe64 -> quarantined (1m)
-[01:03:15]   QUARANTINE FUN_0025d944: duplicate case value '0'
-[01:03:15]     [330/399] FUN_0025d944 -> quarantined (1m)
-[01:03:17]   QUARANTINE FUN_00273a00: passing 'CFUUIDBytes' to parameter of incompatible type 'uint64_t' (aka 'unsigned long long')
-[01:03:17]     [331/399] FUN_00273a00 -> quarantined (1m)
-[01:03:19]   QUARANTINE FUN_00273b58: too many arguments to function call, expected 8, have 9
-[01:03:19]     [332/399] FUN_00273b58 -> quarantined (1m)
-[01:03:21]   QUARANTINE FUN_00273cd8: too many arguments to function call, expected 8, have 9
-[01:03:21]     [333/399] FUN_00273cd8 -> quarantined (1m)
-[01:03:26]   QUARANTINE FUN_002747e0: too many arguments to function call, expected 8, have 9
-[01:03:26]     [334/399] FUN_002747e0 -> quarantined (1m)
-[01:03:32]   QUARANTINE FUN_0027b1d8: redefinition of 'auVar5'
-[01:03:32]     [335/399] FUN_0027b1d8 -> quarantined (1m)
-[01:03:34]   QUARANTINE FUN_0027c5a4: too many arguments to function call, expected 8, have 10
-[01:03:34]     [336/399] FUN_0027c5a4 -> quarantined (1m)
-[01:03:54]   QUARANTINE FUN_0027eb88: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[01:03:54]     [337/399] FUN_0027eb88 -> quarantined (1m)
-[01:04:01]   QUARANTINE FUN_0027ebb8: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[01:04:01]     [338/399] FUN_0027ebb8 -> quarantined (1m)
-[01:04:03]   QUARANTINE FUN_0027ebe8: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[01:04:03]     [339/399] FUN_0027ebe8 -> quarantined (1m)
-[01:04:08]   QUARANTINE FUN_0027ec34: indirection requires pointer operand ('undefined8' (aka 'unsigned long long') invalid)
-[01:04:08]     [340/399] FUN_0027ec34 -> quarantined (1m)
-[01:04:25]     [341/399] FUN_0027ee38 -> fixed (1m)
-[01:04:31]   QUARANTINE FUN_0028fb48: too few arguments to function call, expected 2, have 0
-[01:04:31]     [342/399] FUN_0028fb48 -> quarantined (1m)
-[01:04:33]   QUARANTINE FUN_002a22a4: passing 'gh16' to parameter of incompatible type 'double'
-[01:04:33]     [343/399] FUN_002a22a4 -> quarantined (1m)
-[01:04:34]   QUARANTINE FUN_002a22b4: called object type 'float' is not a function or function pointer
-[01:04:34]     [344/399] FUN_002a22b4 -> quarantined (1m)
-[01:04:36]   QUARANTINE FUN_002ccb78: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[01:04:36]     [345/399] FUN_002ccb78 -> quarantined (1m)
-[01:04:41]   QUARANTINE FUN_002e8a7c: member reference base type 'uint8_t[80]' (aka 'unsigned char[80]') is not a structure or union
-[01:04:41]     [346/399] FUN_002e8a7c -> quarantined (1m)
-[01:04:45]   QUARANTINE FUN_002e8350: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[01:04:45]     [347/399] FUN_002e8350 -> quarantined (1m)
-[01:04:46]   QUARANTINE FUN_002d0844: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[01:04:46]     [348/399] FUN_002d0844 -> quarantined (1m)
-[01:05:07]   QUARANTINE FUN_002d09e4: expression is not assignable
-[01:05:07]     [349/399] FUN_002d09e4 -> quarantined (1m)
-[01:05:13]   QUARANTINE FUN_00295a94: expected ')'
-[01:05:13]     [350/399] FUN_00295a94 -> quarantined (1m)
-[01:05:14]   QUARANTINE FUN_0032ccd4: operand of type 'double' cannot be cast to a pointer type
-[01:05:14]     [351/399] FUN_0032ccd4 -> quarantined (1m)
-[01:05:18]     [352/399] FUN_003010ac -> fixed (1m)
-[01:05:35]   QUARANTINE FUN_0029eef4: array type 'char[8]' is not assignable
-[01:05:35]     [353/399] FUN_0029eef4 -> quarantined (1m)
-[01:05:42]   QUARANTINE FUN_002c5234: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[01:05:42]     [354/399] FUN_002c5234 -> quarantined (1m)
-[01:05:44]   QUARANTINE FUN_002c66c8: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[01:05:44]     [355/399] FUN_002c66c8 -> quarantined (1m)
-[01:05:45]   QUARANTINE FUN_002c6934: returning 'string' (aka 'struct string') from a function with incompatible result type 'char *'
-[01:05:45]     [356/399] FUN_002c6934 -> quarantined (1m)
-[01:05:46]   QUARANTINE FUN_002c7c58: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[01:05:46]     [357/399] FUN_002c7c58 -> quarantined (1m)
-[01:05:50]   QUARANTINE FUN_002fb9a8: operand of type 'double' cannot be cast to a pointer type
-[01:05:50]     [358/399] FUN_002fb9a8 -> quarantined (1m)
-[01:05:54]   QUARANTINE FUN_003020bc: redefinition of 'auVar6'
-[01:05:54]     [359/399] FUN_003020bc -> quarantined (1m)
-[01:05:56]   QUARANTINE FUN_00302264: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:05:56]     [360/399] FUN_00302264 -> quarantined (1m)
-[01:06:18]   QUARANTINE FUN_00308124: operand of type 'uint3' (aka 'struct uint3') where arithmetic or pointer type is required
-[01:06:18]     [361/399] FUN_00308124 -> quarantined (1m)
-[01:06:26]   QUARANTINE FUN_0030cad0: redefinition of 'auVar26'
-[01:06:26]     [362/399] FUN_0030cad0 -> quarantined (1m)
-[01:06:27]   QUARANTINE FUN_0030cbd0: redefinition of 'auVar25'
-[01:06:27]     [363/399] FUN_0030cbd0 -> quarantined (1m)
-[01:06:32]   QUARANTINE FUN_0030ffb8: redefinition of 'auVar4'
-[01:06:32]     [364/399] FUN_0030ffb8 -> quarantined (1m)
-[01:06:53]   QUARANTINE FUN_003196d0: redefinition of 'auVar15'
-[01:06:53]     [365/399] FUN_003196d0 -> quarantined (1m)
-[01:07:02]     [366/399] FUN_00311890 -> fixed (1m)
-[01:07:04]     [367/399] FUN_00311980 -> fixed (1m)
-[01:07:05]   QUARANTINE FUN_003197ac: redefinition of 'auVar14'
-[01:07:05]     [368/399] FUN_003197ac -> quarantined (1m)
-[01:07:07]   QUARANTINE FUN_0033abf8: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[01:07:07]     [369/399] FUN_0033abf8 -> quarantined (1m)
-[01:07:13]   QUARANTINE FUN_0033acac: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[01:07:13]     [370/399] FUN_0033acac -> quarantined (1m)
-[01:07:17]   QUARANTINE FUN_0033f970: subscripted value is not an array, pointer, or vector
-[01:07:17]     [371/399] FUN_0033f970 -> quarantined (1m)
-[01:07:19]   QUARANTINE FUN_0033f7a0: member reference base type 'uint8_t[24]' (aka 'unsigned char[24]') is not a structure or union
-[01:07:19]     [372/399] FUN_0033f7a0 -> quarantined (1m)
-[01:07:41]   QUARANTINE FUN_0033f86c: member reference base type 'uint8_t[24]' (aka 'unsigned char[24]') is not a structure or union
-[01:07:41]     [373/399] FUN_0033f86c -> quarantined (1m)
-[01:07:49]   QUARANTINE FUN_0033fa68: member reference base type 'uint8_t[24]' (aka 'unsigned char[24]') is not a structure or union
-[01:07:49]     [374/399] FUN_0033fa68 -> quarantined (1m)
-[01:07:52]   QUARANTINE FUN_0033fbf4: member reference base type 'uint8_t[24]' (aka 'unsigned char[24]') is not a structure or union
-[01:07:52]     [375/399] FUN_0033fbf4 -> quarantined (1m)
-[01:07:56]   QUARANTINE FUN_0034894c: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:07:56]     [376/399] FUN_0034894c -> quarantined (1m)
-[01:08:14]   QUARANTINE FUN_0034a8f0: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:08:14]     [377/399] FUN_0034a8f0 -> quarantined (1m)
-[01:08:22]   QUARANTINE FUN_0034b23c: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:08:22]     [378/399] FUN_0034b23c -> quarantined (1m)
-[01:08:23]   QUARANTINE FUN_0034b3e8: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:08:23]     [379/399] FUN_0034b3e8 -> quarantined (1m)
-[01:08:25]   QUARANTINE FUN_0035c2b4: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:08:25]     [380/399] FUN_0035c2b4 -> quarantined (1m)
-[01:08:26]     [381/399] FUN_0035af74 -> fixed (1m)
-[01:08:30]   QUARANTINE FUN_0035d540: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:08:30]     [382/399] FUN_0035d540 -> quarantined (1m)
-[01:08:36]   QUARANTINE FUN_0037f914: invalid operands to binary expression ('gh16' and 'gh16')
-[01:08:36]     [383/399] FUN_0037f914 -> quarantined (1m)
-[01:08:37]   QUARANTINE FUN_0035b910: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:08:37]     [384/399] FUN_0035b910 -> quarantined (1m)
-[01:08:54]   QUARANTINE FUN_0035bc44: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:08:54]     [385/399] FUN_0035bc44 -> quarantined (1m)
-[01:08:57]     [391/399] FUN_0037e728 -> fixed (33s)
-[01:09:01]   QUARANTINE FUN_0035f010: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:09:01]     [386/399] FUN_0035f010 -> quarantined (1m)
-[01:09:02]     [387/399] FUN_00369d6c -> fixed (1m)
-[01:09:06]   QUARANTINE FUN_003764bc: member reference base type 'uint8_t[32]' (aka 'unsigned char[32]') is not a structure or union
-[01:09:06]     [388/399] FUN_003764bc -> quarantined (1m)
-[01:09:17]   QUARANTINE FUN_00379ad0: array type 'char[8]' is not assignable
-[01:09:17]     [389/399] FUN_00379ad0 -> quarantined (1m)
-[01:09:21]   QUARANTINE FUN_0037cefc: array type 'char[8]' is not assignable
-[01:09:21]     [390/399] FUN_0037cefc -> quarantined (59s)
-[01:09:23]   QUARANTINE FUN_0037e498: member reference base type 'uint64_t' (aka 'unsigned long long') is not a structure or union
-[01:09:23]     [392/399] FUN_0037e498 -> quarantined (58s)
-[01:09:25]   QUARANTINE FUN_00383b10: use of undeclared identifier 'param_1'
-[01:09:25]     [393/399] FUN_00383b10 -> quarantined (58s)
-[01:09:26]   QUARANTINE length_error: redefinition of 'length_error' as different kind of symbol
-[01:09:26]     [394/399] length_error -> quarantined (56s)
-[01:09:27]   QUARANTINE out_of_range: redefinition of 'out_of_range' as different kind of symbol
-[01:09:27]     [395/399] out_of_range -> quarantined (51s)
-[01:09:27]   QUARANTINE setbuf: conflicting types for 'setbuf'
-[01:09:27]     [396/399] setbuf -> quarantined (50s)
-[01:09:32]   QUARANTINE objc_msgSend: conflicting types for 'objc_msgSend'
-[01:09:32]     [397/399] objc_msgSend -> quarantined (37s)
-[01:09:33]   QUARANTINE func_385e88: variable has incomplete type 'void'
-[01:09:33]     [398/399] func_385e88 -> quarantined (36s)
-[01:09:34]   QUARANTINE func_385ec4: variable has incomplete type 'void'
-[01:09:34]     [399/399] func_385ec4 -> quarantined (33s)
-[01:09:35]   learned fixes on quarantined functions: 0 of 19 retried compile now
-[01:09:35]   ideas (after the one-by-one fixes): 7 kind(s) of error that 8 or more functions share get ideas from the model
-[01:11:20]   (precompiled header failed to build — compiling without it, slower)
-[01:11:21]   (precompiled header failed to build — compiling without it, slower)
-[01:11:21]   (precompiled header failed to build — compiling without it, slower)
-[01:11:21]   (precompiled header failed to build — compiling without it, slower)
-[01:11:22]   (precompiled header failed to build — compiling without it, slower)
-[01:11:22]   (precompiled header failed to build — compiling without it, slower)
-[01:11:23]   (precompiled header failed to build — compiling without it, slower)
-[01:11:23]   (precompiled header failed to build — compiling without it, slower)
-[01:11:24]   (precompiled header failed to build — compiling without it, slower)
-[01:11:24]   (precompiled header failed to build — compiling without it, slower)
-[01:11:45]   ideas: 28 asked, 13 tested, 0 adopted, 10 repeats caught, 0 function(s) compile now. All in build/ideas.txt
-[01:11:45]   learned fixes: 144 proven, 432 being tried, 4 retired (39 new this run); used 104 of 198 time(s) tried, 53% kept; 0 quarantined function(s) rescued. All in build/learned_fixes.txt
-[01:11:45]   model: 792 small edit(s) asked for, 21 without a usable edit
-[01:11:45]   fixer loop done: 29793 compiling, 383 quarantined
-[01:11:45]   why functions are quarantined (most common first; all in fix_report.txt):
-[01:11:45]       194 × passing 'X' (aka 'X') to parameter of incompatible type 'X'  (e.g. FUN_0000365c)
-[01:11:45]        38 × operand of type 'X' where arithmetic or pointer type is required  (e.g. FUN_0000cbac)
-[01:11:45]        33 × member reference base type 'X' (aka 'X') is not a structure or union  (e.g. FUN_000a35a4)
-[01:11:45]        31 × array type 'X' (aka 'X') is not assignable  (e.g. FUN_000532f4)
-[01:11:45]        11 × passing 'X' to parameter of incompatible type 'X' (aka 'X')  (e.g. FUN_0002e28c)
-[01:11:45]         8 × too many arguments to function call, expected N, have N  (e.g. FUN_00212fd0)
-[01:11:45]         8 × indirection requires pointer operand ('X' (aka 'X') invalid)  (e.g. FUN_0007ebe0)
-[01:11:45]         7 × passing 'X' to parameter of incompatible type 'X'  (e.g. FUN_0001b2dc)
-[01:16:14]   link round 1: linking 30179 objects ...
-[01:16:32]   link round 1: 623 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[01:16:33]   link round 2: 1 file(s) didn't compile; the fixer works on them (quick fixes, then small model edits)
-[01:16:33]   stubs.cpp: repaired — disabled 202 declaration(s), dropped 0 struct field(s) (list in stubs_repair_report.txt)
-[01:16:35]   link round 3: linking 30179 objects ...
-[01:16:37]   link round 3: 448 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[01:16:38]   link round 4: 1 file(s) didn't compile; the fixer works on them (quick fixes, then small model edits)
-[01:16:38]   stubs.cpp: repaired — disabled 202 declaration(s), dropped 0 struct field(s) (list in stubs_repair_report.txt)
-[01:16:40]   link round 5: linking 30179 objects ...
-[01:16:42]   link round 5: 448 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[01:16:43]   link round 6: 1 file(s) didn't compile; the fixer works on them (quick fixes, then small model edits)
-[01:16:43]   stubs.cpp: repaired — disabled 202 declaration(s), dropped 0 struct field(s) (list in stubs_repair_report.txt)
-[01:16:45]   link round 7: linking 30179 objects ...
-[01:16:47]   link round 7: 448 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[01:16:49]   link round 8: 1 file(s) didn't compile; the fixer works on them (quick fixes, then small model edits)
-[01:16:49]   stubs.cpp: repaired — disabled 202 declaration(s), dropped 0 struct field(s) (list in stubs_repair_report.txt)
-[01:16:50]   link round 9: linking 30179 objects ...
-[01:16:52]   link round 9: 448 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[01:16:54]   link round 10: 1 file(s) didn't compile; the fixer works on them (quick fixes, then small model edits)
-[01:16:54]   stubs.cpp: repaired — disabled 202 declaration(s), dropped 0 struct field(s) (list in stubs_repair_report.txt)
-[01:16:55]   link round 11: linking 30179 objects ...
-[01:16:57]   link round 11: 448 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[01:16:59]   link round 12: 1 file(s) didn't compile; the fixer works on them (quick fixes, then small model edits)
-[01:16:59]   stubs.cpp: repaired — disabled 202 declaration(s), dropped 0 struct field(s) (list in stubs_repair_report.txt)
-[01:17:00]   link round 13: linking 30179 objects ...
-[01:17:03]   link round 13: 448 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[01:17:04]   link round 14: 1 file(s) didn't compile; the fixer works on them (quick fixes, then small model edits)
-[01:17:04]   stubs.cpp: repaired — disabled 202 declaration(s), dropped 0 struct field(s) (list in stubs_repair_report.txt)
-[01:17:05]   link round 15: linking 30179 objects ...
-[01:17:08]   link round 15: 448 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[01:17:08]   link pass hit round cap — see link_errors.txt
+
 ```
 
 ## pipeline_state.json
@@ -44432,15 +43451,15 @@ PTR_operator: no address in its name
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-22 00:09:25",
-      "at": "2026-10-22 00:09:33",
-      "seconds": 7,
+      "started": "2026-10-22 09:56:08",
+      "at": "2026-10-22 09:56:15",
+      "seconds": 8,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
-      "done": true,
-      "started": "2026-10-22 00:09:35",
-      "at": "2026-10-22 00:11:11",
+      "done": false,
+      "started": "2026-10-22 09:56:18",
+      "at": "2026-10-22 09:56:18",
       "seconds": 97,
       "model": "",
       "note": "30176/30489 rewritten",
@@ -44470,8 +43489,8 @@ PTR_operator: no address in its name
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-22 00:09:33",
-      "at": "2026-10-22 00:09:35",
+      "started": "2026-10-22 09:56:15",
+      "at": "2026-10-22 09:56:18",
       "seconds": 2,
       "note": "1141 replacement(s)"
     },
@@ -44507,53 +43526,6 @@ PTR_operator: no address in its name
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-21 20:52:16",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: operand of type 'X' where arithmetic or pointer type is required": 261,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')": 199,
-        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 191,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')": 163,
-        "fix|quarantined: redefinition of 'X'": 97,
-        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 90,
-        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 78,
-        "fix|quarantined: member reference base type 'X' is not a structure or union": 49,
-        "fix|quarantined: brackets are not allowed here; to declare an array, place the brackets after the identifier": 48,
-        "fix|quarantined: expected 'X' after expression": 29,
-        "fix|quarantined: expected 'X'": 25,
-        "fix|quarantined: subscripted value is not an array, pointer, or vector": 23,
-        "fix|quarantined: use of undeclared identifier 'X'": 22,
-        "fix|quarantined: expected 'X' after top level declarator": 17,
-        "fix|quarantined: variable has incomplete type 'X'": 16,
-        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 16,
-        "fix|quarantined: unknown type name 'X'": 11,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' vs 'X'": 8,
-        "fix|quarantined: expected expression": 8,
-        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 7,
-        "fix|quarantined: expected identifier or 'X'": 7,
-        "fix|quarantined: expression is not assignable": 6,
-        "fix|quarantined: array type 'X' is not assignable": 6,
-        "fix|quarantined: redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X'": 5,
-        "fix|quarantined: initializing 'X' (aka 'X') with an expression of incompatible type 'X'": 5,
-        "fix|quarantined: use of undeclared identifier 'X'; did you mean 'X'?": 4,
-        "fix|quarantined: redefinition of 'X' as different kind of symbol": 4,
-        "fix|quarantined: pointer cannot be cast to type 'X'": 3,
-        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 3,
-        "fix|quarantined: no member named 'X' in 'X'": 2,
-        "fix|quarantined: initializing 'X' with an expression of incompatible type 'X'": 2,
-        "fix|quarantined: called object type 'X' (aka 'X') is not a function or function pointer": 2,
-        "fix|quarantined: unexpected type name 'X': expected expression": 1,
-        "fix|quarantined: too many arguments to function call, expected N, have N": 1,
-        "fix|quarantined: subscript of pointer to function type 'X'": 1,
-        "fix|quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'": 1,
-        "fix|quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required": 1,
-        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X')": 1,
-        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))": 1,
-        "fix|quarantined: extraneous 'X' before 'X'": 1,
-        "fix|not compiling yet (not reached before the run ended)": 1277
-      }
-    },
     {
       "at": "2026-10-21 21:47:41",
       "keys": {
@@ -44726,16 +43698,49 @@ PTR_operator: no address in its name
         "fix|fixes that undid each other (the cycle was stopped and the model got the function)": 246,
         "fix|small edits the model couldn't give a usable answer for": 21
       }
+    },
+    {
+      "at": "2026-10-22 09:57:05",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "fix|quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'": 194,
+        "fix|quarantined: operand of type 'X' where arithmetic or pointer type is required": 38,
+        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 33,
+        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 31,
+        "fix|quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')": 11,
+        "fix|quarantined: too many arguments to function call, expected N, have N": 8,
+        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 8,
+        "fix|quarantined: passing 'X' to parameter of incompatible type 'X'": 7,
+        "fix|quarantined: operand of type 'X' cannot be cast to a pointer type": 4,
+        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 4,
+        "fix|quarantined: array type 'X' is not assignable": 4,
+        "fix|quarantined: variable has incomplete type 'X'": 3,
+        "fix|quarantined: no member named 'X' in 'X'": 3,
+        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))": 3,
+        "fix|quarantined: duplicate case value 'X'": 3,
+        "fix|quarantined: too few arguments to function call, single argument 'X' was not specified": 2,
+        "fix|quarantined: too few arguments to function call, expected N, have N": 2,
+        "fix|quarantined: subscripted value is not an array, pointer, or vector": 2,
+        "fix|quarantined: redefinition of 'X' as different kind of symbol": 2,
+        "fix|quarantined: pointer cannot be cast to type 'X'": 2,
+        "fix|quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required": 2,
+        "fix|quarantined: expected 'X'": 2,
+        "fix|quarantined: conflicting types for 'X'": 2,
+        "fix|quarantined: called object type 'X' is not a function or function pointer": 2,
+        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 2,
+        "fix|quarantined: used type 'X' where arithmetic or pointer type is required": 1,
+        "fix|quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required": 1,
+        "fix|quarantined: use of undeclared identifier 'X'": 1,
+        "fix|quarantined: too many arguments to function call, expected single argument 'X', have N arguments": 1,
+        "fix|quarantined: too many arguments provided to function-like macro invocation": 1,
+        "fix|quarantined: subscript of pointer to function type 'X'": 1,
+        "fix|quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'": 1,
+        "fix|quarantined: extraneous 'X' before 'X'": 1,
+        "fix|quarantined: expected expression": 1
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-21 20:50",
-      "functions": 30176,
-      "compile_pct": 91.1,
-      "quarantined_pct": 4.7,
-      "to_fix": 1277
-    },
     {
       "at": "10-21 20:52",
       "functions": 30176,
@@ -44779,6 +43784,13 @@ PTR_operator: no address in its name
       "learned_proven": 144,
       "learned_kept_pct": 52.5,
       "ideas_adopted": "0/24"
+    },
+    {
+      "at": "10-22 09:57",
+      "functions": 30176,
+      "compile_pct": 98.7,
+      "quarantined_pct": 1.3,
+      "to_fix": 0
     }
   ]
 }
