@@ -2339,3 +2339,22 @@ def test_model_edits_lose_fences_and_examples_from_other_functions(tmp_path):
         {"error": "e", "before": "y = a;", "after": "y = (long)local_99;"}]
     shown = lessons.prompt("k", "funcs/f.c", "long f(long param_1) { long x; x = param_1; }")
     assert "param_1[0x68]" in shown and "local_99" not in shown
+
+
+def test_test_host_build_clears_old_builds_and_their_dsym_folders(tmp_path, monkeypatch):
+    import subprocess
+    P = dp.Paths(tmp_path)
+    P.make()
+    d = P.build / "test" / "host"
+    d.mkdir(parents=True)
+    (d / "aharness_host-arm64-old1").write_text("x")
+    (d / "aharness_host-arm64-old1.dSYM" / "Contents").mkdir(parents=True)   # a folder (-g)
+
+    def fake_cc(cmd, **kw):
+        exe = Path(cmd[cmd.index("-o") + 1])
+        exe.write_text("exe")
+        (exe.parent / (exe.name + ".dSYM")).mkdir()
+        return subprocess.CompletedProcess(cmd, 0, "", "")
+    monkeypatch.setattr(dp.subprocess, "run", fake_cc)
+    exe = dp._build_host(P, "arm64")
+    assert sorted(p.name for p in d.iterdir()) == sorted(["aharness_host.c", exe.name, exe.name + ".dSYM"])

@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.9"
+PIPELINE_VERSION = "2026-10-22.10"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -14734,9 +14734,19 @@ def _build_host(P: Paths, arch: str) -> Path:
         raise TestSetupError(f"the test host didn't compile for {arch} (Xcode command line "
                              f"tools: xcode-select --install). Compiler said:\n"
                              + (r.stderr or r.stdout)[-3000:])
+    # earlier builds go: files, and the .dSYM folders -g leaves next to them (this
+    # build's own is kept); tidying up never stops the test
+    keep = {exe, exe.with_name(exe.name + ".dSYM")}
     for old in d.glob(f"aharness_host-{arch}-*"):
-        if old != exe:
-            old.unlink(missing_ok=True)
+        if old in keep:
+            continue
+        try:
+            if old.is_dir() and not old.is_symlink():
+                shutil.rmtree(old, ignore_errors=True)
+            else:
+                old.unlink(missing_ok=True)
+        except OSError:
+            pass
     return exe
 
 
