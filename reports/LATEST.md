@@ -1,18 +1,18 @@
-# Diagnostics — fastpass 3 — 2026-10-22 14:07:16
+# Diagnostics — fastpass 3 — 2026-10-22 23:52:23
 
 
 ## Run
 
 ```
-script: decomp_pipeline 2026-10-22.10 (build 2026-10-18.1)
+script: decomp_pipeline 2026-10-23.1 (build 2026-10-18.1)
 command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from privacy --to organize --headless-export --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
 python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
 compile flags: -Wno-c++11-narrowing -arch arm64
 --ctx 8192, chars per token 2.06
-model: qwen2.5-coder-3b-instruct-mlx
+model: ?
 model requests turned down this run: 0, thinking-only answers: 0
-fix stage model edits: {'calls': 30, 'no_answer': 0, 'rejected': 0}
+fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 ```
 
 ## What the script struggled with
@@ -23,87 +23,44 @@ fix stage model edits: {'calls': 30, 'no_answer': 0, 'rejected': 0}
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-  10-22 10:12                98.7                1.3                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
   10-22 11:37                98.3                0.6                321                186                3.2                414                  -                  -                  -                  -                  0/33                  -
   10-22 12:51                99.6                0.4                  0                135               15.6                164                  -                 91               82.0                  5                  0/16                  -
   10-22 13:41               100.0                0.0                  0                 15               46.7                117                  -                 94               90.6                  3                     -                  -
   10-22 14:07               100.0                0.0                  0                  5                0.0                 59                  -                 94              100.0                  -                     -                0.0
+  10-22 23:52               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
 couldn't handle:
-  fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize_, initWithContentRect_styleMask_backing_defer__168d74, FUN_001a9378   [also in the last 1 run(s)]
+  fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize_, initWithContentRect_styleMask_backing_defer__168d74, FUN_001a9378   [also in the last 2 run(s)]
   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_002747e0   [also in the last 5 run(s)]
-  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. operator__385ec4
+  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. operator__385ec4   [also in the last 1 run(s)]
   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
                     → tried again next run
-  test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)
-                    → see build/test/test_report.txt
-worked around (cost time, nothing lost):
-  fix         120 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 3 run(s)]
-  fix           9 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. operator__385ec4, FUN_001a9378, FUN_002747e0   [also in the last 3 run(s)]
-  fix           8 × the model repeated an edit that had already failed (skipped)   e.g. operator__385ec4, FUN_001a9378, FUN_002747e0   [also in the last 3 run(s)]
-  link         29 × functions replaced by placeholders to link   [also in the last 1 run(s)]
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[13:52:10] decomp_pipeline 2026-10-22.10: /Users/admin/glitchdecomp/fastpass 3 — stages privacy → organize
-[13:52:10]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[13:52:10] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
-[13:52:12]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
-[13:52:12]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
-[13:52:12] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
-[13:52:41]     functions with a system function's name (the system's is used): 3: sync, setbuf, objc_msgSend
-[13:52:41]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
-[13:52:44]     data found by its address (not in Ghidra's label list): 466
-[13:53:47]     pieces of variables (v._0_8_): 6357
-[13:53:47]     functions Ghidra said return nothing, whose callers use the result: 2949
-[13:53:47]     16-byte register values (as gh16): 1908
-[13:53:47]     C++/Objective-C names in definitions: 1285
-[13:53:47]     C++ qualified names in code: 190
-[13:53:47]     types C didn't know (declared opaque): 19
-[13:53:47]     types that are also functions (as struct tags): 18
-[13:53:47]     switches on a pointer (on its value): 11
-[13:53:47]     NAN(x) tests (as isnan): 8
-[13:53:51]     names that are a type and also a function (the type keeps its struct tag): 12
-[13:53:51]   C source from Ghidra's pseudocode: 30173 function(s), 311 library stub(s) called directly, 29 data type(s) with Ghidra's layout, the program's data (34 block(s), 2967 labelled location(s) used, 33319 pointer fix-up(s), 31 placeholder(s) for data outside the export: rewrite/data_placeholders.txt) -> pseudocode.c
-[13:53:51] ━━━━ Stage 4/10 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
-[13:58:24] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
-[14:03:29]   fix: 60 model request(s); the model was busy 35% of the stage's 5m
-[14:03:29] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
-[14:03:29] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
-[14:07:14] ━━━━ Stage 8/10 · test ━━━━ the rebuilt plugin and the original (--plugin) render the same test signals in a small test host; their outputs are compared sample by sample
-[14:07:16]   test: the rebuilt plugin didn't load: crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
-[14:07:16]   test: everything it saw is in /Users/admin/glitchdecomp/fastpass 3/build_c/test/test_report.txt
-[14:07:16] ━━━━ Stage 9/10 · improve ━━━━ checks find small problems, worst functions first; each is fixed by a rule or one small planned edit, and kept only if it still compiles and behaves like Ghidra's version
-[14:07:16]   improve: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
-[14:07:16] ━━━━ Stage 10/10 · organize ━━━━ the improved code is arranged into modules and classes, checked for anything identifying, and written to final/ as a project that builds
-[14:07:16]   organize: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
-[14:07:16] ============================================================
-[14:07:16] SUMMARY: 30168/30173 functions compile, 5 quarantined, 2 re-derived, link=OK
-[14:07:16] Report: /Users/admin/glitchdecomp/fastpass 3/REPORT.md
-[14:07:16] 
-[14:07:16] ━━━━ what the script struggled with this run ━━━━
-[14:07:16] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[14:07:16] rates (this run last; earlier runs above it):
-[14:07:16]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-[14:07:16]   10-22 10:12                98.7                1.3                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[14:07:16]   10-22 11:37                98.3                0.6                321                186                3.2                414                  -                  -                  -                  -                  0/33                  -
-[14:07:16]   10-22 12:51                99.6                0.4                  0                135               15.6                164                  -                 91               82.0                  5                  0/16                  -
-[14:07:16]   10-22 13:41               100.0                0.0                  0                 15               46.7                117                  -                 94               90.6                  3                     -                  -
-[14:07:16]   10-22 14:07               100.0                0.0                  0                  5                0.0                 59                  -                 94              100.0                  -                     -                0.0
-[14:07:16] couldn't handle:
-[14:07:16]   fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize_, initWithContentRect_styleMask_backing_defer__168d74, FUN_001a9378   [also in the last 1 run(s)]
-[14:07:16]   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_002747e0   [also in the last 5 run(s)]
-[14:07:16]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. operator__385ec4
-[14:07:16]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
-[14:07:16]                     → tried again next run
-[14:07:16]   test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)
-[14:07:16]                     → see build/test/test_report.txt
-[14:07:16] worked around (cost time, nothing lost):
-[14:07:16]   fix         120 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 3 run(s)]
-[14:07:16]   fix           9 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. operator__385ec4, FUN_001a9378, FUN_002747e0   [also in the last 3 run(s)]
-[14:07:16]   fix           8 × the model repeated an edit that had already failed (skipped)   e.g. operator__385ec4, FUN_001a9378, FUN_002747e0   [also in the last 3 run(s)]
-[14:07:16]   link         29 × functions replaced by placeholders to link   [also in the last 1 run(s)]
+[23:52:07] decomp_pipeline 2026-10-23.1: /Users/admin/glitchdecomp/fastpass 3 — stages privacy → organize
+[23:52:07]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[23:52:07] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
+[23:52:10]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
+[23:52:10]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
+[23:52:10] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
+[23:52:23] 
+[23:52:23] ━━━━ what the script struggled with this run ━━━━
+[23:52:23] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[23:52:23] rates (this run last; earlier runs above it):
+[23:52:23]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
+[23:52:23]   10-22 11:37                98.3                0.6                321                186                3.2                414                  -                  -                  -                  -                  0/33                  -
+[23:52:23]   10-22 12:51                99.6                0.4                  0                135               15.6                164                  -                 91               82.0                  5                  0/16                  -
+[23:52:23]   10-22 13:41               100.0                0.0                  0                 15               46.7                117                  -                 94               90.6                  3                     -                  -
+[23:52:23]   10-22 14:07               100.0                0.0                  0                  5                0.0                 59                  -                 94              100.0                  -                     -                0.0
+[23:52:23]   10-22 23:52               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[23:52:23] couldn't handle:
+[23:52:23]   fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize_, initWithContentRect_styleMask_backing_defer__168d74, FUN_001a9378   [also in the last 2 run(s)]
+[23:52:23]   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_002747e0   [also in the last 5 run(s)]
+[23:52:23]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. operator__385ec4   [also in the last 1 run(s)]
+[23:52:23]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
+[23:52:23]                     → tried again next run
 ```
 
 ## Build status
@@ -15834,71 +15791,7 @@ PTR_operator: no address in its name
 ## Build log of this run (build/worklist.log)
 
 ```
-[13:53:51] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/pseudocode.c
-[13:53:52] Resume check (30173 functions in manifest):
-[13:53:52]   [redo] split + header: out of date — rebuilding shared.h/globals.cpp and merging with the work already done
-[13:53:52]   libclang reported 2 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
-[13:53:52]     _parse_monolith.cpp:220: static assertion failed due to requirement 'sizeof(struct section) == 80': Ghidra's size of section
-[13:53:52]     _parse_monolith.cpp:236: static assertion failed due to requirement 'sizeof(struct segment_command) == 72': Ghidra's size of segment_command
-[13:53:59]   split -> 30173 function TUs, 65 types (+37 forward decls), 30173 prototypes, 0 globals
-[13:54:12]     functions: 0 changed in the rewrite (new code taken), 320 already fixed by the model (kept), 29848 untouched (refreshed with the new split), 5 previously quarantined (restored for another try), 0 not in the old run
-[13:54:13]   [redo] header check
-[13:54:13]   » validate/repair shared headers
-[13:54:13]   [redo] compile status
-[13:54:13]   » preflight diagnose (surface any systemic cause before spending model time on 30173 functions)
-[13:54:14]   preflight: sampled TUs compile — proceeding
-[13:54:14]   » isolated compile sweep
-[13:54:14]   compiling with 11 parallel worker(s)
-[13:58:24]   isolated compile: 30114/30173 TUs pass, 59 need repair (250s)
-[13:58:24]   status: 30114 compile, 59 still to fix, 0 quarantined
-[14:01:38]   declared 120 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 55 function(s) that use them again
-[14:01:38]   compiling with 11 parallel worker(s)
-[14:01:39]   isolated compile: 54/55 TUs pass, 1 need repair (1s)
-[14:01:39]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[14:01:39]   » dependency order + fixer loop
-[14:01:39]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
-[14:01:39]   callgraph: 582 callee name(s) not in our TU set (external/library calls) — ignored for ordering
-[14:01:39]   callgraph: exact deps for 21706/30173 functions
-[14:01:39]   quick fixes (no model): 0 of 5 function(s) compile now
-[14:01:39]   fixer loop over 5 failing TU(s), dependency-ordered
-[14:02:09]   QUARANTINE uiViewForAudioUnit_withSize_: no member named 'field1_0x10' in 'struct CGRect'
-[14:02:09]     [1/5] uiViewForAudioUnit_withSize_ -> quarantined (30s)
-[14:02:11]   QUARANTINE initWithContentRect_styleMask_backing_defer__168d74: no member named 'field1_0x10' in 'struct CGRect'
-[14:02:11]     [3/5] initWithContentRect_styleMask_backing_defer__168d74 -> quarantined (31s)
-[14:02:12]   QUARANTINE operator__385ec4: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long'))
-[14:02:12]     [5/5] operator__385ec4 -> quarantined (32s)
-[14:02:14]   QUARANTINE FUN_001a9378: no member named 'field0_0x0' in 'struct CGRect'
-[14:02:14]     [2/5] FUN_001a9378 -> quarantined (34s)
-[14:02:16]   QUARANTINE FUN_002747e0: too many arguments to function call, expected 8, have 9
-[14:02:16]     [4/5] FUN_002747e0 -> quarantined (36s)
-[14:02:16]   learned fixes on quarantined functions: 0 of 5 retried compile now
-[14:02:16]   learned fixes: 94 proven, 486 being tried, 159 retired (0 new this run); used 2 of 2 time(s) tried, 100% kept; 0 quarantined function(s) rescued. All in build/learned_fixes.txt
-[14:02:16]   model: 10 small edit(s) asked for, 0 without a usable edit
-[14:02:16]   fixer loop done: 30168 compiling, 5 quarantined
-[14:02:16]   why functions are quarantined (most common first; all in fix_report.txt):
-[14:02:16]         3 × no member named 'X' in 'X'  (e.g. uiViewForAudioUnit_withSize_)
-[14:02:16]         1 × too many arguments to function call, expected N, have N  (e.g. FUN_002747e0)
-[14:02:16]         1 × invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))  (e.g. operator__385ec4)
-[14:02:17]   repair loop pass 1 (no model): 0 of 5 rescued
-[14:02:47]   QUARANTINE initWithContentRect_styleMask_backing_defer__168d74: no member named 'field1_0x10' in 'struct CGRect'
-[14:02:48]   QUARANTINE uiViewForAudioUnit_withSize_: no member named 'field1_0x10' in 'struct CGRect'
-[14:02:50]   QUARANTINE FUN_001a9378: no member named 'field0_0x0' in 'struct CGRect'
-[14:02:51]   QUARANTINE operator__385ec4: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long'))
-[14:02:53]   QUARANTINE FUN_002747e0: expected ')'
-[14:02:53]   repair loop pass 1 (model): 0 of 5 rescued
-[14:02:53]   repair loop pass 2 (no model): 0 of 5 rescued
-[14:03:22]   QUARANTINE uiViewForAudioUnit_withSize_: no member named 'field1_0x10' in 'struct CGRect'
-[14:03:23]   QUARANTINE initWithContentRect_styleMask_backing_defer__168d74: no member named 'field0_0x0' in 'struct CGRect'
-[14:03:25]   QUARANTINE operator__385ec4: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long'))
-[14:03:26]   QUARANTINE FUN_001a9378: no member named 'field1_0x10' in 'struct CGRect'
-[14:03:28]   QUARANTINE FUN_002747e0: too many arguments to function call, expected 8, have 9
-[14:03:28]   repair loop pass 2 (model): 0 of 5 rescued
-[14:03:28]   repair loop: 0 quarantined function(s) rescued
-[14:07:09]   link round 1: linking 30176 objects ...
-[14:07:11]   link round 1: 100 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[14:07:12]   link round 2: linking 30177 objects ...
-[14:07:13]   29 placeholder definition(s) in stubs.cpp (listed in link_report.txt)
-[14:07:13]   LINK OK (round 2) -> /Users/admin/glitchdecomp/fastpass 3/build_c/program.dylib
+
 ```
 
 ## pipeline_state.json
@@ -15914,9 +15807,9 @@ PTR_operator: no address in its name
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
-      "done": true,
-      "started": "2026-10-22 13:52:12",
-      "at": "2026-10-22 13:53:51",
+      "done": false,
+      "started": "2026-10-22 23:52:10",
+      "at": "2026-10-22 23:52:10",
       "seconds": 100,
       "model": "",
       "note": "30173/30489 rewritten",
@@ -15946,8 +15839,8 @@ PTR_operator: no address in its name
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-22 13:52:10",
-      "at": "2026-10-22 13:52:12",
+      "started": "2026-10-22 23:52:07",
+      "at": "2026-10-22 23:52:10",
       "seconds": 2,
       "note": "1141 replacement(s)"
     },
@@ -15977,52 +15870,12 @@ PTR_operator: no address in its name
       "note": "not in C mode yet"
     }
   },
-  "version": "2026-10-22.10",
+  "version": "2026-10-23.1",
   "chars_per_token": {
     "ctx": 8192,
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-22 10:12:13",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'": 194,
-        "fix|quarantined: operand of type 'X' where arithmetic or pointer type is required": 38,
-        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 33,
-        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 31,
-        "fix|quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')": 11,
-        "fix|quarantined: too many arguments to function call, expected N, have N": 8,
-        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 8,
-        "fix|quarantined: passing 'X' to parameter of incompatible type 'X'": 7,
-        "fix|quarantined: operand of type 'X' cannot be cast to a pointer type": 4,
-        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 4,
-        "fix|quarantined: array type 'X' is not assignable": 4,
-        "fix|quarantined: variable has incomplete type 'X'": 3,
-        "fix|quarantined: no member named 'X' in 'X'": 3,
-        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))": 3,
-        "fix|quarantined: duplicate case value 'X'": 3,
-        "fix|quarantined: too few arguments to function call, single argument 'X' was not specified": 2,
-        "fix|quarantined: too few arguments to function call, expected N, have N": 2,
-        "fix|quarantined: subscripted value is not an array, pointer, or vector": 2,
-        "fix|quarantined: redefinition of 'X' as different kind of symbol": 2,
-        "fix|quarantined: pointer cannot be cast to type 'X'": 2,
-        "fix|quarantined: operand of type 'X' (aka 'X') where arithmetic or pointer type is required": 2,
-        "fix|quarantined: expected 'X'": 2,
-        "fix|quarantined: conflicting types for 'X'": 2,
-        "fix|quarantined: called object type 'X' is not a function or function pointer": 2,
-        "fix|quarantined: assigning to 'X' from incompatible type 'X'": 2,
-        "fix|quarantined: used type 'X' where arithmetic or pointer type is required": 1,
-        "fix|quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required": 1,
-        "fix|quarantined: use of undeclared identifier 'X'": 1,
-        "fix|quarantined: too many arguments to function call, expected single argument 'X', have N arguments": 1,
-        "fix|quarantined: too many arguments provided to function-like macro invocation": 1,
-        "fix|quarantined: subscript of pointer to function type 'X'": 1,
-        "fix|quarantined: returning 'X' (aka 'X') from a function with incompatible result type 'X'": 1,
-        "fix|quarantined: extraneous 'X' before 'X'": 1,
-        "fix|quarantined: expected expression": 1
-      }
-    },
     {
       "at": "2026-10-22 11:37:37",
       "keys": {
@@ -16124,16 +15977,18 @@ PTR_operator: no address in its name
         "fix|fixes that undid each other (the cycle was stopped and the model got the function)": 9,
         "link|functions replaced by placeholders to link": 29
       }
+    },
+    {
+      "at": "2026-10-22 23:52:23",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "fix|quarantined: no member named 'X' in 'X'": 3,
+        "fix|quarantined: too many arguments to function call, expected N, have N": 1,
+        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))": 1
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-22 10:11",
-      "functions": 30176,
-      "compile_pct": 98.7,
-      "quarantined_pct": 1.3,
-      "to_fix": 0
-    },
     {
       "at": "10-22 10:12",
       "functions": 30176,
@@ -16191,6 +16046,13 @@ PTR_operator: no address in its name
       "learned_proven": 94,
       "learned_kept_pct": 100.0,
       "test_pass_pct": 0.0
+    },
+    {
+      "at": "10-22 23:52",
+      "functions": 30173,
+      "compile_pct": 100.0,
+      "quarantined_pct": 0.0,
+      "to_fix": 0
     }
   ]
 }
