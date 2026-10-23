@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-23.1"
+PIPELINE_VERSION = "2026-10-23.2"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -1572,7 +1572,7 @@ def run_headless_export(P: Paths, args, refresh=False):
     return True
 
 
-DATA_EXPORT_VERSION = 3       # raised when the data export takes in more: older ones are redone
+DATA_EXPORT_VERSION = 4       # raised when the data export takes in more: older ones are redone
 
 GHIDRA_DATA_SCRIPT = r"""
 // GhidraDataExport.java - written by decomp_pipeline.py. Exports the program's
@@ -1589,6 +1589,7 @@ import ghidra.program.model.listing.FunctionIterator;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
+import ghidra.program.model.reloc.Relocation;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.program.model.symbol.Symbol;
@@ -1601,6 +1602,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.Set;
 
 public class GhidraDataExport extends GhidraScript {
@@ -1627,7 +1629,7 @@ public class GhidraDataExport extends GhidraScript {
         ReferenceManager refs = currentProgram.getReferenceManager();
         SymbolTable st = currentProgram.getSymbolTable();
         Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8));
-        w.write("{\"version\":3,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
+        w.write("{\"version\":4,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
         AddressSet dataSet = new AddressSet();
         boolean first = true;
         for (MemoryBlock b : mem.getBlocks()) {
@@ -1705,6 +1707,30 @@ public class GhidraDataExport extends GhidraScript {
             }
         }
         println("  " + nref + " pointers stored in data");
+        // every slot the loader fixes up (Mach-O rebases and binds, chained fix-ups
+        // included), with the value Ghidra put there and the import's name for a bind:
+        // the pointers Ghidra keeps no reference for are in this list too
+        w.write("],\"relocs\":[");
+        first = true;
+        int nrel = 0;
+        Iterator<Relocation> rit = currentProgram.getRelocationTable().getRelocations();
+        while (rit.hasNext() && !monitor.isCancelled()) {
+            Relocation r = rit.next();
+            Address a = r.getAddress();
+            if (a == null || !dataSet.contains(a)) continue;
+            long v;
+            try {
+                v = mem.getLong(a);
+            } catch (Exception e) {
+                continue;
+            }
+            if (!first) w.write(",");
+            first = false;
+            w.write("{\"at\":\"" + hex(a) + "\",\"value\":\"" + Long.toHexString(v)
+                    + "\",\"sym\":\"" + esc(r.getSymbolName()) + "\"}");
+            nrel++;
+        }
+        println("  " + nrel + " slots the loader fixes up");
         w.write("],\"callees\":{");
         first = true;
         FunctionIterator fit = currentProgram.getFunctionManager().getFunctions(true);
@@ -3454,9 +3480,10 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
     targets, tindex, relocs, externals, ext_relocs, fn_decls = [], {}, [], [], [], set()
     unresolved: list = []
     by_addr = dict(cname)
+    done: set = set()                           # slots already fixed up
     for r in data.get("refs") or []:
         loc = where(int(r["from"], 16))
-        if not loc:
+        if not loc or loc in done:
             continue
         kind, to = r.get("kind"), int(r["to"], 16)
         if kind == "external" or (kind == "function" and f"{to:x}" not in by_addr):
@@ -3466,6 +3493,7 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
             if n not in externals:
                 externals.append(n)
             ext_relocs.append((*loc, externals.index(n)))
+            done.add(loc)
             continue
         if kind == "function":
             expr = f"(void *){by_addr[f'{to:x}']}"
@@ -3480,6 +3508,42 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
             tindex[expr] = len(targets)
             targets.append(expr)
         relocs.append((*loc, tindex[expr]))
+        done.add(loc)
+    # the loader's own list (export version 4): every slot it fixes up, also the ones
+    # Ghidra keeps no reference for. Its value is where it points in the original
+    # layout; a bind (an import) has the name to look up.
+    n_loader = 0
+    for r in data.get("relocs") or []:
+        loc = where(int(r["at"], 16))
+        if not loc or loc in done:
+            continue
+        v = int(r.get("value") or "0", 16)
+        sym = (r.get("sym") or "").strip()
+        if f"{v:x}" in by_addr:
+            expr = f"(void *){by_addr[f'{v:x}']}"
+            fn_decls.add(by_addr[f"{v:x}"])
+        elif (tl := where(v)):
+            expr = f"(void *)(g_block_{tl[0]} + {tl[1]:#x})"
+        elif sym:
+            if sym not in externals:
+                externals.append(sym)
+            ext_relocs.append((*loc, externals.index(sym)))
+            done.add(loc)
+            n_loader += 1
+            continue
+        else:
+            unresolved.append((r["at"], f"{v:x}"))
+            continue
+        if expr not in tindex:
+            tindex[expr] = len(targets)
+            targets.append(expr)
+        relocs.append((*loc, tindex[expr]))
+        done.add(loc)
+        n_loader += 1
+    if n_loader:
+        plog(P, show=True, msg=f"    pointers only the loader's fix-up list has (no reference in Ghidra): "
+                               f"{n_loader}, fixed up too")
+    unresolved = [(a, b) for a, b in unresolved if where(int(a, 16)) not in done]
     c += [f"extern char {n}[];" for n in sorted(fn_decls)]
     c += [f"extern uint8_t g_block_{i}[];" for i in range(len(blocks))]
     c.append("static void *const gd_targets[] = {" + ", ".join(targets or ["0"]) + "};")
@@ -14867,8 +14931,9 @@ def _run_host(argv: list[str], timeout: int = TEST_TIMEOUT) -> dict:
     return res
 
 
-def _describe_failure(res: dict, records_by_name: dict) -> list[str]:
-    """What went wrong in one host run, in words, with every detail it gave."""
+def _describe_failure(res: dict, records_by_name: dict, workdir: Optional[Path] = None) -> list[str]:
+    """What went wrong in one host run, in words, with every detail it gave (and,
+    with workdir, the code of the rebuilt functions it crashed in, innermost first)."""
     step = res["steps"][-1] if res["steps"] else "starting"
     out = []
     if res["timeout"]:
@@ -14890,6 +14955,19 @@ def _describe_failure(res: dict, records_by_name: dict) -> list[str]:
         if addr is not None and addr < 0x10000:
             out.append("    (an address near zero: a null pointer, often a global or object the "
                        "rebuilt program never set up)")
+        elif addr is not None and addr < 0x100000000:
+            out.append("    (an address from the ORIGINAL program's layout: a pointer the load-time "
+                       "fix-ups missed, still pointing where the original kept that thing)")
+        for n in list(dict.fromkeys(frames))[:2] if workdir else []:
+            try:
+                code = (workdir / records_by_name[n]).read_text()
+            except OSError:
+                continue
+            body = code.split("\n")
+            out.append(f"    code of {n} ({records_by_name[n]}):")
+            out += [f"      {i + 1:4} | {l}" for i, l in enumerate(body[:80])]
+            if len(body) > 80:
+                out.append(f"      ... ({len(body) - 80} more lines)")
     elif res["error"]:
         out.append(f"failed at step {step}: {res['error']}")
     else:
@@ -15088,10 +15166,10 @@ def run_test(P: Paths, cfg: Config, args) -> dict:
             ri = _run_host(r_cmd + ["info", str(bundle), fac, *desc])
             rep.append("rebuilt plugin, loading: " + ("OK" if ri["ok"] else "FAILED"))
             if not ri["ok"] or not ri["info"]:
-                rep += _describe_failure(ri, by_name)
+                rep += _describe_failure(ri, by_name, cfg.workdir)
                 result.update(cases=1, passed=0, failure="the rebuilt plugin didn't load: "
                               + (ri["steps"][-1] if ri["steps"] else "starting"))
-                return finish("the rebuilt plugin didn't load: " + _describe_failure(ri, by_name)[0])
+                return finish("the rebuilt plugin didn't load: " + _describe_failure(ri, by_name, cfg.workdir)[0])
             op, rp = oi["info"]["params"], ri["info"]["params"]
             rep.append(f"parameters: original {len(op)}, rebuilt {len(rp)}")
             ok_ids = {p["id"]: p for p in rp}
@@ -15126,8 +15204,8 @@ def run_test(P: Paths, cfg: Config, args) -> dict:
                                         str(rf), *pv])
                 if not rr["ok"]:
                     crashes += bool(rr["signal"] or rr["crash"])
-                    rep += [f"[{i}] {label}: FAIL"] + _describe_failure(rr, by_name)
-                    result.setdefault("failure", f"{label}: " + _describe_failure(rr, by_name)[0])
+                    rep += [f"[{i}] {label}: FAIL"] + _describe_failure(rr, by_name, cfg.workdir)
+                    result.setdefault("failure", f"{label}: " + _describe_failure(rr, by_name, cfg.workdir)[0])
                     continue
                 if (ro["channels"] or 2) != (rr["channels"] or 2):
                     rep.append(f"[{i}] {label}: FAIL: the original renders {ro['channels']} "

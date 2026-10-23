@@ -2374,7 +2374,7 @@ def test_imported_data_is_looked_up_by_name_and_unfixed_pointers_are_listed(tmp_
     assert n == 1 and "dlsym(RTLD_DEFAULT, n + 1)" in c
     listed = (P.rewrite / "data_unresolved_pointers.txt").read_text()
     assert "at 1008 -> 8ac608" in listed
-    assert "isExternalBlock()" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION == 3
+    assert "isExternalBlock()" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION >= 3
     cc = shutil.which("clang") or shutil.which("gcc")
     if not cc:
         return
@@ -2385,3 +2385,33 @@ def test_imported_data_is_looked_up_by_name_and_unfixed_pointers_are_listed(tmp_
                        capture_output=True, text=True, cwd=tmp_path)
     assert r.returncode == 0, r.stderr
     assert subprocess.run([str(tmp_path / "d")]).returncode == 0      # "_environ" found as environ
+
+
+def test_slots_only_the_loaders_list_has_are_fixed_up_too(tmp_path):
+    import base64
+    P = dp.Paths(tmp_path)
+    P.make()
+    raw = (0x453400).to_bytes(8, "little") + (0x8ac600).to_bytes(8, "little") + (0xa1d8).to_bytes(8, "little")
+    data = {"version": 4,
+            "blocks": [{"name": "__data", "start": "453000", "size": 0x800, "bytes": base64.b64encode(
+                raw + bytes(0x800 - len(raw))).decode()}],
+            "symbols": [], "refs": [],
+            "relocs": [{"at": "453000", "value": "453400", "sym": ""},          # a rebase, no reference
+                       {"at": "453008", "value": "8ac600", "sym": "_kCFAllocatorDefault"},   # a bind
+                       {"at": "453010", "value": "a1d8", "sym": ""},            # a function
+                       {"at": "453018", "value": "999999", "sym": ""}]}         # points nowhere
+    h, c, _, n = dp.data_sources(P, data, {"a1d8": "FUN_0000a1d8"}, set())
+    assert n == 3
+    assert "(void *)(g_block_0 + 0x400)" in c and '"_kCFAllocatorDefault"' in c and "(void *)FUN_0000a1d8" in c
+    assert "at 453018 -> 999999" in (P.rewrite / "data_unresolved_pointers.txt").read_text()
+    assert "getRelocationTable()" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION == 4
+
+
+def test_a_crash_report_shows_the_code_it_crashed_in(tmp_path):
+    (tmp_path / "funcs").mkdir()
+    (tmp_path / "funcs" / "_FUN_0000be10.c").write_text("long FUN_0000be10(void)\n{\n  return *(long *)0x453400;\n}\n")
+    res = {"steps": ["instantiate"], "timeout": False, "signal": "SIGSEGV", "error": "",
+           "crash": ["CRASH signal=11 (SIGSEGV: bad memory access) address=0x453400",
+                     "2   program    0x00000001097067d0 FUN_0000be10 + 56"]}
+    out = "\n".join(dp._describe_failure(res, {"FUN_0000be10": "funcs/_FUN_0000be10.c"}, tmp_path))
+    assert "ORIGINAL program's layout" in out and "return *(long *)0x453400;" in out
