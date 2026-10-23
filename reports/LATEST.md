@@ -1,10 +1,10 @@
-# Diagnostics — fastpass 3 — 2026-10-23 10:28:55
+# Diagnostics — fastpass 3 — 2026-10-23 10:48:20
 
 
 ## Run
 
 ```
-script: decomp_pipeline 2026-10-23.5 (build 2026-10-18.1)
+script: decomp_pipeline 2026-10-23.6 (build 2026-10-18.1)
 command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from export --to organize --headless-export --ghidra-home /Users/admin/Downloads/ghidra_12.1.4_PUBLIC --project /Users/admin/glitchpt2.gpr --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --repair-minutes 1 --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
 python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
@@ -23,85 +23,84 @@ fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-  10-22 13:41               100.0                0.0                  0                 15               46.7                117                  -                 94               90.6                  3                     -                  -
   10-22 14:07               100.0                0.0                  0                  5                0.0                 59                  -                 94              100.0                  -                     -                0.0
   10-22 23:52               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
   10-23 00:06               100.0                0.0                  0                  5                0.0                 77                  -                 96              100.0                  -                     -                0.0
   10-23 10:28               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
+  10-23 10:48               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
 couldn't handle:
   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
                     → tried again next run
-  test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)   [also in the last 1 run(s)]
+  test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)   [also in the last 2 run(s)]
                     → see build/test/test_report.txt
 worked around (cost time, nothing lost):
-  fix         119 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 1 run(s)]
-  link         24 × functions replaced by placeholders to link   [also in the last 1 run(s)]
+  fix         120 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 2 run(s)]
+  link         24 × functions replaced by placeholders to link   [also in the last 2 run(s)]
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[10:16:00] decomp_pipeline 2026-10-23.5: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
-[10:16:00]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[10:16:00] ━━━━ Stage 1/10 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
-[10:16:00]   snapshot of the current files before 'redo-data-export': /Users/admin/glitchdecomp/fastpass 3/snapshots/20261023-101600-redo-data-export
-[10:16:00]   exporting the program's data with Ghidra headless (no decompiling)
-[10:16:07]   using the existing ghidra_export.json (Ghidra not needed)
-[10:16:14]   callgraph.json: 22076 functions with internal calls
-[10:16:14]   export: 30489/30489 functions have pseudocode, 205 data types, 30489 signatures
-[10:16:14] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
-[10:16:16]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
-[10:16:16]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
-[10:16:16] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
-[10:16:45]     functions with a system function's name (the system's is used): 3: sync, setbuf, objc_msgSend
-[10:16:45]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
-[10:16:45]     fields Ghidra named that the system's type calls something else (read at their offset): 14
-[10:16:49]     pointers only the loader's fix-up list has (no reference in Ghidra): 583, fixed up too
-[10:16:49]     pointers in the data to addresses outside it (not fixed up): 7, listed in rewrite/data_unresolved_pointers.txt
-[10:16:49]     data found by its address (not in Ghidra's label list): 467
-[10:17:52]     pieces of variables (v._0_8_): 6357
-[10:17:52]     functions Ghidra said return nothing, whose callers use the result: 2949
-[10:17:52]     16-byte register values (as gh16): 1908
-[10:17:52]     C++/Objective-C names in definitions: 1285
-[10:17:52]     C++ qualified names in code: 190
-[10:17:52]     types C didn't know (declared opaque): 19
-[10:17:52]     types that are also functions (as struct tags): 18
-[10:17:52]     switches on a pointer (on its value): 11
-[10:17:52]     NAN(x) tests (as isnan): 8
-[10:17:57]     names that are a type and also a function (the type keeps its struct tag): 12
-[10:17:57]   C source from Ghidra's pseudocode: 30173 function(s), 311 library stub(s) called directly, 29 data type(s) with Ghidra's layout, the program's data (34 block(s), 2968 labelled location(s) used, 33768 pointer fix-up(s), 30 placeholder(s) for data outside the export: rewrite/data_placeholders.txt) -> pseudocode.c
-[10:17:57] ━━━━ Stage 4/10 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
-[10:22:33] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
-[10:25:53] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
-[10:25:53] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
-[10:28:53] ━━━━ Stage 8/10 · test ━━━━ the rebuilt plugin and the original (--plugin) render the same test signals in a small test host; their outputs are compared sample by sample
-[10:28:55]   test: the rebuilt plugin didn't load: crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
-[10:28:55]   test: everything it saw is in /Users/admin/glitchdecomp/fastpass 3/build_c/test/test_report.txt
-[10:28:55] ━━━━ Stage 9/10 · improve ━━━━ checks find small problems, worst functions first; each is fixed by a rule or one small planned edit, and kept only if it still compiles and behaves like Ghidra's version
-[10:28:55]   improve: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
-[10:28:55] ━━━━ Stage 10/10 · organize ━━━━ the improved code is arranged into modules and classes, checked for anything identifying, and written to final/ as a project that builds
-[10:28:55]   organize: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
-[10:28:55] ============================================================
-[10:28:55] SUMMARY: 30173/30173 functions compile, 0 quarantined, 2 re-derived, link=OK
-[10:28:55] Report: /Users/admin/glitchdecomp/fastpass 3/REPORT.md
-[10:28:55] 
-[10:28:55] ━━━━ what the script struggled with this run ━━━━
-[10:28:55] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[10:28:55] rates (this run last; earlier runs above it):
-[10:28:55]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-[10:28:55]   10-22 13:41               100.0                0.0                  0                 15               46.7                117                  -                 94               90.6                  3                     -                  -
-[10:28:55]   10-22 14:07               100.0                0.0                  0                  5                0.0                 59                  -                 94              100.0                  -                     -                0.0
-[10:28:55]   10-22 23:52               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[10:28:55]   10-23 00:06               100.0                0.0                  0                  5                0.0                 77                  -                 96              100.0                  -                     -                0.0
-[10:28:55]   10-23 10:28               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
-[10:28:55] couldn't handle:
-[10:28:55]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
-[10:28:55]                     → tried again next run
-[10:28:55]   test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)   [also in the last 1 run(s)]
-[10:28:55]                     → see build/test/test_report.txt
-[10:28:55] worked around (cost time, nothing lost):
-[10:28:55]   fix         119 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 1 run(s)]
-[10:28:55]   link         24 × functions replaced by placeholders to link   [also in the last 1 run(s)]
+[10:34:32] decomp_pipeline 2026-10-23.6: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
+[10:34:32]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[10:34:32] ━━━━ Stage 1/10 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
+[10:34:32]   using the existing ghidra_export.json (Ghidra not needed)
+[10:34:39]   callgraph.json: 22076 functions with internal calls
+[10:34:39]   export: 30489/30489 functions have pseudocode, 205 data types, 30489 signatures
+[10:34:39] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
+[10:34:41]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
+[10:34:41]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
+[10:34:41] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
+[10:35:10]     functions with a system function's name (the system's is used): 3: sync, setbuf, objc_msgSend
+[10:35:10]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
+[10:35:10]     fields Ghidra named that the system's type calls something else (read at their offset): 14
+[10:35:14]     pointers only the loader's fix-up list has (no reference in Ghidra): 583, fixed up too
+[10:35:14]     pointers in the data to addresses outside it (not fixed up): 7, listed in rewrite/data_unresolved_pointers.txt
+[10:35:14]     data found by its address (not in Ghidra's label list): 467
+[10:36:04]     addresses in the data written in the code as numbers ((long *)0x453400): 320, now the rebuilt data's
+[10:36:18]     pieces of variables (v._0_8_): 6357
+[10:36:18]     functions Ghidra said return nothing, whose callers use the result: 2949
+[10:36:18]     16-byte register values (as gh16): 1908
+[10:36:18]     C++/Objective-C names in definitions: 1285
+[10:36:18]     C++ qualified names in code: 190
+[10:36:18]     types C didn't know (declared opaque): 19
+[10:36:18]     types that are also functions (as struct tags): 18
+[10:36:18]     switches on a pointer (on its value): 11
+[10:36:18]     NAN(x) tests (as isnan): 8
+[10:36:22]     names that are a type and also a function (the type keeps its struct tag): 12
+[10:36:23]   C source from Ghidra's pseudocode: 30173 function(s), 311 library stub(s) called directly, 29 data type(s) with Ghidra's layout, the program's data (34 block(s), 2968 labelled location(s) used, 33768 pointer fix-up(s), 30 placeholder(s) for data outside the export: rewrite/data_placeholders.txt) -> pseudocode.c
+[10:36:23] ━━━━ Stage 4/10 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
+[10:40:51] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
+[10:44:07] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
+[10:44:07] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
+[10:48:19] ━━━━ Stage 8/10 · test ━━━━ the rebuilt plugin and the original (--plugin) render the same test signals in a small test host; their outputs are compared sample by sample
+[10:48:20]   test: the rebuilt plugin didn't load: crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
+[10:48:20]   test: everything it saw is in /Users/admin/glitchdecomp/fastpass 3/build_c/test/test_report.txt
+[10:48:20] ━━━━ Stage 9/10 · improve ━━━━ checks find small problems, worst functions first; each is fixed by a rule or one small planned edit, and kept only if it still compiles and behaves like Ghidra's version
+[10:48:20]   improve: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
+[10:48:20] ━━━━ Stage 10/10 · organize ━━━━ the improved code is arranged into modules and classes, checked for anything identifying, and written to final/ as a project that builds
+[10:48:20]   organize: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
+[10:48:20] ============================================================
+[10:48:20] SUMMARY: 30173/30173 functions compile, 0 quarantined, 2 re-derived, link=OK
+[10:48:20] Report: /Users/admin/glitchdecomp/fastpass 3/REPORT.md
+[10:48:20] 
+[10:48:20] ━━━━ what the script struggled with this run ━━━━
+[10:48:20] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[10:48:20] rates (this run last; earlier runs above it):
+[10:48:20]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
+[10:48:20]   10-22 14:07               100.0                0.0                  0                  5                0.0                 59                  -                 94              100.0                  -                     -                0.0
+[10:48:20]   10-22 23:52               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[10:48:20]   10-23 00:06               100.0                0.0                  0                  5                0.0                 77                  -                 96              100.0                  -                     -                0.0
+[10:48:20]   10-23 10:28               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
+[10:48:20]   10-23 10:48               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
+[10:48:20] couldn't handle:
+[10:48:20]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
+[10:48:20]                     → tried again next run
+[10:48:20]   test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)   [also in the last 2 run(s)]
+[10:48:20]                     → see build/test/test_report.txt
+[10:48:20] worked around (cost time, nothing lost):
+[10:48:20]   fix         120 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 2 run(s)]
+[10:48:20]   link         24 × functions replaced by placeholders to link   [also in the last 2 run(s)]
 ```
 
 ## Build status
@@ -12677,7 +12676,7 @@ every function with the same error and kept only where they work.
 [43 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2.@3;
   → *(unsigned char*)&@1 = *(unsigned char*)&@2;
-[37 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+[42 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
     )@1);
   → )@1, 1);
 [35 worked, 0 didn't] assigning to 'X' (aka 'X') from incompatible type 'X'
@@ -12737,15 +12736,15 @@ every function with the same error and kept only where they work.
 [11 worked, 0 didn't] integer constant expression must have integer type, not 'X'
     case"\x01" :
   → case 1 :
+[11 worked, 0 didn't] too many arguments to function call, expected N, have N (part of a line)
+    @1(@2
+  → ((uint64_t(*)())@1)(@2
 [10 worked, 0 didn't] operand of type 'X' where arithmetic or pointer type is required (part of a line)
     int @1 = (int)@2(
   → long @1 = @2(
 [9 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union (part of a line)
     , @1.@2, @1.@3, @4.@2, @4.@3, @5.@2,
   → , @1[0], @1[8], @4[0], @4[8], @5[0], @5[8]);
-[9 worked, 0 didn't] too many arguments to function call, expected N, have N (part of a line)
-    @1(@2
-  → ((uint64_t(*)())@1)(@2
 [8 worked, 0 didn't] member reference base type 'X' is not a structure or union
     @1 = @2(@3.@4, @3.@5, @6, @7);
   → @1 = @2(@3, @6, @7);
@@ -14747,36 +14746,64 @@ happened to each (newest last). 'adopted' ones are in the build.
 ## build/test/test_report.txt
 
 ```
-Run test: the rebuilt plugin against the original (2026-10-23 10:28:53)
+Run test: the rebuilt plugin against the original (2026-10-23 10:48:19)
 
 original: Original.component
   architectures: x86_64, arm64; tested as arm64
 rebuilt:  /Users/user?/name1decomp/fastpass 3/build_c/program.dylib (arm64)
 
-packaged the rebuilt program as /Users/user?/name1decomp/fastpass 3/build_c/test/run-51308drk/Rebuilt.component (deleted after the test), with the original's Info.plist (35 privacy stand-in(s) applied) and its Resources folder linked in
+packaged the rebuilt program as /Users/user?/name1decomp/fastpass 3/build_c/test/run-zii8gf1l/Rebuilt.component (deleted after the test), with the original's Info.plist (35 privacy stand-in(s) applied) and its Resources folder linked in
 
 == component Illformed: Name1 (aumf/igl2/DBlu)
 factory: original AUPluginFactory; rebuilt AUPluginFactory (as in the original)
 rebuilt plugin, loading: FAILED
 crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
-    CRASH signal=11 (SIGSEGV: bad memory access) address=0x453400
+    CRASH signal=11 (SIGSEGV: bad memory access) address=0x0
     CRASH stack:
-    0   aharness_host-arm64-c249657857      0x00000001046d9294 on_crash + 180
+    0   aharness_host-arm64-c249657857      0x0000000100215294 on_crash + 180
     1   libsystem_platform.dylib            0x000000018d081744 _sigtramp + 56
-    2   program                             0x00000001099ba7d0 FUN_0000be10 + 56
-    3   program                             0x00000001099ba7d0 FUN_0000be10 + 56
-    4   program                             0x00000001099b805c FUN_0000a1d8 + 32
-    5   program                             0x0000000109a3913c FUN_000659a0 + 156
-    6   AudioToolboxCore                    0x000000018fcdaa94 _ZN11APComponent11newInstanceEjbU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 2376
-    7   AudioToolboxCore                    0x000000018fe2fb38 _ZL11instantiateP20OpaqueAudioComponentj25AudioComponentOpeningModeU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 372
-    8   AudioToolboxCore                    0x000000018fe305b4 __AudioComponentInstanceNew_block_invoke + 120
-    9   AudioToolboxCore                    0x000000018fc44528 Synchronously + 132
-    10  AudioToolboxCore                    0x000000018fe303bc AudioComponentInstanceNew + 240
-    11  aharness_host-arm64-c249657857      0x00000001046d95c4 open_unit + 672
-    12  aharness_host-arm64-c249657857      0x00000001046d88c8 main + 248
-    13  dyld                                0x000000018ccac4e4 start + 6992
-    rebuilt functions in the stack (innermost first): FUN_0000be10 (funcs/_FUN_0000be10.cpp), FUN_0000a1d8 (funcs/_FUN_0000a1d8.cpp), FUN_000659a0 (funcs/_FUN_000659a0.cpp)
-    (an address from the ORIGINAL program's layout: a pointer the load-time fix-ups missed, still pointing where the original kept that thing)
+    2   program                             0x000000010599e18c FUN_00208a8c + 24
+    3   program                             0x000000010599e18c FUN_00208a8c + 24
+    4   program                             0x000000010599e160 FUN_00208a68 + 32
+    5   program                             0x00000001056927d0 FUN_0000be10 + 56
+    6   program                             0x000000010569005c FUN_0000a1d8 + 32
+    7   program                             0x00000001059b486c FUN_00218330 + 52
+    8   program                             0x0000000105995ef0 FUN_002027bc + 56
+    9   program                             0x0000000105995670 FUN_00202134 + 32
+    10  program                             0x0000000105995580 FUN_00202038 + 60
+    11  program                             0x00000001057111c4 FUN_000659a0 + 248
+    12  AudioToolboxCore                    0x000000018fcdaa94 _ZN11APComponent11newInstanceEjbU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 2376
+    13  AudioToolboxCore                    0x000000018fe2fb38 _ZL11instantiateP20OpaqueAudioComponentj25AudioComponentOpeningModeU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 372
+    14  AudioToolboxCore                    0x000000018fe305b4 __AudioComponentInstanceNew_block_invoke + 120
+    15  AudioToolboxCore                    0x000000018fc44528 Synchronously + 132
+    16  AudioToolboxCore                    0x000000018fe303bc AudioComponentInstanceNew + 240
+    17  aharness_host-arm64-c249657857      0x00000001002155c4 open_unit + 672
+    18  aharness_host-arm64-c249657857      0x00000001002148c8 main + 248
+    19  dyld                                0x000000018ccac4e4 start + 6992
+    rebuilt functions in the stack (innermost first): FUN_00208a8c (funcs/_FUN_00208a8c.cpp), FUN_00208a68 (funcs/_FUN_00208a68.cpp), FUN_0000be10 (funcs/_FUN_0000be10.cpp), FUN_0000a1d8 (funcs/_FUN_0000a1d8.cpp), FUN_00218330 (funcs/_FUN_00218330.cpp), FUN_002027bc (funcs/_FUN_002027bc.cpp), FUN_00202134 (funcs/_FUN_00202134.cpp), FUN_00202038 (funcs/_FUN_00202038.cpp), FUN_000659a0 (funcs/_FUN_000659a0.cpp)
+    (an address near zero: a null pointer, often a global or object the rebuilt program never set up)
+    code of FUN_00208a8c (funcs/_FUN_00208a8c.cpp):
+         1 | #include "shared.h"
+         2 | 
+         3 | int FUN_00208a8c(pthread_mutex_t *param_1)
+         4 | {
+         5 |   int iVar1;
+         6 | 
+         7 |   iVar1 = pthread_mutex_lock(param_1);
+         8 |   return iVar1;
+         9 | }
+        10 | 
+    code of FUN_00208a68 (funcs/_FUN_00208a68.cpp):
+         1 | #include "shared.h"
+         2 | 
+         3 | int FUN_00208a68(long param_1)
+         4 | {
+         5 |   int iVar1;
+         6 | 
+         7 |   iVar1 = FUN_00208a8c(*(pthread_mutex_t **)(param_1 + 0x40));
+         8 |   return iVar1;
+         9 | }
+        10 | 
     code of FUN_0000be10 (funcs/_FUN_0000be10.cpp):
          1 | #include "shared.h"
          2 | 
@@ -14789,15 +14816,6 @@ crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run 
          9 |   return param_1;
         10 | }
         11 | 
-    code of FUN_0000a1d8 (funcs/_FUN_0000a1d8.cpp):
-         1 | #include "shared.h"
-         2 | 
-         3 | uint64_t FUN_0000a1d8(long *param_1,long param_2)
-         4 | {
-         5 |   
-         6 |   return (uint64_t)FUN_0000be10(param_1,param_2);
-         7 | }
-         8 | 
 
 the rebuilt plugin didn't load: crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
 ```
@@ -14858,70 +14876,46 @@ at 884451 -> fff8c
 ## Build log of this run (build/worklist.log)
 
 ```
-[10:17:57] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/pseudocode.c
-[10:17:57] Resume check (30173 functions in manifest):
-[10:17:57]   the rewrite changed since the last build — updating the split (functions whose code changed get the new code; the others keep their fixes)
-[10:17:57]   [redo] split + header: input changed — rebuilding shared.h/globals.cpp and merging with the work already done
-[10:17:58]   libclang reported 2 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
-[10:17:58]     _parse_monolith.cpp:220: static assertion failed due to requirement 'sizeof(struct section) == 80': Ghidra's size of section
-[10:17:58]     _parse_monolith.cpp:236: static assertion failed due to requirement 'sizeof(struct segment_command) == 72': Ghidra's size of segment_command
-[10:18:04]   split -> 30173 function TUs, 65 types (+37 forward decls), 30173 prototypes, 0 globals
-[10:18:18]     functions: 41 changed in the rewrite (new code taken), 298 already fixed by the model (kept), 29833 untouched (refreshed with the new split), 1 previously quarantined (restored for another try), 0 not in the old run
-[10:18:18]     (the replaced versions are in /Users/admin/glitchdecomp/fastpass 3/snapshots/20261023-101807-build-update)
-[10:18:18]   [redo] header check
-[10:18:18]   » validate/repair shared headers
-[10:18:19]   [redo] compile status
-[10:18:19]   » preflight diagnose (surface any systemic cause before spending model time on 30173 functions)
-[10:18:19]   preflight: sampled TUs compile — proceeding
-[10:18:19]   » isolated compile sweep
-[10:18:20]   compiling with 11 parallel worker(s)
-[10:22:33]   isolated compile: 30096/30173 TUs pass, 77 need repair (254s)
-[10:22:33]   status: 30096 compile, 77 still to fix, 0 quarantined
-[10:25:49]   declared 119 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 54 function(s) that use them again
-[10:25:49]   compiling with 11 parallel worker(s)
-[10:25:50]   isolated compile: 50/54 TUs pass, 4 need repair (1s)
-[10:25:50]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[10:25:50]   » dependency order + fixer loop
-[10:25:50]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
-[10:25:50]   callgraph: 582 callee name(s) not in our TU set (external/library calls) — ignored for ordering
-[10:25:50]   callgraph: exact deps for 21706/30173 functions
-[10:25:51]     FUN_0020d3fc -> fixed without the model
-[10:25:51]     FUN_001a9378 -> fixed without the model
-[10:25:51]     FUN_001a2588 -> fixed without the model
-[10:25:51]     FUN_0020d83c -> fixed without the model
-[10:25:51]     FUN_00215318 -> fixed without the model
-[10:25:51]     FUN_00171cc8 -> fixed without the model
-[10:25:51]     FUN_0020dca8 -> fixed without the model
-[10:25:51]     FUN_00168600 -> fixed without the model
-[10:25:51]     FUN_00171a30 -> fixed without the model
-[10:25:51]     FUN_001718c0 -> fixed without the model
-[10:25:51]     terminate_ -> fixed without the model
-[10:25:51]     buildMenu_ -> fixed without the model
-[10:25:51]     FUN_001736b4 -> fixed without the model
-[10:25:51]     initWithFrame__16c574 -> fixed without the model
-[10:25:51]     dealloc_16c680 -> fixed without the model
-[10:25:51]     drawRect__16d1bc -> fixed without the model
-[10:25:51]     FUN_00173590 -> fixed without the model
-[10:25:51]     buildMenuGroupEntries_entry__16bb04 -> fixed without the model
-[10:25:51]     validAttributesForMarkedText -> fixed without the model
-[10:25:51]     FUN_001728ac -> fixed without the model
-[10:25:51]     setContentSize__1a8844 -> fixed without the model
-[10:25:51]     invalidate_1a8a74 -> fixed without the model
-[10:25:51]     FUN_002747e0 -> fixed without the model
-[10:25:51]     close_169730 -> fixed without the model
-[10:25:51]     setMarkedText_selectedRange_ -> fixed without the model
-[10:25:51]     insertText__16d864 -> fixed without the model
-[10:25:52]     initWithContentRect_styleMask_backing_defer__168d74 -> fixed without the model
-[10:25:52]   quick fixes (no model): 27 of 27 function(s) compile now
-[10:25:52]   fixer loop over 0 failing TU(s), dependency-ordered
-[10:25:52]   learned fixes: 96 proven, 487 being tried, 159 retired (3 new this run); used 49 of 49 time(s) tried, 100% kept; 0 quarantined function(s) rescued. All in build/learned_fixes.txt
-[10:25:52]   fixer loop done: 30173 compiling, 0 quarantined
-[10:25:52]   repair loop: 0 quarantined function(s) rescued
-[10:28:49]   link round 1: linking 30176 objects ...
-[10:28:51]   link round 1: 98 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[10:28:52]   link round 2: linking 30177 objects ...
-[10:28:53]   24 placeholder definition(s) in stubs.cpp (listed in link_report.txt)
-[10:28:53]   LINK OK (round 2) -> /Users/admin/glitchdecomp/fastpass 3/build_c/program.dylib
+[10:36:23] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/pseudocode.c
+[10:36:23] Resume check (30173 functions in manifest):
+[10:36:23]   the rewrite changed since the last build — updating the split (functions whose code changed get the new code; the others keep their fixes)
+[10:36:23]   [redo] split + header: input changed — rebuilding shared.h/globals.cpp and merging with the work already done
+[10:36:23]   libclang reported 2 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
+[10:36:23]     _parse_monolith.cpp:220: static assertion failed due to requirement 'sizeof(struct section) == 80': Ghidra's size of section
+[10:36:23]     _parse_monolith.cpp:236: static assertion failed due to requirement 'sizeof(struct segment_command) == 72': Ghidra's size of segment_command
+[10:36:30]   split -> 30173 function TUs, 65 types (+37 forward decls), 30173 prototypes, 0 globals
+[10:36:44]     functions: 70 changed in the rewrite (new code taken), 322 already fixed by the model (kept), 29781 untouched (refreshed with the new split), 0 previously quarantined (restored for another try), 0 not in the old run
+[10:36:44]     (the replaced versions are in /Users/admin/glitchdecomp/fastpass 3/snapshots/20261023-103632-build-update)
+[10:36:44]   [redo] header check
+[10:36:44]   » validate/repair shared headers
+[10:36:44]   [redo] compile status
+[10:36:44]   » preflight diagnose (surface any systemic cause before spending model time on 30173 functions)
+[10:36:45]   preflight: sampled TUs compile — proceeding
+[10:36:45]   » isolated compile sweep
+[10:36:46]   compiling with 11 parallel worker(s)
+[10:40:51]   isolated compile: 30117/30173 TUs pass, 56 need repair (246s)
+[10:40:51]   status: 30117 compile, 56 still to fix, 0 quarantined
+[10:44:05]   declared 120 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 54 function(s) that use them again
+[10:44:05]   compiling with 11 parallel worker(s)
+[10:44:06]   isolated compile: 53/54 TUs pass, 1 need repair (1s)
+[10:44:06]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
+[10:44:06]   » dependency order + fixer loop
+[10:44:06]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
+[10:44:06]   callgraph: 582 callee name(s) not in our TU set (external/library calls) — ignored for ordering
+[10:44:06]   callgraph: exact deps for 21706/30173 functions
+[10:44:06]     FUN_002135c0 -> fixed without the model
+[10:44:06]     FUN_001f3cd0 -> fixed without the model
+[10:44:07]     FUN_001a54e0 -> fixed without the model
+[10:44:07]   quick fixes (no model): 3 of 3 function(s) compile now
+[10:44:07]   fixer loop over 0 failing TU(s), dependency-ordered
+[10:44:07]   learned fixes: 96 proven, 487 being tried, 159 retired (0 new this run); used 7 of 7 time(s) tried, 100% kept; 0 quarantined function(s) rescued. All in build/learned_fixes.txt
+[10:44:07]   fixer loop done: 30173 compiling, 0 quarantined
+[10:44:07]   repair loop: 0 quarantined function(s) rescued
+[10:48:15]   link round 1: linking 30176 objects ...
+[10:48:16]   link round 1: 98 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
+[10:48:17]   link round 2: linking 30177 objects ...
+[10:48:19]   24 placeholder definition(s) in stubs.cpp (listed in link_report.txt)
+[10:48:19]   LINK OK (round 2) -> /Users/admin/glitchdecomp/fastpass 3/build_c/program.dylib
 ```
 
 ## pipeline_state.json
@@ -14931,15 +14925,15 @@ at 884451 -> fff8c
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-23 10:16:00",
-      "at": "2026-10-23 10:16:14",
-      "seconds": 14,
+      "started": "2026-10-23 10:34:32",
+      "at": "2026-10-23 10:34:39",
+      "seconds": 8,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-23 10:16:16",
-      "at": "2026-10-23 10:17:57",
+      "started": "2026-10-23 10:34:41",
+      "at": "2026-10-23 10:36:23",
       "seconds": 101,
       "model": "",
       "note": "30173/30489 rewritten",
@@ -14947,81 +14941,65 @@ at 884451 -> fff8c
     },
     "split": {
       "done": true,
-      "started": "2026-10-23 10:17:57",
-      "at": "2026-10-23 10:22:33",
-      "seconds": 277,
-      "note": "30096/30173 compile after the sweep"
+      "started": "2026-10-23 10:36:23",
+      "at": "2026-10-23 10:40:51",
+      "seconds": 268,
+      "note": "30117/30173 compile after the sweep"
     },
     "fix": {
       "done": true,
-      "started": "2026-10-23 10:22:33",
-      "at": "2026-10-23 10:25:53",
-      "seconds": 199,
+      "started": "2026-10-23 10:40:51",
+      "at": "2026-10-23 10:44:07",
+      "seconds": 196,
       "model": "qwen2.5-coder-3b-instruct-mlx",
       "model_busy": 34
     },
     "recover": {
       "done": true,
-      "started": "2026-10-23 10:25:53",
-      "at": "2026-10-23 10:25:53",
+      "started": "2026-10-23 10:44:07",
+      "at": "2026-10-23 10:44:07",
       "seconds": 0,
       "model": "qwen2.5-coder-3b-instruct-mlx"
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-23 10:16:14",
-      "at": "2026-10-23 10:16:16",
+      "started": "2026-10-23 10:34:39",
+      "at": "2026-10-23 10:34:41",
       "seconds": 2,
       "note": "1141 replacement(s)"
     },
     "link": {
       "done": true,
-      "started": "2026-10-23 10:25:53",
-      "at": "2026-10-23 10:28:53",
-      "seconds": 181,
+      "started": "2026-10-23 10:44:07",
+      "at": "2026-10-23 10:48:19",
+      "seconds": 251,
       "note": "linked"
     },
     "test": {
       "done": false,
-      "started": "2026-10-23 10:28:53",
-      "at": "2026-10-23 10:28:55",
+      "started": "2026-10-23 10:48:19",
+      "at": "2026-10-23 10:48:20",
       "note": "the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)"
     },
     "improve": {
       "done": false,
-      "started": "2026-10-23 10:28:55",
-      "at": "2026-10-23 10:28:55",
+      "started": "2026-10-23 10:48:20",
+      "at": "2026-10-23 10:48:20",
       "note": "not in C mode yet"
     },
     "organize": {
       "done": false,
-      "started": "2026-10-23 10:28:55",
-      "at": "2026-10-23 10:28:55",
+      "started": "2026-10-23 10:48:20",
+      "at": "2026-10-23 10:48:20",
       "note": "not in C mode yet"
     }
   },
-  "version": "2026-10-23.5",
+  "version": "2026-10-23.6",
   "chars_per_token": {
     "ctx": 8192,
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-22 13:41:58",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: no member named 'X' in 'X'": 2,
-        "fix|quarantined: use of undeclared identifier 'X'": 1,
-        "fix|quarantined: too many arguments to function call, expected N, have N": 1,
-        "fix|quarantined: expected expression": 1,
-        "test|the run crashed: PermissionError: [Errno N] Operation not permitted: '/Users/admin/glitchdecomp/fastpass N/build_c/test/host/aharness_host-armN-cN.dSYM'": 1,
-        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 120,
-        "fix|the model repeated an edit that had already failed (skipped)": 17,
-        "fix|fixes that undid each other (the cycle was stopped and the model got the function)": 15,
-        "fix|small edits the model couldn't give a usable answer for": 1,
-        "link|functions replaced by placeholders to link": 29
-      }
-    },
     {
       "at": "2026-10-22 14:07:16",
       "keys": {
@@ -15067,23 +15045,18 @@ at 884451 -> fff8c
         "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 119,
         "link|functions replaced by placeholders to link": 24
       }
+    },
+    {
+      "at": "2026-10-23 10:48:20",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "test|the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)": 1,
+        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 120,
+        "link|functions replaced by placeholders to link": 24
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-22 12:51",
-      "functions": 30176,
-      "compile_pct": 99.6,
-      "quarantined_pct": 0.4,
-      "to_fix": 0,
-      "fix_tried": 135,
-      "fix_success_pct": 15.6,
-      "fix_per_hour": 164,
-      "learned_proven": 91,
-      "learned_kept_pct": 82.0,
-      "rescued": 5,
-      "ideas_adopted": "0/16"
-    },
     {
       "at": "10-22 13:41",
       "functions": 30173,
@@ -15139,6 +15112,16 @@ at 884451 -> fff8c
       "learned_proven": 96,
       "learned_kept_pct": 100.0,
       "test_pass_pct": 0.0
+    },
+    {
+      "at": "10-23 10:48",
+      "functions": 30173,
+      "compile_pct": 100.0,
+      "quarantined_pct": 0.0,
+      "to_fix": 0,
+      "learned_proven": 96,
+      "learned_kept_pct": 100.0,
+      "test_pass_pct": 0.0
     }
   ]
 }
@@ -15148,8 +15131,8 @@ at 884451 -> fff8c
 
 ```json
 {
-  "generated": "2026-10-23 10:28:55",
-  "pipeline_version": "2026-10-23.5",
+  "generated": "2026-10-23 10:48:20",
+  "pipeline_version": "2026-10-23.6",
   "workdir": "/Users/admin/glitchdecomp/fastpass 3",
   "export": {
     "functions": 30489,
@@ -15206,15 +15189,15 @@ at 884451 -> fff8c
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-23 10:16:00",
-      "at": "2026-10-23 10:16:14",
-      "seconds": 14,
+      "started": "2026-10-23 10:34:32",
+      "at": "2026-10-23 10:34:39",
+      "seconds": 8,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-23 10:16:16",
-      "at": "2026-10-23 10:17:57",
+      "started": "2026-10-23 10:34:41",
+      "at": "2026-10-23 10:36:23",
       "seconds": 101,
       "model": "",
       "note": "30173/30489 rewritten",
@@ -15222,56 +15205,56 @@ at 884451 -> fff8c
     },
     "split": {
       "done": true,
-      "started": "2026-10-23 10:17:57",
-      "at": "2026-10-23 10:22:33",
-      "seconds": 277,
-      "note": "30096/30173 compile after the sweep"
+      "started": "2026-10-23 10:36:23",
+      "at": "2026-10-23 10:40:51",
+      "seconds": 268,
+      "note": "30117/30173 compile after the sweep"
     },
     "fix": {
       "done": true,
-      "started": "2026-10-23 10:22:33",
-      "at": "2026-10-23 10:25:53",
-      "seconds": 199,
+      "started": "2026-10-23 10:40:51",
+      "at": "2026-10-23 10:44:07",
+      "seconds": 196,
       "model": "qwen2.5-coder-3b-instruct-mlx",
       "model_busy": 34
     },
     "recover": {
       "done": true,
-      "started": "2026-10-23 10:25:53",
-      "at": "2026-10-23 10:25:53",
+      "started": "2026-10-23 10:44:07",
+      "at": "2026-10-23 10:44:07",
       "seconds": 0,
       "model": "qwen2.5-coder-3b-instruct-mlx"
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-23 10:16:14",
-      "at": "2026-10-23 10:16:16",
+      "started": "2026-10-23 10:34:39",
+      "at": "2026-10-23 10:34:41",
       "seconds": 2,
       "note": "1141 replacement(s)"
     },
     "link": {
       "done": true,
-      "started": "2026-10-23 10:25:53",
-      "at": "2026-10-23 10:28:53",
-      "seconds": 181,
+      "started": "2026-10-23 10:44:07",
+      "at": "2026-10-23 10:48:19",
+      "seconds": 251,
       "note": "linked"
     },
     "test": {
       "done": false,
-      "started": "2026-10-23 10:28:53",
-      "at": "2026-10-23 10:28:55",
+      "started": "2026-10-23 10:48:19",
+      "at": "2026-10-23 10:48:20",
       "note": "the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)"
     },
     "improve": {
       "done": false,
-      "started": "2026-10-23 10:28:55",
-      "at": "2026-10-23 10:28:55",
+      "started": "2026-10-23 10:48:20",
+      "at": "2026-10-23 10:48:20",
       "note": "not in C mode yet"
     },
     "organize": {
       "done": false,
-      "started": "2026-10-23 10:28:55",
-      "at": "2026-10-23 10:28:55",
+      "started": "2026-10-23 10:48:20",
+      "at": "2026-10-23 10:48:20",
       "note": "not in C mode yet"
     }
   }
@@ -15282,7 +15265,7 @@ at 884451 -> fff8c
 
 ```json
 {
-  "input_sha": "2e6478085c8cbc9a",
+  "input_sha": "f2c71158ba444a4b",
   "split_done": true,
   "header_ok": true,
   "sweep_done": true,
