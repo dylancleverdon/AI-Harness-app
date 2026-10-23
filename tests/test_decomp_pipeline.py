@@ -2447,3 +2447,45 @@ int main(void) { printf("%g\\n", f(3, 7)); return 0; }
     r = subprocess.run([cc, "-w", str(tmp_path / "g.c"), "-o", str(tmp_path / "g")], capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     assert subprocess.run([str(tmp_path / "g")], capture_output=True, text=True).stdout.strip() == "5"
+
+
+def test_a_call_to_an_address_in_the_data_goes_through_the_pointer_kept_there(tmp_path, model):
+    import base64
+    import ctypes
+    import struct
+    pseudo = {**C_PSEUDO,
+              # Ghidra calls the slot's address as if it were code: FUN_00002008()
+              "10a0": ("FUN_000010a0", "long FUN_000010a0(void)\n\n{\n  long lVar1;\n"
+                                       "  lVar1 = FUN_00002008(DAT_00002000,1);\n  return lVar1;\n}\n")}
+    write_export(tmp_path, pseudo)
+    blob = struct.pack("<qq", 41, 0x1000)
+    (tmp_path / "ghidra" / "ghidra_data.json").write_text(json.dumps({
+        "version": 4, "image_base": "0",
+        "blocks": [{"name": "__data", "start": "2000", "size": len(blob), "write": True,
+                    "bytes": base64.b64encode(blob).decode()}],
+        "symbols": [{"addr": "2000", "name": "DAT_00002000", "type": "long", "size": 8}],
+        "refs": [], "relocs": [{"at": "2008", "value": "1000", "sym": ""}], "callees": {}}))
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    assert "called through it): 1" in (tmp_path / "pipeline.log").read_text()
+    so = ctypes.CDLL(str(next((tmp_path / "build_c").glob("program.*"))))
+    so.FUN_000010a0.restype = ctypes.c_long
+    assert so.FUN_000010a0() == 42          # through the slot, fixed up to addNumbers
+
+
+def test_a_library_function_with_a_lost_name_is_forwarded_to_the_real_one(tmp_path):
+    import subprocess
+    assert dp._library_target("operator_delete", dp.Config(input_file=tmp_path / "x", workdir=tmp_path)) == "_ZdlPv"
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        return
+    assert dp._library_target("_logf", dp.Config(input_file=tmp_path / "x", workdir=tmp_path, cxx=cc)) == "logf"
+    (tmp_path / "f.c").write_text(dp._forwarder("_logf", "logf") + """
+#include <math.h>
+#include <stdio.h>
+float _logf(float);
+int main(void) { printf("%d\\n", _logf(2.5f) == logf(2.5f)); return 0; }
+""")
+    r = subprocess.run([cc, "-w", str(tmp_path / "f.c"), "-o", str(tmp_path / "f"), "-lm"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert subprocess.run([str(tmp_path / "f")], capture_output=True, text=True).stdout.strip() == "1"

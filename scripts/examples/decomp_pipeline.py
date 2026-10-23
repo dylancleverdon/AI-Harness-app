@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-23.3"
+PIPELINE_VERSION = "2026-10-23.4"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -4222,6 +4222,24 @@ def run_pseudo_source(P: Paths, args) -> dict:
     data_names = frozenset(w for e in entries for w in re.findall(r"(?<![\w.>])([A-Za-z_]\w*)", e["body"])
                            if (GD_NAME.match(w) or (w in field_used and named_by_type(w)))
                            and w not in cname.values())
+    # a "function" Ghidra calls at an address in the DATA (FUN_004536f8(), DAT_0042e5a8()),
+    # where the loader stores a pointer: a call through the pointer kept there
+    slots = {int(r["from"], 16) for r in gdata.get("refs") or []} | \
+        {int(r["at"], 16) for r in gdata.get("relocs") or []}
+    spans_d = [(int(b["start"], 16), int(b["start"], 16) + int(b["size"])) for b in gdata.get("blocks") or []
+               if b.get("size")]
+    defined_fns = set(cname.values())
+    via_slot = set()
+    for e in entries:
+        for m in re.finditer(r"(?<![\w.>])((?:FUN|DAT|PTR)_([0-9a-fA-F]{6,16}))\s*\(", e["body"]):
+            w, a = m.group(1), int(m.group(2), 16)
+            if w not in defined_fns and a in slots and any(s <= a < en for s, en in spans_d):
+                via_slot.add(w)
+    if via_slot:
+        fn_ptrs = fn_ptrs | via_slot
+        data_names = data_names | via_slot
+        plog(P, show=True, msg=f"    calls to an address in the data, where a function pointer is kept "
+                               f"(called through it): {len(via_slot)}")
     if gdata.get("blocks"):
         known_labels = {s.get("name") for s in gdata.get("symbols") or []}
         type_known = frozenset(re.findall(r"\btypedef\b[^;]*?\b([A-Za-z_]\w*)\s*;", types)) | \
@@ -9409,6 +9427,49 @@ def _stub_for(kind: str, line: str, name: str, c: bool = False) -> Optional[str]
     return decl + " { return {}; }"
 
 
+# C names Ghidra's C++ library calls end up with -> the library's real (mangled) symbol
+LIBRARY_NAMES = {
+    "operator_new": "_Znwm", "operator_new__": "_Znam",
+    "operator_delete": "_ZdlPv", "operator_delete__": "_ZdaPv",
+    "_next_prime": "_ZNSt3__112__next_primeEm",
+}
+
+
+def _library_target(name: str, cfg) -> Optional[str]:
+    """The library symbol an undefined C name really is: a known C++ one, or a C
+    library function that lost to one underscore too many (_logf -> logf)."""
+    if name in LIBRARY_NAMES:
+        return LIBRARY_NAMES[name]
+    if name.startswith("_") and len(name) > 1:
+        cc = getattr(cfg, "cxx", None) or shutil.which("clang") or shutil.which("cc")
+        if name[1:] in _system_functions(cc):
+            return name[1:]
+    return None
+
+
+_SYSFN: dict = {}
+
+
+def _system_functions(cc) -> set:
+    if cc not in _SYSFN:
+        _SYSFN[cc] = system_names(cc)["functions"]
+    return _SYSFN[cc]
+
+
+def _forwarder(name: str, target: str) -> str:
+    """A definition of `name` that is one jump to `target`: every argument register
+    is passed on as it is, so the signature doesn't matter."""
+    return (f"#ifdef __APPLE__\n#define GH_FWD_N \"_{name}\"\n#define GH_FWD_T \"_{target}\"\n#else\n"
+            f"#define GH_FWD_N \"{name}\"\n#define GH_FWD_T \"{target}\"\n#endif\n"
+            "#if defined(__aarch64__) || defined(__arm64__)\n"
+            "__asm__(\".text\\n.globl \" GH_FWD_N \"\\n.p2align 2\\n\" GH_FWD_N \":\\n  b \" GH_FWD_T \"\\n\");\n"
+            "#elif defined(__APPLE__)\n"
+            "__asm__(\".text\\n.globl \" GH_FWD_N \"\\n\" GH_FWD_N \":\\n  jmp \" GH_FWD_T \"\\n\");\n"
+            "#else\n"
+            "__asm__(\".text\\n.globl \" GH_FWD_N \"\\n\" GH_FWD_N \":\\n  jmp \" GH_FWD_T \"@PLT\\n\");\n"
+            "#endif\n#undef GH_FWD_N\n#undef GH_FWD_T")
+
+
 def _asm_named(stub: str, name: str) -> str:
     """A C stand-in defined under a private name that links as `name` (an asm
     label): a type or a variable of the same name in shared.h can't clash with it."""
@@ -9886,6 +9947,8 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
     c_mode = getattr(cfg, "lang", "c++") == "c"
     objc_c = cfg.workdir / "objc_messages.c"
     objc_sends: dict[str, str] = {}     # Objective-C message stubs: name -> definition
+    forwarded: dict = {}                # library symbol -> the name forwarded to it
+    no_forward: set = set()             # names whose library symbol turned out missing
 
     def write_objc():
         objc_c.write_text("// Objective-C messages the code sends through stubs Ghidra named after their\n"
@@ -10052,6 +10115,15 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
         qnames = quarantined_names()
         for raw_sym in undefined:
             readable = names.get(raw_sym, raw_sym)
+            # a forwarder whose library symbol doesn't exist here: a placeholder after all
+            fwd = forwarded.pop(raw_sym[1:] if sys.platform == "darwin" and raw_sym.startswith("_")
+                                else raw_sym, None)
+            if fwd:
+                no_forward.add(fwd)
+                stubs.pop(fwd, None)
+                report.append(f"{fwd}: the library has no {raw_sym}; a placeholder instead")
+                changed = True
+                continue
             if "::" in readable.split("(")[0]:
                 external.append(readable)       # class method / namespaced: not stubbed
                 continue
@@ -10076,6 +10148,15 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
                                    ).rstrip(";").startswith(want)]
                 cands = exact or cands[:1]
             stub = _stub_for(cands[0][0], cands[0][1], base, c_mode) if cands else None
+            target = _library_target(base, cfg) if c_mode and base not in no_forward else None
+            if target:
+                forwarded[target] = base
+                # a library function whose name got lost on the way (operator_delete is
+                # C++'s delete, _logf is logf): a jump to the real one, arguments untouched
+                stubs[base] = _forwarder(base, target)
+                report.append(f"{base}: forwarded to the library's {target}")
+                changed = True
+                continue
             if stub is None and c_mode and re.fullmatch(r"[A-Za-z_]\w*", base):
                 stub = f"uint64_t {base}() {{ return 0; }}"     # no declaration: any arguments
             if stub and c_mode:
