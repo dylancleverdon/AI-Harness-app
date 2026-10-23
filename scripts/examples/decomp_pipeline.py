@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-22.10"
+PIPELINE_VERSION = "2026-10-23.1"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -1572,7 +1572,7 @@ def run_headless_export(P: Paths, args, refresh=False):
     return True
 
 
-DATA_EXPORT_VERSION = 2       # raised when the data export takes in more: older ones are redone
+DATA_EXPORT_VERSION = 3       # raised when the data export takes in more: older ones are redone
 
 GHIDRA_DATA_SCRIPT = r"""
 // GhidraDataExport.java - written by decomp_pipeline.py. Exports the program's
@@ -1627,7 +1627,7 @@ public class GhidraDataExport extends GhidraScript {
         ReferenceManager refs = currentProgram.getReferenceManager();
         SymbolTable st = currentProgram.getSymbolTable();
         Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8));
-        w.write("{\"version\":2,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
+        w.write("{\"version\":3,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
         AddressSet dataSet = new AddressSet();
         boolean first = true;
         for (MemoryBlock b : mem.getBlocks()) {
@@ -1682,7 +1682,10 @@ public class GhidraDataExport extends GhidraScript {
                 Address to = r.getToAddress();
                 String kind;
                 String name = "";
-                if (to.isExternalAddress()) {
+                MemoryBlock tb = to.isMemoryAddress() ? mem.getBlock(to) : null;
+                if (to.isExternalAddress() || (tb != null && tb.isExternalBlock())) {
+                    // what the program imports (a library's function, vtable or global):
+                    // Mach-O's loader puts it in an EXTERNAL block; the name is what to look up
                     kind = "external";
                     Symbol s = st.getPrimarySymbol(to);
                     name = s != null ? s.getName() : "";
@@ -3449,6 +3452,7 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
             h.append(f"#define {m} (*(uint64_t *)(g_block_{i} + {off:#x}))")
     # pointers stored in data
     targets, tindex, relocs, externals, ext_relocs, fn_decls = [], {}, [], [], [], set()
+    unresolved: list = []
     by_addr = dict(cname)
     for r in data.get("refs") or []:
         loc = where(int(r["from"], 16))
@@ -3469,6 +3473,7 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
         else:
             tl = where(to)
             if not tl:
+                unresolved.append((r["from"], r["to"]))   # points outside the data: stays as it was
                 continue
             expr = f"(void *)(g_block_{tl[0]} + {tl[1]:#x})"
         if expr not in tindex:
@@ -3492,10 +3497,24 @@ __attribute__((constructor)) static void gd_relocate(void) {{
     for (unsigned i = 0; i < {len(relocs)}u; i++)
         memcpy(blocks[gd_relocs[i].block] + gd_relocs[i].off, &gd_targets[gd_relocs[i].target], sizeof(void *));
     for (unsigned i = 0; i < {len(ext_relocs)}u; i++) {{
-        void *p = dlsym(RTLD_DEFAULT, gd_externals[gd_ext_relocs[i].ext]);
+        const char *n = gd_externals[gd_ext_relocs[i].ext];
+        void *p = dlsym(RTLD_DEFAULT, n);
+        if (!p && n[0] == '_')               /* Mach-O's own spelling: _kCFAllocatorDefault */
+            p = dlsym(RTLD_DEFAULT, n + 1);
         memcpy(blocks[gd_ext_relocs[i].block] + gd_ext_relocs[i].off, &p, sizeof(void *));
     }}
 }}""")
+    if unresolved:
+        # a pointer the plugin would follow to an address that doesn't exist when it
+        # runs (an import Ghidra didn't name, in an export from before version 3)
+        write_atomic(P.rewrite / "data_unresolved_pointers.txt",
+                     "Pointers stored in the data that point outside every exported block: they keep\n"
+                     "the original program's address, which doesn't exist in the rebuilt one.\n\n"
+                     + "\n".join(f"at {a} -> {b}" for a, b in unresolved) + "\n")
+        plog(P, show=True, msg=f"    pointers in the data to addresses outside it (not fixed up): "
+                               f"{len(unresolved)}, listed in rewrite/data_unresolved_pointers.txt"
+                               + (" — export the data again (--from export) to name them"
+                                  if int(data.get("version", 1)) < DATA_EXPORT_VERSION else ""))
     return "\n".join(h) + "\n", "\n".join(c) + "\n", macros, len(relocs) + len(ext_relocs)
 
 
@@ -4448,8 +4467,8 @@ def run_export(P: Paths, args, redo: set) -> dict:
                 break
         if old and not (find_analyze_headless(args.ghidra_home) and args.project):
             plog(P, show=True, msg="  !! the data export is from an older version, which left out "
-                                   "constants in executable sections; data it doesn't have gets "
-                                   "placeholders. Run with --ghidra-home and --project once to "
+                                   "constants in executable sections and the names of what the "
+                                   "program imports; the plugin can crash where it uses them. Run with --ghidra-home and --project once to "
                                    "export the data again (quick: nothing is decompiled)")
             old = False
         if refresh or old or not (gd.exists() or gdo.exists()):
@@ -9007,7 +9026,7 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
         f = P.build / name
         if f.exists():
             section(f"build/{name}", _read(f))
-    for name in ("data_placeholders.txt", "functions_without_code.txt"):
+    for name in ("data_placeholders.txt", "data_unresolved_pointers.txt", "functions_without_code.txt"):
         f = P.rewrite / name
         if f.exists():
             section(f"rewrite/{name}", _read(f)[:60000])

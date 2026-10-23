@@ -2358,3 +2358,30 @@ def test_test_host_build_clears_old_builds_and_their_dsym_folders(tmp_path, monk
     monkeypatch.setattr(dp.subprocess, "run", fake_cc)
     exe = dp._build_host(P, "arm64")
     assert sorted(p.name for p in d.iterdir()) == sorted(["aharness_host.c", exe.name, exe.name + ".dSYM"])
+
+
+def test_imported_data_is_looked_up_by_name_and_unfixed_pointers_are_listed(tmp_path):
+    import base64, subprocess
+    P = dp.Paths(tmp_path)
+    P.make()
+    data = {"version": 2,
+            "blocks": [{"name": "__got", "start": "1000", "size": 16, "bytes": base64.b64encode(
+                (0x8ac600).to_bytes(8, "little") + (0x8ac608).to_bytes(8, "little")).decode()}],
+            "symbols": [],
+            "refs": [{"from": "1000", "to": "8ac600", "kind": "external", "name": "_environ"},
+                     {"from": "1008", "to": "8ac608", "kind": "data", "name": ""}]}
+    h, c, _, n = dp.data_sources(P, data, {}, set())
+    assert n == 1 and "dlsym(RTLD_DEFAULT, n + 1)" in c
+    listed = (P.rewrite / "data_unresolved_pointers.txt").read_text()
+    assert "at 1008 -> 8ac608" in listed
+    assert "isExternalBlock()" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION == 3
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        return
+    (tmp_path / "d.c").write_text(c + "\nextern uint8_t g_block_0[];\nextern char **environ;\n"
+                                  "int main(void) { void *p; memcpy(&p, g_block_0, 8);\n"
+                                  "  return p == (void *)&environ ? 0 : 1; }\n")
+    r = subprocess.run([cc, "-w", str(tmp_path / "d.c"), "-o", str(tmp_path / "d"), "-ldl"],
+                       capture_output=True, text=True, cwd=tmp_path)
+    assert r.returncode == 0, r.stderr
+    assert subprocess.run([str(tmp_path / "d")]).returncode == 0      # "_environ" found as environ
