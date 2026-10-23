@@ -1,18 +1,18 @@
-# Diagnostics — fastpass 3 — 2026-10-22 23:52:23
+# Diagnostics — fastpass 3 — 2026-10-23 00:06:49
 
 
 ## Run
 
 ```
 script: decomp_pipeline 2026-10-23.1 (build 2026-10-18.1)
-command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from privacy --to organize --headless-export --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
+command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from export --to organize --headless-export --ghidra-home /Users/admin/Downloads/ghidra_12.1.4_PUBLIC --project /Users/admin/glitchpt2.gpr --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
 python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
 compile flags: -Wno-c++11-narrowing -arch arm64
 --ctx 8192, chars per token 2.06
-model: ?
+model: qwen2.5-coder-3b-instruct-mlx
 model requests turned down this run: 0, thinking-only answers: 0
-fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
+fix stage model edits: {'calls': 30, 'no_answer': 1, 'rejected': 0}
 ```
 
 ## What the script struggled with
@@ -23,44 +23,94 @@ fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-  10-22 11:37                98.3                0.6                321                186                3.2                414                  -                  -                  -                  -                  0/33                  -
   10-22 12:51                99.6                0.4                  0                135               15.6                164                  -                 91               82.0                  5                  0/16                  -
   10-22 13:41               100.0                0.0                  0                 15               46.7                117                  -                 94               90.6                  3                     -                  -
   10-22 14:07               100.0                0.0                  0                  5                0.0                 59                  -                 94              100.0                  -                     -                0.0
   10-22 23:52               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+  10-23 00:06               100.0                0.0                  0                  5                0.0                 77                  -                 96              100.0                  -                     -                0.0
 couldn't handle:
-  fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize_, initWithContentRect_styleMask_backing_defer__168d74, FUN_001a9378   [also in the last 2 run(s)]
+  fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize_, initWithContentRect_styleMask_backing_defer__168d74, FUN_001a9378   [also in the last 3 run(s)]
   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_002747e0   [also in the last 5 run(s)]
-  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. operator__385ec4   [also in the last 1 run(s)]
+  fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. operator__385ec4   [also in the last 2 run(s)]
   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
                     → tried again next run
+  test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)
+                    → see build/test/test_report.txt
+worked around (cost time, nothing lost):
+  fix         120 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4
+  fix          10 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. operator__385ec4, FUN_002747e0, initWithContentRect_styleMask_backing_defer__168d74
+  fix           5 × the model repeated an edit that had already failed (skipped)   e.g. operator__385ec4, FUN_002747e0
+  link         29 × functions replaced by placeholders to link
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[23:52:07] decomp_pipeline 2026-10-23.1: /Users/admin/glitchdecomp/fastpass 3 — stages privacy → organize
-[23:52:07]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[23:52:07] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
-[23:52:10]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
-[23:52:10]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
-[23:52:10] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
-[23:52:23] 
-[23:52:23] ━━━━ what the script struggled with this run ━━━━
-[23:52:23] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[23:52:23] rates (this run last; earlier runs above it):
-[23:52:23]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-[23:52:23]   10-22 11:37                98.3                0.6                321                186                3.2                414                  -                  -                  -                  -                  0/33                  -
-[23:52:23]   10-22 12:51                99.6                0.4                  0                135               15.6                164                  -                 91               82.0                  5                  0/16                  -
-[23:52:23]   10-22 13:41               100.0                0.0                  0                 15               46.7                117                  -                 94               90.6                  3                     -                  -
-[23:52:23]   10-22 14:07               100.0                0.0                  0                  5                0.0                 59                  -                 94              100.0                  -                     -                0.0
-[23:52:23]   10-22 23:52               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
-[23:52:23] couldn't handle:
-[23:52:23]   fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize_, initWithContentRect_styleMask_backing_defer__168d74, FUN_001a9378   [also in the last 2 run(s)]
-[23:52:23]   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_002747e0   [also in the last 5 run(s)]
-[23:52:23]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. operator__385ec4   [also in the last 1 run(s)]
-[23:52:23]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
-[23:52:23]                     → tried again next run
+[23:52:54] decomp_pipeline 2026-10-23.1: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
+[23:52:54]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[23:52:54] ━━━━ Stage 1/10 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
+[23:52:54]   snapshot of the current files before 'redo-data-export': /Users/admin/glitchdecomp/fastpass 3/snapshots/20261022-235254-redo-data-export
+[23:52:54]   exporting the program's data with Ghidra headless (no decompiling)
+[23:53:00]   using the existing ghidra_export.json (Ghidra not needed)
+[23:53:08]   callgraph.json: 22076 functions with internal calls
+[23:53:08]   export: 30489/30489 functions have pseudocode, 205 data types, 30489 signatures
+[23:53:08] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
+[23:53:10]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
+[23:53:10]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
+[23:53:10] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
+[23:53:38]     functions with a system function's name (the system's is used): 3: sync, setbuf, objc_msgSend
+[23:53:39]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
+[23:53:42]     pointers in the data to addresses outside it (not fixed up): 7, listed in rewrite/data_unresolved_pointers.txt
+[23:53:42]     data found by its address (not in Ghidra's label list): 466
+[23:54:45]     pieces of variables (v._0_8_): 6357
+[23:54:45]     functions Ghidra said return nothing, whose callers use the result: 2949
+[23:54:45]     16-byte register values (as gh16): 1908
+[23:54:45]     C++/Objective-C names in definitions: 1285
+[23:54:45]     C++ qualified names in code: 190
+[23:54:45]     types C didn't know (declared opaque): 19
+[23:54:45]     types that are also functions (as struct tags): 18
+[23:54:45]     switches on a pointer (on its value): 11
+[23:54:45]     NAN(x) tests (as isnan): 8
+[23:54:50]     names that are a type and also a function (the type keeps its struct tag): 12
+[23:54:50]   C source from Ghidra's pseudocode: 30173 function(s), 311 library stub(s) called directly, 29 data type(s) with Ghidra's layout, the program's data (34 block(s), 2967 labelled location(s) used, 33951 pointer fix-up(s), 31 placeholder(s) for data outside the export: rewrite/data_placeholders.txt) -> pseudocode.c
+[23:54:50] ━━━━ Stage 4/10 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
+[23:59:09] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
+[00:04:15]   fix: 60 model request(s); the model was busy 34% of the stage's 5m
+[00:04:15] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
+[00:04:16] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
+[00:06:47] ━━━━ Stage 8/10 · test ━━━━ the rebuilt plugin and the original (--plugin) render the same test signals in a small test host; their outputs are compared sample by sample
+[00:06:48]   test: the rebuilt plugin didn't load: crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
+[00:06:48]   test: everything it saw is in /Users/admin/glitchdecomp/fastpass 3/build_c/test/test_report.txt
+[00:06:48] ━━━━ Stage 9/10 · improve ━━━━ checks find small problems, worst functions first; each is fixed by a rule or one small planned edit, and kept only if it still compiles and behaves like Ghidra's version
+[00:06:48]   improve: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
+[00:06:48] ━━━━ Stage 10/10 · organize ━━━━ the improved code is arranged into modules and classes, checked for anything identifying, and written to final/ as a project that builds
+[00:06:48]   organize: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
+[00:06:49] ============================================================
+[00:06:49] SUMMARY: 30168/30173 functions compile, 5 quarantined, 2 re-derived, link=OK
+[00:06:49] Report: /Users/admin/glitchdecomp/fastpass 3/REPORT.md
+[00:06:49] 
+[00:06:49] ━━━━ what the script struggled with this run ━━━━
+[00:06:49] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[00:06:49] rates (this run last; earlier runs above it):
+[00:06:49]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
+[00:06:49]   10-22 12:51                99.6                0.4                  0                135               15.6                164                  -                 91               82.0                  5                  0/16                  -
+[00:06:49]   10-22 13:41               100.0                0.0                  0                 15               46.7                117                  -                 94               90.6                  3                     -                  -
+[00:06:49]   10-22 14:07               100.0                0.0                  0                  5                0.0                 59                  -                 94              100.0                  -                     -                0.0
+[00:06:49]   10-22 23:52               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                  -
+[00:06:49]   10-23 00:06               100.0                0.0                  0                  5                0.0                 77                  -                 96              100.0                  -                     -                0.0
+[00:06:49] couldn't handle:
+[00:06:49]   fix           3 × quarantined: no member named 'X' in 'X'   e.g. uiViewForAudioUnit_withSize_, initWithContentRect_styleMask_backing_defer__168d74, FUN_001a9378   [also in the last 3 run(s)]
+[00:06:49]   fix           1 × quarantined: too many arguments to function call, expected N, have N   e.g. FUN_002747e0   [also in the last 5 run(s)]
+[00:06:49]   fix           1 × quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))   e.g. operator__385ec4   [also in the last 2 run(s)]
+[00:06:49]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
+[00:06:49]                     → tried again next run
+[00:06:49]   test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)
+[00:06:49]                     → see build/test/test_report.txt
+[00:06:49] worked around (cost time, nothing lost):
+[00:06:49]   fix         120 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4
+[00:06:49]   fix          10 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. operator__385ec4, FUN_002747e0, initWithContentRect_styleMask_backing_defer__168d74
+[00:06:49]   fix           5 × the model repeated an edit that had already failed (skipped)   e.g. operator__385ec4, FUN_002747e0
+[00:06:49]   link         29 × functions replaced by placeholders to link
 ```
 
 ## Build status
@@ -183,18 +233,18 @@ ID uiViewForAudioUnit_withSize_
 }
 ```
 Notes:
-- 10-22 13:37 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change the `CVar8.field0_0x0.field1_0x8 = dVar5;` line to `CGSize field1_0x8 = {dVar5, 0};` — still fails: no member named 'field0_0x0' in 'struct CGRect'
-- 10-22 13:37 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change the line `CVar8.field0_0x0.field1_0x8 = dVar5;` to `CGSize field1_0x8 = {dVar5, 0};` — still fails: redefinition of 'field1_0x8'
-- 10-22 13:37 [compile] redefinition of 'field1_0x8' — fixed with a learned rule.
-- 10-22 14:01 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = (double)FUN_0005fd24();` to `CGSize field1_0x8 = {FUN_0005fd24(), 0};`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
-- 10-22 14:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = dVar5;` to `CGSize field1_0x8 = {dVar5, 0};` — still fails: redefinition of 'field1_0x8'
-- 10-22 14:02 [compile] redefinition of 'field1_0x8' — fixed with a learned rule.
-- 10-22 14:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = (double)FUN_0005fd24();` to `CGSize field1_0x8 = {FUN_0005fd24(), 0};` — still fails: no member named 'field0_0x0' in 'struct CGRect'
-- 10-22 14:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = dVar5;` to `CGSize field1_0x8 = {dVar5, 0};`. — still fails: redefinition of 'field1_0x8'
-- 10-22 14:02 [compile] redefinition of 'field1_0x8' — fixed with a learned rule.
 - 10-22 14:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = (double)FUN_0005fd24();` to `CGSize field1_0x8 = {FUN_0005fd24(), 0};` — still fails: no member named 'field0_0x0' in 'struct CGRect'
 - 10-22 14:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field1_0x8 = dVar5;` to `CGSize field1_0x8 = {dVar5, 0};`. — still fails: redefinition of 'field1_0x8'
 - 10-22 14:03 [compile] redefinition of 'field1_0x8' — fixed with a learned rule.
+- 10-23 00:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = (double)FUN_0005fd24();` to `CGSize field1_0x8 = {FUN_0005fd24(), 0};`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
+- 10-23 00:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = dVar5;` to `CGSize field1_0x8 = {dVar5, 0};`. — still fails: redefinition of 'field1_0x8'
+- 10-23 00:02 [compile] redefinition of 'field1_0x8' — fixed with a learned rule.
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = dVar5;` to `CGSize field1_0x8 = {dVar5, 0};`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = dVar5;` to `CGSize field1_0x8 = {dVar5, 0};`. — still fails: redefinition of 'field1_0x8'
+- 10-23 00:03 [compile] redefinition of 'field1_0x8' — fixed with a learned rule.
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `double` to `CGSize` in `CVar8.field0_0x0.field1_0x8 = dVar5;` and `CGSize field1_0x8 = {dVar5, 0};`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
+- 10-23 00:04 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CVar8.field0_0x0.field1_0x8 = dVar5;` to `CGSize field1_0x8 = {dVar5, 0};`. — still fails: redefinition of 'field1_0x8'
+- 10-23 00:04 [compile] redefinition of 'field1_0x8' — fixed with a learned rule.
 Ghidra's pseudocode:
 ```c
 /* Function Stack Size: 0x28 bytes */
@@ -287,19 +337,16 @@ ID Name1215vst3AudioUnitPluginShellUiCreator::uiViewForAudioUnit_withSize_
 
 Compiler output:
 ```
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_initWithContentRect_styleMask_backing_defer__168d74.cpp:63:11: error: no member named 'field0_0x0' in 'struct CGRect'
-   63 |     CVar8.field0_0x0.field1_0x8 = param_2_00;
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_initWithContentRect_styleMask_backing_defer__168d74.cpp:66:11: error: no member named 'field0_0x0' in 'struct CGRect'
+   66 |     CVar8.field0_0x0.field0_0x0 = extraout_d0;
       |     ~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_initWithContentRect_styleMask_backing_defer__168d74.cpp:64:11: error: no member named 'field0_0x0' in 'struct CGRect'
-   64 |     CVar8.field0_0x0.field0_0x0 = extraout_d0;
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_initWithContentRect_styleMask_backing_defer__168d74.cpp:67:11: error: no member named 'field1_0x10' in 'struct CGRect'
+   67 |     CVar8.field1_0x10.field1_0x8 = param_4_00;
       |     ~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_initWithContentRect_styleMask_backing_defer__168d74.cpp:65:11: error: no member named 'field1_0x10' in 'struct CGRect'
-   65 |     CVar8.field1_0x10.field1_0x8 = param_4_00;
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_initWithContentRect_styleMask_backing_defer__168d74.cpp:68:11: error: no member named 'field1_0x10' in 'struct CGRect'
+   68 |     CVar8.field1_0x10.field0_0x0 = param_3;
       |     ~~~~~ ^
-/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_initWithContentRect_styleMask_backing_defer__168d74.cpp:66:11: error: no member named 'field1_0x10' in 'struct CGRect'
-   66 |     CVar8.field1_0x10.field0_0x0 = param_3;
-      |     ~~~~~ ^
-4 errors generated.
+3 errors generated.
 ```
 Code:
 ```cpp
@@ -383,63 +430,63 @@ ID initWithContentRect_styleMask_backing_defer__168d74
       setAction_(IVar3,GD_PTR_s_closeButtonProxi__00452270);
       setTarget_(IVar3,local_90);
     }
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     puVar1 = GD_PTR__NSApp_00424000;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_applicationDidResignActive__00452160,
                *(undefined8 *)GD_PTR__NSApplicationDidResignActiveNotification_00424020,
                *(undefined8 *)GD_PTR__NSApp_00424000);
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_applicationDidBecomeActive__00452150,
                *(undefined8 *)GD_PTR__NSApplicationDidBecomeActiveNotification_00424008,
                *(undefined8 *)puVar1);
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_applicationDidHide__00452158,
                *(undefined8 *)GD_PTR__NSApplicationDidHideNotification_00424018,*(undefined8 *)puVar1);
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_applicationDidUnhide__00452168,
                *(undefined8 *)GD_PTR__NSApplicationDidUnhideNotification_00424028,*(undefined8 *)puVar1
               );
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_windowWillMiniaturize__00452cc8,
                *(undefined8 *)GD_PTR__NSWindowWillMiniaturizeNotification_00424070,local_90);
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_windowDidDeminiaturize__00452c98,
                *(undefined8 *)GD_PTR__NSWindowDidDeminiaturizeNotification_00424060,local_90);
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     puVar2 = GD_PTR_s_windowBecameKeyOrMainWindow__00452c90;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_windowBecameKeyOrMainWindow__00452c90,
                *(undefined8 *)GD_PTR__NSWindowDidBecomeKeyNotification_00424048,local_90);
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     addObserver_selector_name_object_
               (IVar3,local_90,puVar2,*(undefined8 *)GD_PTR__NSWindowDidBecomeMainNotification_00424050,
                local_90);
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_windowDidMove__00452ca0,
                *(undefined8 *)GD_PTR__NSWindowDidMoveNotification_00424068,local_90);
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_screenParameterChanged__00452878,
                *(undefined8 *)GD_PTR__NSApplicationDidChangeScreenParametersNotification_00424010,
                *(undefined8 *)puVar1);
-    IVar3 = defaultCenter_388180((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
+    IVar3 = defaultCenter_8a6d01((ID)GD_PTR__OBJC_CLASS___NSNotificationCenter_00452d30)
     ;
     addObserver_selector_name_object_
               (IVar3,local_90,GD_PTR_s_windowScreenChanged__00452cb8,
@@ -462,18 +509,18 @@ ID initWithContentRect_styleMask_backing_defer__168d74
 }
 ```
 Notes:
-- 10-22 13:37 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 64 from `CVar8.field0_0x0.field1_0x8 = extraout_d0;` to `CGSize field1_0x8 = {extraout_d0, 0};`. — still fails: expected expression
-- 10-22 14:01 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 64 from `CGSize field1_0x8 = {extraout_d0, 0};` to `CGSize field1_0x8 = {param_2_00, 0};`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
-- 10-22 14:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 64 from `CGSize field1_0x8 = {extraout_d0, 0};` to `CGSize field1_0x8 = {param_2_00, 0};`. — still fails: redefinition of 'field1_0x8'
-- 10-22 14:02 [compile] redefinition of 'field1_0x8' — fixed with a learned rule.
-- 10-22 14:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 63 from `CVar8.field0_0x0.field1_0x8 = param_2_00;` to `CGSize field1_0x8 = {param_2_00, 0};`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
-- 10-22 14:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 64 from `CVar8.field0_0x0.field1_0x8 = extraout_d0;` to `CGSize field1_0x8 = {param_2_00, 0};`. — still fails: redefinition of 'field1_0x8'
-- 10-22 14:02 [compile] redefinition of 'field1_0x8' — fixed with a learned rule.
-- 10-22 14:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 64 from `CGSize field1_0x8 = {extraout_d0, 0};` to `CGSize field1_0x8 = {param_2_00, 0};`. — still fails: no member named 'field1_0x8' in 'struct CGRect'
-- 10-22 14:03 [compile] that edit didn't help — undone.
-- 10-22 14:03 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
-- 10-22 14:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 64 from `CGSize field1_0x8 = {extraout_d0, 0};` to `CGSize field0_0x0 = extraout_d0;`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
-- 10-22 14:03 [compile] that edit didn't help — undone.
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
+- 10-23 00:04 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `field0_0x0.field1_0x8 = extraout_d0;` to `field0_0x0.field1_0x8 = param_4_00;` — still fails: no member named 'field0_0x0' in 'struct CGRect'
+- 10-23 00:04 [compile] that edit didn't help — undone.
+- 10-23 00:04 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
 Ghidra's pseudocode:
 ```c
 /* WARNING: Function: _objc_retain replaced with injection: _objc_retain_fixup */
@@ -642,13 +689,16 @@ ID Name1215vst3Window::initWithContentRect_styleMask_backing_defer_
 
 Compiler output:
 ```
+/Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_001a9378.cpp:81:11: error: no member named 'field0_0x0' in 'struct CGRect'
+   81 |     CVar8.field0_0x0.field1_0x8 = dVar5;
+      |     ~~~~~ ^
 /Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_001a9378.cpp:82:11: error: no member named 'field1_0x10' in 'struct CGRect'
    82 |     CVar8.field1_0x10.field1_0x8 = dVar7;
       |     ~~~~~ ^
 /Users/admin/glitchdecomp/fastpass 3/build_c/funcs/_FUN_001a9378.cpp:83:11: error: no member named 'field1_0x10' in 'struct CGRect'
    83 |     CVar8.field1_0x10.field0_0x0 = dVar6;
       |     ~~~~~ ^
-2 errors generated.
+3 errors generated.
 ```
 Code:
 ```cpp
@@ -738,7 +788,7 @@ FUN_001a9378(gh16 param_1,double param_2,double param_3,double param_4,
     IVar3 = initWithFrame_frame_(IVar3,param_5,CVar8);
     self = local_80;
     param_5[2] = IVar3;
-    IVar3 = class_8a7805((ID)GD_PTR__OBJC_CLASS___NSStackView_00452dd8);
+    IVar3 = class_387da0((ID)GD_PTR__OBJC_CLASS___NSStackView_00452dd8);
     IVar3 = isKindOfClass_(self,IVar3);
     if ((int)IVar3 == 0) {
       addSubview_(local_80,param_5[2]);
@@ -754,18 +804,18 @@ FUN_001a9378(gh16 param_1,double param_2,double param_3,double param_4,
 }
 ```
 Notes:
-- 10-22 13:37 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
-- 10-22 13:37 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change `CGSize field1_0x8 = {dVar5, 0};` to `CGSize field1_0x8 = {(double)dVar5, dVar7};` — still fails: redefinition of 'field1_0x8'
-- 10-22 13:37 [compile] redefinition of 'field1_0x8' — fixed by a candidate fix: a second declaration made an assignment.
-- 10-22 14:01 [compile] the model suggested an edit that already failed — skipped.
-- 10-22 14:01 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
-- 10-22 14:02 [compile] the model suggested an edit that already failed — skipped.
-- 10-22 14:02 [compile] the model suggested an edit that already failed — skipped.
-- 10-22 14:02 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
 - 10-22 14:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 80 from `double` to `CGSize`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
 - 10-22 14:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 80 from `double` to `CGSize`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
 - 10-22 14:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — fixed by a candidate fix: a call with the arguments Ghidra saw (untyped).
 - 10-22 14:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 80 from `double` to `CGSize`. — still fails: no member named 'field1_0x10' in 'struct CGRect'
+- 10-23 00:02 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 80 from `double` to `CGSize`. — still fails: used type 'CGSize' (aka 'struct CGSize') where arithmetic or pointer type is required
+- 10-23 00:02 [compile] used type 'CGSize' (aka 'struct CGSize') where arithmetic or pointer type is required — plan: Change line 80 from `CGSize field0_0x0 = (CGSize)FUN_001a9578();` to `CGSize field0_0x0 = (CGSize)GH_AS(CGSize, FUN_001a9578());`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 80 from `double` to `CGSize`. — still fails: used type 'CGSize' (aka 'struct CGSize') where arithmetic or pointer type is required
+- 10-23 00:03 [compile] used type 'CGSize' (aka 'struct CGSize') where arithmetic or pointer type is required — plan: Change line 80 from `CGSize` to `double`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
+- 10-23 00:03 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 80 from `double` to `CGSize`. — still fails: no member named 'field0_0x0' in 'struct CGRect'
+- 10-23 00:04 [compile] no member named 'field0_0x0' in 'struct CGRect' — plan: Change line 80 from `CGSize field0_0x0 = GH_AS(CGSize, FUN_001a9578());` to `CGSize field0_0x0 = {GH_GETD(FUN_001a9578(), 0), GH_GETD(FUN_001a9578(), 4)};` — still fails: no member named 'field0_0x0' in 'struct CGRect'
+- 10-23 00:04 [compile] that edit didn't help — undone.
+- 10-23 00:04 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
 Ghidra's pseudocode:
 ```c
 undefined8 *
@@ -953,18 +1003,18 @@ undefined8 FUN_002747e0(long param_1,long param_2,int param_3)
 }
 ```
 Notes:
-- 10-22 13:37 [compile] the model suggested an edit that already failed — skipped.
-- 10-22 14:01 [compile] too many arguments to function call, expected 8, have 9 — plan: Change `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & 0xfffffffffffffffe)) = 0;` to `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & ~0x1)) = 0;` — still fails: expected ')'
-- 10-22 14:02 [compile] expected ')' — plan: Change `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & 0xfffffffffffffffe)) = 0;` to `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & ~0x1)) = 0;` — still fails: expected ')'
-- 10-22 14:02 [compile] that edit didn't help — undone.
-- 10-22 14:02 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
-- 10-22 14:02 [compile] too many arguments to function call, expected 8, have 9 — plan: Change `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & 0xfffffffffffffffe)) = 0;` to `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & ~0x1)) = 0;` — still fails: too many arguments to function call, expected 8, have 9
-- 10-22 14:02 [compile] that edit didn't help — undone.
-- 10-22 14:02 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
-- 10-22 14:02 [compile] too many arguments to function call, expected 8, have 9 — plan: Change `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & 0xfffffffffffffffe)) = 0;` to `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & ~0x1)) = 0;` — still fails: expected ')'
-- 10-22 14:03 [compile] the model suggested an edit that already failed — skipped.
 - 10-22 14:03 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
 - 10-22 14:03 [compile] the model suggested an edit that already failed — skipped.
+- 10-23 00:02 [compile] too many arguments to function call, expected 8, have 9 — plan: Change `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & 0xfffffffffffffffe)) = 0;` to `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & ~0x1)) = 0;` — still fails: too many arguments to function call, expected 8, have 9
+- 10-23 00:02 [compile] that edit didn't help — undone.
+- 10-23 00:02 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
+- 10-23 00:03 [compile] the model suggested an edit that already failed — skipped.
+- 10-23 00:03 [compile] too many arguments to function call, expected 8, have 9 — plan: Change `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & 0xfffffffffffffffe)) = 0;` to `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & ~0x1)) = 0;` — still fails: expected ')'
+- 10-23 00:03 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
+- 10-23 00:03 [compile] too many arguments to function call, expected 8, have 9 — plan: Change `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & 0xfffffffffffffffe)) = 0;` to `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & ~0x1)) = 0;` — still fails: expected ')'
+- 10-23 00:04 [compile] expected ')' — plan: Change the line: `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & ~0x1)) = 0;` to `*(undefined2 *)(*(long *)(param_1 + 8) + (local_48 & ~0x1)) = 0;` — still fails: expected ')'
+- 10-23 00:04 [compile] that edit didn't help — undone.
+- 10-23 00:04 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
 Ghidra's pseudocode:
 ```c
 undefined8 FUN_002747e0(long param_1,long param_2,int param_3)
@@ -1054,18 +1104,18 @@ uint64_t operator__385ec4(ostream *this,ulong param_1)
 }
 ```
 Notes:
-- 10-22 14:01 [compile] the model suggested an edit that already failed — skipped.
-- 10-22 14:01 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
-- 10-22 14:02 [compile] invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long')) — plan: Change line 5 to: `uint64_t result = (*(code *)PTR_operator<<_00450448)(exception_class); return result;` — still fails: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'uns
-- 10-22 14:02 [compile] that edit didn't help — undone.
-- 10-22 14:02 [compile] invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long')) — plan: Change line 5 to: `uint64_t result = (*(code *)PTR_operator<<_00450448)(exception_class); return result;` — still fails: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'uns
-- 10-22 14:02 [compile] that edit didn't help — undone.
-- 10-22 14:02 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
-- 10-22 14:02 [compile] the model suggested an edit that already failed — skipped.
-- 10-22 14:03 [compile] invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long')) — plan: Change line 5 to: `uint64_t result = (*(code *)PTR_operator<<_00450448)(exception_class); return result;` — still fails: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'uns
-- 10-22 14:03 [compile] that edit didn't help — undone.
-- 10-22 14:03 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
 - 10-22 14:03 [compile] the model suggested an edit that already failed — skipped.
+- 10-23 00:02 [compile] invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long')) — plan: Change line 5 to: `uint64_t result = (*(code *)PTR_operator<<_00450448)(exception_class); return result;` — still fails: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'uns
+- 10-23 00:02 [compile] that edit didn't help — undone.
+- 10-23 00:02 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
+- 10-23 00:02 [compile] the model suggested an edit that already failed — skipped.
+- 10-23 00:03 [compile] invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long')) — plan: Change line 5 to: `uint64_t result = (*(code *)PTR_operator<<_00450448)(exception_class); return result;` — still fails: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'uns
+- 10-23 00:03 [compile] that edit didn't help — undone.
+- 10-23 00:03 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
+- 10-23 00:03 [compile] the model suggested an edit that already failed — skipped.
+- 10-23 00:03 [compile] the model suggested an edit that already failed — skipped.
+- 10-23 00:03 [compile] the no-model fixes went round in circles — stopped; the model gets the best version they reached.
+- 10-23 00:04 [compile] the model suggested an edit that already failed — skipped.
 Ghidra's pseudocode:
 ```c
 /* std::ostream::TEMPNAMEPLACEHOLDERVALUE(unsigned long) */
@@ -13602,7 +13652,7 @@ Fixes this project learned from the model's edits (@1, @2 ... stand for any
 name). Proven ones are applied without the model; candidates are tried on
 every function with the same error and kept only where they work.
 
-== proven: 94
+== proven: 96
 [338 worked, 0 didn't] operand of type 'X' where arithmetic or pointer type is required
     @1 = (@2*)@3(@4);
   → @1 = @3(@4);
@@ -13618,6 +13668,9 @@ every function with the same error and kept only where they work.
 [170 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2(@1.@3, 1);
   → @1 = @2(*(unsigned char*)&@1, 1);
+[125 worked, 0 didn't] too few arguments to function call, expected at least N, have N
+    @1 = @2((@3)@4);
+  → @1 = @2((@3)@4, 1);
 [112 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(@3);
   → unsigned char @1[16] = {0};@2(@3);
@@ -13627,9 +13680,6 @@ every function with the same error and kept only where they work.
 [82 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2();
   → unsigned char @1[16];
-[82 worked, 0 didn't] too few arguments to function call, expected at least N, have N
-    @1 = @2((@3)@4);
-  → @1 = @2((@3)@4, 1);
 [73 worked, 0 didn't] member reference base type 'X' is not a structure or union
     @1 = @2.@3;
   → @1 = @2[8];
@@ -13642,6 +13692,9 @@ every function with the same error and kept only where they work.
 [64 worked, 0 didn't] operand of type 'X' where arithmetic or pointer type is required (part of a line)
     @1 = (void*)@2(
   → @1 = @2(
+[47 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    (@1);
+  → (@1, 1);
 [44 worked, 12 didn't] initializing 'X' with an expression of incompatible type 'X' (part of a line)
     @1 = @2(
   → @1 = (unsigned long long)@2(
@@ -13651,15 +13704,18 @@ every function with the same error and kept only where they work.
 [35 worked, 0 didn't] assigning to 'X' (aka 'X') from incompatible type 'X'
     @1 = @2();
   → (void)@1 = @2();
+[31 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    )@1);
+  → )@1, 1);
+[31 worked, 0 didn't] too few arguments to function call, expected at least N, have N
+    @1(@2);
+  → @1(@2, 1);
 [30 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1.@2 = @3;
   → @1[8] = @3;
 [29 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1.@2 = 0;
   → @1[8] = 0;
-[28 worked, 0 didn't] too few arguments to function call, expected at least N, have N
-    @1(@2);
-  → @1(@2, 1);
 [27 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union (part of a line)
     0].@1, (
   → 0], (
@@ -13669,15 +13725,9 @@ every function with the same error and kept only where they work.
 [25 worked, 6 didn't] assigning to 'X' from incompatible type 'X' (aka 'X')
     @1 = @2();
   → uint64_t @1 = @2();
-[22 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    )@1);
-  → )@1, 1);
 [21 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(@3, @4, @5);
   → unsigned char @1[16] = {0};@2(@3, @4, @5);
-[21 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    (@1);
-  → (@1, 1);
 [19 worked, 0 didn't] assigning to 'X' (aka 'X') from incompatible type 'X'
     @1 = @2((long)@3);
   → uintptr_t @1 = @2((long)@3);
@@ -13732,6 +13782,9 @@ every function with the same error and kept only where they work.
 [7 worked, 0 didn't] member reference base type 'X' is not a structure or union
     @1[0] = @2(@1[0].@3, 1);
   → @1[0] = @2(@1[0], 1);
+[7 worked, 0 didn't] redefinition of 'X' (part of a line)
+    @1 @2 = {@3
+  → @2 = (@1){@3
 [6 worked, 0 didn't] expected 'X' after expression
     std:: @1:: @2(@3);
   → return std:: @1:: @2(@3);
@@ -13744,6 +13797,9 @@ every function with the same error and kept only where they work.
 [6 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1[0].@2 = 0x640001;
   → @1[0] = 0x640001;
+[6 worked, 0 didn't] too few arguments to function call, expected at least N, have N
+    @1(@2[0]);
+  → @1(@2[0], 1);
 [6 worked, 0 didn't] called object type 'X' (aka 'X') is not a function or function pointer (part of a line)
     ((@1)(
   → ((int)(
@@ -13759,9 +13815,6 @@ every function with the same error and kept only where they work.
 [6 worked, 0 didn't] indirection requires pointer operand ('X' (aka 'X') invalid) (part of a line)
     *@1 =
   → *(uint64_t*)@1 =
-[6 worked, 0 didn't] redefinition of 'X' (part of a line)
-    @1 @2 = {@3
-  → @2 = (@1){@3
 [5 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2(@1.@3, (int)@1+1);
   → @1 = @2(*(unsigned int*)&@1, (int)@1+1);
@@ -13822,12 +13875,12 @@ every function with the same error and kept only where they work.
 [4 worked, 0 didn't] too few arguments to function call, expected N, have N (part of a line)
     (@1);
   → (@1, 0);
-[4 worked, 0 didn't] too few arguments to function call, expected at least N, have N
-    @1(@2[0]);
-  → @1(@2[0], 1);
 [4 worked, 0 didn't] integer constant expression must have integer type, not 'X'
     case"\f" :
   → case 0x0C :
+[4 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
+    *(@1(*)[16])(@2+(long)@3) = @4[0];
+  → memcpy(&(*(@1(*)[16])(@2+(long)@3)), &(@4[0]), sizeof(*(@1(*)[16])(@2+(long)@3))<sizeof(@4[0]) ? sizeof(*(@1(*)[16])(@2+(long)@3)) : sizeof(@4[0]));
 [4 worked, 1 didn't] used type 'X' where arithmetic or pointer type is required (part of a line)
     @1 = (struct @2)@3(
   → @1 = @3(
@@ -13870,6 +13923,9 @@ every function with the same error and kept only where they work.
 [3 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2(@3, (long*)&@4.@5);
   → @1 = @2(@3, (long*)@3[0x6c]+3);
+[3 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    @1 = @2((
+  → @1 = ((uint64_t(*)())@2)((
 [3 worked, 0 didn't] subscripted value is not an array, pointer, or vector (part of a line)
     @1[1
   → ((uint64_t*)(uintptr_t)(@1))[1
@@ -13886,7 +13942,7 @@ every function with the same error and kept only where they work.
     @1[2
   → ((uint64_t*)(uintptr_t)(@1))[2
 
-== candidate: 486
+== candidate: 484
 [85 worked, 206 didn't] redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X') (part of a line)
     @1 @2[
   → uint64_t @2[
@@ -14091,12 +14147,6 @@ every function with the same error and kept only where they work.
 [2 worked, 0 didn't] too few arguments to function call, single argument 'X' was not specified
     @1();
   → ((uint64_t(*)())@1)();
-[2 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    @1 = @2((
-  → @1 = ((uint64_t(*)())@2)((
-[2 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
-    *(@1(*)[16])(@2+(long)@3) = @4[0];
-  → memcpy(&(*(@1(*)[16])(@2+(long)@3)), &(@4[0]), sizeof(*(@1(*)[16])(@2+(long)@3))<sizeof(@4[0]) ? sizeof(*(@1(*)[16])(@2+(long)@3)) : sizeof(@4[0]));
 [2 worked, 1 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(@3);
   → @1[16] = {0};@2(@3);
@@ -14787,6 +14837,12 @@ every function with the same error and kept only where they work.
 [1 worked, 0 didn't] too few arguments to function call, expected N, have N
     @1((unsigned char*)@2, @3, @4, @5, @6, 0);
   → @1((unsigned char*)@2, @3, @4, @5, @6, 0, 1);
+[1 worked, 0 didn't] too few arguments to function call, expected N, have N (part of a line)
+    , 0);
+  → , 0, 1);
+[1 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
+    @1[0] = @2(@3+0x30, @4);
+  → unsigned char @1[8] = {0};@2(@3+0x30, @4);
 
 == retired: 159
 [5940 worked, 0 didn't] assigning to 'X' (aka 'X') from incompatible type 'X' — retired: it and its opposite only undo each other
@@ -15715,36 +15771,35 @@ happened to each (newest last). 'adopted' ones are in the build.
 ## build/test/test_report.txt
 
 ```
-Run test: the rebuilt plugin against the original (2026-10-22 14:07:14)
+Run test: the rebuilt plugin against the original (2026-10-23 00:06:47)
 
 original: Original.component
   architectures: x86_64, arm64; tested as arm64
 rebuilt:  /Users/user?/name1decomp/fastpass 3/build_c/program.dylib (arm64)
 
-packaged the rebuilt program as /Users/user?/name1decomp/fastpass 3/build_c/test/run-ck6zb_hr/Rebuilt.component (deleted after the test), with the original's Info.plist (35 privacy stand-in(s) applied) and its Resources folder linked in
+packaged the rebuilt program as /Users/user?/name1decomp/fastpass 3/build_c/test/run-dgxisk_q/Rebuilt.component (deleted after the test), with the original's Info.plist (35 privacy stand-in(s) applied) and its Resources folder linked in
 
 == component Illformed: Name1 (aumf/igl2/DBlu)
 factory: original AUPluginFactory; rebuilt AUPluginFactory (as in the original)
 rebuilt plugin, loading: FAILED
 crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
-    CRASH signal=11 (SIGSEGV: bad memory access) address=0x8ac600
+    CRASH signal=11 (SIGSEGV: bad memory access) address=0x453400
     CRASH stack:
-    0   aharness_host-arm64-c249657857      0x00000001028d9294 on_crash + 180
+    0   aharness_host-arm64-c249657857      0x00000001041d5294 on_crash + 180
     1   libsystem_platform.dylib            0x000000018d081744 _sigtramp + 56
-    2   program                             0x00000001081b9250 FUN_002089b4 + 24
-    3   program                             0x00000001081b9250 FUN_002089b4 + 24
-    4   program                             0x00000001081b9218 FUN_00208990 + 24
-    5   program                             0x00000001081b9274 FUN_002089d4 + 24
-    6   program                             0x0000000107f2ce98 FUN_000659a0 + 104
-    7   AudioToolboxCore                    0x000000018fcdaa94 _ZN11APComponent11newInstanceEjbU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 2376
-    8   AudioToolboxCore                    0x000000018fe2fb38 _ZL11instantiateP20OpaqueAudioComponentj25AudioComponentOpeningModeU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 372
-    9   AudioToolboxCore                    0x000000018fe305b4 __AudioComponentInstanceNew_block_invoke + 120
-    10  AudioToolboxCore                    0x000000018fc44528 Synchronously + 132
-    11  AudioToolboxCore                    0x000000018fe303bc AudioComponentInstanceNew + 240
-    12  aharness_host-arm64-c249657857      0x00000001028d95c4 open_unit + 672
-    13  aharness_host-arm64-c249657857      0x00000001028d88c8 main + 248
-    14  dyld                                0x000000018ccac4e4 start + 6992
-    rebuilt functions in the stack (innermost first): FUN_002089b4 (funcs/_FUN_002089b4.cpp), FUN_00208990 (funcs/_FUN_00208990.cpp), FUN_002089d4 (funcs/_FUN_002089d4.cpp), FUN_000659a0 (funcs/_FUN_000659a0.cpp)
+    2   program                             0x00000001097067d0 FUN_0000be10 + 56
+    3   program                             0x00000001097067d0 FUN_0000be10 + 56
+    4   program                             0x000000010970405c FUN_0000a1d8 + 32
+    5   program                             0x0000000109784ecc FUN_000659a0 + 156
+    6   AudioToolboxCore                    0x000000018fcdaa94 _ZN11APComponent11newInstanceEjbU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 2376
+    7   AudioToolboxCore                    0x000000018fe2fb38 _ZL11instantiateP20OpaqueAudioComponentj25AudioComponentOpeningModeU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 372
+    8   AudioToolboxCore                    0x000000018fe305b4 __AudioComponentInstanceNew_block_invoke + 120
+    9   AudioToolboxCore                    0x000000018fc44528 Synchronously + 132
+    10  AudioToolboxCore                    0x000000018fe303bc AudioComponentInstanceNew + 240
+    11  aharness_host-arm64-c249657857      0x00000001041d55c4 open_unit + 672
+    12  aharness_host-arm64-c249657857      0x00000001041d48c8 main + 248
+    13  dyld                                0x000000018ccac4e4 start + 6992
+    rebuilt functions in the stack (innermost first): FUN_0000be10 (funcs/_FUN_0000be10.cpp), FUN_0000a1d8 (funcs/_FUN_0000a1d8.cpp), FUN_000659a0 (funcs/_FUN_000659a0.cpp)
 
 the rebuilt plugin didn't load: crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
 ```
@@ -15788,10 +15843,118 @@ DAT_800000008: not in any exported block; nearest: __LINKEDIT ends at 0x8a4000, 
 PTR_operator: no address in its name
 ```
 
+## rewrite/data_unresolved_pointers.txt
+
+```
+Pointers stored in the data that point outside every exported block: they keep
+the original program's address, which doesn't exist in the rebuilt one.
+
+at 881a73 -> 3de0
+at 881aa9 -> 477c
+at 881b3e -> 6b80
+at 881b44 -> 6d50
+at 881d44 -> f5a0
+at 882040 -> 1ffbc
+at 884451 -> fff8c
+```
+
 ## Build log of this run (build/worklist.log)
 
 ```
-
+[23:54:50] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/pseudocode.c
+[23:54:50] Resume check (30173 functions in manifest):
+[23:54:50]   the rewrite changed since the last build — updating the split (functions whose code changed get the new code; the others keep their fixes)
+[23:54:50]   [redo] split + header: input changed — rebuilding shared.h/globals.cpp and merging with the work already done
+[23:54:51]   libclang reported 2 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
+[23:54:51]     _parse_monolith.cpp:220: static assertion failed due to requirement 'sizeof(struct section) == 80': Ghidra's size of section
+[23:54:51]     _parse_monolith.cpp:236: static assertion failed due to requirement 'sizeof(struct segment_command) == 72': Ghidra's size of segment_command
+[23:54:58]   split -> 30173 function TUs, 65 types (+37 forward decls), 30173 prototypes, 0 globals
+[23:55:11]     functions: 37 changed in the rewrite (new code taken), 294 already fixed by the model (kept), 29839 untouched (refreshed with the new split), 3 previously quarantined (restored for another try), 0 not in the old run
+[23:55:11]     (the replaced versions are in /Users/admin/glitchdecomp/fastpass 3/snapshots/20261022-235502-build-update)
+[23:55:12]   [redo] header check
+[23:55:12]   » validate/repair shared headers
+[23:55:12]   [redo] compile status
+[23:55:12]   » preflight diagnose (surface any systemic cause before spending model time on 30173 functions)
+[23:55:12]   preflight: sampled TUs compile — proceeding
+[23:55:12]   » isolated compile sweep
+[23:55:13]   compiling with 11 parallel worker(s)
+[23:59:09]   isolated compile: 30089/30173 TUs pass, 84 need repair (236s)
+[23:59:09]   status: 30089 compile, 84 still to fix, 0 quarantined
+[00:02:23]   declared 120 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 55 function(s) that use them again
+[00:02:24]   compiling with 11 parallel worker(s)
+[00:02:24]   isolated compile: 52/55 TUs pass, 3 need repair (1s)
+[00:02:24]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
+[00:02:24]   » dependency order + fixer loop
+[00:02:24]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
+[00:02:24]   callgraph: 582 callee name(s) not in our TU set (external/library calls) — ignored for ordering
+[00:02:24]   callgraph: exact deps for 21706/30173 functions
+[00:02:25]     FUN_00214424 -> fixed without the model
+[00:02:25]     FUN_0020cc04 -> fixed without the model
+[00:02:25]     FUN_001680c4 -> fixed without the model
+[00:02:25]     FUN_001a374c -> fixed without the model
+[00:02:25]     FUN_00210068 -> fixed without the model
+[00:02:25]     FUN_00214da4 -> fixed without the model
+[00:02:25]     FUN_0020d54c -> fixed without the model
+[00:02:25]     FUN_00171cc8 -> fixed without the model
+[00:02:25]     buildMenuGroupEntries_entry__16bb04 -> fixed without the model
+[00:02:25]     FUN_001718c0 -> fixed without the model
+[00:02:26]     applicationDidBecomeActive_ -> fixed without the model
+[00:02:26]     FUN_00168600 -> fixed without the model
+[00:02:26]     FUN_001736b4 -> fixed without the model
+[00:02:26]     FUN_00171a30 -> fixed without the model
+[00:02:26]     close_169730 -> fixed without the model
+[00:02:26]     createLayerTextureWithSize__16cb94 -> fixed without the model
+[00:02:26]     FUN_00173590 -> fixed without the model
+[00:02:26]     FUN_00214278 -> fixed without the model
+[00:02:26]     updateLayerInRect__16ce54 -> fixed without the model
+[00:02:26]     FUN_00173144 -> fixed without the model
+[00:02:26]     setMarkedText_selectedRange_ -> fixed without the model
+[00:02:26]     FUN_001a2588 -> fixed without the model
+[00:02:26]     FUN_001a54e0 -> fixed without the model
+[00:02:26]     insertText__16d864 -> fixed without the model
+[00:02:26]     drawRect__16d1bc -> fixed without the model
+[00:02:26]     FUN_001728ac -> fixed without the model
+[00:02:26]     FUN_001725c4 -> fixed without the model
+[00:02:26]   quick fixes (no model): 27 of 32 function(s) compile now
+[00:02:26]   fixer loop over 5 failing TU(s), dependency-ordered
+[00:02:56]   QUARANTINE uiViewForAudioUnit_withSize_: no member named 'field1_0x10' in 'struct CGRect'
+[00:02:56]     [1/5] uiViewForAudioUnit_withSize_ -> quarantined (29s)
+[00:02:58]   QUARANTINE FUN_001a9378: no member named 'field0_0x0' in 'struct CGRect'
+[00:02:58]     [2/5] FUN_001a9378 -> quarantined (31s)
+[00:02:59]   QUARANTINE operator__385ec4: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long'))
+[00:02:59]     [5/5] operator__385ec4 -> quarantined (32s)
+[00:03:00]   QUARANTINE initWithContentRect_styleMask_backing_defer__168d74: no member named 'field0_0x0' in 'struct CGRect'
+[00:03:00]     [3/5] initWithContentRect_styleMask_backing_defer__168d74 -> quarantined (34s)
+[00:03:02]   QUARANTINE FUN_002747e0: too many arguments to function call, expected 8, have 9
+[00:03:02]     [4/5] FUN_002747e0 -> quarantined (35s)
+[00:03:03]   learned fixes on quarantined functions: 0 of 5 retried compile now
+[00:03:03]   learned fixes: 96 proven, 484 being tried, 159 retired (0 new this run); used 87 of 87 time(s) tried, 100% kept; 0 quarantined function(s) rescued. All in build/learned_fixes.txt
+[00:03:03]   model: 10 small edit(s) asked for, 0 without a usable edit
+[00:03:03]   fixer loop done: 30168 compiling, 5 quarantined
+[00:03:03]   why functions are quarantined (most common first; all in fix_report.txt):
+[00:03:03]         3 × no member named 'X' in 'X'  (e.g. uiViewForAudioUnit_withSize_)
+[00:03:03]         1 × too many arguments to function call, expected N, have N  (e.g. FUN_002747e0)
+[00:03:03]         1 × invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))  (e.g. operator__385ec4)
+[00:03:03]   repair loop pass 1 (no model): 0 of 5 rescued
+[00:03:31]   QUARANTINE FUN_001a9378: no member named 'field0_0x0' in 'struct CGRect'
+[00:03:33]   QUARANTINE uiViewForAudioUnit_withSize_: no member named 'field1_0x10' in 'struct CGRect'
+[00:03:34]   QUARANTINE operator__385ec4: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long'))
+[00:03:36]   QUARANTINE initWithContentRect_styleMask_backing_defer__168d74: no member named 'field0_0x0' in 'struct CGRect'
+[00:03:38]   QUARANTINE FUN_002747e0: too many arguments to function call, expected 8, have 9
+[00:03:38]   repair loop pass 1 (model): 0 of 5 rescued
+[00:03:38]   repair loop pass 2 (no model): 0 of 5 rescued
+[00:04:08]   QUARANTINE operator__385ec4: invalid operands to binary expression ('code' (aka 'unsigned long long ()') and 'uint64_t' (aka 'unsigned long long'))
+[00:04:10]   QUARANTINE FUN_001a9378: no member named 'field0_0x0' in 'struct CGRect'
+[00:04:11]   QUARANTINE uiViewForAudioUnit_withSize_: no member named 'field1_0x10' in 'struct CGRect'
+[00:04:14]   QUARANTINE FUN_002747e0: too many arguments to function call, expected 8, have 9
+[00:04:15]   QUARANTINE initWithContentRect_styleMask_backing_defer__168d74: no member named 'field0_0x0' in 'struct CGRect'
+[00:04:15]   repair loop pass 2 (model): 0 of 5 rescued
+[00:04:15]   repair loop: 0 quarantined function(s) rescued
+[00:06:43]   link round 1: linking 30176 objects ...
+[00:06:44]   link round 1: 100 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
+[00:06:46]   link round 2: linking 30177 objects ...
+[00:06:47]   29 placeholder definition(s) in stubs.cpp (listed in link_report.txt)
+[00:06:47]   LINK OK (round 2) -> /Users/admin/glitchdecomp/fastpass 3/build_c/program.dylib
 ```
 
 ## pipeline_state.json
@@ -15801,15 +15964,15 @@ PTR_operator: no address in its name
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-22 10:11:15",
-      "at": "2026-10-22 10:11:22",
-      "seconds": 8,
+      "started": "2026-10-22 23:52:54",
+      "at": "2026-10-22 23:53:08",
+      "seconds": 14,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
-      "done": false,
-      "started": "2026-10-22 23:52:10",
-      "at": "2026-10-22 23:52:10",
+      "done": true,
+      "started": "2026-10-22 23:53:10",
+      "at": "2026-10-22 23:54:50",
       "seconds": 100,
       "model": "",
       "note": "30173/30489 rewritten",
@@ -15817,56 +15980,56 @@ PTR_operator: no address in its name
     },
     "split": {
       "done": true,
-      "started": "2026-10-22 13:53:51",
-      "at": "2026-10-22 13:58:24",
-      "seconds": 273,
-      "note": "30114/30173 compile after the sweep"
+      "started": "2026-10-22 23:54:50",
+      "at": "2026-10-22 23:59:09",
+      "seconds": 259,
+      "note": "30089/30173 compile after the sweep"
     },
     "fix": {
       "done": true,
-      "started": "2026-10-22 13:58:24",
-      "at": "2026-10-22 14:03:29",
-      "seconds": 304,
+      "started": "2026-10-22 23:59:09",
+      "at": "2026-10-23 00:04:15",
+      "seconds": 307,
       "model": "qwen2.5-coder-3b-instruct-mlx",
-      "model_busy": 35
+      "model_busy": 34
     },
     "recover": {
       "done": true,
-      "started": "2026-10-22 14:03:29",
-      "at": "2026-10-22 14:03:29",
+      "started": "2026-10-23 00:04:15",
+      "at": "2026-10-23 00:04:16",
       "seconds": 0,
       "model": "qwen2.5-coder-3b-instruct-mlx"
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-22 23:52:07",
-      "at": "2026-10-22 23:52:10",
+      "started": "2026-10-22 23:53:08",
+      "at": "2026-10-22 23:53:10",
       "seconds": 2,
       "note": "1141 replacement(s)"
     },
     "link": {
       "done": true,
-      "started": "2026-10-22 14:03:29",
-      "at": "2026-10-22 14:07:14",
-      "seconds": 225,
+      "started": "2026-10-23 00:04:16",
+      "at": "2026-10-23 00:06:47",
+      "seconds": 152,
       "note": "linked"
     },
     "test": {
       "done": false,
-      "started": "2026-10-22 14:07:14",
-      "at": "2026-10-22 14:07:16",
+      "started": "2026-10-23 00:06:47",
+      "at": "2026-10-23 00:06:48",
       "note": "the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)"
     },
     "improve": {
       "done": false,
-      "started": "2026-10-22 14:07:16",
-      "at": "2026-10-22 14:07:16",
+      "started": "2026-10-23 00:06:48",
+      "at": "2026-10-23 00:06:48",
       "note": "not in C mode yet"
     },
     "organize": {
       "done": false,
-      "started": "2026-10-22 14:07:16",
-      "at": "2026-10-22 14:07:16",
+      "started": "2026-10-23 00:06:48",
+      "at": "2026-10-23 00:06:48",
       "note": "not in C mode yet"
     }
   },
@@ -15876,37 +16039,6 @@ PTR_operator: no address in its name
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-22 11:37:37",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: operand of type 'X' where arithmetic or pointer type is required": 72,
-        "fix|quarantined: passing 'X' (aka 'X') to parameter of incompatible type 'X'": 70,
-        "fix|quarantined: array type 'X' (aka 'X') is not assignable": 6,
-        "fix|quarantined: passing 'X' to parameter of incompatible type 'X' (aka 'X')": 4,
-        "fix|quarantined: passing 'X' to parameter of incompatible type 'X'": 4,
-        "fix|quarantined: member reference base type 'X' (aka 'X') is not a structure or union": 4,
-        "fix|quarantined: too many arguments to function call, expected N, have N": 3,
-        "fix|quarantined: indirection requires pointer operand ('X' (aka 'X') invalid)": 3,
-        "fix|quarantined: too few arguments to function call, single argument 'X' was not specified": 2,
-        "fix|quarantined: no member named 'X' in 'X'": 2,
-        "fix|quarantined: invalid operands to binary expression ('X' and 'X')": 2,
-        "fix|quarantined: used type 'X' where arithmetic or pointer type is required": 1,
-        "fix|quarantined: used type 'X' (aka 'X') where arithmetic or pointer type is required": 1,
-        "fix|quarantined: too few arguments to function call, expected N, have N": 1,
-        "fix|quarantined: subscripted value is not an array, pointer, or vector": 1,
-        "fix|quarantined: operand of type 'X' cannot be cast to a pointer type": 1,
-        "fix|quarantined: expected expression": 1,
-        "fix|quarantined: cast to union type from type 'X' not present in union": 1,
-        "fix|quarantined: assigning to 'X' (aka 'X') from incompatible type 'X'": 1,
-        "fix|not compiling yet (not reached before the run ended)": 321,
-        "split|declarations in shared.h that didn't compile (switched off)": 2,
-        "split|functions libclang didn't list (var decl), cut out by marker": 2,
-        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 125,
-        "fix|the model repeated an edit that had already failed (skipped)": 89,
-        "fix|fixes that undid each other (the cycle was stopped and the model got the function)": 129
-      }
-    },
     {
       "at": "2026-10-22 12:51:00",
       "keys": {
@@ -15986,16 +16118,23 @@ PTR_operator: no address in its name
         "fix|quarantined: too many arguments to function call, expected N, have N": 1,
         "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))": 1
       }
+    },
+    {
+      "at": "2026-10-23 00:06:49",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "fix|quarantined: no member named 'X' in 'X'": 3,
+        "fix|quarantined: too many arguments to function call, expected N, have N": 1,
+        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))": 1,
+        "test|the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)": 1,
+        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 120,
+        "fix|fixes that undid each other (the cycle was stopped and the model got the function)": 10,
+        "fix|the model repeated an edit that had already failed (skipped)": 5,
+        "link|functions replaced by placeholders to link": 29
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-22 10:12",
-      "functions": 30176,
-      "compile_pct": 98.7,
-      "quarantined_pct": 1.3,
-      "to_fix": 0
-    },
     {
       "at": "10-22 11:37",
       "functions": 30176,
@@ -16053,6 +16192,19 @@ PTR_operator: no address in its name
       "compile_pct": 100.0,
       "quarantined_pct": 0.0,
       "to_fix": 0
+    },
+    {
+      "at": "10-23 00:06",
+      "functions": 30173,
+      "compile_pct": 100.0,
+      "quarantined_pct": 0.0,
+      "to_fix": 0,
+      "fix_tried": 5,
+      "fix_success_pct": 0.0,
+      "fix_per_hour": 77,
+      "learned_proven": 96,
+      "learned_kept_pct": 100.0,
+      "test_pass_pct": 0.0
     }
   ]
 }
@@ -16062,8 +16214,8 @@ PTR_operator: no address in its name
 
 ```json
 {
-  "generated": "2026-10-22 14:07:16",
-  "pipeline_version": "2026-10-22.10",
+  "generated": "2026-10-23 00:06:48",
+  "pipeline_version": "2026-10-23.1",
   "workdir": "/Users/admin/glitchdecomp/fastpass 3",
   "export": {
     "functions": 30489,
@@ -16120,15 +16272,15 @@ PTR_operator: no address in its name
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-22 10:11:15",
-      "at": "2026-10-22 10:11:22",
-      "seconds": 8,
+      "started": "2026-10-22 23:52:54",
+      "at": "2026-10-22 23:53:08",
+      "seconds": 14,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-22 13:52:12",
-      "at": "2026-10-22 13:53:51",
+      "started": "2026-10-22 23:53:10",
+      "at": "2026-10-22 23:54:50",
       "seconds": 100,
       "model": "",
       "note": "30173/30489 rewritten",
@@ -16136,56 +16288,56 @@ PTR_operator: no address in its name
     },
     "split": {
       "done": true,
-      "started": "2026-10-22 13:53:51",
-      "at": "2026-10-22 13:58:24",
-      "seconds": 273,
-      "note": "30114/30173 compile after the sweep"
+      "started": "2026-10-22 23:54:50",
+      "at": "2026-10-22 23:59:09",
+      "seconds": 259,
+      "note": "30089/30173 compile after the sweep"
     },
     "fix": {
       "done": true,
-      "started": "2026-10-22 13:58:24",
-      "at": "2026-10-22 14:03:29",
-      "seconds": 304,
+      "started": "2026-10-22 23:59:09",
+      "at": "2026-10-23 00:04:15",
+      "seconds": 307,
       "model": "qwen2.5-coder-3b-instruct-mlx",
-      "model_busy": 35
+      "model_busy": 34
     },
     "recover": {
       "done": true,
-      "started": "2026-10-22 14:03:29",
-      "at": "2026-10-22 14:03:29",
+      "started": "2026-10-23 00:04:15",
+      "at": "2026-10-23 00:04:16",
       "seconds": 0,
       "model": "qwen2.5-coder-3b-instruct-mlx"
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-22 13:52:10",
-      "at": "2026-10-22 13:52:12",
+      "started": "2026-10-22 23:53:08",
+      "at": "2026-10-22 23:53:10",
       "seconds": 2,
       "note": "1141 replacement(s)"
     },
     "link": {
       "done": true,
-      "started": "2026-10-22 14:03:29",
-      "at": "2026-10-22 14:07:14",
-      "seconds": 225,
+      "started": "2026-10-23 00:04:16",
+      "at": "2026-10-23 00:06:47",
+      "seconds": 152,
       "note": "linked"
     },
     "test": {
       "done": false,
-      "started": "2026-10-22 14:07:14",
-      "at": "2026-10-22 14:07:16",
+      "started": "2026-10-23 00:06:47",
+      "at": "2026-10-23 00:06:48",
       "note": "the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)"
     },
     "improve": {
       "done": false,
-      "started": "2026-10-22 14:07:16",
-      "at": "2026-10-22 14:07:16",
+      "started": "2026-10-23 00:06:48",
+      "at": "2026-10-23 00:06:48",
       "note": "not in C mode yet"
     },
     "organize": {
       "done": false,
-      "started": "2026-10-22 14:07:16",
-      "at": "2026-10-22 14:07:16",
+      "started": "2026-10-23 00:06:48",
+      "at": "2026-10-23 00:06:48",
       "note": "not in C mode yet"
     }
   }
@@ -16196,7 +16348,7 @@ PTR_operator: no address in its name
 
 ```json
 {
-  "input_sha": "589f2334af41c80f",
+  "input_sha": "aeca10d51352f97c",
   "split_done": true,
   "header_ok": true,
   "sweep_done": true,
