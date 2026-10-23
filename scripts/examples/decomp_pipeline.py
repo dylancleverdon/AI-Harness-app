@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-23.2"
+PIPELINE_VERSION = "2026-10-23.3"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3583,26 +3583,43 @@ __attribute__((constructor)) static void gd_relocate(void) {{
 
 
 def _system_type_fields(entries: list, datatypes: list, clash: set, system: dict) -> int:
-    """Ghidra's copy of a system type (CGSize) is dropped for the system's, whose
-    fields have other names (width, not field0_0x0). Ghidra's own field names
-    (fieldN_0xOFF) on a variable of such a type become the bytes at that offset,
-    as the field's type: (*(double *)GH_ADDR(v, 0x8)). Returns how many."""
-    fields: dict = {}                       # type -> {field: (off, ctype)}
+    """Ghidra's copy of a system type (CGRect) is dropped for the system's, whose
+    fields have other names (origin.x, not field0_0x0.field0_0x0). Ghidra's own field
+    names (fieldN_0xOFF, the offset is in the name), also a chain of them, on a
+    variable of such a type become the bytes at that offset, as the field's type:
+    (*(double *)GH_ADDR(v, 0x18)). The type comes from Ghidra's copy when the export
+    has it; Core Graphics' geometry types (CGPoint, CGSize, CGRect...) are all
+    doubles inside. Returns how many."""
+    fields: dict = {}                       # type -> {field: ctype}
+    alias: dict = {}                        # typedef -> what it names
     for t in datatypes:
-        if not isinstance(t, dict) or _c_ident(t.get("name") or "") not in clash or \
-                t.get("kind") not in ("struct", "union"):
+        if not isinstance(t, dict) or not t.get("name"):
+            continue
+        name = _c_ident(t["name"])
+        if t.get("kind") == "typedef":
+            alias[name] = _c_ident(re.sub(r"^(?:struct|union)\s+", "", str(t.get("type") or "")).strip())
+            continue
+        if t.get("kind") not in ("struct", "union"):
             continue
         for f in t.get("fields") or []:
             fn = f.get("name") or ""
             if re.fullmatch(r"field\d+_0x[0-9a-fA-F]+", fn):
                 c, arr = _ghidra_type_to_c(f.get("type", ""), set(system["typedefs"]), system["tags"])
                 if c and not arr:
-                    fields.setdefault(_c_ident(t["name"]), {})[fn] = (int(f.get("off", 0)), c)
-    if not fields:
+                    fields.setdefault(name, {})[fn] = c
+
+    def real(n):
+        seen = set()
+        while n in alias and n not in seen:
+            seen.add(n)
+            n = alias[n]
+        return n
+    if not clash:
         return 0
     n = 0
-    tnames = "|".join(re.escape(k) for k in fields)
+    tnames = "|".join(re.escape(k) for k in sorted(clash, key=len, reverse=True))
     decl = re.compile(rf"(?:^|[(,{{;])\s*(?:const\s+)?(?:struct\s+)?({tnames})\s+(\**)\s*([A-Za-z_]\w*)\s*(?=[;,)=\[])", re.M)
+    chain = re.compile(r"(?<![\w.>])([A-Za-z_]\w*)\s*(\.|->)\s*(field\d+_0x[0-9a-fA-F]+(?:\s*\.\s*field\d+_0x[0-9a-fA-F]+)*)\b")
     for e in entries:
         text = e["head"] + e["body"]
         if not re.search(r"\bfield\d+_0x", text):
@@ -3611,18 +3628,30 @@ def _system_type_fields(entries: list, datatypes: list, clash: set, system: dict
 
         def sub(m):
             nonlocal n
-            v, op, fn = m.group(1), m.group(2), m.group(3)
+            v, op = m.group(1), m.group(2)
+            names = re.findall(r"field\d+_0x[0-9a-fA-F]+", m.group(3))
             if v not in var_type:
                 return m.group(0)
             tname, stars = var_type[v]
-            got = fields[tname].get(fn)
-            if not got or stars != (1 if op == "->" else 0):
+            if stars != (1 if op == "->" else 0):
                 return m.group(0)
+            off, cur, c = 0, real(tname), None
+            for fn in names:
+                off += int(fn.split("_0x")[1], 16)
+                c = fields.get(cur, {}).get(fn)
+                cur = real(c) if c else None
+            if not c:                        # Core Graphics' geometry, as the system has it
+                base = real(tname)
+                if base == "CGRect":
+                    c = "double" if len(names) == 2 else ("CGPoint" if off == 0 else "CGSize")
+                elif base in ("CGPoint", "CGSize", "CGVector", "CGAffineTransform") and len(names) == 1:
+                    c = "double"
+                else:
+                    return m.group(0)       # no type for it: left for the fixes
             n += 1
-            off, c = got
             return (f"(*({c} *)GH_ADDR({v}, {off:#x}))" if op == "." else
                     f"(*({c} *)((char *)({v}) + {off:#x}))")
-        e["body"] = re.sub(r"(?<![\w.>])([A-Za-z_]\w*)\s*(\.|->)\s*(field\d+_0x[0-9a-fA-F]+)\b", sub, e["body"])
+        e["body"] = chain.sub(sub, e["body"])
     return n
 
 
@@ -4134,6 +4163,10 @@ def run_pseudo_source(P: Paths, args) -> dict:
         body = re.sub(r"(?<![\w.>])_([A-Za-z_]\w*)(?=\s*\()",
                       lambda m: m.group(0) if m.group(0) in defined or m.group(0) in mapped
                       else m.group(1), body)
+        # a data label named after a C++ operator (PTR_operator<<_00450448): C can't
+        # say that name; its address at the end still finds it in the data
+        body = re.sub(r"\b((?:PTR|DAT|PTR_DAT)_\w*?operator)([^\w\s(),;]+)(\w*_[0-9a-fA-F]{8,16})\b",
+                      lambda m: m.group(1) + "_" * len(m.group(2)) + m.group(3), body)
         entries.append({"tag": f"//@ghidra {a} {f.get('name')}", "head": head.strip(),
                         "body": body, "name": cname[a]})
         index[cname[a]] = {"ghidra": f.get("name"), "addr": a, "status": "done"}
@@ -4169,7 +4202,9 @@ def run_pseudo_source(P: Paths, args) -> dict:
     if clash_sys:
         plog(P, show=True, msg=f"    Ghidra's copies of types the system headers define (the system's are "
                                f"used): {len(clash_sys)}, e.g. {', '.join(clash_sys[:6])}")
-    n_sys_fields = _system_type_fields(entries, data.get("datatypes") or [], set(clash_sys), system)
+    n_sys_fields = _system_type_fields(
+        entries, data.get("datatypes") or [], set(clash_sys) | (
+            {"CGRect", "CGPoint", "CGSize", "CGVector", "CGAffineTransform"} & system["typedefs"]), system)
     if n_sys_fields:
         plog(P, show=True, msg=f"    fields Ghidra named that the system's type calls something else "
                                f"(read at their offset): {n_sys_fields}")
@@ -8612,6 +8647,18 @@ def candidate_fixes(cfg: Config, rel: str, src: str, err: str) -> list[tuple[str
                 put("a second declaration made an assignment", f"{dm.group(1)}{v} = {val};")
     elif msg.startswith("duplicate case value"):
         put("a duplicate case label dropped", re.sub(r"\bcase\s+[^:]+:\s*", "", line, count=1))
+    elif re.match(r"too (?:many|few) arguments to function call", msg) and line.rfind("(", 0, i + 1) < 0:
+        # the call starts on an earlier line (its arguments run on): the function the
+        # compiler names ("'CFStringGetBytes' declared here"), on the nearest line above
+        dn = re.search(r"note: '([A-Za-z_]\w*)' declared here", err)
+        for j in range(ln - 2, max(-1, ln - 7), -1):
+            nm = re.search(rf"(?<![\w.>])({re.escape(dn.group(1))})\s*\(" if dn else
+                           r"(?<![\w.>])([A-Za-z_]\w*)\s*\((?!.*\b[A-Za-z_]\w*\s*\()", lines[j])
+            if nm and nm.group(1) not in CPP_KEYWORDS:
+                l2 = lines[j][:nm.start(1)] + f"((uint64_t (*)()){nm.group(1)})" + lines[j][nm.end(1):]
+                out.append(("a call with the arguments Ghidra saw (untyped)",
+                            "\n".join(lines[:j] + [l2] + lines[j + 1:])))
+                break
     elif re.match(r"too (?:many|few) arguments to function call", msg):
         k = line.rfind("(", 0, i + 1)
         while k > 0:

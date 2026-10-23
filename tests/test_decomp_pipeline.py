@@ -2113,6 +2113,9 @@ CANDIDATE_CASES = {
     "redecl": "double redecl(double a) {\n  double v = a;\n  double v = a + 1;\n  return v;\n}\n",
     # a model reply's fence left in the code
     "fence": "uint64_t fence(void) {\n  ```cpp\n  return 1;\n}\n",
+    # a call whose arguments run onto the next line, one more than declared (Ghidra
+    # splits a 16-byte struct argument in two: CFStringGetBytes' CFRange)
+    "splitcall": "long splitcall(long a) {\n  long r;\n  r = getbytes(a, 0,\n                a);\n  return r;\n}\n",
     # a 16-byte struct as a 16-byte value
     "struct16": "gh16 struct16(void) {\n  gh16 v;\n  v = GH16(bytes16());\n  return v;\n}\n",
 }
@@ -2130,7 +2133,7 @@ def test_candidate_fixes_repair_real_kinds_of_error_without_the_model(tmp_path, 
         "uint64_t take16(gh16 a, double b);\ndouble takeD(double d);\ngh16 give16(void);\n"
         "uint64_t two(long a, long b);\n"
         "struct pair { float s, c; };\nstruct pair pair_of(float x);\n"
-        "struct b16 { uint8_t b[16]; };\nstruct b16 bytes16(void);\n")
+        "struct b16 { uint8_t b[16]; };\nstruct b16 bytes16(void);\nlong getbytes(long s, long a);\n")
     (tmp_path / "funcs").mkdir()
     monkeypatch.setattr(dp, "_LESSONS", {})
     fixed = {}
@@ -2150,6 +2153,7 @@ def test_candidate_fixes_repair_real_kinds_of_error_without_the_model(tmp_path, 
     assert "GH_GET(local_9c, 0, 4) == 0x0" in text["arrcmp"] and "memcpy(&(b), &(a)" in text["arrcopy"]
     assert "  v = a + 1;" in text["redecl"] and "```" not in text["fence"]
     assert "GH16_ANY(bytes16())" in text["struct16"]
+    assert "((uint64_t (*)())getbytes)(a, 0," in text["splitcall"]
     assert "memcpy(&(local_c)" in text["arr12"] and "GH_GET(p->f, 4, 4)" in text["piece"]
     assert "((uint64_t (*)())two)(a, a, a)" in text["toomany"] and "GH_DBITS(d)" in text["dptr"]
     assert text["dupcase"].count("case 0:") == 1
@@ -2324,9 +2328,12 @@ def test_c_mode_drops_functions_with_a_system_functions_name(tmp_path, model):
               "10e0": ("setbuf", "void setbuf(char *param_1,long param_2)\n\n{\n  return;\n}\n"),
               "10f0": ("operator=", "void operator=(Pair *this,Pair *param_1)\n\n{\n"
                                     "  this->first = param_1->first;\n  return;\n}\n")}
+    pseudo["1100"] = ("FUN_00001100", "void FUN_00001100(void)\n\n{\n  (*(code *)PTR_operator<<_00004000)();\n"
+                                      "  return;\n}\n")
     write_export(tmp_path, pseudo)
     assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
     src = (tmp_path / "rewrite" / "pseudocode.c").read_text()
+    assert "PTR_operator___00004000" in src and "<<" not in src.split("//@ghidra 1100")[1]
     assert "void setbuf(" not in src
     assert src.split("//@ghidra 10f0")[1].split("\n")[1].startswith("void operator_(Pair *this")
 
@@ -2415,3 +2422,28 @@ def test_a_crash_report_shows_the_code_it_crashed_in(tmp_path):
                      "2   program    0x00000001097067d0 FUN_0000be10 + 56"]}
     out = "\n".join(dp._describe_failure(res, {"FUN_0000be10": "funcs/_FUN_0000be10.c"}, tmp_path))
     assert "ORIGINAL program's layout" in out and "return *(long *)0x453400;" in out
+
+
+def test_core_graphics_fields_two_levels_deep_are_read_at_their_offset(tmp_path):
+    import subprocess
+    entries = [{"name": "f", "head": "double f(double a,double b)",
+                "body": "{\n  CGRect CVar8;\n  CVar8.field0_0x0.field0_0x0 = 1.0;\n  CVar8.field0_0x0.field1_0x8 = 2.0;\n"
+                        "  CVar8.field1_0x10.field1_0x8 = b;\n  CVar8.field1_0x10.field0_0x0 = a;\n"
+                        "  return CVar8.size.height - CVar8.origin.y;\n}"}]
+    # no copy of CGRect in the export at all: the offsets are in the names
+    n = dp._system_type_fields(entries, [], {"CGRect"}, {"typedefs": {"CGRect"}, "tags": {}})
+    assert n == 4 and "(*(double *)GH_ADDR(CVar8, 0x18)) = b;" in entries[0]["body"]
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        return
+    (tmp_path / "g.c").write_text(dp.GHIDRA_INTRINS_H + """
+#include <stdio.h>
+typedef struct { double x, y; } CGPoint;
+typedef struct { double width, height; } CGSize;
+typedef struct { CGPoint origin; CGSize size; } CGRect;
+""" + entries[0]["head"] + "\n" + entries[0]["body"] + """
+int main(void) { printf("%g\\n", f(3, 7)); return 0; }
+""")
+    r = subprocess.run([cc, "-w", str(tmp_path / "g.c"), "-o", str(tmp_path / "g")], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert subprocess.run([str(tmp_path / "g")], capture_output=True, text=True).stdout.strip() == "5"
