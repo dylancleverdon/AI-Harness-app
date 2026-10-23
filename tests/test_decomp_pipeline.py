@@ -2541,3 +2541,34 @@ def test_addresses_in_the_data_written_as_numbers_become_the_rebuilt_datas(tmp_p
     so = ctypes.CDLL(str(next((tmp_path / "build_c").glob("program.*"))))
     so.FUN_000010a0.restype = ctypes.c_long
     assert so.FUN_000010a0() == 42          # 37 read through the number, 5 written and read back
+
+
+def test_the_programs_static_initializers_run_when_the_plugin_loads(tmp_path, model):
+    import base64
+    import ctypes
+    import struct
+    pseudo = {**C_PSEUDO,
+              # a C++ global's constructor: sets up an object the rest of the code relies on
+              "10a0": ("FUN_000010a0", "void FUN_000010a0(void)\n\n{\n  DAT_00002000 = 40;\n  return;\n}\n"),
+              "10b0": ("FUN_000010b0", "void FUN_000010b0(void)\n\n{\n  DAT_00002000 = DAT_00002000 + 2;\n"
+                                       "  return;\n}\n"),
+              "10c0": ("FUN_000010c0", "long FUN_000010c0(void)\n\n{\n  return DAT_00002000;\n}\n")}
+    write_export(tmp_path, pseudo)
+    (tmp_path / "ghidra" / "ghidra_data.json").write_text(json.dumps({
+        "version": 4, "image_base": "0",
+        "blocks": [{"name": "__data", "start": "2000", "size": 8, "write": True,
+                    "bytes": base64.b64encode(bytes(8)).decode()},
+                   # newer linkers: 32-bit offsets of the initializers, in order
+                   {"name": "__init_offsets", "start": "3000", "size": 4,
+                    "bytes": base64.b64encode(struct.pack("<I", 0x10a0)).decode()},
+                   # older ones: pointers, fixed up by the loader
+                   {"name": "__mod_init_func", "start": "3010", "size": 8,
+                    "bytes": base64.b64encode(struct.pack("<Q", 0x10b0)).decode()}],
+        "symbols": [{"addr": "2000", "name": "DAT_00002000", "type": "long", "size": 8}],
+        "refs": [], "relocs": [{"at": "3010", "value": "10b0", "sym": ""}], "callees": {}}))
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    assert "static initializers the plugin runs when it loads (as the original does): 2" in \
+        (tmp_path / "pipeline.log").read_text()
+    so = ctypes.CDLL(str(next((tmp_path / "build_c").glob("program.*"))))
+    so.FUN_000010c0.restype = ctypes.c_long
+    assert so.FUN_000010c0() == 42          # both ran at load, the 40 first

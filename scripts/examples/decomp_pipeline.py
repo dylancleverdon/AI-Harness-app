@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-23.6"
+PIPELINE_VERSION = "2026-10-23.7"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3553,6 +3553,35 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
              + ", ".join(json.dumps(n) for n in externals or [""]) + "};")
     c.append("static const struct { uint32_t block, off, ext; } gd_ext_relocs[] = {"
              + ", ".join(f"{{{b}, {o:#x}, {e}}}" for b, o, e in ext_relocs or [(0, 0, 0)]) + "};")
+    # the program's static initializers (C++ global objects, their mutexes...), which
+    # the system runs when the original loads: __mod_init_func holds pointers to them,
+    # __init_offsets (newer linkers) their offsets from the image base. The rebuilt
+    # plugin runs the same ones, in the same order, once its pointers are fixed up.
+    init_fns: list = []
+    base = int(str(data.get("image_base") or "0"), 16)
+    for b in blocks:
+        bs, be = int(b["start"], 16), int(b["start"], 16) + int(b["size"])
+        if b.get("name") == "__mod_init_func":
+            slots = {}
+            for r in data.get("refs") or []:
+                a = int(r["from"], 16)
+                if bs <= a < be and r.get("kind") == "function":
+                    slots.setdefault(a, by_addr.get(f"{int(r['to'], 16):x}"))
+            for r in data.get("relocs") or []:
+                a = int(r["at"], 16)
+                if bs <= a < be:
+                    slots.setdefault(a, by_addr.get(f"{int(r.get('value') or '0', 16):x}"))
+            init_fns += [slots[a] for a in sorted(slots) if slots[a]]
+        elif b.get("name") == "__init_offsets" and b.get("bytes"):
+            raw = base64.b64decode(b["bytes"])
+            for k in range(0, len(raw) - 3, 4):
+                fn = by_addr.get(f"{base + int.from_bytes(raw[k:k + 4], 'little'):x}")
+                if fn:
+                    init_fns.append(fn)
+    c += [f"extern char {n}[];" for n in sorted(set(init_fns) - fn_decls)]   # not declared above
+    if init_fns:
+        plog(P, show=True, msg=f"    static initializers the plugin runs when it loads (as the original "
+                               f"does): {len(init_fns)}")
     c.append(f"""
 // Pointers stored in the data pointed into the ORIGINAL program; point them at
 // the rebuilt functions, the right spot in the data, or the system library.
@@ -3567,7 +3596,8 @@ __attribute__((constructor)) static void gd_relocate(void) {{
             p = dlsym(RTLD_DEFAULT, n + 1);
         memcpy(blocks[gd_ext_relocs[i].block] + gd_ext_relocs[i].off, &p, sizeof(void *));
     }}
-}}""")
+    /* then the program's static initializers, as the system runs them for the original */
+{"".join(f"    ((void (*)(void))(void *){n})();{chr(10)}" for n in init_fns)}}}""")
     if unresolved:
         # a pointer the plugin would follow to an address that doesn't exist when it
         # runs (an import Ghidra didn't name, in an export from before version 3)
