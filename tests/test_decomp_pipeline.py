@@ -2516,3 +2516,28 @@ def test_the_script_updates_itself_to_a_newer_version_and_only_then(tmp_path, mo
     monkeypatch.delenv("DECOMP_UPDATED")
     assert dp.self_update(["--no-update"], path=me) == "skipped"
     assert dp._version_key("2026-10-23.10") > dp._version_key("2026-10-23.9")
+
+
+def test_addresses_in_the_data_written_as_numbers_become_the_rebuilt_datas(tmp_path, model):
+    import base64
+    import ctypes
+    import struct
+    pseudo = {**C_PSEUDO,
+              # the factory hands a spot in the data over as a number (Ghidra had no label)
+              "10a0": ("FUN_000010a0", "long FUN_000010a0(void)\n\n{\n  long *plVar1;\n"
+                                       "  plVar1 = (long *)0x102008;\n  *plVar1 = 5;\n"
+                                       "  return FUN_000010c0(0x102000) + *(long *)0x102008;\n}\n"),
+              "10c0": ("FUN_000010c0", "long FUN_000010c0(long param_1)\n\n{\n  return *(long *)param_1;\n}\n")}
+    write_export(tmp_path, pseudo)
+    blob = struct.pack("<qq", 37, 0)
+    (tmp_path / "ghidra" / "ghidra_data.json").write_text(json.dumps({
+        "version": 4, "image_base": "0",
+        "blocks": [{"name": "__data", "start": "102000", "size": len(blob), "write": True,
+                    "bytes": base64.b64encode(blob).decode()}],
+        "symbols": [], "refs": [], "relocs": [], "callees": {}}))
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    src = (tmp_path / "rewrite" / "pseudocode.c").read_text()
+    assert "(long *)(g_block_0 + 0x8)" in src and "FUN_000010c0((uintptr_t)(g_block_0 + 0x0))" in src
+    so = ctypes.CDLL(str(next((tmp_path / "build_c").glob("program.*"))))
+    so.FUN_000010a0.restype = ctypes.c_long
+    assert so.FUN_000010a0() == 42          # 37 read through the number, 5 written and read back

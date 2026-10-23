@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-23.5"
+PIPELINE_VERSION = "2026-10-23.6"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3582,6 +3582,50 @@ __attribute__((constructor)) static void gd_relocate(void) {{
     return "\n".join(h) + "\n", "\n".join(c) + "\n", macros, len(relocs) + len(ext_relocs)
 
 
+def _data_address_literals(entries: list, gdata: dict) -> int:
+    """Ghidra writes an address in the program's data as a plain number when it has
+    no label for it: (long *)0x453400, or FUN_x(0x453400). In the rebuilt plugin the
+    data is somewhere else, so such a number becomes that spot in the rebuilt data
+    (g_block_N + offset). A number cast to a pointer is one wherever it falls in the
+    data; a bare number only in writable data, from 0x100000 up (so small counts and
+    sizes never are). Returns how many."""
+    blocks = [b for b in gdata.get("blocks") or [] if b.get("size")]
+    spans = [(int(b["start"], 16), int(b["start"], 16) + int(b["size"]), i, bool(b.get("write")))
+             for i, b in enumerate(blocks)]
+    spans = [s for s in spans if s[0] > 0]              # never the Mach-O header at 0
+
+    def where(a):
+        for st, en, i, w in spans:
+            if st <= a < en:
+                return i, a - st, w
+        return None
+    n = 0
+
+    def cast(m):
+        nonlocal n
+        loc = where(int(m.group(2), 16))
+        if not loc:
+            return m.group(0)
+        n += 1
+        return f"({m.group(1)})(g_block_{loc[0]} + {loc[1]:#x})"
+
+    def bare(m):
+        nonlocal n
+        v = int(m.group(1), 16)
+        loc = where(v) if v >= 0x100000 else None
+        if not loc or not loc[2]:
+            return m.group(0)
+        n += 1
+        return f"(uintptr_t)(g_block_{loc[0]} + {loc[1]:#x})"
+    for e in entries:
+        b = re.sub(r"\(\s*([A-Za-z_][\w\s]*?\s*\*+)\s*\)\s*(0x[0-9a-fA-F]+)\b(?![.\w])", cast, e["body"])
+        # a bare number as a call's argument or an assignment's value, not inside a case label
+        b = re.sub(r"(?<=[(,=])\s*(0x[0-9a-fA-F]{6,16})\b(?=\s*[,);])",
+                   lambda m: m.group(0).replace(m.group(1), bare(re.match(r"(0x\w+)", m.group(1)))), b)
+        e["body"] = b
+    return n
+
+
 def _system_type_fields(entries: list, datatypes: list, clash: set, system: dict) -> int:
     """Ghidra's copy of a system type (CGRect) is dropped for the system's, whose
     fields have other names (origin.x, not field0_0x0.field0_0x0). Ghidra's own field
@@ -4265,6 +4309,10 @@ def run_pseudo_source(P: Paths, args) -> dict:
                 return macros[n]
             for e in entries:          # in the code only: never in a function's own name
                 e["body"] = rx.sub(lambda m, b=e["body"]: label(m, b), e["body"])
+        n_lit = _data_address_literals(entries, gdata)
+        if n_lit:
+            plog(P, show=True, msg=f"    addresses in the data written in the code as numbers "
+                                   f"((long *)0x453400): {n_lit}, now the rebuilt data's")
         # data the code names that the export doesn't have (outside its blocks):
         # a placeholder, so it compiles; listed, because it won't hold the real value
         defined_names = set(macros) | set(cname.values())
@@ -15086,7 +15134,7 @@ def _describe_failure(res: dict, records_by_name: dict, workdir: Optional[Path] 
         elif addr is not None and addr < 0x100000000:
             out.append("    (an address from the ORIGINAL program's layout: a pointer the load-time "
                        "fix-ups missed, still pointing where the original kept that thing)")
-        for n in list(dict.fromkeys(frames))[:2] if workdir else []:
+        for n in list(dict.fromkeys(frames))[:3] if workdir else []:
             try:
                 code = (workdir / records_by_name[n]).read_text()
             except OSError:
