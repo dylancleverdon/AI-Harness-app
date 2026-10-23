@@ -2489,3 +2489,30 @@ int main(void) { printf("%d\\n", _logf(2.5f) == logf(2.5f)); return 0; }
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     assert subprocess.run([str(tmp_path / "f")], capture_output=True, text=True).stdout.strip() == "1"
+
+
+def test_the_script_updates_itself_to_a_newer_version_and_only_then(tmp_path, monkeypatch):
+    import io
+    me = tmp_path / "decomp_pipeline.py"
+    me.write_text('PIPELINE_VERSION = "2026-10-23.4"\\n')
+    served = {}
+
+    def fake_urlopen(url, timeout=0):
+        return io.BytesIO(served["text"].encode())
+    monkeypatch.setattr(dp.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.delenv("DECOMP_UPDATED", raising=False)
+    monkeypatch.delenv("DECOMP_NO_UPDATE", raising=False)
+    restarted = []
+    served["text"] = f'PIPELINE_VERSION = "{dp.PIPELINE_VERSION}"\nprint(1)\n'
+    assert dp.self_update([], path=me, restart=lambda: restarted.append(1)) == "latest"
+    served["text"] = 'PIPELINE_VERSION = "2999-01-01.1"\ndef broken(:\n'      # cut off
+    assert dp.self_update([], path=me, restart=lambda: restarted.append(1)) == "bad download"
+    assert not restarted and "2999" not in me.read_text()
+    served["text"] = 'PIPELINE_VERSION = "2999-01-01.1"\nprint(1)\n'
+    assert dp.self_update(["--lang", "c"], path=me, restart=lambda: restarted.append(1)) == "updated"
+    assert restarted and "2999-01-01.1" in me.read_text()
+    assert (tmp_path / "decomp_pipeline.py.previous").exists()
+    assert dp.self_update([], path=me) == "skipped"          # the restarted one doesn't check again
+    monkeypatch.delenv("DECOMP_UPDATED")
+    assert dp.self_update(["--no-update"], path=me) == "skipped"
+    assert dp._version_key("2026-10-23.10") > dp._version_key("2026-10-23.9")

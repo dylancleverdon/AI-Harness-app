@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-23.4"
+PIPELINE_VERSION = "2026-10-23.5"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -15734,6 +15734,8 @@ def build_parser() -> argparse.ArgumentParser:
                    help="at link time, stub EVERY undefined symbol that has a prototype")
     g.add_argument("--no-pseudo", action="store_true",
                    help="skip rebuilding quarantined functions from pseudocode")
+    g.add_argument("--no-update", action="store_true",
+                   help="don't check for a newer version of this script when it starts")
     g.add_argument("--repair-minutes", type=int, default=30,
                    help="after the fix stage, passes over everything quarantined (fixes that need no "
                         "model, then the model) until one rescues nothing, for at most this many "
@@ -15821,5 +15823,66 @@ def main(argv=None) -> int:
     return run_pipeline(args)
 
 
+# ----------------------------------------------------------------------------
+# Self-update: the first thing a run does is make sure it's the latest version
+# ----------------------------------------------------------------------------
+
+UPDATE_URL = ("https://raw.githubusercontent.com/dylancleverdon/AI-Harness-app/main/"
+              "scripts/examples/decomp_pipeline.py")
+
+
+def _version_key(v: str) -> tuple:
+    """"2026-10-23.4" -> (2026, 10, 23, 4), so versions compare in order."""
+    return tuple(int(x) for x in re.findall(r"\d+", v or ""))
+
+
+def self_update(argv: list, url: str = UPDATE_URL, path: Optional[Path] = None,
+                restart=None) -> str:
+    """Download the latest version of this script; if it's newer than this one,
+    replace this file with it (the old one is kept as .previous) and start again
+    with the same arguments. Never stops a run: offline, a download that isn't a
+    whole working script, or a file that can't be written, and this version runs.
+    Returns what happened (for the log)."""
+    if "--no-update" in argv or os.environ.get("DECOMP_NO_UPDATE") or os.environ.get("DECOMP_UPDATED"):
+        return "skipped"
+    path = path or Path(__file__).resolve()
+    try:
+        with urllib.request.urlopen(url, timeout=15) as r:
+            new = r.read().decode("utf-8")
+    except Exception as e:
+        print(f"update check: couldn't reach GitHub ({str(e)[:120]}); running {PIPELINE_VERSION}",
+              flush=True)
+        return "offline"
+    m = re.search(r'^PIPELINE_VERSION = "([^"]+)"', new, re.M)
+    if not m:
+        print("update check: the download isn't this script; running this version", flush=True)
+        return "bad download"
+    latest = m.group(1)
+    if _version_key(latest) <= _version_key(PIPELINE_VERSION):
+        print(f"update check: {PIPELINE_VERSION} is the latest version", flush=True)
+        return "latest"
+    try:
+        compile(new, str(path), "exec")             # a whole script, not a cut-off download
+    except SyntaxError:
+        print(f"update check: version {latest} didn't download whole; running {PIPELINE_VERSION}",
+              flush=True)
+        return "bad download"
+    try:
+        shutil.copy2(path, path.with_name(path.name + ".previous"))
+        tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+        tmp.write_text(new)
+        os.replace(tmp, path)
+    except OSError as e:
+        print(f"update check: version {latest} is out, but {path} can't be replaced ({e}); "
+              f"running {PIPELINE_VERSION}", flush=True)
+        return "not writable"
+    print(f"update check: updated {PIPELINE_VERSION} -> {latest} (the old one is "
+          f"{path.name}.previous); starting again with it", flush=True)
+    os.environ["DECOMP_UPDATED"] = latest           # the new one doesn't check again
+    (restart or (lambda: os.execv(sys.executable, [sys.executable, str(path), *argv])))()
+    return "updated"
+
+
 if __name__ == "__main__":
+    self_update(sys.argv[1:])
     sys.exit(main())
