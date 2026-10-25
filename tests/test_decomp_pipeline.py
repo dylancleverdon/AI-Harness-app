@@ -2572,3 +2572,46 @@ def test_the_programs_static_initializers_run_when_the_plugin_loads(tmp_path, mo
     so = ctypes.CDLL(str(next((tmp_path / "build_c").glob("program.*"))))
     so.FUN_000010c0.restype = ctypes.c_long
     assert so.FUN_000010c0() == 42          # both ran at load, the 40 first
+
+
+def test_a_crash_is_explained_in_the_programs_own_terms(tmp_path, model):
+    import os
+    import base64
+    import ctypes
+    import struct
+    import subprocess
+    pseudo = {**C_PSEUDO,
+              "10a0": ("FUN_000010a0", "long FUN_000010a0(void)\n\n{\n  long lVar1;\n"
+                                       "  lVar1 = (*(code *)PTR_FUN_00002008)(DAT_00002000,1);\n"
+                                       "  return lVar1;\n}\n")}
+    write_export(tmp_path, pseudo)
+    blob = struct.pack("<qq", 41, 0x1000)
+    (tmp_path / "ghidra" / "ghidra_data.json").write_text(json.dumps({
+        "version": 4, "image_base": "0",
+        "blocks": [{"name": "__data", "start": "2000", "size": len(blob), "write": True,
+                    "bytes": base64.b64encode(blob).decode()}],
+        "symbols": [{"addr": "2000", "name": "DAT_00002000", "type": "long", "size": 8},
+                    {"addr": "2008", "name": "PTR_FUN_00002008", "type": "pointer", "size": 8, "pointer": True}],
+        "refs": [{"from": "2008", "to": "1000", "kind": "function", "name": "FUN_00001000"}],
+        "relocs": [], "callees": {}}))
+    assert run(tmp_path, model, "--lang", "c", "--to", "link") == 0
+    lib = next((tmp_path / "build_c").glob("program.*"))
+    # the plugin's own load steps, with GD_DEBUG
+    r = subprocess.run([sys.executable, "-c", f"import ctypes; ctypes.CDLL({str(lib)!r})"],
+                       capture_output=True, text=True, env={**os.environ, "GD_DEBUG": "1"})
+    assert "GD fixing up 1 pointer(s)" in r.stderr and "GD loaded" in r.stderr
+    # a crash with a register pointing at the data's second slot
+    so = ctypes.CDLL(str(lib))
+    at = ctypes.addressof(ctypes.c_uint8.in_dll(so, "g_block_0"))
+    nm = subprocess.run(["nm", "-n", str(lib)], capture_output=True, text=True).stdout
+    sym = next(int(l.split()[0], 16) for l in nm.splitlines() if l.endswith(" g_block_0"))
+    base = at - sym
+    cfg = dp.Config(input_file=tmp_path / "x", workdir=tmp_path / "build_c", lang="c")
+    recs = {r.name: r for r in dp.load_manifest(cfg).values()} if hasattr(dp, "load_manifest") else {}
+    res = {"steps": ["instantiate"], "crash": [f"CRASH reg x0={at + 8:#x}", "CRASH reg x1=0x0",
+                                               f"CRASH frame 2 {base + 0x10:#x} base={base:#x} sym=f image=/x/{lib.name}"],
+           "gd": ["fixing up 1 pointer(s)"], "stderr": "plugin said hello"}
+    out = "\n".join(dp._crash_context(res, {"lib": lib, "P": dp.Paths(tmp_path), "cfg": cfg, "recs": recs}))
+    assert "in the rebuilt data: g_block_0 + 0x8" in out and "original 0x2008, Ghidra's PTR_FUN_00002008" in out
+    assert "fixed up at load: function -> 1000" in out and "x1 = 0x0000000000000000  (zero)" in out
+    assert "the rebuilt plugin's load steps" in out and "plugin said hello" in out

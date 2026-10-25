@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.1"
+PIPELINE_VERSION = "2026-10-25.2"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3410,7 +3410,7 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
     spans = []                                  # (start, end, index)
     h = ["#pragma once", "// The program's data, from Ghidra (generated: don't edit)", "#include <stdint.h>"]
     c = ["// The program's data, from Ghidra (generated: don't edit)", "#include <stdint.h>",
-         "#include <string.h>", "#include <dlfcn.h>"]
+         "#include <string.h>", "#include <dlfcn.h>", "#include <stdio.h>", "#include <stdlib.h>"]
     for i, b in enumerate(blocks):
         start, size = int(b["start"], 16), int(b["size"])
         spans.append((start, start + size, i))
@@ -3594,8 +3594,16 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
     c.append(f"""
 // Pointers stored in the data pointed into the ORIGINAL program; point them at
 // the rebuilt functions, the right spot in the data, or the system library.
+// With GD_DEBUG=1 (the test stage sets it) every step is written to stderr, so a
+// crash while loading says where it happened.
 __attribute__((constructor)) static void gd_relocate(void) {{
     uint8_t *const blocks[] = {{{", ".join(f"g_block_{i}" for i in range(len(blocks))) or "0"}}};
+    const int dbg = getenv("GD_DEBUG") != NULL;
+    unsigned missing = 0;
+    if (dbg) fprintf(stderr, "GD data at");
+    for (unsigned i = 0; dbg && i < sizeof blocks / sizeof *blocks; i++)
+        fprintf(stderr, " %u=%p", i, (void *)blocks[i]);
+    if (dbg) fprintf(stderr, "\\nGD fixing up {len(relocs)} pointer(s) and {len(ext_relocs)} import(s)\\n");
     for (unsigned i = 0; i < {len(relocs)}u; i++)
         memcpy(blocks[gd_relocs[i].block] + gd_relocs[i].off, &gd_targets[gd_relocs[i].target], sizeof(void *));
     for (unsigned i = 0; i < {len(ext_relocs)}u; i++) {{
@@ -3603,10 +3611,17 @@ __attribute__((constructor)) static void gd_relocate(void) {{
         void *p = dlsym(RTLD_DEFAULT, n);
         if (!p && n[0] == '_')               /* Mach-O's own spelling: _kCFAllocatorDefault */
             p = dlsym(RTLD_DEFAULT, n + 1);
+        if (!p && dbg && missing++ < 200)
+            fprintf(stderr, "GD import not found (left null): %s, at block %u + 0x%x\\n", n,
+                    gd_ext_relocs[i].block, gd_ext_relocs[i].off);
         memcpy(blocks[gd_ext_relocs[i].block] + gd_ext_relocs[i].off, &p, sizeof(void *));
     }}
+    if (dbg) fprintf(stderr, "GD fix-ups done; imports not found: %u\\n", missing);
     /* then the program's static initializers, as the system runs them for the original */
-{"".join(f"    ((void (*)(void))(void *){n})();{chr(10)}" for n in init_fns)}}}""")
+{"".join(f'    if (dbg) fprintf(stderr, "GD initializer {k + 1}/{len(init_fns)}: {n}\\n");{chr(10)}'
+            f"    ((void (*)(void))(void *){n})();{chr(10)}" for k, n in enumerate(init_fns))}
+    if (dbg) fprintf(stderr, "GD loaded: {len(init_fns)} initializer(s) ran\\n");
+}}""")
     if unresolved:
         # a pointer the plugin would follow to an address that doesn't exist when it
         # runs (an import Ghidra didn't name, in an export from before version 3)
@@ -10067,6 +10082,16 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
     # that now compile (duplicate symbols); the rounds below add back what's needed
     write_stubs()
 
+    # C mode: line tables in the objects, so a crash's addresses become file:line in
+    # the test report; objects built without them are rebuilt once
+    link_debug = ["-gline-tables-only"] if c_mode else []
+    mark = obj_dir / ".line-tables"
+    if c_mode and not mark.exists():
+        obj_dir.mkdir(parents=True, exist_ok=True)
+        for o in obj_dir.glob("*.o"):
+            o.unlink(missing_ok=True)
+        mark.write_text("objects have line tables\n")
+
     def _obj(src: Path) -> tuple[Path, Path, str]:
         o = obj_dir / (src.stem + ".o")
         if o.exists() and o.stat().st_mtime >= max(src.stat().st_mtime,
@@ -10075,7 +10100,7 @@ def link_pass(cfg: Config, records: dict[str, FuncRecord]) -> bool:
         own = src.name in ("ghidra_data.c", "objc_messages.c")   # stand alone: no shared.h
         pch = [] if own else _pch_flags(cfg)
         cmd = [cfg.cxx, *(["-x", "c", "-std=gnu11"] if own else lang_args(cfg)), f"-I{cfg.workdir}",
-               "-w", "-c", *PIC_FLAGS, *pch, *cfg.extra_flags, str(src), "-o", str(o)]
+               "-w", "-c", *PIC_FLAGS, *pch, *cfg.extra_flags, *link_debug, str(src), "-o", str(o)]
         pr = subprocess.run(cmd, capture_output=True, text=True)
         if pr.returncode != 0 and pch:   # PCH/flag mismatch -> retry without
             pr = subprocess.run([x for x in cmd if x not in pch],
@@ -14517,6 +14542,7 @@ AU_HOST_C = r'''// aharness_host.c: a tiny command-line Audio Unit host, for tes
 #include <AudioToolbox/AudioToolbox.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <execinfo.h>
+#include <dlfcn.h>
 #include <math.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -14599,6 +14625,66 @@ static void on_crash(int sig, siginfo_t *info, void *ctx) {
     int count = backtrace(frames, 64);
     if (write(1, "CRASH stack:\n", 13) < 0) _exit(3);
     backtrace_symbols_fd(frames, count, 1);
+#if defined(__APPLE__)
+    // every register when it crashed (which one held the bad value), and for each
+    // frame the image it's in and where that image is loaded (so the pipeline can
+    // turn an address into a source line, or a spot in the program's data)
+    ucontext_t *uc = (ucontext_t *)ctx;
+    unsigned long long special[4] = {0, 0, 0, 0};
+    const char *special_name[4] = {"fp", "lr", "sp", "pc"};
+    if (uc && uc->uc_mcontext) {
+#if defined(__arm64__) || defined(__aarch64__)
+        for (int i = 0; i < 29; i++) {
+            n = snprintf(line, sizeof line, "CRASH reg x%d=0x%llx\n", i,
+                         (unsigned long long)uc->uc_mcontext->__ss.__x[i]);
+            if (write(1, line, (size_t)n) < 0) _exit(3);
+        }
+#if defined(__DARWIN_OPAQUE_ARM_THREAD_STATE64) && __DARWIN_OPAQUE_ARM_THREAD_STATE64
+        special[0] = (unsigned long long)uc->uc_mcontext->__ss.__opaque_fp;
+        special[1] = (unsigned long long)uc->uc_mcontext->__ss.__opaque_lr;
+        special[2] = (unsigned long long)uc->uc_mcontext->__ss.__opaque_sp;
+        special[3] = (unsigned long long)uc->uc_mcontext->__ss.__opaque_pc;
+#else
+        special[0] = uc->uc_mcontext->__ss.__fp;
+        special[1] = uc->uc_mcontext->__ss.__lr;
+        special[2] = uc->uc_mcontext->__ss.__sp;
+        special[3] = uc->uc_mcontext->__ss.__pc;
+#endif
+#elif defined(__x86_64__)
+        const char *xn[] = {"rax", "rbx", "rcx", "rdx", "rdi", "rsi", "r8", "r9", "r10", "r11",
+                            "r12", "r13", "r14", "r15"};
+        unsigned long long xv[] = {uc->uc_mcontext->__ss.__rax, uc->uc_mcontext->__ss.__rbx,
+            uc->uc_mcontext->__ss.__rcx, uc->uc_mcontext->__ss.__rdx, uc->uc_mcontext->__ss.__rdi,
+            uc->uc_mcontext->__ss.__rsi, uc->uc_mcontext->__ss.__r8, uc->uc_mcontext->__ss.__r9,
+            uc->uc_mcontext->__ss.__r10, uc->uc_mcontext->__ss.__r11, uc->uc_mcontext->__ss.__r12,
+            uc->uc_mcontext->__ss.__r13, uc->uc_mcontext->__ss.__r14, uc->uc_mcontext->__ss.__r15};
+        for (int i = 0; i < 14; i++) {
+            n = snprintf(line, sizeof line, "CRASH reg %s=0x%llx\n", xn[i], xv[i]);
+            if (write(1, line, (size_t)n) < 0) _exit(3);
+        }
+        special[0] = uc->uc_mcontext->__ss.__rbp;
+        special[2] = uc->uc_mcontext->__ss.__rsp;
+        special[3] = uc->uc_mcontext->__ss.__rip;
+#endif
+        for (int i = 0; i < 4; i++) {
+            n = snprintf(line, sizeof line, "CRASH reg %s=0x%llx\n", special_name[i], special[i]);
+            if (write(1, line, (size_t)n) < 0) _exit(3);
+        }
+    }
+    for (int i = 0; i < count + 2; i++) {
+        void *a = i < count ? frames[i] : (void *)(uintptr_t)special[i == count ? 3 : 1];
+        Dl_info di;
+        if (!a || !dladdr(a, &di)) continue;
+        char which[16];
+        if (i < count) snprintf(which, sizeof which, "%d", i);
+        else snprintf(which, sizeof which, "%s", i == count ? "pc" : "lr");
+        n = snprintf(line, sizeof line, "CRASH frame %s %p base=%p sym=%s image=", which, a,
+                     di.dli_fbase, di.dli_sname ? di.dli_sname : "?");
+        if (write(1, line, (size_t)n) < 0) _exit(3);
+        if (di.dli_fname && write(1, di.dli_fname, strlen(di.dli_fname)) < 0) _exit(3);
+        if (write(1, "\n", 1) < 0) _exit(3);
+    }
+#endif
     if (write(1, "CRASH end\n", 10) < 0) _exit(3);
     signal(sig, SIG_DFL);
     raise(sig);
@@ -15108,7 +15194,7 @@ def _run_host(argv: list[str], timeout: int = TEST_TIMEOUT) -> dict:
                  "timeout": False, "channels": None, "info": None, "stderr": ""}
     try:
         r = subprocess.run(argv, capture_output=True, text=True, errors="replace",
-                           timeout=timeout)
+                           timeout=timeout, env={**os.environ, "GD_DEBUG": "1"})
         out, err, code = r.stdout, r.stderr, r.returncode
     except subprocess.TimeoutExpired as e:
         out = e.stdout.decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or "")
@@ -15126,6 +15212,8 @@ def _run_host(argv: list[str], timeout: int = TEST_TIMEOUT) -> dict:
         elif line.startswith("CRASH"):
             if not line.startswith("CRASH end"):
                 res["crash"].append(line)
+        elif line.startswith("GD "):                 # the rebuilt plugin's own load steps
+            res.setdefault("gd", []).append(line[3:])
         elif line.startswith("FORMAT channels="):
             res["channels"] = int(line.split("=", 1)[1])
         elif line.startswith("INFO "):
@@ -15133,9 +15221,12 @@ def _run_host(argv: list[str], timeout: int = TEST_TIMEOUT) -> dict:
                 res["info"] = json.loads(line[5:])
             except ValueError:
                 res["error"] = "the host's parameter list couldn't be read: " + line[5:300]
-        elif res["crash"] and not line.startswith("CRASH end") and len(res["crash"]) < 70:
+        elif res["crash"] and not line.startswith("CRASH end") and len(res["crash"]) < 200:
             res["crash"].append(line)                # the stack trace's frames
-    res["stderr"] = err[-2000:]
+    for line in err.splitlines():
+        if line.startswith("GD "):                   # (the plugin writes them to stderr)
+            res.setdefault("gd", []).append(line[3:])
+    res["stderr"] = "\n".join(l for l in err.splitlines() if not l.startswith("GD "))[-4000:]
     if code is not None and code < 0:
         try:
             res["signal"] = signal.Signals(-code).name
@@ -15147,7 +15238,164 @@ def _run_host(argv: list[str], timeout: int = TEST_TIMEOUT) -> dict:
     return res
 
 
-def _describe_failure(res: dict, records_by_name: dict, workdir: Optional[Path] = None) -> list[str]:
+def _crash_context(res: dict, extra: dict) -> list[str]:
+    """Everything the crash tells about the rebuilt program, in its own terms: each
+    rebuilt frame as file:line, every register that points into the program (a
+    function, or a spot in its data: which block, the ORIGINAL address there, Ghidra's
+    label, the bytes the original has there and whether a fix-up fills them), the
+    globals each crashing function uses (the same, for each), Ghidra's pseudocode
+    beside the rebuilt code, the plugin's own load steps, and what it wrote to stderr."""
+    import bisect
+    lib, P, cfg, recs = extra.get("lib"), extra.get("P"), extra.get("cfg"), extra.get("recs") or {}
+    out: list[str] = []
+    regs = {m.group(1): int(m.group(2), 16) for l in res["crash"]
+            for m in [re.match(r"CRASH reg (\w+)=0x([0-9a-fA-F]+)", l)] if m}
+    frames = [(m.group(1), int(m.group(2), 16), int(m.group(3), 16), m.group(4), m.group(5))
+              for l in res["crash"]
+              for m in [re.match(r"CRASH frame (\w+) 0x([0-9a-fA-F]+) base=0x([0-9a-fA-F]+) sym=(\S*) image=(.*)$", l)]
+              if m]
+    if res.get("gd"):
+        out.append("    the rebuilt plugin's load steps (GD_DEBUG):")
+        out += [f"      {l}" for l in res["gd"][-60:]]
+    if (res.get("stderr") or "").strip():
+        out.append("    what the plugin and the host wrote to stderr (last lines):")
+        out += [f"      {l}" for l in res["stderr"].strip().splitlines()[-40:]]
+    if not lib or not Path(lib).exists():
+        return out
+    lib = Path(lib)
+    prog = [f for f in frames if f[4].endswith(("/" + lib.name, "Rebuilt")) or "Rebuilt.component" in f[4]]
+    base = prog[0][2] if prog else None
+    # the program's symbols: functions, and its data blocks (g_block_N)
+    syms: list = []
+    try:
+        r = subprocess.run(["nm", "-n", str(lib)], capture_output=True, text=True, timeout=120)
+        for l in r.stdout.splitlines():
+            m = re.match(r"^([0-9a-fA-F]+) ([A-Za-z]) (\S+)$", l)
+            if m:
+                syms.append((int(m.group(1), 16), m.group(3).lstrip("_") if sys.platform == "darwin"
+                             else m.group(3)))
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    addrs = [s[0] for s in syms]
+    gdata: dict = {}
+    try:
+        gdata = json.loads((P.ghidra / "ghidra_data.json").read_text()) if P else {}
+    except Exception:
+        pass
+    blocks = [b for b in gdata.get("blocks") or [] if b.get("size")]
+    labels = sorted((int(s["addr"], 16), s.get("name", ""), int(s.get("size") or 0))
+                    for s in gdata.get("symbols") or [])
+    fixups: dict = {}
+    for rr in gdata.get("refs") or []:
+        fixups.setdefault(int(rr["from"], 16), f"{rr.get('kind')} -> {rr.get('to')} {rr.get('name') or ''}".strip())
+    for rr in gdata.get("relocs") or []:
+        fixups.setdefault(int(rr["at"], 16), f"loader fix-up -> {rr.get('value')} {rr.get('sym') or ''}".strip())
+    raw_cache: dict = {}
+
+    def original_bytes(addr: int, n: int) -> str:
+        import base64
+        for b in blocks:
+            st = int(b["start"], 16)
+            if st <= addr < st + int(b["size"]):
+                if not b.get("bytes"):
+                    return "(zero-filled block)"
+                raw = raw_cache.setdefault(b["start"], base64.b64decode(b["bytes"]))
+                return raw[addr - st:addr - st + n].hex(" ")
+        return "(not in the data export)"
+
+    def describe_original(addr: int) -> str:
+        i = bisect.bisect_right([x[0] for x in labels], addr) - 1
+        lab = ""
+        if i >= 0 and labels[i][0] <= addr < labels[i][0] + max(labels[i][2], 1):
+            lab = f", Ghidra's {labels[i][1]}" + (f"+{addr - labels[i][0]:#x}" if addr != labels[i][0] else "")
+        fx = fixups.get(addr)
+        return (f"original {addr:#x}{lab}; the original has there: {original_bytes(addr, 8)}"
+                + (f"; fixed up at load: {fx}" if fx else "; no fix-up there"))
+
+    def where(v: int) -> str:
+        if base is None or not addrs:
+            return ""
+        rel = v - base
+        if rel < 0 or rel > (addrs[-1] + 0x4000000):
+            return ""
+        i = bisect.bisect_right(addrs, rel) - 1
+        if i < 0:
+            return ""
+        a, name = syms[i]
+        m = re.match(r"g_block_(\d+)$", name)
+        if m and int(m.group(1)) < len(blocks):
+            b = blocks[int(m.group(1))]
+            off = rel - a
+            if off < int(b["size"]):
+                return (f"in the rebuilt data: {name} + {off:#x} (block {b.get('name', '')}); "
+                        + describe_original(int(b["start"], 16) + off))
+        return f"in the rebuilt program: {name} + {rel - a:#x}"
+    if regs:
+        out.append("    registers when it crashed (the ones that point into the rebuilt program explained):")
+        for k, v in regs.items():
+            w = where(v)
+            note = "  (zero)" if v == 0 else "  (near zero)" if v < 0x10000 else ""
+            out.append(f"      {k:>3} = {v:#018x}{note}" + (f"  {w}" if w else ""))
+    # source lines for the program's frames (atos reads the line tables on macOS)
+    if base is not None and sys.platform == "darwin" and shutil.which("atos"):
+        pts = [(f[0], f[1]) for f in frames if f[2] == base]
+        try:
+            r = subprocess.run(["atos", "-o", str(lib), "-l", hex(base), *[hex(a) for _, a in pts]],
+                               capture_output=True, text=True, timeout=120)
+            lines = r.stdout.strip().splitlines()
+            if lines and len(lines) == len(pts):
+                out.append("    the rebuilt frames as source lines:")
+                out += [f"      {w:>3}: {l}" for (w, _), l in zip(pts, lines)]
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+    # for each rebuilt function in the stack: Ghidra's pseudocode and the data it uses
+    macros: dict = {}
+    try:
+        for m in re.finditer(r"^#define (GD_\w+) .*?g_block_(\d+) \+ (0x[0-9a-fA-F]+)",
+                             (cfg.workdir / "ghidra_data.h").read_text(), re.M):
+            macros[m.group(1)] = (int(m.group(2)), int(m.group(3), 16))
+    except Exception:
+        pass
+    try:
+        exp, idx = _load_pseudocode(cfg)
+    except Exception:
+        exp, idx = {}, {}
+    seen = []
+    for l in res["crash"]:
+        m = re.search(r"\b((?:FUN|thunk_FUN)_[0-9a-fA-F]+|[A-Za-z_]\w*)\s*\+\s*\d+", l)
+        if m and m.group(1) in recs and "program" in l and m.group(1) not in seen:
+            seen.append(m.group(1))
+    for name in seen[:10]:
+        rec = recs[name]
+        try:
+            code = (cfg.workdir / rec.file).read_text()
+        except OSError:
+            code = ""
+        used = sorted(set(re.findall(r"\bGD_\w+", code)))
+        lits = sorted(set(re.findall(r"g_block_(\d+) \+ (0x[0-9a-fA-F]+)", code)))
+        if used or lits:
+            out.append(f"    data {name} uses:")
+            for g in used[:30]:
+                if g in macros and macros[g][0] < len(blocks):
+                    bi, off = macros[g]
+                    out.append(f"      {g}: block {blocks[bi].get('name', '')} + {off:#x}; "
+                               + describe_original(int(blocks[bi]["start"], 16) + off))
+                else:
+                    out.append(f"      {g}: (a placeholder or a function pointer: not in the data)")
+            for bi, off in lits[:30]:
+                bi, off = int(bi), int(off, 16)
+                if bi < len(blocks):
+                    out.append(f"      g_block_{bi} + {off:#x} (an address written as a number): "
+                               + describe_original(int(blocks[bi]["start"], 16) + off))
+        ps = _pseudo_for(rec, exp, idx) if exp else None
+        if ps:
+            out.append(f"    Ghidra's pseudocode of {name}:")
+            out += [f"      {l}" for l in ps.strip().splitlines()[:60]]
+    return out
+
+
+def _describe_failure(res: dict, records_by_name: dict, workdir: Optional[Path] = None,
+                      extra: Optional[dict] = None) -> list[str]:
     """What went wrong in one host run, in words, with every detail it gave (and,
     with workdir, the code of the rebuilt functions it crashed in, innermost first)."""
     step = res["steps"][-1] if res["steps"] else "starting"
@@ -15159,6 +15407,8 @@ def _describe_failure(res: dict, records_by_name: dict, workdir: Optional[Path] 
         out.append(f"crashed ({res['signal'] or 'signal'}) during: {step}")
         frames = []
         for line in res["crash"]:
+            if line.startswith(("CRASH reg ", "CRASH frame ")):
+                continue                         # explained below (_crash_context)
             out.append("    " + line)
             m = re.search(r"\b((?:FUN|thunk_FUN)_[0-9a-fA-F]+|[A-Za-z_]\w*)\s*\+\s*\d+", line)
             if m and m.group(1) in records_by_name and "program" in line:
@@ -15184,6 +15434,11 @@ def _describe_failure(res: dict, records_by_name: dict, workdir: Optional[Path] 
             out += [f"      {i + 1:4} | {l}" for i, l in enumerate(body[:60])]
             if len(body) > 60:
                 out.append(f"      ... ({len(body) - 60} more lines)")
+        if extra:
+            try:
+                out += _crash_context(res, extra)
+            except Exception as e:                  # the report never fails because of this
+                out.append(f"    (the crash details couldn't all be worked out: {e})")
     elif res["error"]:
         out.append(f"failed at step {step}: {res['error']}")
     else:
@@ -15316,6 +15571,7 @@ def run_test(P: Paths, cfg: Config, args) -> dict:
     except Exception:
         pass
     by_name = {r.name: r.file for r in records.values()}
+    crash_extra = {"lib": lib, "P": P, "cfg": cfg, "recs": {r.name: r for r in records.values()}}
     exported = _exported_functions(lib)
 
     # the hosts: one for this Mac's architecture (the rebuilt program), and one
@@ -15382,10 +15638,10 @@ def run_test(P: Paths, cfg: Config, args) -> dict:
             ri = _run_host(r_cmd + ["info", str(bundle), fac, *desc])
             rep.append("rebuilt plugin, loading: " + ("OK" if ri["ok"] else "FAILED"))
             if not ri["ok"] or not ri["info"]:
-                rep += _describe_failure(ri, by_name, cfg.workdir)
+                rep += _describe_failure(ri, by_name, cfg.workdir, crash_extra)
                 result.update(cases=1, passed=0, failure="the rebuilt plugin didn't load: "
                               + (ri["steps"][-1] if ri["steps"] else "starting"))
-                return finish("the rebuilt plugin didn't load: " + _describe_failure(ri, by_name, cfg.workdir)[0])
+                return finish("the rebuilt plugin didn't load: " + _describe_failure(ri, by_name, cfg.workdir, crash_extra)[0])
             op, rp = oi["info"]["params"], ri["info"]["params"]
             rep.append(f"parameters: original {len(op)}, rebuilt {len(rp)}")
             ok_ids = {p["id"]: p for p in rp}
@@ -15420,8 +15676,8 @@ def run_test(P: Paths, cfg: Config, args) -> dict:
                                         str(rf), *pv])
                 if not rr["ok"]:
                     crashes += bool(rr["signal"] or rr["crash"])
-                    rep += [f"[{i}] {label}: FAIL"] + _describe_failure(rr, by_name, cfg.workdir)
-                    result.setdefault("failure", f"{label}: " + _describe_failure(rr, by_name, cfg.workdir)[0])
+                    rep += [f"[{i}] {label}: FAIL"] + _describe_failure(rr, by_name, cfg.workdir, crash_extra)
+                    result.setdefault("failure", f"{label}: " + _describe_failure(rr, by_name, cfg.workdir, crash_extra)[0])
                     continue
                 if (ro["channels"] or 2) != (rr["channels"] or 2):
                     rep.append(f"[{i}] {label}: FAIL: the original renders {ro['channels']} "
