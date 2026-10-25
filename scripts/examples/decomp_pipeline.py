@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.6"
+PIPELINE_VERSION = "2026-10-25.8"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -1577,7 +1577,7 @@ def run_headless_export(P: Paths, args, refresh=False):
     return True
 
 
-DATA_EXPORT_VERSION = 5       # raised when the data export takes in more: older ones are redone
+DATA_EXPORT_VERSION = 6       # raised when the data export takes in more: older ones are redone
 
 GHIDRA_DATA_SCRIPT = r"""
 // GhidraDataExport.java - written by decomp_pipeline.py. Exports the program's
@@ -1635,7 +1635,7 @@ public class GhidraDataExport extends GhidraScript {
         ReferenceManager refs = currentProgram.getReferenceManager();
         SymbolTable st = currentProgram.getSymbolTable();
         Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8));
-        w.write("{\"version\":5,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
+        w.write("{\"version\":6,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
         AddressSet dataSet = new AddressSet();
         boolean first = true;
         for (MemoryBlock b : mem.getBlocks()) {
@@ -1643,15 +1643,18 @@ public class GhidraDataExport extends GhidraScript {
             // constants and strings also live in executable sections (Mach-O's
             // __TEXT,__const / __cstring): only the code itself is left out
             String bn = b.getName();
-            if (b.isExecute() && (bn.equals("__text") || bn.equals(".text") || bn.contains("stub")
-                    || bn.equals(".plt") || bn.equals("__init") || bn.equals(".init"))) continue;
+            if (b.isExecute() && (bn.contains("stub") || bn.equals(".plt") || bn.equals("__init")
+                    || bn.equals(".init"))) continue;
+            // the code itself goes too, marked as code: constants the compiler keeps among
+            // it (literal pools) are read as data; it's never a pointer's target
+            boolean code = b.isExecute() && (bn.equals("__text") || bn.equals(".text"));
             long size = b.getSize();
             if (size <= 0 || size > Integer.MAX_VALUE) continue;
-            dataSet.addRange(b.getStart(), b.getEnd());
+            if (!code) dataSet.addRange(b.getStart(), b.getEnd());   // (code: bytes only)
             if (!first) w.write(",");
             first = false;
             w.write("{\"name\":\"" + esc(b.getName()) + "\",\"start\":\"" + hex(b.getStart())
-                    + "\",\"size\":" + size + ",\"write\":" + b.isWrite());
+                    + "\",\"size\":" + size + ",\"write\":" + b.isWrite() + ",\"code\":" + code);
             if (b.isInitialized()) {
                 byte[] bytes = new byte[(int) size];
                 b.getBytes(b.getStart(), bytes);
@@ -1775,6 +1778,263 @@ public class GhidraDataExport extends GhidraScript {
     }
 }
 """
+
+
+SIGFIX_VERSION = 1    # raised when the signature fix finds more: it's redone
+
+GHIDRA_SIGFIX_SCRIPT = r"""
+// GhidraSignatureFix.java - written by decomp_pipeline.py. Ghidra decides a
+// function returns nothing when nothing it can see uses a value, and drops its
+// parameters when its code never reads them: a C++ helper that hands back the
+// pointer it was given (its code is just "ret") becomes "void f(void)", and every
+// call to it loses its argument. Given the functions whose callers use a value
+// they don't return (one per line: address, then "empty" if Ghidra's version does
+// nothing), this gives each a return value (and an empty one the parameter it
+// returns), then decompiles them and every function that calls them again.
+// The project is opened read-only: nothing in it is changed.
+// Output: ghidra_signature_patch.json {"pseudocode": {addr: C}, "signatures": {addr: proto}}.
+import ghidra.app.script.GhidraScript;
+import ghidra.app.decompiler.DecompInterface;
+import ghidra.app.decompiler.DecompileResults;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.data.Undefined8DataType;
+import ghidra.program.model.listing.Function;
+import ghidra.program.model.listing.ParameterImpl;
+import ghidra.program.model.listing.Parameter;
+import ghidra.program.model.symbol.SourceType;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+public class GhidraSignatureFix extends GhidraScript {
+    private static String esc(String s) {
+        if (s == null) return "";
+        StringBuilder b = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (c == '"' || c == '\\') b.append('\\').append(c);
+            else if (c == '\n') b.append("\\n");
+            else if (c == '\t') b.append("\\t");
+            else if (c < 0x20) b.append(String.format("\\u%04x", (int) c));
+            else b.append(c);
+        }
+        return b.toString();
+    }
+
+    @Override
+    public void run() throws Exception {
+        String[] a = getScriptArgs();
+        File list = new File(a[0]);
+        File out = new File(a[1], "ghidra_signature_patch.json");
+        File tmp = new File(a[1], "ghidra_signature_patch.json.tmp");
+        LinkedHashSet<Function> redo = new LinkedHashSet<Function>();
+        int fixed = 0, given = 0;
+        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(list), StandardCharsets.UTF_8));
+        String line;
+        while ((line = r.readLine()) != null) {
+            String[] p = line.trim().split("\\s+");
+            if (p.length == 0 || p[0].isEmpty()) continue;
+            Address ad = currentProgram.getAddressFactory().getDefaultAddressSpace()
+                    .getAddress(Long.parseUnsignedLong(p[0], 16));
+            Function f = getFunctionAt(ad);
+            if (f == null || f.isExternal()) continue;
+            try {
+                if (p.length > 1 && p[1].equals("empty") && f.getParameterCount() == 0) {
+                    // its code is just "ret": it returns the value it's given
+                    f.replaceParameters(Function.FunctionUpdateType.DYNAMIC_STORAGE_ALL_PARAMS, true,
+                            SourceType.USER_DEFINED,
+                            new Parameter[] { new ParameterImpl("param_1", Undefined8DataType.dataType, currentProgram) });
+                    given++;
+                }
+                f.setReturnType(Undefined8DataType.dataType, SourceType.USER_DEFINED);
+                fixed++;
+                redo.add(f);
+                for (Function c : f.getCallingFunctions(monitor)) redo.add(c);
+            } catch (Exception e) {
+                println("  ! " + f.getName() + ": " + e);
+            }
+        }
+        r.close();
+        println("signatures fixed: " + fixed + " (" + given + " given the parameter they return); "
+                + "decompiling " + redo.size() + " function(s) again");
+        DecompInterface d = new DecompInterface();
+        if (!d.openProgram(currentProgram)) { println("ERROR: could not open the decompiler"); return; }
+        Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8));
+        StringBuilder sigs = new StringBuilder();
+        w.write("{\"version\":1,\"fixed\":" + fixed + ",\"pseudocode\":{");
+        boolean first = true;
+        int n = 0;
+        long t0 = System.currentTimeMillis();
+        for (Function f : redo) {
+            if (monitor.isCancelled()) break;
+            String addr = Long.toHexString(f.getEntryPoint().getOffset());
+            String code = "";
+            try {
+                DecompileResults res = d.decompileFunction(f, 60, monitor);
+                if (res != null && res.decompileCompleted() && res.getDecompiledFunction() != null)
+                    code = res.getDecompiledFunction().getC();
+            } catch (Exception e) {
+                println("  ! " + f.getName() + " @ " + addr + ": " + e);
+            }
+            n++;
+            if (n % 200 == 0) {
+                double rate = n / Math.max((System.currentTimeMillis() - t0) / 1000.0, 0.001);
+                println(String.format("  %d/%d decompiled again (%.1f/s)", n, redo.size(), rate));
+            }
+            if (code == null || code.isEmpty()) continue;
+            if (!first) { w.write(","); sigs.append(","); }
+            first = false;
+            w.write("\"" + addr + "\":\"" + esc(code) + "\"");
+            sigs.append("\"" + addr + "\":\"" + esc(f.getPrototypeString(false, false)) + "\"");
+        }
+        w.write("},\"signatures\":{" + sigs + "}}");
+        w.close();
+        if (out.exists()) out.delete();
+        if (!tmp.renameTo(out)) throw new Exception("couldn't write " + out);
+        println("Done. " + n + " function(s) decompiled again -> " + out.getPath());
+    }
+}
+"""
+
+
+def _lost_return_targets(data: dict) -> list:
+    """(address, empty) for each function Ghidra says returns nothing whose callers
+    use what it returns; empty: Ghidra's version does nothing at all."""
+    pseudo = data.get("pseudocode") or {}
+    sigs = data.get("signatures") or {}
+    by_name: dict = {}
+    for f in data.get("functions") or []:
+        if isinstance(f, dict) and f.get("addr") and f.get("name"):
+            by_name.setdefault(f["name"].split("::")[-1], []).append(f["addr"])
+    void = {}
+    for a, s in sigs.items():
+        head = re.sub(r"\b(?:__thiscall|__cdecl|__stdcall|static|virtual)\b", "", str(s)).strip()
+        if head.startswith("void ") and "*" not in head.split("(")[0]:
+            void[a] = True
+    if not void:
+        return []
+    names = {n: [a for a in addrs if a in void] for n, addrs in by_name.items()}
+    names = {n: v for n, v in names.items() if v}
+    if not names:
+        return []
+    value_use = re.compile(r"(?:[=,(+\-*/%&|^<>!?:\[]|\breturn|\)\s*)\s*$")
+    call = re.compile(r"(?<![\w.>])(?:[A-Za-z_]\w*::)*([A-Za-z_]\w*)\s*\(")
+    used = set()
+    for a, code in pseudo.items():
+        if not isinstance(code, str):
+            continue
+        for m in call.finditer(code):
+            n = m.group(1)
+            if n not in names:
+                continue
+            before = code[max(0, m.start() - 80):m.start()]
+            before = re.sub(r"(?:[A-Za-z_]\w*::)+$", "", before)
+            if not value_use.search(before):
+                continue
+            if before.rstrip().endswith(")") and not re.search(r"\(\s*[A-Za-z_][\w\s]*\**\s*\)\s*$", before):
+                continue                                  # "if (x) f();"
+            used.update(names[n])
+    out = []
+    for a in sorted(used, key=lambda x: int(x, 16)):
+        body = strip_comments(pseudo.get(a) or "")
+        i = body.find("{")
+        inner = body[i + 1:body.rfind("}")] if i >= 0 else ""
+        empty = not re.sub(r"\breturn\s*;|\s|/\*.*?\*/", "", inner, flags=re.S)
+        out.append((a, empty))
+    return out
+
+
+def run_signature_fix(P: Paths, args, targets: list) -> Optional[dict]:
+    """GhidraSignatureFix.java over the targets (headless, read-only): the patch."""
+    ah = find_analyze_headless(args.ghidra_home)
+    if not ah or not args.project or not targets:
+        return None
+    proj_dir, proj_name = _project_dir_name(args.project)
+    script_dir = P.ghidra / ".script"
+    script_dir.mkdir(parents=True, exist_ok=True)
+    (script_dir / "GhidraSignatureFix.java").write_text(GHIDRA_SIGFIX_SCRIPT)
+    lst = P.ghidra / "signature_fix_targets.txt"
+    lst.write_text("".join(f"{a}{' empty' if e else ''}\n" for a, e in targets))
+    patch = P.ghidra / "ghidra_signature_patch.json"
+    patch.unlink(missing_ok=True)
+    cmd = [ah, proj_dir, proj_name, "-process", *([args.program] if args.program else []),
+           "-noanalysis", "-readOnly", "-scriptPath", str(script_dir),
+           "-postScript", "GhidraSignatureFix.java", str(lst), str(P.ghidra)]
+    plog(P, show=True, msg=f"  Ghidra lost the return value of {len(targets)} function(s) "
+                           f"({sum(1 for _, e in targets if e)} of them empty: they return what they're "
+                           f"given): fixing their signatures and decompiling them and their callers again "
+                           f"(headless, read-only)")
+    tail: list = []
+    try:
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        for line in proc.stdout:
+            line = line.rstrip()
+            if line:
+                tail = (tail + [line])[-40:]
+                if "GhidraSignatureFix" in line or "decompiled again" in line or "signatures fixed" in line \
+                        or line.lstrip().startswith(("Done", "!")) or "ERROR" in line or "Exception" in line:
+                    print("  " + line, flush=True)
+        code = proc.wait()
+    except Exception as e:
+        plog(P, show=True, msg=f"  !! couldn't launch Ghidra for the signature fix: {e}")
+        return None
+    if not patch.exists():
+        plog(P, show=True, msg=f"  !! the signature fix failed (exit {code}). Its last output:")
+        for l in tail[-15:]:
+            plog(P, show=True, msg="     | " + l[:200])
+        struggle("export", "the Ghidra signature fix failed", hint="its output is in the log")
+        return None
+    try:
+        return json.loads(patch.read_text())
+    except Exception as e:
+        plog(P, show=True, msg=f"  !! the signature fix's output couldn't be read: {e}")
+        return None
+
+
+def apply_signature_fix(P: Paths, args) -> int:
+    """In the export stage (C): find the functions Ghidra lost the return value of,
+    have Ghidra fix their signatures and decompile them and their callers again,
+    and put that in the export (the original one too, so the privacy sweep starts
+    from it). Once per export (redone when this gets better). How many changed."""
+    original = P.ghidra / "ghidra_export.original.json"
+    src = original if original.exists() else P.export
+    if not src.exists():
+        return 0
+    try:
+        data = json.loads(src.read_text())
+    except Exception:
+        return 0
+    done = data.get("signature_fix") or {}
+    if done.get("version") == SIGFIX_VERSION:
+        return 0
+    if not (find_analyze_headless(args.ghidra_home) and args.project):
+        plog(P, show=True, msg="  (Ghidra isn't available: the functions it lost the return value of keep "
+                               "a stand-in 0; run the export stage with --ghidra-home and --project to "
+                               "fix them)")
+        return 0
+    targets = _lost_return_targets(data)
+    if not targets:
+        data["signature_fix"] = {"version": SIGFIX_VERSION, "functions": 0, "redecompiled": 0}
+        write_atomic(src, json.dumps(data))
+        return 0
+    patch = run_signature_fix(P, args, targets)
+    if not patch:
+        return 0
+    n = 0
+    for f in {src, P.export}:
+        try:
+            d = data if f == src else json.loads(f.read_text())
+        except Exception:
+            continue
+        for k in ("pseudocode", "signatures"):
+            d.setdefault(k, {}).update(patch.get(k) or {})
+        d["signature_fix"] = {"version": SIGFIX_VERSION, "functions": len(targets),
+                              "redecompiled": len(patch.get("pseudocode") or {})}
+        d.pop("privacy", None) if f == src else None
+        write_atomic(f, json.dumps(d))
+        n = len(patch.get("pseudocode") or {})
+    plog(P, show=True, msg=f"  signature fix: {len(targets)} function(s) given back their return value, "
+                           f"{n} decompiled again with it")
+    return n
 
 
 def run_data_export(P: Paths, args) -> bool:
@@ -3448,6 +3708,11 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
             if st <= addr < en:
                 return i, addr - st
         return None
+    code_blocks = {i for i, b in enumerate(blocks) if b.get("code")}
+
+    def where_target(addr):            # what a pointer can point at: never the code's copy
+        loc = where(addr)
+        return None if loc is None or loc[0] in code_blocks else loc
     types_known: set = set()
     macros: dict = {}
     for sym in data.get("symbols") or []:
@@ -3522,7 +3787,7 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
             expr = f"(void *){by_addr[f'{to:x}']}"
             fn_decls.add(by_addr[f"{to:x}"])
         else:
-            tl = where(to)
+            tl = where_target(to)
             if not tl:
                 unresolved.append((r["from"], r["to"]))   # points outside the data: stays as it was
                 continue
@@ -3545,7 +3810,7 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
         if f"{v:x}" in by_addr:
             expr = f"(void *){by_addr[f'{v:x}']}"
             fn_decls.add(by_addr[f"{v:x}"])
-        elif (tl := where(v)):
+        elif (tl := where_target(v)):
             expr = f"(void *)(g_block_{tl[0]} + {tl[1]:#x})"
         elif sym:
             if sym not in externals:
@@ -3678,7 +3943,7 @@ def _data_address_literals(entries: list, gdata: dict) -> int:
     sizes never are). Returns how many."""
     blocks = [b for b in gdata.get("blocks") or [] if b.get("size")]
     spans = [(int(b["start"], 16), int(b["start"], 16) + int(b["size"]), i, bool(b.get("write")))
-             for i, b in enumerate(blocks)]
+             for i, b in enumerate(blocks) if not b.get("code")]    # a code address is a function
     spans = [s for s in spans if s[0] > 0]              # never the Mach-O header at 0
 
     def where(a):
@@ -4758,6 +5023,8 @@ def run_export(P: Paths, args, redo: set) -> dict:
                 progress_print=lambda m: plog(P, "  " + m))
         else:
             plog(P, f"  using the existing {P.export.name} (Ghidra not needed)")
+    if args.lang == "c":
+        apply_signature_fix(P, args)
     names_known = {e["ghidra"]: e["name"]
                    for e in load_progress(P).get("functions", {}).values()
                    if e.get("name") and e["name"] != e["ghidra"]}
@@ -9051,6 +9318,8 @@ def struggle_report(P: "Paths", records: Optional[dict] = None, cfg: Optional[Co
     except Exception:
         fns = {}
     rw: dict[str, list[str]] = {}
+    if getattr(cfg, "lang", "") == "c":
+        fns = {}            # the model's rewrites are the C++ path's; the C build doesn't use them
     for e in fns.values():
         if e.get("status") in ("skipped", "redo", "too big") or e.get("redo_failed"):
             why = e.get("reason") or e.get("retry_reason") or e.get("redo_failed") or e["status"]
@@ -9284,6 +9553,8 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
         fns = {}
     bad = {k: e for k, e in fns.items() if e.get("status") in ("skipped", "redo", "too big")
            or e.get("redo_failed") or e.get("cut_off_at_smallest")}
+    if getattr(cfg, "lang", "") == "c":
+        bad = {}            # the C build doesn't use the model's rewrites (that's the C++ path)
     if bad:
         out.extend(["", f"## Rewrite: {len(bad)} function(s) without a usable rewrite", ""])
         for k, e in list(bad.items())[:200]:

@@ -2710,7 +2710,7 @@ def test_initializers_are_found_from_the_sections_own_bytes_and_imports_by_their
     h, c, _, _ = dp.data_sources(P, data, {"10a0": "init_a", "10b0": "init_b"}, set())
     assert c.index("(void *)init_a)();") < c.index("(void *)init_b)();")
     assert '"__ZTVN10__cxxabiv117__class_type_infoE"' in c and '"vtable"' not in c
-    assert "ExternalLocation" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION == 5
+    assert "ExternalLocation" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION >= 5
 
 
 def test_improve_is_off_unless_asked_for(tmp_path, model):
@@ -2718,3 +2718,66 @@ def test_improve_is_off_unless_asked_for(tmp_path, model):
     assert dp.main(["--workdir", str(tmp_path), "--api", model.url]) == 0
     log = (tmp_path / "pipeline.log").read_text()
     assert "improve: off" in log and (tmp_path / "final" / "program.c").exists()
+
+
+def test_functions_ghidra_lost_the_return_value_of_are_fixed_in_ghidra(tmp_path, monkeypatch):
+    export = {
+        "functions": [{"name": "FUN_getter", "addr": "100"}, {"name": "FUN_chain", "addr": "200"},
+                      {"name": "FUN_caller", "addr": "300"}, {"name": "FUN_quiet", "addr": "400"}],
+        "pseudocode": {
+            "100": "void FUN_getter(void)\n\n{\n  return;\n}\n",
+            "200": "void FUN_chain(void)\n\n{\n  FUN_quiet();\n  return;\n}\n",
+            "300": "long FUN_caller(long param_1)\n\n{\n  long *p;\n  long v;\n"
+                   "  v = FUN_chain();\n  p = (long *)FUN_getter();\n  *p = v;\n  FUN_quiet();\n  return param_1;\n}\n",
+            "400": "void FUN_quiet(void)\n\n{\n  return;\n}\n"},
+        "signatures": {"100": "void FUN_getter(void)", "200": "void FUN_chain(void)",
+                       "300": "long FUN_caller(long param_1)", "400": "void FUN_quiet(void)"}}
+    # FUN_quiet's result is never used: it's left alone
+    assert dp._lost_return_targets(export) == [("100", True), ("200", False)]
+    P = dp.Paths(tmp_path)
+    P.make()
+    (P.ghidra / "ghidra_export.original.json").write_text(json.dumps(export))
+    P.export.write_text(json.dumps(export))
+    seen = {}
+
+    def fake_fix(P, args, targets):            # what the Ghidra script gives back
+        seen["targets"] = targets
+        return {"pseudocode": {"100": "undefined8 FUN_getter(undefined8 param_1)\n\n{\n  return param_1;\n}\n",
+                               "300": "long FUN_caller(long param_1)\n\n{\n  long *p;\n  long v;\n"
+                                      "  v = FUN_chain();\n  p = (long *)FUN_getter(param_1 + 0x10);\n"
+                                      "  *p = v;\n  return param_1;\n}\n"},
+                "signatures": {"100": "undefined8 FUN_getter(undefined8 param_1)"}}
+    monkeypatch.setattr(dp, "run_signature_fix", fake_fix)
+    monkeypatch.setattr(dp, "find_analyze_headless", lambda home: "/x/analyzeHeadless")
+
+    class A:
+        ghidra_home, project, program = "/g", "/p.gpr", None
+    assert dp.apply_signature_fix(P, A()) == 2
+    for f in (P.ghidra / "ghidra_export.original.json", P.export):
+        d = json.loads(f.read_text())
+        assert "FUN_getter(param_1 + 0x10)" in d["pseudocode"]["300"]
+        assert d["signature_fix"]["functions"] == 2
+    assert dp.apply_signature_fix(P, A()) == 0          # once per export
+    assert "getCallingFunctions" in dp.GHIDRA_SIGFIX_SCRIPT
+    src = SCRIPT.read_text()
+    fix = src[src.index("def run_signature_fix"):src.index("def apply_signature_fix")]
+    assert '"-readOnly"' in fix                      # the project itself is never changed
+
+
+def test_constants_among_the_code_are_read_but_the_code_is_never_a_pointers_target(tmp_path):
+    import base64
+    import struct
+    P = dp.Paths(tmp_path)
+    P.make()
+    code = struct.pack("<Q", 0x3ff0000000000000) + bytes(8)       # a literal pool constant
+    data = {"version": 6, "image_base": "0",
+            "blocks": [{"name": "__text", "start": "1000", "size": 16, "code": True,
+                        "bytes": base64.b64encode(code).decode()},
+                       {"name": "__data", "start": "2000", "size": 8, "write": True,
+                        "bytes": base64.b64encode(bytes(8)).decode()}],
+            "symbols": [], "refs": [{"from": "2000", "to": "1008", "kind": "data", "name": ""}], "relocs": []}
+    h, c, macros, n = dp.data_sources(P, data, {}, set(), frozenset(), frozenset({"DAT_00001000"}))
+    assert "#define GD_DAT_00001000 (*(uint64_t *)(g_block_0 + 0x0))" in h     # read like any data
+    assert n == 0 and "at 2000 -> 1008" in (P.rewrite / "data_unresolved_pointers.txt").read_text()
+    entries = [{"name": "f", "head": "long f(void)", "body": "{\n  return *(long *)0x1008;\n}"}]
+    assert dp._data_address_literals(entries, data) == 0                 # a code address stays one
