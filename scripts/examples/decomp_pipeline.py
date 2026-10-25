@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-23.7"
+PIPELINE_VERSION = "2026-10-25.1"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -3561,7 +3561,8 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
     base = int(str(data.get("image_base") or "0"), 16)
     for b in blocks:
         bs, be = int(b["start"], 16), int(b["start"], 16) + int(b["size"])
-        if b.get("name") == "__mod_init_func":
+        bname = str(b.get("name") or "")
+        if bname.endswith("mod_init_func"):            # also "__DATA_CONST.__mod_init_func"
             slots = {}
             for r in data.get("refs") or []:
                 a = int(r["from"], 16)
@@ -3572,7 +3573,7 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
                 if bs <= a < be:
                     slots.setdefault(a, by_addr.get(f"{int(r.get('value') or '0', 16):x}"))
             init_fns += [slots[a] for a in sorted(slots) if slots[a]]
-        elif b.get("name") == "__init_offsets" and b.get("bytes"):
+        elif bname.endswith("init_offsets") and b.get("bytes"):
             raw = base64.b64decode(b["bytes"])
             for k in range(0, len(raw) - 3, 4):
                 fn = by_addr.get(f"{base + int.from_bytes(raw[k:k + 4], 'little'):x}")
@@ -3582,6 +3583,14 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
     if init_fns:
         plog(P, show=True, msg=f"    static initializers the plugin runs when it loads (as the original "
                                f"does): {len(init_fns)}")
+    else:
+        plog(P, show=True, msg="    static initializers: none found in the data export (no __mod_init_func "
+                               "or __init_offsets section among its blocks: rewrite/data_blocks.txt)")
+    write_atomic(P.rewrite / "data_blocks.txt",
+                 "The data export's blocks (name, start, size, writable, bytes exported):\n\n" + "\n".join(
+                     f"{b.get('name', '')}  {int(b['start'], 16):#x}  {int(b['size'])}  "
+                     f"{'w' if b.get('write') else '-'}  {'bytes' if b.get('bytes') else 'zero-filled'}"
+                     for b in blocks) + "\n")
     c.append(f"""
 // Pointers stored in the data pointed into the ORIGINAL program; point them at
 // the rebuilt functions, the right spot in the data, or the system library.
@@ -9233,7 +9242,8 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
         f = P.build / name
         if f.exists():
             section(f"build/{name}", _read(f))
-    for name in ("data_placeholders.txt", "data_unresolved_pointers.txt", "functions_without_code.txt"):
+    for name in ("data_placeholders.txt", "data_unresolved_pointers.txt", "data_blocks.txt",
+                 "functions_without_code.txt"):
         f = P.rewrite / name
         if f.exists():
             section(f"rewrite/{name}", _read(f)[:60000])
@@ -15164,16 +15174,16 @@ def _describe_failure(res: dict, records_by_name: dict, workdir: Optional[Path] 
         elif addr is not None and addr < 0x100000000:
             out.append("    (an address from the ORIGINAL program's layout: a pointer the load-time "
                        "fix-ups missed, still pointing where the original kept that thing)")
-        for n in list(dict.fromkeys(frames))[:3] if workdir else []:
+        for n in list(dict.fromkeys(frames))[:10] if workdir else []:
             try:
                 code = (workdir / records_by_name[n]).read_text()
             except OSError:
                 continue
             body = code.split("\n")
             out.append(f"    code of {n} ({records_by_name[n]}):")
-            out += [f"      {i + 1:4} | {l}" for i, l in enumerate(body[:80])]
-            if len(body) > 80:
-                out.append(f"      ... ({len(body) - 80} more lines)")
+            out += [f"      {i + 1:4} | {l}" for i, l in enumerate(body[:60])]
+            if len(body) > 60:
+                out.append(f"      ... ({len(body) - 60} more lines)")
     elif res["error"]:
         out.append(f"failed at step {step}: {res['error']}")
     else:
