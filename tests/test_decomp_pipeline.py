@@ -311,7 +311,7 @@ def write_export(workdir: Path, pseudo=PSEUDO):
 
 def run(workdir, model, *extra):
     # the C++ path's tests say nothing about the language: C is the default now
-    lang = [] if "--lang" in extra else ["--lang", "c++"]
+    lang = [] if "--lang" in extra else ["--lang", "c++", "--improve"]
     argv = ["--workdir", str(workdir), "--api", model.url, *lang, *extra]
     return dp.main(argv)
 
@@ -2638,7 +2638,7 @@ def test_the_c_pipeline_runs_to_the_end_and_writes_one_c_file_that_builds(tmp_pa
         "refs": [{"from": "2008", "to": "1000", "kind": "function", "name": "FUN_00001000"}],
         "relocs": [], "callees": {}}))
     # C is the default: no --lang
-    assert dp.main(["--workdir", str(tmp_path), "--api", model.url, "--improve-minutes", "1"]) == 0
+    assert dp.main(["--workdir", str(tmp_path), "--api", model.url, "--improve", "--improve-minutes", "1"]) == 0
     log = (tmp_path / "pipeline.log").read_text()
     assert "not in C mode yet" not in log and "same machine code" in log
     assert "improve (C):" in (tmp_path / "build_c" / "worklist.log").read_text()
@@ -2711,3 +2711,10 @@ def test_initializers_are_found_from_the_sections_own_bytes_and_imports_by_their
     assert c.index("(void *)init_a)();") < c.index("(void *)init_b)();")
     assert '"__ZTVN10__cxxabiv117__class_type_infoE"' in c and '"vtable"' not in c
     assert "ExternalLocation" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION == 5
+
+
+def test_improve_is_off_unless_asked_for(tmp_path, model):
+    write_export(tmp_path, C_PSEUDO)
+    assert dp.main(["--workdir", str(tmp_path), "--api", model.url]) == 0
+    log = (tmp_path / "pipeline.log").read_text()
+    assert "improve: off" in log and (tmp_path / "final" / "program.c").exists()

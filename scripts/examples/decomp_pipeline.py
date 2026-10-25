@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.4"
+PIPELINE_VERSION = "2026-10-25.5"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -4061,6 +4061,7 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
         hp = parts.get(name)
         return hp[0] if hp else None
     void_fns = {n for n in functions if (returns(n) or "").strip() == "void"}
+    lost_zero: set = set()            # the ones of them that get a stand-in "return 0"
     value_use = re.compile(r"(?:[=,(+\-*/%&|^<>!?:\[]|\breturn|\)\s*)\s*$")
     cast_before = re.compile(r"\(\s*[A-Za-z_][\w\s]*\**\s*\)\s*$")
     used = set()
@@ -4097,6 +4098,7 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
                 if "gh16" in rt or "[16]" in rt:      # a 16-byte register: its low 8 bytes
                     return "return GH_AS(uint64_t, " + prev.strip()[:-1].strip() + ");"
                 return "return (uint64_t)" + prev.strip()[:-1].strip() + ";"
+            lost_zero.add(e["name"])           # nothing to return: a stand-in 0
             return "return 0;"
         new = []
         last = 0
@@ -4230,7 +4232,7 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
             out.append(body[i:])
             body = "".join(out)
         e["body"] = body
-    return {"stats": stats, "opaque": "\n".join(opaque)}
+    return {"stats": stats, "opaque": "\n".join(opaque), "lost_zero": sorted(lost_zero)}
 
 
 def run_pseudo_source(P: Paths, args) -> dict:
@@ -4456,6 +4458,15 @@ def run_pseudo_source(P: Paths, args) -> dict:
     for what, n in sorted(passes["stats"].items(), key=lambda kv: -kv[1]):
         if n:
             plog(P, show=True, msg=f"    {what}: {n}")
+    lz = passes.get("lost_zero") or []
+    write_atomic(P.rewrite / "lost_returns.txt",
+                 "Functions Ghidra says return nothing, whose callers use what they return, and that\n"
+                 "have no call at the end whose value they could return: each returns 0 here. If the\n"
+                 "real one returns a pointer (often what it was given), callers that use it break.\n\n"
+                 + "\n".join(lz) + "\n")
+    if lz:
+        plog(P, show=True, msg=f"    of those, returning a stand-in 0 (nothing to return in Ghidra's "
+                               f"code): {len(lz)}, listed in rewrite/lost_returns.txt")
     called = set(re.findall(r"(?<![\w.>~])([A-Za-z_]\w*)\s*\(", "\n".join(e["body"] for e in entries)))
     called |= {e["name"] for e in entries}        # defined: a type of that name clashes too
     opaque = passes["opaque"]
@@ -9291,7 +9302,7 @@ def write_diagnostics(P: "Paths", records: Optional[dict], cfg: Optional[Config]
         if f.exists():
             section(f"build/{name}", _read(f))
     for name in ("data_placeholders.txt", "data_unresolved_pointers.txt", "data_blocks.txt",
-                 "functions_without_code.txt"):
+                 "lost_returns.txt", "functions_without_code.txt"):
         f = P.rewrite / name
         if f.exists():
             section(f"rewrite/{name}", _read(f)[:60000])
@@ -15713,6 +15724,52 @@ def _crash_context(res: dict, extra: dict) -> list[str]:
                 out += [f"      {w:>3}: {l}" for (w, _), l in zip(pts, lines)]
         except (OSError, subprocess.TimeoutExpired):
             pass
+    # what the innermost rebuilt frame called on the lines up to where it crashed:
+    # a function that returned a bad value has returned already, so it isn't in the stack
+    lost = set()
+    try:
+        lost = set((P.rewrite / "lost_returns.txt").read_text().split("\n")[4:]) - {""}
+    except Exception:
+        pass
+    called_here: list = []
+    if base is not None and sys.platform == "darwin" and shutil.which("atos"):
+        pc = regs.get("pc")
+        try:
+            r = subprocess.run(["atos", "-o", str(lib), "-l", hex(base), hex(pc)],
+                               capture_output=True, text=True, timeout=60) if pc else None
+            m = re.search(r"\((_?[\w.]+?)\.(?:cpp|c):(\d+)\)", r.stdout) if r else None
+        except (OSError, subprocess.TimeoutExpired):
+            m = None
+        if m:
+            fname, ln = m.group(1).lstrip("_"), int(m.group(2))
+            rec = recs.get(fname)
+            if rec:
+                try:
+                    lines = (cfg.workdir / rec.file).read_text().split("\n")
+                except OSError:
+                    lines = []
+                near = "\n".join(lines[max(0, ln - 4):ln])
+                out.append(f"    where it crashed: {fname} line {ln}: {lines[ln - 1].strip() if 0 < ln <= len(lines) else '?'}")
+                called_here = [c for c in dict.fromkeys(re.findall(r"(?<![\w.>])([A-Za-z_]\w*)\s*\(", near))
+                               if c in recs and c != fname]
+    try:
+        exp0, idx0 = _load_pseudocode(cfg)
+    except Exception:
+        exp0, idx0 = {}, {}
+    for c in called_here[:6]:
+        rec = recs[c]
+        try:
+            code = (cfg.workdir / rec.file).read_text()
+        except OSError:
+            continue
+        out.append(f"    called just before the crash: {c} ({rec.file})"
+                   + ("  — Ghidra says it returns nothing; here it returns a stand-in 0"
+                      if c in lost else ""))
+        out += [f"      {i + 1:4} | {l}" for i, l in enumerate(code.split("\n")[:40])]
+        ps = _pseudo_for(rec, exp0, idx0) if exp0 else None
+        if ps:
+            out.append(f"    Ghidra's pseudocode of {c}:")
+            out += [f"      {l}" for l in ps.strip().splitlines()[:40]]
     # for each rebuilt function in the stack: Ghidra's pseudocode and the data it uses
     macros: dict = {}
     try:
@@ -16221,6 +16278,13 @@ def run_pipeline(args) -> int:
                     ran_something = True
                     continue
                 info = {"note": f"{tr['passed']}/{tr['cases']} case(s) pass"}
+            elif stage == "improve" and not (args.improve or args.improve_checks
+                                             or "improve" in (args.redo or [])):
+                plog(P, show=True, msg="  improve: off (it's slow, and optional: the final code builds "
+                                       "without it). Turn it on with --improve")
+                mark_stage(P, stage, done=False, note="off (--improve turns it on)")
+                ran_something = True
+                continue
             elif stage in ("fix", "recover", "link", "improve", "organize"):
                 if records is None:
                     records = load_manifest(cfg)
@@ -16475,6 +16539,9 @@ def build_parser() -> argparse.ArgumentParser:
                         "no limit in C++)")
     g.add_argument("--improve-per-function", type=int, default=6,
                    help="most small fixes per function per round (spreads the work)")
+    g.add_argument("--improve", action="store_true",
+                   help="run the improve stage (off by default: names and clean-ups that keep the "
+                        "machine code the same; slow with a small model)")
     g.add_argument("--improve-checks", default=None,
                    help="only these checks, comma-separated: " + ", ".join(CHECK_NAMES))
     g.add_argument("--allow-privacy-findings", action="store_true",
