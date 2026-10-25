@@ -2413,7 +2413,7 @@ def test_slots_only_the_loaders_list_has_are_fixed_up_too(tmp_path):
     assert n == 3
     assert "(void *)(g_block_0 + 0x400)" in c and '"_kCFAllocatorDefault"' in c and "(void *)FUN_0000a1d8" in c
     assert "at 453018 -> 999999" in (P.rewrite / "data_unresolved_pointers.txt").read_text()
-    assert "getRelocationTable()" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION == 4
+    assert "getRelocationTable()" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION >= 4
 
 
 def test_a_crash_report_shows_the_code_it_crashed_in(tmp_path):
@@ -2689,3 +2689,25 @@ def test_declarations_that_clash_in_one_file_are_left_out_and_it_builds(tmp_path
     src = (tmp_path / "final" / "program.c").read_text()
     assert src.count("gh_clash") == 1
     assert "clash now that every function is in one file" in (tmp_path / "build_c" / "worklist.log").read_text()
+
+
+def test_initializers_are_found_from_the_sections_own_bytes_and_imports_by_their_real_name(tmp_path):
+    import base64
+    import struct
+    P = dp.Paths(tmp_path)
+    P.make()
+    # no reference and no loader entry for the initializer slots: only their bytes,
+    # one a plain pointer, one a chained fix-up (high bits set, target in the low 36)
+    slots = struct.pack("<QQ", 0x10a0, (0x8 << 51) | 0x10b0)
+    data = {"version": 5, "image_base": "0",
+            "blocks": [{"name": "__mod_init_func", "start": "3000", "size": 16,
+                        "bytes": base64.b64encode(slots).decode()},
+                       {"name": "__got", "start": "4000", "size": 8, "bytes": base64.b64encode(bytes(8)).decode()}],
+            "symbols": [],
+            # Ghidra's display name for the import, and the loader's real one
+            "refs": [{"from": "4000", "to": "8ac600", "kind": "external", "name": "vtable"}],
+            "relocs": [{"at": "4000", "value": "8ac600", "sym": "__ZTVN10__cxxabiv117__class_type_infoE"}]}
+    h, c, _, _ = dp.data_sources(P, data, {"10a0": "init_a", "10b0": "init_b"}, set())
+    assert c.index("(void *)init_a)();") < c.index("(void *)init_b)();")
+    assert '"__ZTVN10__cxxabiv117__class_type_infoE"' in c and '"vtable"' not in c
+    assert "ExternalLocation" in dp.GHIDRA_DATA_SCRIPT and dp.DATA_EXPORT_VERSION == 5

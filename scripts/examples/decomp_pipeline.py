@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.3"
+PIPELINE_VERSION = "2026-10-25.4"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -1577,7 +1577,7 @@ def run_headless_export(P: Paths, args, refresh=False):
     return True
 
 
-DATA_EXPORT_VERSION = 4       # raised when the data export takes in more: older ones are redone
+DATA_EXPORT_VERSION = 5       # raised when the data export takes in more: older ones are redone
 
 GHIDRA_DATA_SCRIPT = r"""
 // GhidraDataExport.java - written by decomp_pipeline.py. Exports the program's
@@ -1595,6 +1595,7 @@ import ghidra.program.model.listing.Listing;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.reloc.Relocation;
+import ghidra.program.model.symbol.ExternalLocation;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.program.model.symbol.Symbol;
@@ -1634,7 +1635,7 @@ public class GhidraDataExport extends GhidraScript {
         ReferenceManager refs = currentProgram.getReferenceManager();
         SymbolTable st = currentProgram.getSymbolTable();
         Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8));
-        w.write("{\"version\":4,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
+        w.write("{\"version\":5,\"image_base\":\"" + hex(currentProgram.getImageBase()) + "\",\"blocks\":[");
         AddressSet dataSet = new AddressSet();
         boolean first = true;
         for (MemoryBlock b : mem.getBlocks()) {
@@ -1696,6 +1697,18 @@ public class GhidraDataExport extends GhidraScript {
                     kind = "external";
                     Symbol s = st.getPrimarySymbol(to);
                     name = s != null ? s.getName() : "";
+                    // Ghidra shows C++ imports demangled ("vtable", "typeinfo"); the library
+                    // exports the mangled name: the original import name, or the mangled
+                    // label Ghidra keeps beside the demangled one
+                    if (s != null && s.isExternal()) {
+                        ExternalLocation loc = currentProgram.getExternalManager().getExternalLocation(s);
+                        if (loc != null && loc.getOriginalImportedName() != null)
+                            name = loc.getOriginalImportedName();
+                    }
+                    for (Symbol o : st.getSymbols(to)) {
+                        String on = o.getName();
+                        if (on.startsWith("_Z") || on.startsWith("__Z")) { name = on; break; }
+                    }
                 } else if (!to.isMemoryAddress()) {
                     continue;
                 } else if (currentProgram.getFunctionManager().getFunctionAt(to) != null) {
@@ -3486,6 +3499,8 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
     unresolved: list = []
     by_addr = dict(cname)
     done: set = set()                           # slots already fixed up
+    bind_sym = {int(r["at"], 16): r["sym"].strip() for r in data.get("relocs") or []
+                if (r.get("sym") or "").strip()}
     for r in data.get("refs") or []:
         loc = where(int(r["from"], 16))
         if not loc or loc in done:
@@ -3493,6 +3508,9 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
         kind, to = r.get("kind"), int(r["to"], 16)
         if kind == "external" or (kind == "function" and f"{to:x}" not in by_addr):
             n = (r.get("name") or "").lstrip("_") if kind == "function" else (r.get("name") or "")
+            # Ghidra shows C++ imports by a short name ("vtable", "typeinfo", "~iostream");
+            # the loader's list has the real (mangled) symbol the library exports
+            n = bind_sym.get(int(r["from"], 16)) or n
             if not n:
                 continue
             if n not in externals:
@@ -3568,16 +3586,26 @@ def data_sources(P: Paths, data: dict, cname: dict, used_names: set,
         bs, be = int(b["start"], 16), int(b["start"], 16) + int(b["size"])
         bname = str(b.get("name") or "")
         if bname.endswith("mod_init_func"):            # also "__DATA_CONST.__mod_init_func"
-            slots = {}
-            for r in data.get("refs") or []:
-                a = int(r["from"], 16)
-                if bs <= a < be and r.get("kind") == "function":
-                    slots.setdefault(a, by_addr.get(f"{int(r['to'], 16):x}"))
-            for r in data.get("relocs") or []:
-                a = int(r["at"], 16)
-                if bs <= a < be:
-                    slots.setdefault(a, by_addr.get(f"{int(r.get('value') or '0', 16):x}"))
-            init_fns += [slots[a] for a in sorted(slots) if slots[a]]
+            # each 8-byte slot: what the loader's fix-up says, Ghidra's reference, or the
+            # bytes Ghidra has there (also as a chained fix-up: the target in the low 36
+            # bits); the first that is a rebuilt function
+            ref_to = {int(r["from"], 16): int(r["to"], 16) for r in data.get("refs") or []}
+            rel_to = {int(r["at"], 16): int(r.get("value") or "0", 16) for r in data.get("relocs") or []}
+            raw = base64.b64decode(b["bytes"]) if b.get("bytes") else b""
+            unmatched = []
+            for a in range(bs, be - 7, 8):
+                cands = [rel_to.get(a), ref_to.get(a)]
+                if raw:
+                    v = int.from_bytes(raw[a - bs:a - bs + 8], "little")
+                    cands += [v, v & 0xFFFFFFFFF, (v & 0xFFFFFFFFF) + base, v - base]
+                fn = next((by_addr[f"{c:x}"] for c in cands if c is not None and f"{c:x}" in by_addr), None)
+                if fn:
+                    init_fns.append(fn)
+                elif any(cands):
+                    unmatched.append(f"{a:#x}: " + ", ".join(f"{c:#x}" for c in cands if c))
+            if unmatched:
+                plog(P, show=True, msg=f"    static initializer slots that aren't a rebuilt function: "
+                                       f"{len(unmatched)} (e.g. {'; '.join(unmatched[:3])})")
         elif bname.endswith("init_offsets") and b.get("bytes"):
             raw = base64.b64decode(b["bytes"])
             for k in range(0, len(raw) - 3, 4):
