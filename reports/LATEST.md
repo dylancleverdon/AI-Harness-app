@@ -1,10 +1,10 @@
-# Diagnostics — fastpass 3 — 2026-10-24 20:19:43
+# Diagnostics — fastpass 3 — 2026-10-24 21:46:28
 
 
 ## Run
 
 ```
-script: decomp_pipeline 2026-10-25.10 (build 2026-10-18.1)
+script: decomp_pipeline 2026-10-25.11 (build 2026-10-18.1)
 command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from export --to organize --headless-export --ghidra-home /Users/admin/Downloads/ghidra_12.1.4_PUBLIC --project /Users/admin/glitchpt2.gpr --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --repair-minutes 1 --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
 python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
@@ -12,7 +12,7 @@ compile flags: -Wno-c++11-narrowing -arch arm64
 --ctx 8192, chars per token 2.06
 model: qwen2.5-coder-3b-instruct-mlx
 model requests turned down this run: 0, thinking-only answers: 0
-fix stage model edits: {'calls': 11, 'no_answer': 3, 'rejected': 0}
+fix stage model edits: {'calls': 17, 'no_answer': 0, 'rejected': 0}
 ```
 
 ## What the script struggled with
@@ -23,90 +23,96 @@ fix stage model edits: {'calls': 11, 'no_answer': 3, 'rejected': 0}
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-  10-24 18:26               100.0                0.0                  0                  -                  -                  -                  -                 96               98.1                  -                     -                0.0
   10-24 18:56               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                0.0
   10-24 19:28               100.0                0.0                  0                  1              100.0                 23                  -                 97               98.6                  -                     -                0.0
   10-24 19:54               100.0                0.0                  0                  2               50.0                 41                  -                 99               92.5                  -                     -                0.0
   10-24 20:19               100.0                0.0                  0                  3               33.3                 35                  -                104               98.6                  2                     -                0.0
+  10-24 21:46               100.0                0.0                  0                 37               97.3                795                  -                122               99.2                  1                   0/1                0.0
 couldn't handle:
-  test          1 × the rebuilt plugin didn't load: load executable   [also in the last 4 run(s)]
+  test          1 × the rebuilt plugin didn't load: load executable   [also in the last 5 run(s)]
                     → see build/test/test_report.txt
 worked around (cost time, nothing lost):
   fix         119 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 5 run(s)]
-  fix           4 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. FUN_000cab20, insertText__16d864   [also in the last 2 run(s)]
-  fix           3 × the model repeated an edit that had already failed (skipped)   e.g. insertText__16d864   [also in the last 1 run(s)]
-  fix           2 × small edits the model couldn't give a usable answer for
+  fix           2 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. FUN_001a8494, FUN_0020f76c   [also in the last 3 run(s)]
   link         24 × functions replaced by placeholders to link   [also in the last 5 run(s)]
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[20:03:18] decomp_pipeline 2026-10-25.10: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
-[20:03:18]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[20:03:18] ━━━━ Stage 1/10 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
-[20:03:18]   using the existing ghidra_export.json (Ghidra not needed)
-[20:03:26]   Ghidra lost the return value of 1507 function(s) (258 of them empty: they return what they're given), and 125 read an argument their signature doesn't have: fixing their signatures and decompiling them and their callers again (headless, read-only)
-[20:04:18]   signature fix: 1507 function(s) given back their return value, 0 given the parameters they pass on (up the call chains), 4536 decompiled again with them
-[20:04:25]   callgraph.json: 22076 functions with internal calls
-[20:04:25]   export: 30489/30489 functions have pseudocode, 205 data types, 30489 signatures
-[20:04:25] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
-[20:04:27]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
-[20:04:27]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
-[20:04:27] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
-[20:04:57]     functions with a system function's name (the system's is used): 3: sync, setbuf, objc_msgSend
-[20:04:57]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
-[20:04:57]     fields Ghidra named that the system's type calls something else (read at their offset): 14
-[20:05:01]     pointers only the loader's fix-up list has (no reference in Ghidra): 583, fixed up too
-[20:05:01]     static initializers the plugin runs when it loads (as the original does): 91
-[20:05:01]     pointers in the data to addresses outside it (not fixed up): 7, listed in rewrite/data_unresolved_pointers.txt
-[20:05:01]     data found by its address (not in Ghidra's label list): 496
-[20:05:51]     addresses in the data written in the code as numbers ((long *)0x453400): 320, now the rebuilt data's
-[20:06:05]     pieces of variables (v._0_8_): 6070
-[20:06:05]     functions Ghidra said return nothing, whose callers use the result: 1929
-[20:06:05]     16-byte register values (as gh16): 1791
-[20:06:05]     C++/Objective-C names in definitions: 1285
-[20:06:05]     C++ qualified names in code: 190
-[20:06:05]     types C didn't know (declared opaque): 19
-[20:06:05]     types that are also functions (as struct tags): 18
-[20:06:05]     switches on a pointer (on its value): 11
-[20:06:05]     NAN(x) tests (as isnan): 8
-[20:06:05]     of those, returning a stand-in 0 (nothing to return in Ghidra's code): 537, listed in rewrite/lost_returns.txt
-[20:06:10]     names that are a type and also a function (the type keeps its struct tag): 12
-[20:06:10]   C source from Ghidra's pseudocode: 30173 function(s), 311 library stub(s) called directly, 29 data type(s) with Ghidra's layout, the program's data (35 block(s), 2997 labelled location(s) used, 33768 pointer fix-up(s), 1 placeholder(s) for data outside the export: rewrite/data_placeholders.txt) -> pseudocode.c
-[20:06:10] ━━━━ Stage 4/10 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
-[20:10:42] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
-[20:14:53]   fix: 23 model request(s); the model was busy 15% of the stage's 4m
-[20:14:53] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
-[20:14:53] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
-[20:19:24] ━━━━ Stage 8/10 · test ━━━━ the rebuilt plugin and the original (--plugin) render the same test signals in a small test host; their outputs are compared sample by sample
-[20:19:30]   test: the rebuilt plugin didn't load: crashed (SIGBUS) during: load executable
-[20:19:30]   test: everything it saw is in /Users/admin/glitchdecomp/fastpass 3/build_c/test/test_report.txt
-[20:19:30] ━━━━ Stage 9/10 · improve ━━━━ the code is made easier to read (names, Ghidra's helpers, casts, pointer arithmetic), worst functions first; a change is kept only if the function compiles to the same machine code, so the plugin does exactly what it did
-[20:19:30]   improve: off (it's slow, and optional: the final code builds without it). Turn it on with --improve
-[20:19:30] ━━━━ Stage 10/10 · organize ━━━━ the whole program is written out as one C source file, final/program.c, with its headers, its data and build.sh; final/ is only replaced once that builds
-[20:19:43] ============================================================
-[20:19:43] SUMMARY: 30173/30173 functions compile, 0 quarantined, 1 re-derived, link=OK
-[20:19:43] Report: /Users/admin/glitchdecomp/fastpass 3/REPORT.md
-[20:19:43] 
-[20:19:43] ━━━━ what the script struggled with this run ━━━━
-[20:19:43] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[20:19:43] rates (this run last; earlier runs above it):
-[20:19:43]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-[20:19:43]   10-24 18:26               100.0                0.0                  0                  -                  -                  -                  -                 96               98.1                  -                     -                0.0
-[20:19:43]   10-24 18:56               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                0.0
-[20:19:43]   10-24 19:28               100.0                0.0                  0                  1              100.0                 23                  -                 97               98.6                  -                     -                0.0
-[20:19:43]   10-24 19:54               100.0                0.0                  0                  2               50.0                 41                  -                 99               92.5                  -                     -                0.0
-[20:19:43]   10-24 20:19               100.0                0.0                  0                  3               33.3                 35                  -                104               98.6                  2                     -                0.0
-[20:19:43] couldn't handle:
-[20:19:43]   test          1 × the rebuilt plugin didn't load: load executable   [also in the last 4 run(s)]
-[20:19:43]                     → see build/test/test_report.txt
-[20:19:43] worked around (cost time, nothing lost):
-[20:19:43]   fix         119 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 5 run(s)]
-[20:19:43]   fix           4 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. FUN_000cab20, insertText__16d864   [also in the last 2 run(s)]
-[20:19:43]   fix           3 × the model repeated an edit that had already failed (skipped)   e.g. insertText__16d864   [also in the last 1 run(s)]
-[20:19:43]   fix           2 × small edits the model couldn't give a usable answer for
-[20:19:43]   link         24 × functions replaced by placeholders to link   [also in the last 5 run(s)]
+[21:32:31] decomp_pipeline 2026-10-25.11: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
+[21:32:31]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[21:32:31] ━━━━ Stage 1/10 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
+[21:32:31]   using the existing ghidra_export.json (Ghidra not needed)
+[21:32:39]   Ghidra lost the return value of 2181 function(s) (226 of them empty: they return what they're given), and 27 read an argument their signature doesn't have: fixing their signatures and decompiling them and their callers again (headless, read-only)
+[21:33:21]     ghidra: INFO  GhidraSignatureFix.java>   round 1: 411 function(s) given the parameters they read (GhidraScript)
+[21:33:22]     ghidra: INFO  GhidraSignatureFix.java>   round 2: 228 function(s) given the parameters they read (GhidraScript)
+[21:33:23]     ghidra: INFO  GhidraSignatureFix.java>   round 3: 24 function(s) given the parameters they read (GhidraScript)
+[21:33:23]     ghidra: INFO  GhidraSignatureFix.java>   round 4: 11 function(s) given the parameters they read (GhidraScript)
+[21:33:24]     ghidra: INFO  GhidraSignatureFix.java>   round 5: 5 function(s) given the parameters they read (GhidraScript)
+[21:33:24]     ghidra: INFO  GhidraSignatureFix.java>   round 6: 5 function(s) given the parameters they read (GhidraScript)
+[21:33:25]     ghidra: INFO  GhidraSignatureFix.java>   round 7: 52 function(s) given the parameters they read (GhidraScript)
+[21:33:25]     ghidra: INFO  GhidraSignatureFix.java>   round 8: 48 function(s) given the parameters they read (GhidraScript)
+[21:33:25]     ghidra: INFO  GhidraSignatureFix.java> parameters found up the call chains: 784; decompiling 7841 function(s) for the export (GhidraScript)
+[21:34:01]   signature fix: 2181 function(s) given back their return value, 784 given the parameters they pass on (up the call chains), 7841 decompiled again with them
+[21:34:09]   callgraph.json: 22076 functions with internal calls
+[21:34:09]   export: 30489/30489 functions have pseudocode, 205 data types, 30489 signatures
+[21:34:09] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
+[21:34:11]   privacy: 1142 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
+[21:34:11]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
+[21:34:11] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
+[21:34:41]     functions with a system function's name (the system's is used): 3: sync, setbuf, objc_msgSend
+[21:34:41]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
+[21:34:41]     fields Ghidra named that the system's type calls something else (read at their offset): 14
+[21:34:45]     pointers only the loader's fix-up list has (no reference in Ghidra): 583, fixed up too
+[21:34:45]     static initializers the plugin runs when it loads (as the original does): 91
+[21:34:45]     pointers in the data to addresses outside it (not fixed up): 7, listed in rewrite/data_unresolved_pointers.txt
+[21:34:45]     data found by its address (not in Ghidra's label list): 496
+[21:35:36]     addresses in the data written in the code as numbers ((long *)0x453400): 320, now the rebuilt data's
+[21:35:51]     pieces of variables (v._0_8_): 4572
+[21:35:51]     16-byte register values (as gh16): 1658
+[21:35:51]     C++/Objective-C names in definitions: 1287
+[21:35:51]     functions Ghidra said return nothing, whose callers use the result: 863
+[21:35:51]     registers Ghidra saw read but nothing gave (as 0): 495
+[21:35:51]     C++ qualified names in code: 190
+[21:35:51]     types C didn't know (declared opaque): 19
+[21:35:51]     types that are also functions (as struct tags): 18
+[21:35:51]     switches on a pointer (on its value): 11
+[21:35:51]     NAN(x) tests (as isnan): 8
+[21:35:51]     of those, returning a stand-in 0 (nothing to return in Ghidra's code): 196, listed in rewrite/lost_returns.txt
+[21:35:56]     names that are a type and also a function (the type keeps its struct tag): 12
+[21:35:56]   C source from Ghidra's pseudocode: 30173 function(s), 311 library stub(s) called directly, 29 data type(s) with Ghidra's layout, the program's data (35 block(s), 2997 labelled location(s) used, 33768 pointer fix-up(s), 1 placeholder(s) for data outside the export: rewrite/data_placeholders.txt) -> pseudocode.c
+[21:35:56] ━━━━ Stage 4/10 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
+[21:39:06] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
+[21:44:05]   fix: 40 model request(s); the model was busy 18% of the stage's 4m
+[21:44:05] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
+[21:44:06] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
+[21:46:09] ━━━━ Stage 8/10 · test ━━━━ the rebuilt plugin and the original (--plugin) render the same test signals in a small test host; their outputs are compared sample by sample
+[21:46:15]   test: the rebuilt plugin didn't load: crashed (SIGSEGV) during: load executable
+[21:46:15]   test: everything it saw is in /Users/admin/glitchdecomp/fastpass 3/build_c/test/test_report.txt
+[21:46:15] ━━━━ Stage 9/10 · improve ━━━━ the code is made easier to read (names, Ghidra's helpers, casts, pointer arithmetic), worst functions first; a change is kept only if the function compiles to the same machine code, so the plugin does exactly what it did
+[21:46:15]   improve: off (it's slow, and optional: the final code builds without it). Turn it on with --improve
+[21:46:15] ━━━━ Stage 10/10 · organize ━━━━ the whole program is written out as one C source file, final/program.c, with its headers, its data and build.sh; final/ is only replaced once that builds
+[21:46:28] ============================================================
+[21:46:28] SUMMARY: 30173/30173 functions compile, 0 quarantined, 1 re-derived, link=OK
+[21:46:28] Report: /Users/admin/glitchdecomp/fastpass 3/REPORT.md
+[21:46:28] 
+[21:46:28] ━━━━ what the script struggled with this run ━━━━
+[21:46:28] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[21:46:28] rates (this run last; earlier runs above it):
+[21:46:28]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
+[21:46:28]   10-24 18:56               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                0.0
+[21:46:28]   10-24 19:28               100.0                0.0                  0                  1              100.0                 23                  -                 97               98.6                  -                     -                0.0
+[21:46:28]   10-24 19:54               100.0                0.0                  0                  2               50.0                 41                  -                 99               92.5                  -                     -                0.0
+[21:46:28]   10-24 20:19               100.0                0.0                  0                  3               33.3                 35                  -                104               98.6                  2                     -                0.0
+[21:46:28]   10-24 21:46               100.0                0.0                  0                 37               97.3                795                  -                122               99.2                  1                   0/1                0.0
+[21:46:28] couldn't handle:
+[21:46:28]   test          1 × the rebuilt plugin didn't load: load executable   [also in the last 5 run(s)]
+[21:46:28]                     → see build/test/test_report.txt
+[21:46:28] worked around (cost time, nothing lost):
+[21:46:28]   fix         119 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 5 run(s)]
+[21:46:28]   fix           2 × fixes that undid each other (the cycle was stopped and the model got the function)   e.g. FUN_001a8494, FUN_0020f76c   [also in the last 3 run(s)]
+[21:46:28]   link         24 × functions replaced by placeholders to link   [also in the last 5 run(s)]
 ```
 
 ## Build status
@@ -143,12 +149,7 @@ disabled proto length_error   <- redefinition of 'length_error' as different kin
 ## build/fix_report.txt
 
 ```
-why 2 function(s) are quarantined (first compile error, grouped):
-
-     1  too few arguments to function call, expected N, have N
-        e.g. insertText__16d864
-     1  invalid operands to binary expression ('X' and 'X')
-        e.g. FUN_000cab20
+why 0 function(s) are quarantined (first compile error, grouped):
 ```
 
 ## build/link_report.txt
@@ -274,17 +275,23 @@ Fixes this project learned from the model's edits (@1, @2 ... stand for any
 name). Proven ones are applied without the model; candidates are tried on
 every function with the same error and kept only where they work.
 
-== proven: 104
-[423 worked, 4 didn't] too few arguments to function call, expected N, have N (part of a line)
+== proven: 122
+[1344 worked, 5 didn't] too few arguments to function call, expected N, have N (part of a line)
     @1();
   → @1(1);
+[591 worked, 0 didn't] redefinition of 'X'
+    @1 @2 = {0};
+  → @2 = (@1){0};
 [338 worked, 0 didn't] operand of type 'X' where arithmetic or pointer type is required
     @1 = (@2*)@3(@4);
   → @1 = @3(@4);
-[258 worked, 0 didn't] too few arguments to function call, expected at least N, have N
+[298 worked, 0 didn't] too few arguments to function call, expected at least N, have N
     @1 = @2((@3)@4);
   → @1 = @2((@3)@4, 1);
-[233 worked, 53 didn't] array type 'X' (aka 'X') is not assignable (part of a line)
+[243 worked, 0 didn't] redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
+    @1 @2 = {0};
+  → @2 = (@1){0};
+[235 worked, 53 didn't] array type 'X' (aka 'X') is not assignable (part of a line)
     @1 = @2(
   → unsigned char @1[16] = {0};@2(
 [203 worked, 0 didn't] redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
@@ -296,33 +303,39 @@ every function with the same error and kept only where they work.
 [170 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2(@1.@3, 1);
   → @1 = @2(*(unsigned char*)&@1, 1);
+[115 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    (@1);
+  → (@1, 1);
 [112 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(@3);
   → unsigned char @1[16] = {0};@2(@3);
-[104 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    (@1);
-  → (@1, 1);
 [89 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(@3, @4);
   → *(unsigned char*)&@1 = @2(@3, @4);
+[83 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    )@1);
+  → )@1, 1);
 [82 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2();
   → unsigned char @1[16];
+[80 worked, 18 didn't] integer constant expression must have integer type, not 'X'
+    case"" :
+  → case 0 :
 [73 worked, 0 didn't] member reference base type 'X' is not a structure or union
     @1 = @2.@3;
   → @1 = @2[8];
-[73 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    )@1);
-  → )@1, 1);
 [70 worked, 12 didn't] redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X')
     @1*@2;
   → uint64_t @2;
-[69 worked, 6 didn't] integer constant expression must have integer type, not 'X'
-    case"" :
-  → case 0 :
 [64 worked, 2 didn't] operand of type 'X' where arithmetic or pointer type is required (part of a line)
     @1 = (void*)@2(
   → @1 = @2(
+[57 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+    int @1 = {0};
+  → @1 = (int){0};
+[52 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+    double @1 = {0};
+  → @1 = (double){0};
 [44 worked, 12 didn't] initializing 'X' with an expression of incompatible type 'X' (part of a line)
     @1 = @2(
   → @1 = (unsigned long long)@2(
@@ -332,12 +345,24 @@ every function with the same error and kept only where they work.
 [35 worked, 0 didn't] assigning to 'X' (aka 'X') from incompatible type 'X'
     @1 = @2();
   → (void)@1 = @2();
+[34 worked, 1 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    @1 = @2((
+  → @1 = ((uint64_t(*)())@2)((
+[32 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+    float @1 = {0};
+  → @1 = (float){0};
 [31 worked, 0 didn't] too few arguments to function call, expected at least N, have N
     @1(@2);
   → @1(@2, 1);
 [30 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1.@2 = @3;
   → @1[8] = @3;
+[30 worked, 0 didn't] redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X') (part of a line)
+    @1*@2 = {0
+  → @2 = (@1*){0
+[30 worked, 0 didn't] expected expression
+    return @1 = {0};
+  → return @1 = 0;
 [29 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1.@2 = 0;
   → @1[8] = 0;
@@ -350,54 +375,66 @@ every function with the same error and kept only where they work.
 [25 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(@3, @4);
   → unsigned char @1[16];@2(@3, @4);
+[25 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+    long @1 = {0};
+  → @1 = (long){0};
 [25 worked, 6 didn't] assigning to 'X' from incompatible type 'X' (aka 'X')
     @1 = @2();
   → uint64_t @1 = @2();
 [21 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(@3, @4, @5);
   → unsigned char @1[16] = {0};@2(@3, @4, @5);
-[21 worked, 1 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    @1 = @2((
-  → @1 = ((uint64_t(*)())@2)((
 [19 worked, 0 didn't] assigning to 'X' (aka 'X') from incompatible type 'X'
     @1 = @2((long)@3);
   → uintptr_t @1 = @2((long)@3);
 [18 worked, 8 didn't] array type 'X' (aka 'X') is not assignable (part of a line)
     @1[0] = @2(
   → unsigned char @1[1] = {0};@2(
+[17 worked, 1 didn't] indirection requires pointer operand ('X' (aka 'X') invalid) (part of a line)
+    *@1 =
+  → *(uint64_t*)@1 =
 [16 worked, 0 didn't] operand of type 'X' where arithmetic or pointer type is required
     @1 = (long)@2(@3, @4);
   → long @1 = @2(@3, @4);
+[16 worked, 0 didn't] too few arguments to function call, single argument 'X' was not specified (part of a line)
+    @1()
+  → ((uint64_t(*)())@1)()
+[16 worked, 0 didn't] too few arguments to function call, expected N, have N
+    @1 = @2(@3());
+  → @1 = @2(((uint64_t(*)())@3)());
 [14 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2(@1.@3, @4);
   → @1 = @2(*(unsigned int*)&@1, @4);
 [14 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2();
   → unsigned char @1[16] = {0};@2();
-[13 worked, 0 didn't] too few arguments to function call, single argument 'X' was not specified (part of a line)
-    @1()
-  → ((uint64_t(*)())@1)()
+[14 worked, 0 didn't] too few arguments to function call, expected at least N, have N
+    @1(@2[0]);
+  → @1(@2[0], 1);
+[14 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X') (part of a line)
+    long*@1 = {0
+  → @1 = (long*){0
 [12 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(@3, @4, @5, @6, @7, @8, @9);
   → unsigned char @1[16] = {0};@2(@3, @4, @5, @6, @7, @8, @9);
-[12 worked, 0 didn't] too few arguments to function call, expected at least N, have N
-    @1(@2[0]);
-  → @1(@2[0], 1);
+[12 worked, 0 didn't] integer constant expression must have integer type, not 'X'
+    case"\x01" :
+  → case 1 :
 [12 worked, 3 didn't] array type 'X' (aka 'X') is not assignable (part of a line)
     @1 = (*
   → unsigned char @1[16] = {0};(*
 [11 worked, 0 didn't] member reference base type 'X' is not a structure or union
     @1[0].@2 = 0;
   → @1[0] = 0;
-[11 worked, 0 didn't] integer constant expression must have integer type, not 'X'
-    case"\x01" :
-  → case 1 :
-[11 worked, 0 didn't] too few arguments to function call, expected N, have N
-    @1 = @2(@3());
-  → @1 = @2(((uint64_t(*)())@3)());
 [10 worked, 0 didn't] operand of type 'X' where arithmetic or pointer type is required (part of a line)
     int @1 = (int)@2(
   → long @1 = @2(
+[10 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
+    *(@1(*)[16])(@2+(long)@3) = @4[0];
+  → memcpy(&(*(@1(*)[16])(@2+(long)@3)), &(@4[0]), sizeof(*(@1(*)[16])(@2+(long)@3))<sizeof(@4[0]) ? sizeof(*(@1(*)[16])(@2+(long)@3)) : sizeof(@4[0]));
+[10 worked, 0 didn't] subscripted value is not an array, pointer, or vector (part of a line)
+    @1[@2
+  → ((uint64_t*)(uintptr_t)(@1))[@2
 [9 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union (part of a line)
     , @1.@2, @1.@3, @4.@2, @4.@3, @5.@2,
   → , @1[0], @1[8], @4[0], @4[8], @5[0], @5[8]);
@@ -407,15 +444,24 @@ every function with the same error and kept only where they work.
 [8 worked, 0 didn't] subscripted value is not an array, pointer, or vector (part of a line)
     long)@1[0x68]+3
   → long)(@1+0x68)+3
-[8 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
-    *(@1(*)[16])(@2+(long)@3) = @4[0];
-  → memcpy(&(*(@1(*)[16])(@2+(long)@3)), &(@4[0]), sizeof(*(@1(*)[16])(@2+(long)@3))<sizeof(@4[0]) ? sizeof(*(@1(*)[16])(@2+(long)@3)) : sizeof(@4[0]));
+[8 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X') (part of a line)
+    float*@1 = {0
+  → @1 = (float*){0
 [7 worked, 0 didn't] variable has incomplete type 'X'
     void std:: @1:: @1(@1*this)
   → void @1(@1*this)
 [7 worked, 0 didn't] member reference base type 'X' is not a structure or union
     @1[0] = @2(@1[0].@3, 1);
   → @1[0] = @2(@1[0], 1);
+[7 worked, 0 didn't] integer constant expression must have integer type, not 'X'
+    case"\b" :
+  → case'\b' :
+[7 worked, 0 didn't] indirection requires pointer operand ('X' (aka 'X') invalid) (part of a line)
+    (*@1+
+  → (*(uint64_t*)@1+
+[7 worked, 0 didn't] subscripted value is not an array, pointer, or vector (part of a line)
+    @1[1
+  → ((uint64_t*)(uintptr_t)(@1))[1
 [7 worked, 0 didn't] redefinition of 'X' (part of a line)
     @1 @2 = {@3
   → @2 = (@1){@3
@@ -440,12 +486,12 @@ every function with the same error and kept only where they work.
 [6 worked, 0 didn't] subscripted value is not an array, pointer, or vector
     @1 = (long)@2[7]+0x20;
   → @1 = (long)(@2+7)+0x20;
-[6 worked, 0 didn't] integer constant expression must have integer type, not 'X'
-    case"\b" :
-  → case'\b' :
-[6 worked, 0 didn't] indirection requires pointer operand ('X' (aka 'X') invalid) (part of a line)
-    *@1 =
-  → *(uint64_t*)@1 =
+[6 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+    void*@1 = {0};
+  → @1 = (void*){0};
+[6 worked, 0 didn't] expected expression (part of a line)
+    @1 = {0};
+  → @1 = 0;
 [5 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2(@1.@3, (int)@1+1);
   → @1 = @2(*(unsigned int*)&@1, (int)@1+1);
@@ -467,21 +513,36 @@ every function with the same error and kept only where they work.
 [5 worked, 0 didn't] used type 'X' where arithmetic or pointer type is required
     @1 = (struct @2)@3(*(long**)(@4+0x80));
   → @1 = @3(*(long**)(@4+0x80));
+[5 worked, 0 didn't] integer constant expression must have integer type, not 'X'
+    case"\f" :
+  → case 0x0C :
 [5 worked, 0 didn't] subscripted value is not an array, pointer, or vector
     @1 = (@2*)@3[1];
   → @1 = *(@2**)(@3+1);
 [5 worked, 0 didn't] indirection requires pointer operand ('X' invalid) (part of a line)
     *@1(
   → @1(
-[5 worked, 0 didn't] indirection requires pointer operand ('X' (aka 'X') invalid) (part of a line)
-    (*@1+
-  → (*(uint64_t*)@1+
+[5 worked, 0 didn't] too few arguments to function call, expected at least N, have N
+    @1(*(@2*)(@3+0x20));
+  → ((uint64_t(*)())@1)(*(@2*)(@3+0x20));
 [5 worked, 0 didn't] indirection requires pointer operand ('X' (aka 'X') invalid) (part of a line)
     *(@1+
   → *(uint64_t*)(@1+
+[5 worked, 0 didn't] too few arguments to function call, expected N, have N
+    @1(@2, 0, 8, @3());
+  → @1(@2, 0, 8, ((uint64_t(*)())@3)());
+[5 worked, 0 didn't] redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X') (part of a line)
+    @1 @2 = {0
+  → @2 = (@1){0
 [5 worked, 1 didn't] member reference base type 'X' is not a structure or union (part of a line)
     @1.@2 = @3
   → @1[1] = @3
+[5 worked, 1 didn't] subscripted value is not an array, pointer, or vector (part of a line)
+    @1[2
+  → ((uint64_t*)(uintptr_t)(@1))[2
+[5 worked, 2 didn't] too few arguments to function call, expected N, have N (part of a line)
+    (0x3ff0000000000000);
+  → (0x3ff0000000000000, 0);
 [4 worked, 0 didn't] operand of type 'X' where arithmetic or pointer type is required
     @1 = (@2)@3();
   → @1 = @3();
@@ -506,21 +567,24 @@ every function with the same error and kept only where they work.
 [4 worked, 0 didn't] too few arguments to function call, expected N, have N (part of a line)
     (@1);
   → (@1, 0);
-[4 worked, 0 didn't] integer constant expression must have integer type, not 'X'
-    case"\f" :
-  → case 0x0C :
-[4 worked, 0 didn't] too few arguments to function call, expected at least N, have N
-    @1(*(@2*)(@3+0x20));
-  → ((uint64_t(*)())@1)(*(@2*)(@3+0x20));
 [4 worked, 0 didn't] too few arguments to function call, expected N, have N (part of a line)
     @1(@2()
   → @1(((uint64_t(*)())@2)()
+[4 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X') (part of a line)
+    int @1 = {0
+  → @1 = (int){0
+[4 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X') (part of a line)
+    float @1 = {0
+  → @1 = (float){0
 [4 worked, 1 didn't] used type 'X' where arithmetic or pointer type is required (part of a line)
     @1 = (struct @2)@3(
   → @1 = @3(
-[4 worked, 1 didn't] too few arguments to function call, expected N, have N (part of a line)
-    (0x3ff0000000000000);
-  → (0x3ff0000000000000, 0);
+[4 worked, 1 didn't] used type 'X' (aka 'X') where arithmetic or pointer type is required
+    (@1(@2, 3, @3), @3 = = (@4[4])@5(@6, 4, 4))){
+  → (@1(@2, 3, @3), @5(@3, 0, 4) = = @5(@6, 4, 4))){
+[4 worked, 1 didn't] used type 'X' (aka 'X') where arithmetic or pointer type is required (part of a line)
+    ), @1 = = (@2[4])@3(
+  → ), @3(@1, 0, 4) = = @3(
 [3 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1.@2 = @3(@4);
   → *(unsigned char*)&@1 = (unsigned char)@3(@4);
@@ -563,9 +627,12 @@ every function with the same error and kept only where they work.
 [3 worked, 0 didn't] too few arguments to function call, expected N, have N
     @1 = (float)powf();
   → @1 = (float)((uint64_t(*)())powf)();
-[3 worked, 0 didn't] subscripted value is not an array, pointer, or vector (part of a line)
-    @1[1
-  → ((uint64_t*)(uintptr_t)(@1))[1
+[3 worked, 0 didn't] too few arguments to function call, expected N, have N (part of a line)
+    *)@1(0x3ff0000000000000
+  → *)((uint64_t(*)())@1)(0x3ff0000000000000
+[3 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+    char*@1 = {0};
+  → @1 = (char*){0};
 [3 worked, 1 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
     unsigned long @1;
   → uint64_t @1 = 0;
@@ -575,20 +642,8 @@ every function with the same error and kept only where they work.
 [3 worked, 1 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = *(long*)((long)&@2.@3+@4);
   → @1 = *(long*)((long)@4[0x6a]+@4);
-[3 worked, 1 didn't] used type 'X' (aka 'X') where arithmetic or pointer type is required
-    (@1(@2, 3, @3), @3 = = (@4[4])@5(@6, 4, 4))){
-  → (@1(@2, 3, @3), @5(@3, 0, 4) = = @5(@6, 4, 4))){
-[3 worked, 1 didn't] used type 'X' (aka 'X') where arithmetic or pointer type is required (part of a line)
-    ), @1 = = (@2[4])@3(
-  → ), @3(@1, 0, 4) = = @3(
-[3 worked, 1 didn't] subscripted value is not an array, pointer, or vector (part of a line)
-    @1[2
-  → ((uint64_t*)(uintptr_t)(@1))[2
-[3 worked, 1 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    @1 = @2(@3
-  → @1 = ((uint64_t(*)())@2)(@3
 
-== candidate: 492
+== candidate: 515
 [85 worked, 206 didn't] redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X') (part of a line)
     @1 @2[
   → uint64_t @2[
@@ -646,6 +701,9 @@ every function with the same error and kept only where they work.
 [5 worked, 7 didn't] assigning to 'X' from incompatible type 'X' (aka 'X')
     @1 = @2(@3, @4, @5);
   → uint64_t @1 = @2(@3, @4, @5);
+[4 worked, 2 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    @1 = @2(@3
+  → @1 = ((uint64_t(*)())@2)(@3
 [4 worked, 3 didn't] redefinition of 'X'
     @1 @2;
   → @1*@2 = 0;
@@ -808,9 +866,6 @@ every function with the same error and kept only where they work.
 [2 worked, 0 didn't] too few arguments to function call, expected N, have N
     @1 = (long*)@2(0x3ff0000000000000);
   → @1 = (long*)((uint64_t(*)())@2)(0x3ff0000000000000);
-[2 worked, 0 didn't] too few arguments to function call, expected N, have N (part of a line)
-    *)@1(0x3ff0000000000000
-  → *)((uint64_t(*)())@1)(0x3ff0000000000000
 [2 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     *(@1(*)[12])((long)@2+0x37c) = @3;
   → memcpy(&(*(@1(*)[12])((long)@2+0x37c)), &(@3), sizeof(*(@1(*)[12])((long)@2+0x37c))<sizeof(@3) ? sizeof(*(@1(*)[12])((long)@2+0x37c)) : sizeof(@3));
@@ -826,15 +881,51 @@ every function with the same error and kept only where they work.
 [2 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     *(@1(*)[12])(@2+0x73) = @3;
   → memcpy(&(*(@1(*)[12])(@2+0x73)), &(@3), sizeof(*(@1(*)[12])(@2+0x73))<sizeof(@3) ? sizeof(*(@1(*)[12])(@2+0x73)) : sizeof(@3));
+[2 worked, 0 didn't] subscripted value is not an array, pointer, or vector
+    @1[3] = (char)(int)(@2*255.0);
+  → ((uint8_t*)(uintptr_t)(@1))[3] = (char)(int)(@2*255.0);
+[2 worked, 0 didn't] subscripted value is not an array, pointer, or vector (part of a line)
+    @1[3
+  → ((uint8_t*)(uintptr_t)(@1))[3
 [2 worked, 0 didn't] too few arguments to function call, expected at least N, have N
     if((@1)&& (@2 = @3(@4), @2 = = 0)){
   → if((@1)&& (@2 = ((uint64_t(*)())@3)(@4), @2 = = 0)){
-[2 worked, 0 didn't] too few arguments to function call, expected N, have N
-    @1(@2, 0, 8, @3());
-  → @1(@2, 0, 8, ((uint64_t(*)())@3)());
 [2 worked, 0 didn't] too few arguments to function call, expected N, have N (part of a line)
     8, @1()
   → 8, ((uint64_t(*)())@1)()
+[2 worked, 0 didn't] redefinition of 'X' (part of a line)
+    @1 @2 = {0
+  → @2 = (@1){0
+[2 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X') (part of a line)
+    long @1 = {0
+  → @1 = (long){0
+[2 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+    float*@1 = {0};
+  → @1 = (float*){0};
+[2 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X') (part of a line)
+    char*@1 = {0
+  → @1 = (char*){0
+[2 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+    long*@1 = {0};
+  → @1 = (long*){0};
+[2 worked, 0 didn't] indirection requires pointer operand ('X' (aka 'X') invalid) (part of a line)
+    (*@1!
+  → (*(uint64_t*)@1!
+[2 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X') (part of a line)
+    void*@1 = {0
+  → @1 = (void*){0
+[2 worked, 0 didn't] subscripted value is not an array, pointer, or vector
+    @1[@2] = *(@3*)((long)@4+10);
+  → ((uint64_t*)(uintptr_t)(@1))[@2] = *(@3*)((long)@4+10);
+[2 worked, 0 didn't] subscripted value is not an array, pointer, or vector
+    @1[@2+-1] = *(@3*)((long)@4+10);
+  → ((uint64_t*)(uintptr_t)(@1))[@2+-1] = *(@3*)((long)@4+10);
+[2 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
+    short*@1 = {0};
+  → @1 = (short*){0};
+[2 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X') (part of a line)
+    short*@1 = {0
+  → @1 = (short*){0
 [2 worked, 1 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(@3);
   → @1[16] = {0};@2(@3);
@@ -886,6 +977,9 @@ every function with the same error and kept only where they work.
 [2 worked, 1 didn't] too few arguments to function call, expected N, have N (part of a line)
     @1()
   → ((uint64_t(*)())@1)()
+[2 worked, 1 didn't] indirection requires pointer operand ('X' (aka 'X') invalid)
+    if(*@1! = 0){
+  → if(*(uint64_t*)@1! = 0){
 [2 worked, 2 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
     long*@1;
   → uint64_t @1 = 0;
@@ -1450,45 +1544,6 @@ every function with the same error and kept only where they work.
 [1 worked, 0 didn't] too few arguments to function call, expected N, have N
     @1 = @2(*(float*)(@3+0x28)-(float)*(int*)(@3+0x2c));
   → @1 = @2(*(float*)(@3+0x28)-(float)*(int*)(@3+0x2c), 1);
-[1 worked, 0 didn't] too few arguments to function call, expected N, have N (part of a line)
-    0x2c));
-  → 0x2c), 1);
-[1 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
-    @1[0] = @2(@3+0x180, @4);
-  → unsigned char @1[1] = {0};@2(@3+0x180, @4);
-[1 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
-    @1[0] = @2(@3, @4);
-  → unsigned char @1[1] = {0};@2(@3, @4);
-[1 worked, 0 didn't] redefinition of 'X' with a different type: 'X' vs 'X' (aka 'X')
-    char*@1;
-  → uint64_t @1;
-[1 worked, 0 didn't] integer constant expression must have integer type, not 'X'
-    case"\x01" :
-  → case'\x01' :
-[1 worked, 0 didn't] too many arguments to function call, expected N, have N
-    @1 = @2(@3, 0, @4, @5, 0x3f, 0, @6, (long)@7, &@8);
-  → @1 = @2(@3, 0, @4, @6, 0x3f, 0, (long)@7, &@8);
-[1 worked, 0 didn't] too few arguments to function call, expected N, have N
-    @1(0x3ff0000000000000);
-  → return @1(0x3ff0000000000000, 64);
-[1 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
-    @1.@2 = (@3)@4;
-  → @1[0] = (char)@4;
-[1 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union (part of a line)
-    @1.@2 = (@3)@4
-  → @1[0] = (char)@4
-[1 worked, 0 didn't] indirection requires pointer operand ('X' invalid)
-    *@1(@2, 8, 8, @3+0xdc4);
-  → *(long*)(@1(@2, 8, 8, @3+0xdc4));
-[1 worked, 0 didn't] indirection requires pointer operand ('X' invalid)
-    *@1(@2, 8, 8, @3+0xdc4);
-  → @1(@2, 8, 8, @3+0xdc4);
-[1 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
-    (**(@1**)(*(long*)((long)&@2.@3+*(long*)(*@4+0x428))+0x10))()
-  → (**(@1**)(*(long*)((long)@4[0x428]+*(long*)(*@4+0x428))+0x10))()
-[1 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
-    (**(@1**)(*(long*)((long)&@2.@3+*(long*)(*@4+0x428))+0x18))()
-  → (*(@1**)(*(long*)(@4[0x428]+*(long*)(*@4+0x428))+0x18))()
 
 == retired: 159
 [5940 worked, 0 didn't] assigning to 'X' (aka 'X') from incompatible type 'X' — retired: it and its opposite only undo each other
@@ -2027,6 +2082,15 @@ happened to each (newest last). 'adopted' ones are in the build.
    #166 [no effect] rewrite: * @ 1 = @ 2 ( @ 3 ) ; -> * @ 1 = & @ 2 [ 0 ] ;  ->  * @ 1 = @ 2 ( 0 , sizeof ( undefined1 [ 0 ] ) ) ;
         its 'before' text isn't in any failing line of the examples
 
+== expected expression
+   3 idea(s), 0 adopted; parked until something changes (or run 15)
+   #200 [no effect] rewrite "*pdVar2 * local_48 + dVar5*dVar4" -> "GH_GETD(*pdVar2 * local_48 + dVar5 * dVar4, 0)"
+        its 'before' text isn't in any failing line of the examples
+   #201 [repeat] rewrite "*pdVar2 * local_48 + dVar5*dVar4" -> "GH_GETD(*pdVar2 * local_48 + dVar5 * dVar4, 0)"
+        same as #200
+   #202 [rejected] declare void FUN_002481d8(void *param_1, char ** param_2);
+        tested on 20: 0 better, 0 worse, 1 compiling function(s) broke
+
 == indirection requires pointer operand ('X' (aka 'X') invalid)
    23 idea(s), 0 adopted; parked until something changes (or run 8)
    #29 [rejected] typedef: typedef unsigned long long uint64_t ;
@@ -2417,29 +2481,29 @@ happened to each (newest last). 'adopted' ones are in the build.
 ## build/test/test_report.txt
 
 ```
-Run test: the rebuilt plugin against the original (2026-10-24 20:19:24)
+Run test: the rebuilt plugin against the original (2026-10-24 21:46:09)
 
 original: Original.component
   architectures: x86_64, arm64; tested as arm64
 rebuilt:  /Users/user?/name1decomp/fastpass 3/build_c/program.dylib (arm64)
 
-packaged the rebuilt program as /Users/user?/name1decomp/fastpass 3/build_c/test/run-llblb0mp/Rebuilt.component (deleted after the test), with the original's Info.plist (35 privacy stand-in(s) applied) and its Resources folder linked in
+packaged the rebuilt program as /Users/user?/name1decomp/fastpass 3/build_c/test/run-oxvnkoxo/Rebuilt.component (deleted after the test), with the original's Info.plist (35 privacy stand-in(s) applied) and its Resources folder linked in
 
 == component Illformed: Name1 (aumf/igl2/DBlu)
 factory: original AUPluginFactory; rebuilt AUPluginFactory (as in the original)
 rebuilt plugin, loading: FAILED
-crashed (SIGBUS) during: load executable
-    CRASH signal=10 (SIGBUS: bad memory access) address=0x10abc9a34
+crashed (SIGSEGV) during: load executable
+    CRASH signal=11 (SIGSEGV: bad memory access) address=0x1
     CRASH stack:
-    0   aharness_host-arm64-325db53723      0x000000010486d2a4 on_crash + 196
+    0   aharness_host-arm64-325db53723      0x00000001008152a4 on_crash + 196
     1   libsystem_platform.dylib            0x000000018d081744 _sigtramp + 56
-    2   program                             0x000000010abc9a60 FUN_0020e3a0 + 16
-    3   program                             0x000000010abc99ec FUN_0020e2fc + 12
-    4   program                             0x000000010abc99b8 FUN_0020e27c + 28
-    5   program                             0x000000010abc6714 FUN_0020bbe4 + 24
-    6   program                             0x000000010ab9e8c0 FUN_001f04ac + 36
-    7   program                             0x000000010ab9e9bc FUN_001f05ac + 12
-    8   program                             0x000000010aedff30 gd_relocate + 4360
+    2   program                             0x00000001068e8e94 FUN_00067718 + 84
+    3   program                             0x00000001068e8e30 FUN_000676ec + 32
+    4   program                             0x00000001068e8dd0 FUN_00067690 + 56
+    5   program                             0x00000001068dd0cc FUN_0005fa70 + 24
+    6   program                             0x00000001068ec984 FUN_0006a480 + 32
+    7   program                             0x00000001068ec9b0 FUN_0006a4c0 + 12
+    8   program                             0x0000000106e937b8 gd_relocate + 1240
     9   dyld                                0x000000018ccdaa28 ___ZZNK5dyld46Loader25findAndRunAllInitializersERNS_12RuntimeStateEENK3$_0clEv_block_invoke + 180
     10  dyld                                0x000000018cce5a8c ___ZNK5dyld313MachOAnalyzer18forEachInitializerER11DiagnosticsRKNS0_15VMAddrConverterEU13block_pointerFvjEPKv_block_invoke.204 + 320
     11  dyld                                0x000000018cd25fac ___ZNK6mach_o12UnsafeHeader14forEachSectionEU13block_pointerFvRKNS0_11SectionInfoERbE_block_invoke + 312
@@ -2456,147 +2520,107 @@ crashed (SIGBUS) during: load executable
     22  dyld                                0x000000018cc97b04 _ZN5dyld44APIs6dlopenEPKci + 120
     23  CoreFoundation                      0x000000018d16c750 _CFBundleDlfcnLoadFramework + 156
     24  CoreFoundation                      0x000000018d1c2c20 _CFBundleLoadExecutableAndReturnError + 472
-    25  aharness_host-arm64-325db53723      0x000000010486d628 open_unit + 204
-    26  aharness_host-arm64-325db53723      0x000000010486c8c8 main + 248
+    25  aharness_host-arm64-325db53723      0x0000000100815628 open_unit + 204
+    26  aharness_host-arm64-325db53723      0x00000001008148c8 main + 248
     27  dyld                                0x000000018ccac4e4 start + 6992
-    rebuilt functions in the stack (innermost first): FUN_0020e3a0 (funcs/_FUN_0020e3a0.cpp), FUN_0020e2fc (funcs/_FUN_0020e2fc.cpp), FUN_0020e27c (funcs/_FUN_0020e27c.cpp), FUN_0020bbe4 (funcs/_FUN_0020bbe4.cpp), FUN_001f04ac (funcs/_FUN_001f04ac.cpp), FUN_001f05ac (funcs/_FUN_001f05ac.cpp)
-    code of FUN_0020e3a0 (funcs/_FUN_0020e3a0.cpp):
+    rebuilt functions in the stack (innermost first): FUN_00067718 (funcs/_FUN_00067718.cpp), FUN_000676ec (funcs/_FUN_000676ec.cpp), FUN_00067690 (funcs/_FUN_00067690.cpp), FUN_0005fa70 (funcs/_FUN_0005fa70.cpp), FUN_0006a480 (funcs/_FUN_0006a480.cpp), FUN_0006a4c0 (funcs/_FUN_0006a4c0.cpp)
+    (an address near zero: a null pointer, often a global or object the rebuilt program never set up)
+    code of FUN_00067718 (funcs/_FUN_00067718.cpp):
          1 | #include "shared.h"
          2 | 
-         3 | void FUN_0020e3a0(void)
+         3 | long FUN_00067718(long param_1,undefined8 param_2)
          4 | {
-         5 |   undefined8 *puVar1;
-         6 | 
-         7 |   puVar1 = (undefined8 *)FUN_0020e24c();
-         8 |   puVar1[1] = 0;
-         9 |   *puVar1 = 0;
-        10 |   puVar1[2] = 0;
+         5 |   undefined8 uVar1;
+         6 |   undefined8 *puVar2;
+         7 |   int local_34;
+         8 |   undefined8 local_30;
+         9 |   long lStack_28;
+        10 | 
+        11 |   local_30 = param_2;
+        12 |   lStack_28 = param_1;
+        13 |   FUN_0006777c((undefined8 *)(param_1 + 8));
+        14 |   local_34 = 0;
+        15 |   FUN_0006779c((long *)(param_1 + 0x10),&local_34);
+        16 |   uVar1 = FUN_000677c0();
+        17 |   puVar2 = (undefined8*)FUN_000677e8(1);
+        18 |   *puVar2 = uVar1;
+        19 |   return param_1;
+        20 | }
+        21 | 
+    code of FUN_000676ec (funcs/_FUN_000676ec.cpp):
+         1 | #include "shared.h"
+         2 | 
+         3 | void FUN_000676ec(long param_1,undefined8 param_2)
+         4 | {
+         5 |   FUN_00067718(param_1,param_2);
+         6 |   return;
+         7 | }
+         8 | 
+    code of FUN_00067690 (funcs/_FUN_00067690.cpp):
+         1 | #include "shared.h"
+         2 | 
+         3 | void FUN_00067690(long param_1)
+         4 | {
+         5 |   undefined1 auStack_30 [8];
+         6 |   long local_28;
+         7 | 
+         8 |   local_28 = param_1;
+         9 |   FUN_000676cc();
+        10 |   FUN_000676ec(param_1,auStack_30);
         11 |   return;
         12 | }
         13 | 
-    code of FUN_0020e2fc (funcs/_FUN_0020e2fc.cpp):
+    code of FUN_0005fa70 (funcs/_FUN_0005fa70.cpp):
          1 | #include "shared.h"
          2 | 
-         3 | void FUN_0020e2fc(void)
+         3 | void FUN_0005fa70(long param_1)
          4 | {
-         5 |   FUN_0020e3a0();
+         5 |   FUN_00067690(param_1);
          6 |   return;
          7 | }
          8 | 
-    code of FUN_0020e27c (funcs/_FUN_0020e27c.cpp):
+    code of FUN_0006a480 (funcs/_FUN_0006a480.cpp):
          1 | #include "shared.h"
          2 | 
-         3 | undefined8 FUN_0020e27c(undefined8 param_1)
+         3 | void FUN_0006a480(void)
          4 | {
-         5 |   FUN_0020e2c8();
-         6 |   FUN_0020e2ec();
-         7 |   FUN_0020e2fc();
-         8 |   return param_1;
-         9 | }
-        10 | 
-    code of FUN_0020bbe4 (funcs/_FUN_0020bbe4.cpp):
-         1 | #include "shared.h"
-         2 | 
-         3 | void FUN_0020bbe4(undefined8 param_1)
-         4 | {
-         5 |   FUN_0020e27c(param_1);
-         6 |   return;
-         7 | }
-         8 | 
-    code of FUN_001f04ac (funcs/_FUN_001f04ac.cpp):
-         1 | #include "shared.h"
-         2 | 
-         3 | void FUN_001f04ac(void)
-         4 | {
-         5 |   FUN_0020bbe4(&GD_DAT_0045f5e8);
-         6 |   __cxa_atexit(GD_PTR__string_004240b0,&GD_DAT_0045f5e8,0);
+         5 |   FUN_0005fa70((uintptr_t)(g_block_29 + 0x8));
+         6 |   __cxa_atexit(FUN_0005fa90,&GD_DAT_0045e138,0);
          7 |   return;
          8 | }
          9 | 
-    code of FUN_001f05ac (funcs/_FUN_001f05ac.cpp):
+    code of FUN_0006a4c0 (funcs/_FUN_0006a4c0.cpp):
          1 | #include "shared.h"
          2 | 
-         3 | void FUN_001f05ac(void)
+         3 | void FUN_0006a4c0(void)
          4 | {
-         5 |   FUN_001f04ac();
-         6 |   FUN_001f04ec();
-         7 |   FUN_001f052c();
-         8 |   FUN_001f056c();
-         9 |   return;
-        10 | }
-        11 | 
+         5 |   FUN_0006a480();
+         6 |   return;
+         7 | }
+         8 | 
     the rebuilt plugin's load steps (GD_DEBUG):
-      initializer 8/91: FUN_0006bd14
-      initializer 9/91: FUN_0006d484
-      initializer 10/91: FUN_00091eb4
-      initializer 11/91: FUN_00096f44
-      initializer 12/91: FUN_00096f7c
-      initializer 13/91: FUN_0009720c
-      initializer 14/91: FUN_000a5800
-      initializer 15/91: FUN_000abe14
-      initializer 16/91: FUN_000b0e24
-      initializer 17/91: FUN_000b4380
-      initializer 18/91: FUN_000b6238
-      initializer 19/91: FUN_000b6270
-      initializer 20/91: FUN_000b62a8
-      initializer 21/91: FUN_000bc4ec
-      initializer 22/91: FUN_000c54d0
-      initializer 23/91: FUN_000c6ce8
-      initializer 24/91: FUN_000f8dcc
-      initializer 25/91: FUN_0010a5fc
-      initializer 26/91: FUN_00112498
-      initializer 27/91: FUN_0011288c
-      initializer 28/91: FUN_0011b3cc
-      initializer 29/91: FUN_0011b404
-      initializer 30/91: FUN_00127608
-      initializer 31/91: FUN_00127640
-      initializer 32/91: FUN_0012928c
-      initializer 33/91: FUN_00129824
-      initializer 34/91: FUN_0012db44
-      initializer 35/91: FUN_0012f118
-      initializer 36/91: FUN_0012f150
-      initializer 37/91: FUN_0012f6d0
-      initializer 38/91: FUN_0013235c
-      initializer 39/91: FUN_001549a0
-      initializer 40/91: FUN_001549d8
-      initializer 41/91: FUN_00155ec8
-      initializer 42/91: FUN_00156ea0
-      initializer 43/91: FUN_00156ed8
-      initializer 44/91: FUN_00156f10
-      initializer 45/91: FUN_001676bc
-      initializer 46/91: FUN_00170a1c
-      initializer 47/91: FUN_00171830
-      initializer 48/91: FUN_001756c4
-      initializer 49/91: FUN_001a86a4
-      initializer 50/91: FUN_001aca8c
-      initializer 51/91: FUN_001bbd0c
-      initializer 52/91: FUN_001c1460
-      initializer 53/91: FUN_001c1744
-      initializer 54/91: FUN_001c177c
-      initializer 55/91: FUN_001c2280
-      initializer 56/91: FUN_001c22d4
-      initializer 57/91: FUN_001c2328
-      initializer 58/91: FUN_001c2364
-      initializer 59/91: FUN_001cf594
-      initializer 60/91: FUN_001d8fec
-      initializer 61/91: FUN_001da7f4
-      initializer 62/91: FUN_001e326c
-      initializer 63/91: FUN_001e4cbc
-      initializer 64/91: FUN_001e4dd8
-      initializer 65/91: FUN_001e9544
-      initializer 66/91: FUN_001eb9ac
-      initializer 67/91: FUN_001f05ac
+      data at 0=0x106f64000 1=0x106f65a40 2=0x1072e9860 3=0x1072e9f20 4=0x10730cea0 5=0x107348330 6=0x107367200 7=0x107367340 8=0x107369900 9=0x107369a40 10=0x10736a490 11=0x107382f20 12=0x107383880 13=0x107383af0 14=0x107383dd0 15=0x107383de0 16=0x1073adc70 17=0x1073ae1d0 18=0x1073ae220 19=0x1073ae240 20=0x1073af8a0 21=0x1073b03a0 22=0x1073b1950 23=0x1073b2590 24=0x1073b2730 25=0x1073b2780 26=0x1073b2810 27=0x1073b2820 28=0x1073b2af0 29=0x1073bd9f0 30=0x1073e6d80 31=0x1077f8760 32=0x1077ff360 33=0x1073bf8c0 34=0x107802d90
+      fixing up 32214 pointer(s) and 1554 import(s)
+      import not found (left null): dyld_stub_binder, at block 12 + 0x268
+      fix-ups done; imports not found: 1
+      initializer 1/91: FUN_00007144
+      initializer 2/91: FUN_0000717c
+      initializer 3/91: FUN_00021f34
+      initializer 4/91: FUN_00035e5c
+      initializer 5/91: FUN_000383cc
+      initializer 6/91: FUN_0004530c
+      initializer 7/91: FUN_0006a4c0
     registers when it crashed (the ones that point into the rebuilt program explained):
-       x0 = 0x000000010abc9a2c  in the rebuilt program: FUN_0020e350 + 0xc
-       x1 = 0x0000000000000000  (zero)
+       x0 = 0x0000000000000001  (near zero)
+       x1 = 0x000000016f5e946c
        x2 = 0x00000000000120a8
-       x3 = 0x000000016b59100b
-       x4 = 0x000000010aef6fec  in the rebuilt program: zoom_ + 0x145e0
-       x5 = 0x000000016b591540
+       x3 = 0x000000016f5e900a
+       x4 = 0x0000000106eaac37  in the rebuilt program: zoom_ + 0x13d73
+       x5 = 0x000000016f5e9540
        x6 = 0x000000000000000a  (near zero)
        x7 = 0x0000000000000000  (zero)
-       x8 = 0x000000010abc9a2c  in the rebuilt program: FUN_0020e350 + 0xc
-       x9 = 0x00000000000014b8  (near zero)
+       x8 = 0x0000000000000001  (near zero)
+       x9 = 0x0000000000000001  (near zero)
       x10 = 0x0000000000000002  (near zero)
       x11 = 0x00000000fffffffd
       x12 = 0x0000000000000000  (zero)
@@ -2606,109 +2630,149 @@ crashed (SIGBUS) during: load executable
       x16 = 0x000000018d034618
       x17 = 0x00000001fb0f7228
       x18 = 0x0000000000000000  (zero)
-      x19 = 0x000000016b591be8
-      x20 = 0x000000010aedee28  in the rebuilt program: gd_relocate + 0x0
+      x19 = 0x000000016f5e9be8
+      x20 = 0x0000000106e932e0  in the rebuilt program: gd_relocate + 0x0
       x21 = 0x00000001f9801360
-      x22 = 0x000000010aee38bc  in the rebuilt program: zoom_ + 0xeb0
-      x23 = 0x000000010a8a4118
+      x22 = 0x0000000106e97d74  in the rebuilt program: zoom_ + 0xeb0
+      x23 = 0x000000010685c118
       x24 = 0x0000000000000006  (near zero)
       x25 = 0x00000000000000a0  (near zero)
-      x26 = 0x000000010a8a4248
-      x27 = 0x000000010a8a40c0
+      x26 = 0x000000010685c248
+      x27 = 0x000000010685c0c0
       x28 = 0x0000000000000010  (near zero)
-       fp = 0x000000016b5914b0
-       lr = 0x000000010abc9a60  in the rebuilt program: FUN_0020e3a0 + 0x10
-       sp = 0x000000016b5914a0
-       pc = 0x000000010abc9a68  in the rebuilt program: FUN_0020e3a0 + 0x18
+       fp = 0x000000016f5e9490
+       lr = 0x00000001068e8e94  in the rebuilt program: FUN_00067718 + 0x54
+       sp = 0x000000016f5e9450
+       pc = 0x00000001068e8ea0  in the rebuilt program: FUN_00067718 + 0x60
     the rebuilt frames as source lines:
-        2: FUN_0020e3a0 (in program.dylib) (_FUN_0020e3a0.cpp:7)
-        3: FUN_0020e2fc (in program.dylib) (_FUN_0020e2fc.cpp:6)
-        4: FUN_0020e27c (in program.dylib) (_FUN_0020e27c.cpp:8)
-        5: FUN_0020bbe4 (in program.dylib) (_FUN_0020bbe4.cpp:6)
-        6: FUN_001f04ac (in program.dylib) (_FUN_001f04ac.cpp:5)
-        7: FUN_001f05ac (in program.dylib) (_FUN_001f05ac.cpp:6)
-        8: gd_relocate (in program.dylib) (ghidra_data.c:30096)
-       pc: FUN_0020e3a0 (in program.dylib) (_FUN_0020e3a0.cpp:8)
-       lr: FUN_0020e3a0 (in program.dylib) (_FUN_0020e3a0.cpp:7)
-    where it crashed: FUN_0020e3a0 line 8: puVar1[1] = 0;
-    called just before the crash: FUN_0020e24c (funcs/_FUN_0020e24c.cpp)
+        2: FUN_00067718 (in program.dylib) (_FUN_00067718.cpp:17)
+        3: FUN_000676ec (in program.dylib) (_FUN_000676ec.cpp:6)
+        4: FUN_00067690 (in program.dylib) (_FUN_00067690.cpp:11)
+        5: FUN_0005fa70 (in program.dylib) (_FUN_0005fa70.cpp:6)
+        6: FUN_0006a480 (in program.dylib) (_FUN_0006a480.cpp:5)
+        7: FUN_0006a4c0 (in program.dylib) (_FUN_0006a4c0.cpp:6)
+        8: gd_relocate (in program.dylib) (ghidra_data.c:29976)
+       pc: FUN_00067718 (in program.dylib) (_FUN_00067718.cpp:18)
+       lr: FUN_00067718 (in program.dylib) (_FUN_00067718.cpp:17)
+    where it crashed: FUN_00067718 line 18: *puVar2 = uVar1;
+    called just before the crash: FUN_0006779c (funcs/_FUN_0006779c.cpp)
          1 | #include "shared.h"
          2 | 
-         3 | uint64_t FUN_0020e24c(void)
+         3 | void FUN_0006779c(long *param_1,int *param_2)
          4 | {
-         5 |   undefined8 in_x0;
+         5 |   FUN_0006786c(param_1,param_2);
+         6 |   return;
+         7 | }
+         8 | 
+    Ghidra's pseudocode of FUN_0006779c:
+      void FUN_0006779c(long *param_1,int *param_2)
+      
+      {
+        FUN_0006786c(param_1,param_2);
+        return;
+      }
+    called just before the crash: FUN_000677c0 (funcs/_FUN_000677c0.cpp)
+         1 | #include "shared.h"
+         2 | 
+         3 | undefined8 FUN_000677c0(void)
+         4 | {
+         5 |   undefined8 uVar1;
          6 | 
-         7 |   
-         8 |   return (uint64_t)FUN_0020e26c(in_x0);
-         9 | }
-        10 | 
-    Ghidra's pseudocode of FUN_0020e24c:
-      void FUN_0020e24c(void)
+         7 |   FUN_000678a4();
+         8 |   uVar1 = FUN_001fdacc(1);
+         9 |   return uVar1;
+        10 | }
+        11 | 
+    Ghidra's pseudocode of FUN_000677c0:
+      undefined8 FUN_000677c0(void)
       
       {
-        undefined8 in_x0;
+        undefined8 uVar1;
         
-        FUN_0020e26c(in_x0);
-        return;
+        FUN_000678a4();
+        uVar1 = FUN_001fdacc();
+        return uVar1;
       }
-    Ghidra's pseudocode of FUN_0020e3a0:
-      void FUN_0020e3a0(void)
+    called just before the crash: FUN_000677e8 (funcs/_FUN_000677e8.cpp)
+         1 | #include "shared.h"
+         2 | 
+         3 | undefined8 FUN_000677e8(undefined8 param_1)
+         4 | {
+         5 |   return param_1;
+         6 | }
+         7 | 
+    Ghidra's pseudocode of FUN_000677e8:
+      undefined8 FUN_000677e8(undefined8 param_1)
       
       {
-        undefined8 *puVar1;
-        
-        puVar1 = (undefined8 *)FUN_0020e24c();
-        puVar1[1] = 0;
-        *puVar1 = 0;
-        puVar1[2] = 0;
-        return;
-      }
-    Ghidra's pseudocode of FUN_0020e2fc:
-      void FUN_0020e2fc(void)
-      
-      {
-        FUN_0020e3a0();
-        return;
-      }
-    Ghidra's pseudocode of FUN_0020e27c:
-      undefined8 FUN_0020e27c(undefined8 param_1)
-      
-      {
-        FUN_0020e2c8();
-        FUN_0020e2ec();
-        FUN_0020e2fc();
         return param_1;
       }
-    Ghidra's pseudocode of FUN_0020bbe4:
-      void FUN_0020bbe4(undefined8 param_1)
+    Ghidra's pseudocode of FUN_00067718:
+      long FUN_00067718(long param_1,undefined8 param_2)
       
       {
-        FUN_0020e27c(param_1);
+        undefined8 uVar1;
+        undefined8 *puVar2;
+        int local_34;
+        undefined8 local_30;
+        long lStack_28;
+        
+        local_30 = param_2;
+        lStack_28 = param_1;
+        FUN_0006777c((undefined8 *)(param_1 + 8));
+        local_34 = 0;
+        FUN_0006779c((long *)(param_1 + 0x10),&local_34);
+        uVar1 = FUN_000677c0();
+        puVar2 = (undefined8 *)FUN_000677e8();
+        *puVar2 = uVar1;
+        return param_1;
+      }
+    Ghidra's pseudocode of FUN_000676ec:
+      void FUN_000676ec(long param_1,undefined8 param_2)
+      
+      {
+        FUN_00067718(param_1,param_2);
         return;
       }
-    data FUN_001f04ac uses:
-      GD_DAT_0045f5e8: block __bss + 0x14b8; original 0x45f5e8, Ghidra's DAT_0045f5e8; the original has there: 00 00 00 00 00 00 00 00; no fix-up there
-      GD_PTR__string_004240b0: block __got + 0xb0; original 0x4240b0, Ghidra's PTR_~string_004240b0; the original has there: 7c 5e 38 00 00 00 00 00; fixed up at load: function -> 385e7c ~string
-    Ghidra's pseudocode of FUN_001f04ac:
-      void FUN_001f04ac(void)
+    Ghidra's pseudocode of FUN_00067690:
+      void FUN_00067690(long param_1)
       
       {
-        FUN_0020bbe4(&DAT_0045f5e8);
-        ___cxa_atexit(PTR__string_004240b0,&DAT_0045f5e8,0);
+        undefined1 auStack_30 [8];
+        long local_28;
+        
+        local_28 = param_1;
+        FUN_000676cc();
+        FUN_000676ec(param_1,auStack_30);
         return;
       }
-    Ghidra's pseudocode of FUN_001f05ac:
-      void FUN_001f05ac(void)
+    Ghidra's pseudocode of FUN_0005fa70:
+      void FUN_0005fa70(long param_1)
       
       {
-        FUN_001f04ac();
-        FUN_001f04ec();
-        FUN_001f052c();
-        FUN_001f056c();
+        FUN_00067690(param_1);
+        return;
+      }
+    data FUN_0006a480 uses:
+      GD_DAT_0045e138: block __bss + 0x8; original 0x45e138, Ghidra's DAT_0045e138; the original has there: 00 00 00 00 00 00 00 00; no fix-up there
+      g_block_29 + 0x8 (an address written as a number): original 0x45e138, Ghidra's DAT_0045e138; the original has there: 00 00 00 00 00 00 00 00; no fix-up there
+    Ghidra's pseudocode of FUN_0006a480:
+      void FUN_0006a480(void)
+      
+      {
+        FUN_0005fa70(0x45e138);
+        ___cxa_atexit(FUN_0005fa90,&DAT_0045e138,0);
+        return;
+      }
+    Ghidra's pseudocode of FUN_0006a4c0:
+      void FUN_0006a4c0(void)
+      
+      {
+        FUN_0006a480();
         return;
       }
 
-the rebuilt plugin didn't load: crashed (SIGBUS) during: load executable
+the rebuilt plugin didn't load: crashed (SIGSEGV) during: load executable
 ```
 
 ## rewrite/data_placeholders.txt
@@ -2784,205 +2848,85 @@ Functions Ghidra says return nothing, whose callers use what they return, and th
 have no call at the end whose value they could return: each returns 0 here. If the
 real one returns a pointer (often what it was given), callers that use it break.
 
-FUN_000037fc
-FUN_00003e68
-FUN_00005050
-FUN_0000727c
 FUN_000076a4
-FUN_000087b8
-FUN_0000973c
-FUN_0000bb48
-FUN_0000c1b8
-FUN_0000f3c8
-FUN_000116d0
-FUN_00016dd0
-FUN_00018e10
-FUN_000195a4
-FUN_0001bca4
-FUN_00020be4
-FUN_0002269c
-FUN_000375f0
-FUN_000532f4
-FUN_00053364
-FUN_00055104
-FUN_00056e34
+FUN_0000a9c0
+FUN_0000dd2c
+FUN_0000f278
+FUN_0000f930
+FUN_00016738
+FUN_000167a4
+FUN_0001bcc0
+FUN_0001bf00
+FUN_00020c08
+FUN_00023c5c
+FUN_000376e8
+FUN_0003cf50
+FUN_00042bc8
+FUN_00045264
+FUN_0004faa0
+FUN_00055134
 FUN_00059f20
-FUN_000654e4
-FUN_000678a4
-FUN_00067a78
-FUN_00067afc
-FUN_00067e58
-FUN_00067f34
-FUN_0006806c
-FUN_0006823c
-FUN_00068308
-FUN_00068f38
-FUN_00069874
-FUN_000698b8
-FUN_00069a68
-FUN_0006a514
-FUN_0006ab90
-FUN_0006ad64
-FUN_0006ade8
-FUN_0006b374
-FUN_0006baf4
-FUN_0006bd68
-FUN_0006c300
-FUN_0006c4d4
-FUN_0006c558
-FUN_0006cae4
-FUN_0006d264
-FUN_0006e058
-FUN_00077000
-FUN_00078900
-FUN_00078954
-FUN_00078a18
-FUN_00078be8
-FUN_00078cb4
-FUN_0007971c
-FUN_00079854
-FUN_00079a48
-FUN_0007ab28
-FUN_0007b288
-FUN_0007b3ec
-FUN_0007c054
-FUN_0007c098
-FUN_0007cc4c
-FUN_0007cdb4
-FUN_0007e150
-FUN_0007e1ac
-FUN_0007ea74
-FUN_0007ec40
-FUN_0007ff4c
-FUN_000800b0
-FUN_000811d0
-FUN_00081338
+FUN_0005b134
+FUN_000613c4
+FUN_00068a4c
+FUN_000698e0
+FUN_0006b48c
+FUN_0006bb1c
+FUN_0006cbfc
+FUN_0006d28c
+FUN_00076ce4
+FUN_00079bdc
+FUN_0007c0c0
 FUN_00084778
-FUN_0008a134
-FUN_0008a8b4
-FUN_0008aa84
-FUN_0008ab50
-FUN_0008af74
-FUN_0008b0dc
-FUN_0008bacc
+FUN_00085174
+FUN_0008baf4
 FUN_0008ce40
-FUN_0008d2e0
+FUN_00097090
 FUN_00098a00
 FUN_00098bd0
-FUN_0009d504
-FUN_0009e9ac
-FUN_000a61d8
-FUN_000a9888
-FUN_000a9da4
-FUN_000a9f90
-FUN_000aa068
-FUN_000aa870
-FUN_000ab2ac
-FUN_000ac208
-FUN_000af700
-FUN_000be348
-FUN_000c5484
-FUN_000c7a5c
-FUN_000c8978
-FUN_000c96a0
-FUN_000cb488
-FUN_000ce3e0
-FUN_000d2d9c
+FUN_000aadec
+FUN_000adb70
+FUN_000bc5d8
+FUN_000c1424
+FUN_000c4fd8
+FUN_000ca464
+FUN_000cfcc8
 FUN_000d4824
 FUN_000d4b48
 FUN_000d4c88
 FUN_000d5310
 FUN_000d5af0
+FUN_000e17e8
 FUN_000e7118
-FUN_000e7bf4
-FUN_000e7dec
-FUN_000e7e64
-FUN_000e8208
-FUN_000e8308
+FUN_000e8c6c
 FUN_000f695c
-FUN_000ff0bc
-FUN_00101b84
-FUN_00101ccc
-FUN_00101df8
-FUN_00101ec8
-FUN_00101f9c
-FUN_00102098
-FUN_00102184
-FUN_0010a408
-FUN_0010e070
+FUN_00100548
 FUN_00113bd0
 FUN_00114b0c
+FUN_00119d9c
+FUN_00119de4
+FUN_0011a00c
 FUN_0011a6d4
 FUN_0011ad24
-FUN_0011ba8c
-FUN_0011c2e0
+FUN_0011b6d8
+FUN_0011c4f8
+FUN_0011d040
+FUN_0011d17c
 FUN_0011d550
-FUN_0011e170
-FUN_0011e1f8
 FUN_001201fc
-FUN_001264b4
-FUN_00126508
-FUN_00126844
-FUN_00126898
-FUN_00127d78
-FUN_0012a6d8
-FUN_0012b6fc
-FUN_0012b764
-FUN_0012c0c0
-FUN_0012c0e0
-FUN_0012c13c
-FUN_0012c790
-FUN_0012cc88
-FUN_00138108
-FUN_00138450
-FUN_00138688
-FUN_00138754
-FUN_00139268
-FUN_001393d0
-FUN_00139754
-FUN_001397b0
-FUN_001397f4
-FUN_00139b9c
-FUN_0013b090
-FUN_0013f30c
-FUN_00141178
-FUN_00141594
-FUN_00144400
-FUN_0014ed1c
-FUN_0014edc4
-FUN_0014f540
-FUN_00150300
-FUN_00150a94
-FUN_001521bc
-FUN_0015303c
-FUN_00153598
-FUN_00153640
-FUN_00157c7c
-FUN_0015a6d8
-FUN_0016501c
-FUN_00165250
-FUN_0016543c
-FUN_00165514
-FUN_00165700
-FUN_001657c4
-FUN_00165e7c
-FUN_0016644c
-FUN_00166984
-FUN_00166e98
-FUN_00167138
-FUN_001671a4
-FUN_00167430
-FUN_0016749c
-FUN_0016e9d0
-FUN_0016f134
-FUN_0016f298
-FUN_00171eb0
-FUN_00173a94
-FUN_00173ca4
-FUN_00173dc8
-FUN_001751cc
-FUN_00175758
-FUN_00175864
+FUN_00129934
+FUN_001321e4
+FUN_00132280
+FUN_001393f8
+FUN_0013982c
+FUN_00144490
+FUN_0014ed54
+FUN_001516bc
+FUN_001535d0
+FUN_00157574
+FUN_001575d0
+FUN_00165f98
+FUN_00166aac
 FUN_001a305c
 FUN_001a30e4
 FUN_001a314c
@@ -2991,332 +2935,111 @@ FUN_001a6858
 FUN_001a687c
 FUN_001a68c8
 FUN_001a68ec
-FUN_001a7468
-FUN_001a74bc
-FUN_001a768c
+FUN_001a7b88
 FUN_001a8f80
-FUN_001aaeb4
-FUN_001ab088
-FUN_001ab10c
-FUN_001ab468
-FUN_001abed8
-FUN_001aea24
-FUN_001aeb24
-FUN_001af62c
-FUN_001aff18
-FUN_001b70d0
-FUN_001b9628
-FUN_001b9944
-FUN_001b9b14
-FUN_001b9be0
-FUN_001b9ff8
-FUN_001ba0f8
-FUN_001ba1d8
-FUN_001beb38
-FUN_001beb8c
-FUN_001bedb0
-FUN_001bef84
-FUN_001bf008
-FUN_001bf35c
-FUN_001bf3ec
-FUN_001c0128
-FUN_001c1d50
-FUN_001c1e28
-FUN_001c1e48
-FUN_001c21e4
-FUN_001c663c
-FUN_001cd330
-FUN_001cd55c
-FUN_001cd62c
-FUN_001cda50
-FUN_001cdb50
-FUN_001d4470
-FUN_001d4b94
-FUN_001d4d64
-FUN_001d4e30
-FUN_001d5290
-FUN_001d53f8
-FUN_001d5dd8
-FUN_001d6f6c
-FUN_001d71a8
-FUN_001d72cc
-FUN_001d7604
-FUN_001d7704
-FUN_001d97c4
-FUN_001d9a00
-FUN_001d9ab8
-FUN_001d9df0
-FUN_001da77c
-FUN_001dfa88
-FUN_001e1d90
-FUN_001e1f90
-FUN_001e21b0
-FUN_001e2218
-FUN_001e2298
-FUN_001e256c
-FUN_001e3b38
-FUN_001e3d64
-FUN_001e3e30
-FUN_001e4248
-FUN_001e4348
-FUN_001e79ec
-FUN_001e7aa4
-FUN_001e7cb4
-FUN_001e8240
-FUN_001e8978
-FUN_001ef378
-FUN_001ef460
-FUN_001efeac
-FUN_001f1ab4
-FUN_001f5464
-FUN_001f54e4
-FUN_001f896c
-FUN_001f8fd0
-FUN_001f9b30
-FUN_001f9bc4
-FUN_001f9ca8
-FUN_001f9d50
-FUN_001f9dec
-FUN_001f9e9c
-FUN_001fdadc
-FUN_001fdcf0
-FUN_001fde2c
-FUN_001fe1a0
-FUN_001fe1e4
-FUN_001fed44
-FUN_00202c84
-FUN_00202cd8
-FUN_00203100
-FUN_00203154
-FUN_00203430
-FUN_00204254
-FUN_0020530c
-FUN_00205360
-FUN_002054f4
-FUN_002063b8
-FUN_00206458
-FUN_00206884
-FUN_00208454
-FUN_00208bd4
-FUN_00208d74
-FUN_00209648
-FUN_00209754
-FUN_0020a0e0
-FUN_0020a1ec
-FUN_0020d198
-FUN_0020e23c
-FUN_0020e350
-FUN_0020e40c
-FUN_0020e498
-FUN_0020eb8c
-FUN_0020eea8
-FUN_0020ef28
-FUN_0020f730
-FUN_00211228
-FUN_00212104
-FUN_00213ec8
-FUN_00215ca4
-FUN_00216570
-FUN_00218abc
-FUN_00218b10
-FUN_00218f58
-FUN_0021996c
-FUN_0021af00
-FUN_00225e90
-FUN_00225ef4
-FUN_0022642c
-FUN_00226490
-FUN_002269b8
-FUN_00226c24
-FUN_00227700
-FUN_00227974
-FUN_0022bdd4
-FUN_0022c018
-FUN_0022c208
-FUN_0022c2d4
-FUN_0022c630
-FUN_0022c674
-FUN_0022ccd0
-FUN_0022cd38
-FUN_0022db14
-FUN_0022e850
-FUN_0022e930
-FUN_00230f94
-FUN_00231560
-FUN_0023170c
-FUN_00244830
-FUN_002477c4
-FUN_0024a2bc
-FUN_0024f84c
-FUN_002502f8
-FUN_00250a70
-FUN_0025275c
-FUN_00253104
-FUN_002541b8
-FUN_0025519c
-FUN_0025ae48
-FUN_0025be8c
-FUN_0025c000
-FUN_0025c5ac
-FUN_0025c698
-FUN_0025ca14
-FUN_0025cc8c
-FUN_00266080
-FUN_002675c4
-FUN_00269f24
-FUN_00269fcc
-FUN_0026a0e0
-FUN_0026a14c
-FUN_0026a17c
-FUN_0026a254
-FUN_0026a2d4
-FUN_0026a604
-FUN_0026ae0c
-FUN_0026ae3c
-FUN_0026b4a0
-FUN_0026b8c8
-FUN_0026c260
-FUN_0026c44c
-FUN_0026c498
-FUN_0026fc10
-FUN_0026ff3c
-FUN_00270228
-FUN_00270e28
-FUN_00270f38
-FUN_002711d0
-FUN_00271250
-FUN_00271334
-FUN_002713b8
-FUN_0027167c
-FUN_00271aa4
-FUN_00272304
-FUN_0027320c
-FUN_002732a0
-FUN_00273390
-FUN_002739cc
-FUN_0027cfa8
-FUN_00280c9c
-FUN_00280eac
-FUN_00281018
-FUN_0028116c
-FUN_002812f8
-FUN_002812fc
-FUN_0028179c
-FUN_002818dc
-FUN_00281cf0
-FUN_0028210c
-FUN_0028269c
-FUN_00282c5c
-FUN_00284a84
-FUN_00285ea8
-FUN_00286298
-FUN_002863d8
-FUN_00286484
-FUN_002867c0
-FUN_00286b68
-FUN_00286d94
-FUN_0028d744
-FUN_0028d7ec
-FUN_0028d94c
-FUN_0028dfa4
-FUN_0028e060
-FUN_0028e260
-FUN_0028e748
-FUN_0028e7e4
-FUN_0028ec7c
-FUN_00290b04
-FUN_00290bb4
-FUN_00290e08
-FUN_00293328
-FUN_002945bc
-FUN_0029f9bc
-FUN_0029fbec
-FUN_002a0020
-FUN_002a01e4
-FUN_002a04a8
-FUN_002a0ea4
-FUN_002a1280
-FUN_002a19d4
-FUN_002a1aac
+FUN_001ab9e8
+FUN_001ba200
+FUN_001bf8f0
+FUN_001c0624
+FUN_001c1d30
+FUN_001d5e00
+FUN_001da7a4
+FUN_001e1fc8
+FUN_001e89a0
+FUN_001eb8d4
+FUN_001efd50
+FUN_001effac
+FUN_001f8fe0
+FUN_001fd9f8
+FUN_001fdafc
+FUN_001fde4c
+FUN_001fe20c
+FUN_001fe78c
+FUN_002024c8
+FUN_002084e8
+FUN_0020895c
+FUN_0020e344
+FUN_0020e370
+FUN_0020ebe0
+FUN_00219de8
+FUN_00223288
+FUN_00223db4
+FUN_002297e4
+FUN_0022c69c
+FUN_002324c0
+FUN_00234d38
+FUN_00235224
+FUN_00235ee4
+FUN_00239258
+FUN_00244530
+FUN_002445e0
+FUN_0024764c
+FUN_002536dc
+FUN_0025a0e8
+FUN_0025af78
+FUN_0025b138
+FUN_0025b8f0
+FUN_0025c0b4
+FUN_0025c2c4
+FUN_00265274
+FUN_002661f0
+FUN_00266ffc
+FUN_00269f10
+FUN_0026a034
+FUN_0026ae50
+FUN_0026c438
+FUN_00270e14
+FUN_002721a8
+FUN_002721d4
+FUN_00280c88
+FUN_00280ec8
+FUN_00280f7c
+FUN_00281034
+FUN_002811e8
+FUN_00281338
+FUN_0028192c
+FUN_00286284
+FUN_00286440
+FUN_00286db0
+FUN_0028e710
+FUN_0028e760
+FUN_0028e834
+FUN_0029fa0c
+FUN_0029fbd8
+FUN_0029fff4
+FUN_002a0a94
+FUN_002a0bc8
+FUN_002a0e7c
+FUN_002a19ac
 FUN_002a22a4
-FUN_002b2c18
-FUN_002c4bc4
-FUN_002e9a6c
-FUN_002eab84
-FUN_002f0974
-FUN_002f0af4
-FUN_002f1024
-FUN_002f19e4
-FUN_002f1d78
-FUN_002f1eb8
-FUN_002f1fd0
-FUN_002f4364
-FUN_002f531c
-FUN_002f712c
-FUN_0030ab8c
-FUN_0030f060
-FUN_003149a4
-FUN_00314bb4
-FUN_00315318
-FUN_0031eccc
-FUN_0031ecfc
-FUN_0031ef88
-FUN_0031efb8
-FUN_0031f244
-FUN_0031f274
-FUN_0031f3f0
-FUN_0031f444
-FUN_0031f4c8
-FUN_0031f570
-FUN_0031f7ac
-FUN_0031f9bc
-FUN_0031fda0
-FUN_00320138
-FUN_003213a0
-FUN_00321770
-FUN_00322700
-FUN_00322a90
-FUN_00323a20
-FUN_00323db0
-FUN_00325b30
-FUN_00325c14
-FUN_00325dbc
-FUN_00325ec0
-FUN_003261a0
-FUN_00326cec
-FUN_00326e2c
-FUN_003271e4
-FUN_0032758c
-FUN_00327ad8
-FUN_00327bc4
-FUN_003280e4
-FUN_003282b8
-FUN_00330808
-FUN_00330850
-FUN_00334274
-FUN_00335ea4
-FUN_0033780c
-FUN_0033b9a8
-FUN_0033c9b4
-FUN_0034894c
-FUN_00348fa8
-FUN_0034b684
-FUN_0034c544
-FUN_0034eb88
-FUN_0035c508
-FUN_0035f640
-FUN_0035fc70
-FUN_00366e0c
-FUN_0036a158
-FUN_0036a314
-FUN_0036b730
-FUN_003734c4
-FUN_003774fc
-FUN_00379c28
-FUN_00381d64
-FUN_00383b18
+FUN_002eac9c
+FUN_002f2628
+FUN_002f27a8
+FUN_002f2974
+FUN_002f3e9c
+FUN_002f425c
+FUN_002f48bc
+FUN_002f5ab4
+FUN_002f6218
+FUN_0030014c
+FUN_003004c4
+FUN_0031f3dc
+FUN_0031fd74
+FUN_003213b4
+FUN_00322714
+FUN_00323a34
+FUN_00325b80
+FUN_00326cd8
+FUN_00326e94
+FUN_00327744
+FUN_00327ab0
+FUN_00328100
+FUN_003282d4
+FUN_00331c0c
+FUN_0035fde4
+FUN_00381eb0
+FUN_003836d4
 exception
-iostream_385ed0
 istream_385e94
 operator__385ec4
 runtime_error
@@ -3326,434 +3049,1194 @@ streambuf_385ee8
 ## Build log of this run (build/worklist.log)
 
 ```
-[20:06:10] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/pseudocode.c
-[20:06:10] Resume check (30173 functions in manifest):
-[20:06:10]   the rewrite changed since the last build — updating the split (functions whose code changed get the new code; the others keep their fixes)
-[20:06:10]   [redo] split + header: input changed — rebuilding shared.h/globals.cpp and merging with the work already done
-[20:06:11]   libclang reported 2 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
-[20:06:11]     _parse_monolith.cpp:220: static assertion failed due to requirement 'sizeof(struct section) == 80': Ghidra's size of section
-[20:06:11]     _parse_monolith.cpp:236: static assertion failed due to requirement 'sizeof(struct segment_command) == 72': Ghidra's size of segment_command
-[20:06:18]   split -> 30173 function TUs, 65 types (+37 forward decls), 30173 prototypes, 0 globals
-[20:06:30]     functions: 3794 changed in the rewrite (new code taken), 207 already fixed by the model (kept), 26171 untouched (refreshed with the new split), 1 previously quarantined (restored for another try), 0 not in the old run
-[20:06:30]     (the replaced versions are in /Users/admin/glitchdecomp/fastpass 3/snapshots/20261024-200619-build-update)
-[20:06:30]   [redo] header check
-[20:06:30]   » validate/repair shared headers
-[20:06:31]   [redo] compile status
-[20:06:31]   » preflight diagnose (surface any systemic cause before spending model time on 30173 functions)
-[20:06:31]   preflight: sampled TUs compile — proceeding
-[20:06:31]   » isolated compile sweep
-[20:06:32]   compiling with 11 parallel worker(s)
-[20:10:42]   isolated compile: 29748/30173 TUs pass, 425 need repair (251s)
-[20:10:42]   status: 29748 compile, 425 still to fix, 0 quarantined
-[20:14:01]   declared 119 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 54 function(s) that use them again
-[20:14:01]   compiling with 11 parallel worker(s)
-[20:14:01]   isolated compile: 50/54 TUs pass, 4 need repair (1s)
-[20:14:01]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[20:14:01]   » dependency order + fixer loop
-[20:14:01]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
-[20:14:02]   callgraph: 582 callee name(s) not in our TU set (external/library calls) — ignored for ordering
-[20:14:02]   callgraph: exact deps for 21706/30173 functions
-[20:14:02]     FUN_001f9ca8 -> fixed without the model
-[20:14:02]     FUN_00208454 -> fixed without the model
-[20:14:02]     FUN_00226bd0 -> fixed without the model
-[20:14:02]     FUN_00227920 -> fixed without the model
-[20:14:02]     FUN_001f9e9c -> fixed without the model
-[20:14:02]     FUN_0012bfa8 -> fixed without the model
-[20:14:02]     FUN_001e248c -> fixed without the model
-[20:14:02]     FUN_001f9dec -> fixed without the model
-[20:14:02]     FUN_0022c4e0 -> fixed without the model
-[20:14:02]     FUN_0012bd48 -> fixed without the model
-[20:14:02]     FUN_0011c380 -> fixed without the model
-[20:14:02]     FUN_00212fd0 -> fixed without the model
-[20:14:02]     FUN_0011d040 -> fixed without the model
-[20:14:02]     FUN_00213f0c -> fixed without the model
-[20:14:02]     FUN_0022c6ac -> fixed without the model
-[20:14:02]     FUN_001c7904 -> fixed without the model
-[20:14:02]     FUN_001cd8f4 -> fixed without the model
-[20:14:02]     FUN_0023170c -> fixed without the model
-[20:14:02]     FUN_001d74d8 -> fixed without the model
-[20:14:02]     FUN_0011c800 -> fixed without the model
-[20:14:02]     FUN_00018d88 -> fixed without the model
-[20:14:02]     FUN_001e8194 -> fixed without the model
-[20:14:02]     FUN_001d627c -> fixed without the model
-[20:14:02]     FUN_0020eac8 -> fixed without the model
-[20:14:03]     FUN_000c59b4 -> fixed without the model
-[20:14:03]     FUN_0020f9f4 -> fixed without the model
-[20:14:03]     FUN_001d5d98 -> fixed without the model
-[20:14:03]     FUN_0020fa14 -> fixed without the model
-[20:14:03]     FUN_001d0860 -> fixed without the model
-[20:14:03]     FUN_001d072c -> fixed without the model
-[20:14:03]     FUN_001d09c8 -> fixed without the model
-[20:14:03]     FUN_001d0914 -> fixed without the model
-[20:14:03]     FUN_001e40f8 -> fixed without the model
-[20:14:03]     FUN_001e37c0 -> fixed without the model
-[20:14:03]     FUN_00213b7c -> fixed without the model
-[20:14:03]     FUN_001bf230 -> fixed without the model
-[20:14:03]     FUN_001bef20 -> fixed without the model
-[20:14:03]     FUN_001fe048 -> fixed without the model
-[20:14:03]     FUN_00213964 -> fixed without the model
-[20:14:03]     FUN_0013f530 -> fixed without the model
-[20:14:03]     FUN_0013f62c -> fixed without the model
-[20:14:03]     FUN_0013f8ec -> fixed without the model
-[20:14:03]     FUN_002135c0 -> fixed without the model
-[20:14:03]     FUN_0014193c -> fixed without the model
-[20:14:03]     FUN_00223be4 -> fixed without the model
-[20:14:03]     FUN_001edca0 -> fixed without the model
-[20:14:03]     FUN_000eccc8 -> fixed without the model
-[20:14:03]     FUN_00150980 -> fixed without the model
-[20:14:03]     FUN_0014edf8 -> fixed without the model
-[20:14:03]     FUN_0014f74c -> fixed without the model
-[20:14:03]     FUN_001510f8 -> fixed without the model
-[20:14:03]     FUN_00152200 -> fixed without the model
-[20:14:03]     FUN_001515f0 -> fixed without the model
-[20:14:03]     FUN_00223bc4 -> fixed without the model
-[20:14:03]     FUN_00153468 -> fixed without the model
-[20:14:03]     FUN_00153934 -> fixed without the model
-[20:14:03]     FUN_00153660 -> fixed without the model
-[20:14:03]     FUN_001537ac -> fixed without the model
-[20:14:03]     FUN_001a7320 -> fixed without the model
-[20:14:03]     FUN_001a80a4 -> fixed without the model
-[20:14:03]     FUN_001be9f0 -> fixed without the model
-[20:14:03]     FUN_001a1d80 -> fixed without the model
-[20:14:03]     FUN_001bbebc -> fixed without the model
-[20:14:03]     FUN_001c0b40 -> fixed without the model
-[20:14:03]     FUN_000be83c -> fixed without the model
-[20:14:03]     FUN_000be780 -> fixed without the model
-[20:14:04]     FUN_001a353c -> fixed without the model
-[20:14:04]     FUN_001e1e48 -> fixed without the model
-[20:14:04]     FUN_000b19f8 -> fixed without the model
-[20:14:04]     FUN_00003a04 -> fixed without the model
-[20:14:04]     FUN_0004b344 -> fixed without the model
-[20:14:04]     FUN_001a3394 -> fixed without the model
-[20:14:04]     FUN_00202b58 -> fixed without the model
-[20:14:04]     FUN_00203cd8 -> fixed without the model
-[20:14:04]     FUN_001a41f8 -> fixed without the model
-[20:14:04]     FUN_00202fd4 -> fixed without the model
-[20:14:04]     FUN_00204afc -> fixed without the model
-[20:14:04]     FUN_00067a14 -> fixed without the model
-[20:14:04]     FUN_00067d08 -> fixed without the model
-[20:14:04]     FUN_00069934 -> fixed without the model
-[20:14:04]     FUN_00061330 -> fixed without the model
-[20:14:04]     FUN_000649ac -> fixed without the model
-[20:14:04]     FUN_0026ce1c -> fixed without the model
-[20:14:04]     FUN_001a3a5c -> fixed without the model
-[20:14:04]     FUN_00069748 -> fixed without the model
-[20:14:04]     FUN_0008ae48 -> fixed without the model
-[20:14:04]     FUN_0008afa8 -> fixed without the model
-[20:14:04]     FUN_00086ed0 -> fixed without the model
-[20:14:04]     FUN_0012636c -> fixed without the model
-[20:14:04]     FUN_001266fc -> fixed without the model
-[20:14:04]     FUN_00211c40 -> fixed without the model
-[20:14:04]     FUN_00084778 -> fixed without the model
-[20:14:04]     FUN_000b186c -> fixed without the model
-[20:14:04]     FUN_002129e8 -> fixed without the model
-[20:14:04]     FUN_00219784 -> fixed without the model
-[20:14:04]     FUN_00219408 -> fixed without the model
-[20:14:04]     FUN_00218990 -> fixed without the model
-[20:14:05]     FUN_002051c8 -> fixed without the model
-[20:14:05]     FUN_00205e80 -> fixed without the model
-[20:14:05]     FUN_0021980c -> fixed without the model
-[20:14:05]     FUN_001d9cc4 -> fixed without the model
-[20:14:05]     FUN_00286c00 -> fixed without the model
-[20:14:05]     FUN_00285690 -> fixed without the model
-[20:14:05]     FUN_0012db5c -> fixed without the model
-[20:14:05]     FUN_000a9f2c -> fixed without the model
-[20:14:05]     FUN_0028674c -> fixed without the model
-[20:14:05]     FUN_001f934c -> fixed without the model
-[20:14:05]     FUN_00014e50 -> fixed without the model
-[20:14:05]     FUN_0001b2dc -> fixed without the model
-[20:14:05]     FUN_00023d48 -> fixed without the model
-[20:14:05]     FUN_000171f8 -> fixed without the model
-[20:14:05]     FUN_001a2588 -> fixed without the model
-[20:14:05]     FUN_0002806c -> fixed without the model
-[20:14:05]     FUN_001a3658 -> fixed without the model
-[20:14:05]     FUN_00165dd0 -> fixed without the model
-[20:14:05]     FUN_000315b0 -> fixed without the model
-[20:14:05]     FUN_0016342c -> fixed without the model
-[20:14:05]     FUN_001ab318 -> fixed without the model
-[20:14:05]     FUN_000305a8 -> fixed without the model
-[20:14:05]     FUN_001ab024 -> fixed without the model
-[20:14:05]     FUN_001a374c -> fixed without the model
-[20:14:05]     FUN_001a9e08 -> fixed without the model
-[20:14:05]     FUN_000b8f30 -> fixed without the model
-[20:14:05]     FUN_0003b010 -> fixed without the model
-[20:14:05]     FUN_0003b7c0 -> fixed without the model
-[20:14:05]     FUN_000471a8 -> fixed without the model
-[20:14:06]     FUN_0004ab0c -> fixed without the model
-[20:14:06]     FUN_00173144 -> fixed without the model
-[20:14:06]     FUN_0004de00 -> fixed without the model
-[20:14:06]     FUN_0004e5f8 -> fixed without the model
-[20:14:06]     FUN_0002e28c -> fixed without the model
-[20:14:06]     FUN_000b9730 -> fixed without the model
-[20:14:06]     FUN_0004f15c -> fixed without the model
-[20:14:06]     FUN_000532f4 -> fixed without the model
-[20:14:06]     FUN_000ff0bc -> fixed without the model
-[20:14:06]     FUN_00053364 -> fixed without the model
-[20:14:06]     FUN_00053124 -> fixed without the model
-[20:14:06]     FUN_00113540 -> fixed without the model
-[20:14:06]     FUN_0005fcfc -> fixed without the model
-[20:14:06]     FUN_000461e4 -> fixed without the model
-[20:14:06]     FUN_000533dc -> fixed without the model
-[20:14:06]     openShellWindow_60180 -> fixed without the model
-[20:14:06]     FUN_0005c368 -> fixed without the model
-[20:14:06]     FUN_0026909c -> fixed without the model
-[20:14:06]     FUN_00225ea0 -> fixed without the model
-[20:14:06]     FUN_0026b538 -> fixed without the model
-[20:14:06]     FUN_0026ad3c -> fixed without the model
-[20:14:06]     uiViewForAudioUnit_withSize_ -> fixed without the model
-[20:14:06]     FUN_002721d4 -> fixed without the model
-[20:14:06]     FUN_0011ff30 -> fixed without the model
-[20:14:06]     FUN_0006b2c8 -> fixed without the model
-[20:14:06]     FUN_0006ca38 -> fixed without the model
-[20:14:06]     FUN_0006dbb8 -> fixed without the model
-[20:14:06]     FUN_000787bc -> fixed without the model
-[20:14:06]     FUN_001a9378 -> fixed without the model
-[20:14:06]     FUN_00048c10 -> fixed without the model
-[20:14:06]     FUN_000349a0 -> fixed without the model
-[20:14:06]     FUN_0007bf04 -> fixed without the model
-[20:14:07]     FUN_0007ea84 -> fixed without the model
-[20:14:07]     FUN_00073024 -> fixed without the model
-[20:14:07]     FUN_00079f84 -> fixed without the model
-[20:14:07]     FUN_0007a1bc -> fixed without the model
-[20:14:07]     FUN_00075344 -> fixed without the model
-[20:14:07]     FUN_0008fe54 -> fixed without the model
-[20:14:07]     FUN_000828e0 -> fixed without the model
-[20:14:07]     FUN_000e80b8 -> fixed without the model
-[20:14:07]     FUN_0007a408 -> fixed without the model
-[20:14:07]     FUN_000e7784 -> fixed without the model
-[20:14:07]     FUN_00088d48 -> fixed without the model
-[20:14:07]     FUN_000cd0d8 -> fixed without the model
-[20:14:07]     FUN_00227388 -> fixed without the model
-[20:14:07]     FUN_0009d598 -> fixed without the model
-[20:14:07]     FUN_0009f780 -> fixed without the model
-[20:14:07]     FUN_000a352c -> fixed without the model
-[20:14:07]     FUN_000cf2dc -> fixed without the model
-[20:14:07]     FUN_000a1758 -> fixed without the model
-[20:14:07]     FUN_000aa744 -> fixed without the model
-[20:14:07]     FUN_000a7b50 -> fixed without the model
-[20:14:07]     FUN_00270228 -> fixed without the model
-[20:14:07]     FUN_00227144 -> fixed without the model
-[20:14:07]     FUN_000b0234 -> fixed without the model
-[20:14:07]     FUN_000a6694 -> fixed without the model
-[20:14:07]     FUN_000b01d4 -> fixed without the model
-[20:14:07]     FUN_000b091c -> fixed without the model
-[20:14:07]     FUN_000b0638 -> fixed without the model
-[20:14:07]     FUN_000b1034 -> fixed without the model
-[20:14:07]     FUN_000b0698 -> fixed without the model
-[20:14:07]     FUN_000b1cfc -> fixed without the model
-[20:14:07]     FUN_000d0430 -> fixed without the model
-[20:14:07]     FUN_000bc6c4 -> fixed without the model
-[20:14:07]     FUN_000bd534 -> fixed without the model
-[20:14:07]     FUN_000bdb6c -> fixed without the model
-[20:14:07]     FUN_000bdae4 -> fixed without the model
-[20:14:07]     FUN_000bf520 -> fixed without the model
-[20:14:07]     FUN_0015933c -> fixed without the model
-[20:14:07]     FUN_000d5230 -> fixed without the model
-[20:14:08]     FUN_00099a34 -> fixed without the model
-[20:14:08]     FUN_000cb488 -> fixed without the model
-[20:14:08]     FUN_000c7158 -> fixed without the model
-[20:14:08]     FUN_0011e170 -> fixed without the model
-[20:14:08]     FUN_0011e1f8 -> fixed without the model
-[20:14:08]     FUN_000d1a68 -> fixed without the model
-[20:14:08]     FUN_000d4b48 -> fixed without the model
-[20:14:08]     FUN_000d0c3c -> fixed without the model
-[20:14:08]     FUN_000ca774 -> fixed without the model
-[20:14:08]     FUN_000d5af0 -> fixed without the model
-[20:14:08]     FUN_0011ab00 -> fixed without the model
-[20:14:08]     FUN_0009a688 -> fixed without the model
-[20:14:08]     FUN_000cbd04 -> fixed without the model
-[20:14:08]     FUN_0011afa8 -> fixed without the model
-[20:14:08]     FUN_000d61a8 -> fixed without the model
-[20:14:08]     FUN_00023e68 -> fixed without the model
-[20:14:08]     FUN_000d3d20 -> fixed without the model
-[20:14:08]     FUN_000d6bec -> fixed without the model
-[20:14:08]     FUN_000d7104 -> fixed without the model
-[20:14:08]     FUN_001668d8 -> fixed without the model
-[20:14:08]     FUN_0016374c -> fixed without the model
-[20:14:09]     FUN_000f02dc -> fixed without the model
-[20:14:09]     FUN_000ea3dc -> fixed without the model
-[20:14:09]     FUN_000f5678 -> fixed without the model
-[20:14:09]     FUN_000e6a1c -> fixed without the model
-[20:14:09]     FUN_0011ad24 -> fixed without the model
-[20:14:09]     FUN_000f660c -> fixed without the model
-[20:14:09]     FUN_00112c78 -> fixed without the model
-[20:14:09]     FUN_00101df8 -> fixed without the model
-[20:14:09]     FUN_000eacc4 -> fixed without the model
-[20:14:09]     FUN_00109dd8 -> fixed without the model
-[20:14:09]     FUN_0010a09c -> fixed without the model
-[20:14:09]     FUN_000fe7a0 -> fixed without the model
-[20:14:09]     FUN_000fddd8 -> fixed without the model
-[20:14:09]     FUN_000fe358 -> fixed without the model
-[20:14:09]     FUN_000ff12c -> fixed without the model
-[20:14:09]     FUN_000feb74 -> fixed without the model
-[20:14:09]     FUN_00101b18 -> fixed without the model
-[20:14:09]     FUN_00100548 -> fixed without the model
-[20:14:09]     FUN_00101adc -> fixed without the model
-[20:14:09]     FUN_00101c5c -> fixed without the model
-[20:14:09]     FUN_00101d90 -> fixed without the model
-[20:14:09]     FUN_00101ec8 -> fixed without the model
-[20:14:09]     FUN_00101f38 -> fixed without the model
-[20:14:09]     FUN_00101e60 -> fixed without the model
-[20:14:09]     FUN_000b7074 -> fixed without the model
-[20:14:09]     FUN_00102034 -> fixed without the model
-[20:14:09]     FUN_00102120 -> fixed without the model
-[20:14:10]     FUN_00101ccc -> fixed without the model
-[20:14:10]     FUN_00105064 -> fixed without the model
-[20:14:10]     FUN_000d4824 -> fixed without the model
-[20:14:10]     FUN_001027bc -> fixed without the model
-[20:14:10]     FUN_001084c4 -> fixed without the model
-[20:14:10]     FUN_0010234c -> fixed without the model
-[20:14:10]     FUN_00120648 -> fixed without the model
-[20:14:10]     FUN_0010f698 -> fixed without the model
-[20:14:10]     FUN_00109774 -> fixed without the model
-[20:14:10]     FUN_000ac208 -> fixed without the model
-[20:14:10]     FUN_0010fa24 -> fixed without the model
-[20:14:10]     FUN_00106410 -> fixed without the model
-[20:14:10]     FUN_00121510 -> fixed without the model
-[20:14:10]     FUN_0010fdec -> fixed without the model
-[20:14:10]     FUN_00121644 -> fixed without the model
-[20:14:10]     FUN_00123694 -> fixed without the model
-[20:14:10]     FUN_001a305c -> fixed without the model
-[20:14:10]     FUN_00120960 -> fixed without the model
-[20:14:10]     FUN_00132824 -> fixed without the model
-[20:14:10]     FUN_0013913c -> fixed without the model
-[20:14:10]     FUN_001aff18 -> fixed without the model
-[20:14:10]     FUN_00139618 -> fixed without the model
-[20:14:10]     FUN_00134180 -> fixed without the model
-[20:14:10]     FUN_00135198 -> fixed without the model
-[20:14:10]     FUN_00135ffc -> fixed without the model
-[20:14:10]     FUN_0013fc48 -> fixed without the model
-[20:14:10]     FUN_001653d8 -> fixed without the model
-[20:14:10]     FUN_00124424 -> fixed without the model
-[20:14:10]     FUN_00123e8c -> fixed without the model
-[20:14:10]     FUN_001630a4 -> fixed without the model
-[20:14:10]     FUN_0016569c -> fixed without the model
-[20:14:11]     FUN_000eaad8 -> fixed without the model
-[20:14:11]     FUN_00163110 -> fixed without the model
-[20:14:11]     keyEquivalentFromMenuEntry__16b3b0 -> fixed without the model
-[20:14:11]     FUN_0016f9a8 -> fixed without the model
-[20:14:11]     FUN_001722dc -> fixed without the model
-[20:14:11]     close_169730 -> fixed without the model
-[20:14:11]     FUN_00176f44 -> fixed without the model
-[20:14:11]     FUN_000eaec8 -> fixed without the model
-[20:14:11]     FUN_001a3fa8 -> fixed without the model
-[20:14:11]     FUN_00177824 -> fixed without the model
-[20:14:11]     applicationDidBecomeActive_ -> fixed without the model
-[20:14:11]     FUN_00123bf0 -> fixed without the model
-[20:14:11]     FUN_00178094 -> fixed without the model
-[20:14:11]     FUN_0018268c -> fixed without the model
-[20:14:11]     FUN_0017929c -> fixed without the model
-[20:14:11]     FUN_00182b5c -> fixed without the model
-[20:14:11]     FUN_001807b4 -> fixed without the model
-[20:14:11]     FUN_00189ea0 -> fixed without the model
-[20:14:11]     FUN_0018b5cc -> fixed without the model
-[20:14:11]     FUN_0018b914 -> fixed without the model
-[20:14:11]     FUN_001926c4 -> fixed without the model
-[20:14:11]     FUN_00188a38 -> fixed without the model
-[20:14:11]     FUN_001723a0 -> fixed without the model
-[20:14:11]     FUN_00194270 -> fixed without the model
-[20:14:11]     FUN_00193f28 -> fixed without the model
-[20:14:11]     FUN_001912c4 -> fixed without the model
-[20:14:11]     updateLayerInRect__16ce54 -> fixed without the model
-[20:14:12]     FUN_0019b0b0 -> fixed without the model
-[20:14:12]     FUN_0019c938 -> fixed without the model
-[20:14:12]     invalidate_1a8a74 -> fixed without the model
-[20:14:12]     FUN_003836d4 -> fixed without the model
-[20:14:12]     FUN_0019cc80 -> fixed without the model
-[20:14:12]     FUN_001ae8f8 -> fixed without the model
-[20:14:12]     FUN_00280ca4 -> fixed without the model
-[20:14:12]     FUN_00199c00 -> fixed without the model
-[20:14:12]     FUN_001ae170 -> fixed without the model
-[20:14:12]     FUN_0027f4a0 -> fixed without the model
-[20:14:12]     FUN_0028112c -> fixed without the model
-[20:14:12]     FUN_00280ecc -> fixed without the model
-[20:14:12]     FUN_0027f524 -> fixed without the model
-[20:14:12]     FUN_00281728 -> fixed without the model
-[20:14:12]     FUN_0028175c -> fixed without the model
-[20:14:12]     FUN_0028209c -> fixed without the model
-[20:14:12]     FUN_00327170 -> fixed without the model
-[20:14:12]     FUN_002807ac -> fixed without the model
-[20:14:12]     FUN_00327a38 -> fixed without the model
-[20:14:12]     FUN_00326aec -> fixed without the model
-[20:14:12]     FUN_003281a4 -> fixed without the model
-[20:14:12]     FUN_001b432c -> fixed without the model
-[20:14:12]     FUN_001b9e98 -> fixed without the model
-[20:14:12]     FUN_001b8320 -> fixed without the model
-[20:14:12]     FUN_001d5164 -> fixed without the model
-[20:14:12]     FUN_001b7894 -> fixed without the model
-[20:14:12]     FUN_001ba160 -> fixed without the model
-[20:14:12]     FUN_001b8c8c -> fixed without the model
-[20:14:12]     FUN_001d1544 -> fixed without the model
-[20:14:12]     FUN_001a54e0 -> fixed without the model
-[20:14:12]     FUN_00203e74 -> fixed without the model
-[20:14:12]     FUN_00204c98 -> fixed without the model
-[20:14:12]     FUN_00212b84 -> fixed without the model
-[20:14:12]     FUN_0020601c -> fixed without the model
-[20:14:12]     FUN_0022643c -> fixed without the model
-[20:14:12]     FUN_002260dc -> fixed without the model
-[20:14:12]     FUN_00228374 -> fixed without the model
-[20:14:12]     FUN_001bce04 -> fixed without the model
-[20:14:12]     FUN_002265a8 -> fixed without the model
-[20:14:12]     FUN_00280990 -> fixed without the model
-[20:14:13]     FUN_0031fcb0 -> fixed without the model
-[20:14:13]     FUN_00320928 -> fixed without the model
-[20:14:13]     FUN_00320b04 -> fixed without the model
-[20:14:13]     FUN_0028fb48 -> fixed without the model
-[20:14:13]     FUN_00320d00 -> fixed without the model
-[20:14:13]     FUN_001725c4 -> fixed without the model
-[20:14:13]     FUN_00321c9c -> fixed without the model
-[20:14:13]     FUN_00320ed0 -> fixed without the model
-[20:14:13]     FUN_00321e78 -> fixed without the model
-[20:14:13]     FUN_002722a0 -> fixed without the model
-[20:14:13]     FUN_00323198 -> fixed without the model
-[20:14:13]     FUN_00322060 -> fixed without the model
-[20:14:13]     FUN_00322230 -> fixed without the model
-[20:14:13]     FUN_00322fbc -> fixed without the model
-[20:14:13]     FUN_00323380 -> fixed without the model
-[20:14:13]     FUN_002fb554 -> fixed without the model
-[20:14:13]     FUN_00323550 -> fixed without the model
-[20:14:13]     FUN_0032dc78 -> fixed without the model
-[20:14:13]     FUN_0029ff78 -> fixed without the model
-[20:14:13]     FUN_002a06ac -> fixed without the model
-[20:14:13]     FUN_002a1934 -> fixed without the model
-[20:14:13]     FUN_0029ffac -> fixed without the model
-[20:14:13]     FUN_002a96d8 -> fixed without the model
-[20:14:13]     FUN_002a0db8 -> fixed without the model
-[20:14:13]     FUN_0030d24c -> fixed without the model
-[20:14:13]     FUN_002a1ef0 -> fixed without the model
-[20:14:13]     FUN_0030f060 -> fixed without the model
-[20:14:13]     FUN_00327f3c -> fixed without the model
-[20:14:13]     FUN_00326800 -> fixed without the model
-[20:14:13]     FUN_001ad0a4 -> fixed without the model
-[20:14:13]   quick fixes (no model): 372 of 375 function(s) compile now
-[20:14:13]   fixer loop over 3 failing TU(s), dependency-ordered
-[20:14:33]     [1/3] FUN_0013ec40 -> fixed (19s)
-[20:14:34]   QUARANTINE FUN_000cab20: invalid operands to binary expression ('double' and 'unsigned int')
-[20:14:34]     [2/3] FUN_000cab20 -> quarantined (20s)
-[20:14:37]   QUARANTINE insertText__16d864: too few arguments to function call, expected 1, have 0
-[20:14:37]     [3/3] insertText__16d864 -> quarantined (23s)
-[20:14:37]   learned fixes on quarantined functions: 0 of 2 retried compile now
-[20:14:37]   learned fixes: 104 proven, 492 being tried, 159 retired (8 new this run); used 480 of 487 time(s) tried, 99% kept; 0 quarantined function(s) rescued. All in build/learned_fixes.txt
-[20:14:37]   model: 6 small edit(s) asked for, 2 without a usable edit
-[20:14:37]   fixer loop done: 30171 compiling, 2 quarantined
-[20:14:37]   why functions are quarantined (most common first; all in fix_report.txt):
-[20:14:37]         1 × too few arguments to function call, expected N, have N  (e.g. insertText__16d864)
-[20:14:37]         1 × invalid operands to binary expression ('X' and 'X')  (e.g. FUN_000cab20)
-[20:14:37]   repair loop pass 1 (no model): 0 of 2 rescued
-[20:14:46]     FUN_000cab20 -> fixed in the repair loop (model)
-[20:14:48]   QUARANTINE insertText__16d864: assigning to 'gh16' from incompatible type 'undefined8' (aka 'unsigned long long')
-[20:14:48]   repair loop pass 1 (model): 1 of 2 rescued
-[20:14:48]   repair loop pass 2 (no model): 0 of 1 rescued
-[20:14:52]     insertText__16d864 -> fixed in the repair loop (model)
-[20:14:53]   repair loop pass 2 (model): 1 of 1 rescued
-[20:14:53]   repair loop: 2 quarantined function(s) rescued
-[20:19:19]   link round 1: linking 30176 objects ...
-[20:19:21]   link round 1: 98 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[20:19:22]   link round 2: linking 30177 objects ...
-[20:19:23]   24 placeholder definition(s) in stubs.cpp (listed in link_report.txt)
-[20:19:23]   LINK OK (round 2) -> /Users/admin/glitchdecomp/fastpass 3/build_c/program.dylib
-[20:19:42]   previous final/ moved to /Users/admin/glitchdecomp/fastpass 3/snapshots/20261024-201942-final
-[20:19:42]   final C source: /Users/admin/glitchdecomp/fastpass 3/final/program.c (30173 functions, 17.1 MB), built by final/build.sh into program.dylib
+[21:35:56] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/pseudocode.c
+[21:35:56] Resume check (30173 functions in manifest):
+[21:35:56]   the rewrite changed since the last build — updating the split (functions whose code changed get the new code; the others keep their fixes)
+[21:35:56]   [redo] split + header: input changed — rebuilding shared.h/globals.cpp and merging with the work already done
+[21:35:57]   libclang reported 2 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
+[21:35:57]     _parse_monolith.cpp:220: static assertion failed due to requirement 'sizeof(struct section) == 80': Ghidra's size of section
+[21:35:57]     _parse_monolith.cpp:236: static assertion failed due to requirement 'sizeof(struct segment_command) == 72': Ghidra's size of segment_command
+[21:36:04]   split -> 30173 function TUs, 65 types (+37 forward decls), 30173 prototypes, 0 globals
+[21:36:19]     functions: 4318 changed in the rewrite (new code taken), 388 already fixed by the model (kept), 25467 untouched (refreshed with the new split), 0 previously quarantined (restored for another try), 0 not in the old run
+[21:36:19]     (the replaced versions are in /Users/admin/glitchdecomp/fastpass 3/snapshots/20261024-213606-build-update)
+[21:36:20]   [redo] header check
+[21:36:20]   » validate/repair shared headers
+[21:36:20]   [redo] compile status
+[21:36:20]   » preflight diagnose (surface any systemic cause before spending model time on 30173 functions)
+[21:36:21]   preflight: sampled TUs compile — proceeding
+[21:36:21]   » isolated compile sweep
+[21:36:23]   compiling with 11 parallel worker(s)
+[21:39:06]   isolated compile: 28984/30173 TUs pass, 1189 need repair (165s)
+[21:39:06]   status: 28984 compile, 1189 still to fix, 0 quarantined
+[21:42:30]   declared 119 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 54 function(s) that use them again
+[21:42:30]   compiling with 11 parallel worker(s)
+[21:42:30]   isolated compile: 46/54 TUs pass, 8 need repair (1s)
+[21:42:30]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
+[21:42:30]   » dependency order + fixer loop
+[21:42:31]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
+[21:42:31]   callgraph: 582 callee name(s) not in our TU set (external/library calls) — ignored for ordering
+[21:42:31]   callgraph: exact deps for 21706/30173 functions
+[21:42:32]     FUN_00216570 -> fixed without the model
+[21:42:32]     FUN_001f9ca8 -> fixed without the model
+[21:42:32]     FUN_001f9e9c -> fixed without the model
+[21:42:32]     FUN_001f9bc4 -> fixed without the model
+[21:42:32]     FUN_00206aa0 -> fixed without the model
+[21:42:32]     FUN_00225cec -> fixed without the model
+[21:42:32]     FUN_00208454 -> fixed without the model
+[21:42:32]     FUN_00227920 -> fixed without the model
+[21:42:32]     FUN_00226bd0 -> fixed without the model
+[21:42:32]     FUN_0020e3d8 -> fixed without the model
+[21:42:32]     FUN_0020e018 -> fixed without the model
+[21:42:32]     FUN_001f9dec -> fixed without the model
+[21:42:32]     FUN_0020e24c -> fixed without the model
+[21:42:32]     FUN_00216154 -> fixed without the model
+[21:42:32]     FUN_001e21f0 -> fixed without the model
+[21:42:32]     FUN_001e1ccc -> fixed without the model
+[21:42:32]     FUN_001e2e2c -> fixed without the model
+[21:42:32]     FUN_001e2148 -> fixed without the model
+[21:42:32]     FUN_001e2e5c -> fixed without the model
+[21:42:32]     FUN_001e1c28 -> fixed without the model
+[21:42:32]     FUN_001e2e90 -> fixed without the model
+[21:42:32]     FUN_0012c098 -> fixed without the model
+[21:42:32]     FUN_0012bf08 -> fixed without the model
+[21:42:32]     FUN_0012c70c -> fixed without the model
+[21:42:32]     FUN_0012c948 -> fixed without the model
+[21:42:32]     FUN_0012c978 -> fixed without the model
+[21:42:32]     FUN_0012ca00 -> fixed without the model
+[21:42:32]     FUN_0022c2ac -> fixed without the model
+[21:42:32]     FUN_0022bf54 -> fixed without the model
+[21:42:32]     FUN_001e12b4 -> fixed without the model
+[21:42:32]     FUN_0022c1a0 -> fixed without the model
+[21:42:32]     FUN_0022bd7c -> fixed without the model
+[21:42:32]     FUN_0022d454 -> fixed without the model
+[21:42:32]     FUN_0022d484 -> fixed without the model
+[21:42:32]     FUN_0022d4b8 -> fixed without the model
+[21:42:32]     FUN_0022cba8 -> fixed without the model
+[21:42:33]     FUN_0022cd10 -> fixed without the model
+[21:42:33]     FUN_0022c9fc -> fixed without the model
+[21:42:33]     FUN_0012bd48 -> fixed without the model
+[21:42:33]     FUN_0022dd38 -> fixed without the model
+[21:42:33]     FUN_0022dd68 -> fixed without the model
+[21:42:33]     FUN_0022b66c -> fixed without the model
+[21:42:33]     FUN_0022bca4 -> fixed without the model
+[21:42:33]     FUN_0022d884 -> fixed without the model
+[21:42:33]     FUN_0022dd9c -> fixed without the model
+[21:42:33]     FUN_0011d17c -> fixed without the model
+[21:42:33]     FUN_0022e09c -> fixed without the model
+[21:42:33]     FUN_001e2a70 -> fixed without the model
+[21:42:33]     FUN_0011b8e8 -> fixed without the model
+[21:42:33]     FUN_00055364 -> fixed without the model
+[21:42:33]     FUN_0011d040 -> fixed without the model
+[21:42:33]     FUN_0012c4c8 -> fixed without the model
+[21:42:33]     FUN_001cd26c -> fixed without the model
+[21:42:33]     FUN_0022c84c -> fixed without the model
+[21:42:33]     FUN_001cd604 -> fixed without the model
+[21:42:33]     FUN_001a3234 -> fixed without the model
+[21:42:33]     FUN_0022e200 -> fixed without the model
+[21:42:33]     FUN_001cd4f4 -> fixed without the model
+[21:42:33]     FUN_0022d080 -> fixed without the model
+[21:42:33]     FUN_001ce2d8 -> fixed without the model
+[21:42:33]     FUN_001ce2a8 -> fixed without the model
+[21:42:33]     FUN_001ce30c -> fixed without the model
+[21:42:33]     FUN_001e262c -> fixed without the model
+[21:42:33]     FUN_001d6ea8 -> fixed without the model
+[21:42:33]     FUN_001d72a4 -> fixed without the model
+[21:42:33]     FUN_0023170c -> fixed without the model
+[21:42:33]     FUN_0022d930 -> fixed without the model
+[21:42:33]     FUN_001c7904 -> fixed without the model
+[21:42:33]     FUN_00223664 -> fixed without the model
+[21:42:33]     FUN_001c4210 -> fixed without the model
+[21:42:33]     FUN_0025355c -> fixed without the model
+[21:42:33]     FUN_001dd968 -> fixed without the model
+[21:42:33]     FUN_001e7a7c -> fixed without the model
+[21:42:34]     FUN_001d627c -> fixed without the model
+[21:42:34]     FUN_001e7bf0 -> fixed without the model
+[21:42:34]     FUN_001cbf5c -> fixed without the model
+[21:42:34]     FUN_0020ebb0 -> fixed without the model
+[21:42:34]     FUN_00248330 -> fixed without the model
+[21:42:34]     FUN_0020ee78 -> fixed without the model
+[21:42:34]     FUN_0020ec5c -> fixed without the model
+[21:42:34]     FUN_001718c0 -> fixed without the model
+[21:42:34]     FUN_001cde94 -> fixed without the model
+[21:42:34]     FUN_001ee518 -> fixed without the model
+[21:42:34]     FUN_002278f0 -> fixed without the model
+[21:42:34]     FUN_002279a4 -> fixed without the model
+[21:42:34]     FUN_00227a64 -> fixed without the model
+[21:42:34]     FUN_001e5258 -> fixed without the model
+[21:42:34]     FUN_001d43ac -> fixed without the model
+[21:42:34]     FUN_001d4cfc -> fixed without the model
+[21:42:34]     FUN_001d4e08 -> fixed without the model
+[21:42:34]     FUN_001d4e50 -> fixed without the model
+[21:42:34]     FUN_001e3a74 -> fixed without the model
+[21:42:34]     FUN_001e3e08 -> fixed without the model
+[21:42:34]     FUN_001e4a84 -> fixed without the model
+[21:42:34]     FUN_001e3cfc -> fixed without the model
+[21:42:34]     FUN_001e4ab4 -> fixed without the model
+[21:42:34]     FUN_001e4ae8 -> fixed without the model
+[21:42:34]     FUN_000351d4 -> fixed without the model
+[21:42:34]     FUN_001d18b4 -> fixed without the model
+[21:42:34]     FUN_001befe0 -> fixed without the model
+[21:42:34]     FUN_001bef20 -> fixed without the model
+[21:42:34]     FUN_001beccc -> fixed without the model
+[21:42:34]     FUN_001d5e8c -> fixed without the model
+[21:42:34]     FUN_001edca0 -> fixed without the model
+[21:42:34]     FUN_001e37c0 -> fixed without the model
+[21:42:34]     FUN_001fde04 -> fixed without the model
+[21:42:34]     FUN_001fda2c -> fixed without the model
+[21:42:34]     FUN_001fdc8c -> fixed without the model
+[21:42:35]     FUN_001bdb68 -> fixed without the model
+[21:42:35]     FUN_001fe9e8 -> fixed without the model
+[21:42:35]     FUN_001fea18 -> fixed without the model
+[21:42:35]     FUN_001bfe24 -> fixed without the model
+[21:42:35]     FUN_001bc954 -> fixed without the model
+[21:42:35]     FUN_001fed54 -> fixed without the model
+[21:42:35]     FUN_001415a4 -> fixed without the model
+[21:42:35]     FUN_00141018 -> fixed without the model
+[21:42:35]     FUN_0013f8ec -> fixed without the model
+[21:42:35]     FUN_001e468c -> fixed without the model
+[21:42:35]     FUN_001fac70 -> fixed without the model
+[21:42:35]     FUN_00141e8c -> fixed without the model
+[21:42:35]     FUN_001442c0 -> fixed without the model
+[21:42:35]     FUN_001410a0 -> fixed without the model
+[21:42:35]     FUN_001444ec -> fixed without the model
+[21:42:35]     FUN_0014edf8 -> fixed without the model
+[21:42:35]     FUN_00150058 -> fixed without the model
+[21:42:35]     FUN_0014d380 -> fixed without the model
+[21:42:35]     FUN_001419b8 -> fixed without the model
+[21:42:35]     FUN_0014cf68 -> fixed without the model
+[21:42:35]     FUN_0014eebc -> fixed without the model
+[21:42:35]     FUN_001680c4 -> fixed without the model
+[21:42:35]     FUN_00151ef4 -> fixed without the model
+[21:42:35]     FUN_0014eb98 -> fixed without the model
+[21:42:35]     FUN_001536dc -> fixed without the model
+[21:42:35]     FUN_00153660 -> fixed without the model
+[21:42:35]     FUN_0013e2a8 -> fixed without the model
+[21:42:35]     FUN_0013e1e0 -> fixed without the model
+[21:42:35]     FUN_001fe53c -> fixed without the model
+[21:42:35]     FUN_0014f128 -> fixed without the model
+[21:42:35]     FUN_001a7a14 -> fixed without the model
+[21:42:35]     FUN_001a775c -> fixed without the model
+[21:42:35]     FUN_001d4308 -> fixed without the model
+[21:42:35]     FUN_001406ec -> fixed without the model
+[21:42:35]     FUN_001a752c -> fixed without the model
+[21:42:35]     FUN_001a8338 -> fixed without the model
+[21:42:36]     FUN_001a75b4 -> fixed without the model
+[21:42:36]     FUN_001bfb18 -> fixed without the model
+[21:42:36]     FUN_001bfb48 -> fixed without the model
+[21:42:36]     FUN_001a7dc0 -> fixed without the model
+[21:42:36]     FUN_001c04b0 -> fixed without the model
+[21:42:36]     FUN_001a3448 -> fixed without the model
+[21:42:36]     FUN_001bfbc0 -> fixed without the model
+[21:42:36]     FUN_001c01f8 -> fixed without the model
+[21:42:36]     FUN_001bffc8 -> fixed without the model
+[21:42:36]     FUN_001201fc -> fixed without the model
+[21:42:36]     FUN_001c0050 -> fixed without the model
+[21:42:36]     FUN_001c0dd4 -> fixed without the model
+[21:42:36]     FUN_0020f008 -> fixed without the model
+[21:42:36]     FUN_001a6830 -> fixed without the model
+[21:42:36]     FUN_000be0c0 -> fixed without the model
+[21:42:36]     FUN_001736b4 -> fixed without the model
+[21:42:36]     FUN_001c085c -> fixed without the model
+[21:42:36]     FUN_000be83c -> fixed without the model
+[21:42:36]     FUN_001a1d80 -> fixed without the model
+[21:42:36]     FUN_001e1fec -> fixed without the model
+[21:42:36]     FUN_00003a04 -> fixed without the model
+[21:42:36]     FUN_001a7370 -> fixed without the model
+[21:42:36]     FUN_001bf69c -> fixed without the model
+[21:42:36]     FUN_001bea40 -> fixed without the model
+[21:42:36]     FUN_000bc2a0 -> fixed without the model
+[21:42:36]     FUN_0001ef1c -> fixed without the model
+[21:42:36]     FUN_00016b10 -> fixed without the model
+[21:42:37]     FUN_000b19f8 -> fixed without the model
+[21:42:37]     FUN_00014338 -> fixed without the model
+[21:42:37]     FUN_001a314c -> fixed without the model
+[21:42:37]     FUN_0003319c -> fixed without the model
+[21:42:37]     FUN_000ea8dc -> fixed without the model
+[21:42:37]     FUN_000b186c -> fixed without the model
+[21:42:37]     FUN_000520e8 -> fixed without the model
+[21:42:37]     FUN_002037b8 -> fixed without the model
+[21:42:37]     FUN_00203500 -> fixed without the model
+[21:42:37]     FUN_002032d0 -> fixed without the model
+[21:42:37]     FUN_00173590 -> fixed without the model
+[21:42:37]     FUN_00204024 -> fixed without the model
+[21:42:37]     FUN_002045dc -> fixed without the model
+[21:42:37]     FUN_00204324 -> fixed without the model
+[21:42:37]     FUN_002040f4 -> fixed without the model
+[21:42:37]     FUN_00203358 -> fixed without the model
+[21:42:37]     FUN_0004b344 -> fixed without the model
+[21:42:37]     FUN_00204e48 -> fixed without the model
+[21:42:37]     FUN_0020417c -> fixed without the model
+[21:42:37]     FUN_00065420 -> fixed without the model
+[21:42:37]     FUN_000677c0 -> fixed without the model
+[21:42:37]     FUN_0006537c -> fixed without the model
+[21:42:37]     FUN_00067ad4 -> fixed without the model
+[21:42:37]     FUN_00067a14 -> fixed without the model
+[21:42:38]     FUN_00068cd4 -> fixed without the model
+[21:42:38]     FUN_00068ca4 -> fixed without the model
+[21:42:38]     FUN_00068d4c -> fixed without the model
+[21:42:38]     FUN_00171a30 -> fixed without the model
+[21:42:38]     FUN_000681d4 -> fixed without the model
+[21:42:38]     FUN_000682e0 -> fixed without the model
+[21:42:38]     FUN_00069a8c -> fixed without the model
+[21:42:38]     FUN_0006a280 -> fixed without the model
+[21:42:38]     FUN_0006a250 -> fixed without the model
+[21:42:38]     FUN_0026ce1c -> fixed without the model
+[21:42:38]     FUN_000649ac -> fixed without the model
+[21:42:38]     FUN_0006a2b4 -> fixed without the model
+[21:42:38]     FUN_0008a070 -> fixed without the model
+[21:42:38]     FUN_00089fcc -> fixed without the model
+[21:42:38]     FUN_0008ab28 -> fixed without the model
+[21:42:38]     FUN_0008aa1c -> fixed without the model
+[21:42:38]     FUN_000076a4 -> fixed without the model
+[21:42:38]     FUN_0008b100 -> fixed without the model
+[21:42:38]     FUN_000687f8 -> fixed without the model
+[21:42:38]     FUN_001263a0 -> fixed without the model
+[21:42:38]     FUN_002115b0 -> fixed without the model
+[21:42:38]     FUN_0012674c -> fixed without the model
+[21:42:38]     FUN_002110c8 -> fixed without the model
+[21:42:38]     FUN_002112f8 -> fixed without the model
+[21:42:38]     FUN_00086ed0 -> fixed without the model
+[21:42:38]     FUN_00211ed4 -> fixed without the model
+[21:42:38]     FUN_002124a4 -> fixed without the model
+[21:42:38]     FUN_00211fa4 -> fixed without the model
+[21:42:38]     FUN_00211150 -> fixed without the model
+[21:42:38]     FUN_001a2588 -> fixed without the model
+[21:42:38]     FUN_002121e8 -> fixed without the model
+[21:42:38]     FUN_00069e58 -> fixed without the model
+[21:42:39]     FUN_0021195c -> fixed without the model
+[21:42:39]     FUN_00212d40 -> fixed without the model
+[21:42:39]     FUN_0021202c -> fixed without the model
+[21:42:39]     FUN_0022beb0 -> fixed without the model
+[21:42:39]     FUN_00206458 -> fixed without the model
+[21:42:39]     FUN_00202b8c -> fixed without the model
+[21:42:39]     FUN_00218d44 -> fixed without the model
+[21:42:39]     FUN_00203008 -> fixed without the model
+[21:42:39]     FUN_001a3394 -> fixed without the model
+[21:42:39]     FUN_001a374c -> fixed without the model
+[21:42:39]     FUN_00219784 -> fixed without the model
+[21:42:39]     FUN_00219984 -> fixed without the model
+[21:42:39]     FUN_002196bc -> fixed without the model
+[21:42:39]     FUN_00201f14 -> fixed without the model
+[21:42:39]     FUN_00201d68 -> fixed without the model
+[21:42:39]     FUN_0021980c -> fixed without the model
+[21:42:39]     FUN_002189c4 -> fixed without the model
+[21:42:39]     FUN_00201b2c -> fixed without the model
+[21:42:39]     FUN_00201aac -> fixed without the model
+[21:42:39]     FUN_00219124 -> fixed without the model
+[21:42:39]     FUN_00205900 -> fixed without the model
+[21:42:39]     FUN_00205648 -> fixed without the model
+[21:42:39]     FUN_00205394 -> fixed without the model
+[21:42:39]     FUN_00202220 -> fixed without the model
+[21:42:39]     FUN_00202038 -> fixed without the model
+[21:42:39]     FUN_002061cc -> fixed without the model
+[21:42:39]     FUN_0020541c -> fixed without the model
+[21:42:39]     FUN_000a5818 -> fixed without the model
+[21:42:39]     FUN_001d7140 -> fixed without the model
+[21:42:39]     FUN_001d7eb0 -> fixed without the model
+[21:42:39]     FUN_001d7ee0 -> fixed without the model
+[21:42:39]     FUN_00201c5c -> fixed without the model
+[21:42:39]     FUN_001d7f58 -> fixed without the model
+[21:42:39]     FUN_001d9700 -> fixed without the model
+[21:42:39]     FUN_001d9a90 -> fixed without the model
+[21:42:39]     FUN_001d9998 -> fixed without the model
+[21:42:39]     FUN_001da530 -> fixed without the model
+[21:42:39]     FUN_00084694 -> fixed without the model
+[21:42:39]     FUN_001da560 -> fixed without the model
+[21:42:39]     FUN_001f934c -> fixed without the model
+[21:42:39]     FUN_001da5d8 -> fixed without the model
+[21:42:39]     FUN_000c4d4c -> fixed without the model
+[21:42:40]     FUN_002854b0 -> fixed without the model
+[21:42:40]     FUN_0012cefc -> fixed without the model
+[21:42:40]     FUN_0028611c -> fixed without the model
+[21:42:40]     FUN_0012db5c -> fixed without the model
+[21:42:40]     FUN_00285690 -> fixed without the model
+[21:42:40]     FUN_0028671c -> fixed without the model
+[21:42:40]     FUN_00286a08 -> fixed without the model
+[21:42:40]     FUN_00286b6c -> fixed without the model
+[21:42:40]     FUN_002869f0 -> fixed without the model
+[21:42:40]     FUN_0028663c -> fixed without the model
+[21:42:40]     FUN_001d7a48 -> fixed without the model
+[21:42:40]     FUN_001cd1c8 -> fixed without the model
+[21:42:40]     FUN_001d6e04 -> fixed without the model
+[21:42:40]     FUN_001d965c -> fixed without the model
+[21:42:40]     FUN_00286488 -> fixed without the model
+[21:42:40]     FUN_001e39d0 -> fixed without the model
+[21:42:40]     FUN_001e7984 -> fixed without the model
+[21:42:40]     FUN_001da144 -> fixed without the model
+[21:42:40]     FUN_001e7b4c -> fixed without the model
+[21:42:40]     FUN_001e84d0 -> fixed without the model
+[21:42:40]     FUN_001e8500 -> fixed without the model
+[21:42:40]     FUN_00156044 -> fixed without the model
+[21:42:40]     FUN_001e8578 -> fixed without the model
+[21:42:40]     FUN_001f1ea4 -> fixed without the model
+[21:42:40]     FUN_00007d70 -> fixed without the model
+[21:42:40]     FUN_000a9cc0 -> fixed without the model
+[21:42:40]     FUN_001f1ab4 -> fixed without the model
+[21:42:40]     FUN_000a9f2c -> fixed without the model
+[21:42:40]     FUN_00008040 -> fixed without the model
+[21:42:40]     FUN_000aa040 -> fixed without the model
+[21:42:40]     FUN_001cd37c -> fixed without the model
+[21:42:40]     FUN_000aa104 -> fixed without the model
+[21:42:40]     FUN_00021f4c -> fixed without the model
+[21:42:40]     FUN_0000b154 -> fixed without the model
+[21:42:40]     FUN_0000def4 -> fixed without the model
+[21:42:40]     FUN_001e3b84 -> fixed without the model
+[21:42:40]     FUN_0000e054 -> fixed without the model
+[21:42:40]     FUN_00012ec0 -> fixed without the model
+[21:42:41]     FUN_00011a98 -> fixed without the model
+[21:42:41]     FUN_00016c90 -> fixed without the model
+[21:42:41]     FUN_00016ce8 -> fixed without the model
+[21:42:41]     FUN_00016390 -> fixed without the model
+[21:42:41]     FUN_00015dc0 -> fixed without the model
+[21:42:41]     FUN_00014e50 -> fixed without the model
+[21:42:41]     FUN_000231a4 -> fixed without the model
+[21:42:41]     FUN_001e7ff4 -> fixed without the model
+[21:42:41]     FUN_000419ec -> fixed without the model
+[21:42:41]     FUN_00286574 -> fixed without the model
+[21:42:41]     FUN_0001ae70 -> fixed without the model
+[21:42:41]     FUN_000231e0 -> fixed without the model
+[21:42:41]     FUN_00084778 -> fixed without the model
+[21:42:41]     FUN_00027aac -> fixed without the model
+[21:42:41]     FUN_00027cac -> fixed without the model
+[21:42:41]     FUN_00027d70 -> fixed without the model
+[21:42:41]     FUN_00027df8 -> fixed without the model
+[21:42:41]     FUN_0001b2dc -> fixed without the model
+[21:42:41]     FUN_0002d2a0 -> fixed without the model
+[21:42:41]     FUN_000171f8 -> fixed without the model
+[21:42:41]     FUN_0002d6bc -> fixed without the model
+[21:42:41]     FUN_0002e1dc -> fixed without the model
+[21:42:41]     FUN_0003016c -> fixed without the model
+[21:42:41]     FUN_0002eae0 -> fixed without the model
+[21:42:41]     FUN_00157b54 -> fixed without the model
+[21:42:41]     FUN_001654ec -> fixed without the model
+[21:42:41]     FUN_00157bac -> fixed without the model
+[21:42:41]     FUN_00032c6c -> fixed without the model
+[21:42:41]     FUN_001aadd0 -> fixed without the model
+[21:42:41]     FUN_001ab0e4 -> fixed without the model
+[21:42:41]     FUN_001ab024 -> fixed without the model
+[21:42:41]     FUN_001abc44 -> fixed without the model
+[21:42:41]     FUN_001abc74 -> fixed without the model
+[21:42:41]     FUN_00173144 -> fixed without the model
+[21:42:41]     FUN_0003e818 -> fixed without the model
+[21:42:41]     FUN_001abcec -> fixed without the model
+[21:42:41]     FUN_0003e904 -> fixed without the model
+[21:42:41]     FUN_00040414 -> fixed without the model
+[21:42:41]     FUN_0016342c -> fixed without the model
+[21:42:41]     FUN_000404f0 -> fixed without the model
+[21:42:41]     FUN_0004743c -> fixed without the model
+[21:42:42]     FUN_00046e1c -> fixed without the model
+[21:42:42]     FUN_000471a8 -> fixed without the model
+[21:42:42]     FUN_0004301c -> fixed without the model
+[21:42:42]     FUN_00048aac -> fixed without the model
+[21:42:42]     FUN_000502e0 -> fixed without the model
+[21:42:42]     FUN_00051444 -> fixed without the model
+[21:42:42]     FUN_000ff0bc -> fixed without the model
+[21:42:42]     FUN_001b9564 -> fixed without the model
+[21:42:42]     FUN_001b9aac -> fixed without the model
+[21:42:42]     FUN_000173a0 -> fixed without the model
+[21:42:42]     FUN_0004ab0c -> fixed without the model
+[21:42:42]     FUN_001b9bb8 -> fixed without the model
+[21:42:42]     FUN_001ab794 -> fixed without the model
+[21:42:42]     FUN_000f49a0 -> fixed without the model
+[21:42:42]     FUN_000532f4 -> fixed without the model
+[21:42:42]     FUN_00053364 -> fixed without the model
+[21:42:42]     FUN_001b9c00 -> fixed without the model
+[21:42:42]     FUN_001b94c0 -> fixed without the model
+[21:42:42]     FUN_000533dc -> fixed without the model
+[21:42:42]     FUN_00053af8 -> fixed without the model
+[21:42:42]     FUN_0002e28c -> fixed without the model
+[21:42:42]     FUN_00053568 -> fixed without the model
+[21:42:42]     FUN_00023e68 -> fixed without the model
+[21:42:43]     FUN_00053890 -> fixed without the model
+[21:42:43]     FUN_00056690 -> fixed without the model
+[21:42:43]     FUN_000545e8 -> fixed without the model
+[21:42:43]     FUN_00056abc -> fixed without the model
+[21:42:43]     FUN_00053124 -> fixed without the model
+[21:42:43]     FUN_000548c4 -> fixed without the model
+[21:42:43]     FUN_0005beb4 -> fixed without the model
+[21:42:43]     FUN_00054330 -> fixed without the model
+[21:42:43]     FUN_00067718 -> fixed without the model
+[21:42:43]     FUN_0005a2c8 -> fixed without the model
+[21:42:43]     FUN_000b9730 -> fixed without the model
+[21:42:43]     FUN_00225ea0 -> fixed without the model
+[21:42:43]     FUN_00061754 -> fixed without the model
+[21:42:43]     closeShellWindow_606b4 -> fixed without the model
+[21:42:43]     FUN_001a2e58 -> fixed without the model
+[21:42:43]     FUN_0005fcfc -> fixed without the model
+[21:42:43]     FUN_0026909c -> fixed without the model
+[21:42:43]     FUN_0026b100 -> fixed without the model
+[21:42:43]     FUN_00058d7c -> fixed without the model
+[21:42:43]     FUN_0026b340 -> fixed without the model
+[21:42:43]     FUN_0026b4a4 -> fixed without the model
+[21:42:43]     FUN_0026b328 -> fixed without the model
+[21:42:43]     FUN_000693ac -> fixed without the model
+[21:42:43]     uiViewForAudioUnit_withSize_ -> fixed without the model
+[21:42:44]     FUN_0026b020 -> fixed without the model
+[21:42:44]     FUN_0026ae54 -> fixed without the model
+[21:42:44]     FUN_0026ee0c -> fixed without the model
+[21:42:44]     frameTimer_ -> fixed without the model
+[21:42:44]     FUN_001a8954 -> fixed without the model
+[21:42:44]     FUN_000632ac -> fixed without the model
+[21:42:44]     FUN_00065d48 -> fixed without the model
+[21:42:44]     FUN_00063be8 -> fixed without the model
+[21:42:44]     FUN_000631bc -> fixed without the model
+[21:42:44]     FUN_00065e6c -> fixed without the model
+[21:42:44]     FUN_000659a0 -> fixed without the model
+[21:42:44]     FUN_00065ac8 -> fixed without the model
+[21:42:44]     FUN_00065f90 -> fixed without the model
+[21:42:44]     FUN_00063504 -> fixed without the model
+[21:42:44]     FUN_00066674 -> fixed without the model
+[21:42:44]     FUN_000461e4 -> fixed without the model
+[21:42:44]     FUN_00066900 -> fixed without the model
+[21:42:44]     FUN_000667b4 -> fixed without the model
+[21:42:44]     FUN_00066a4c -> fixed without the model
+[21:42:44]     FUN_00066b80 -> fixed without the model
+[21:42:44]     FUN_00066e14 -> fixed without the model
+[21:42:44]     FUN_00066f60 -> fixed without the model
+[21:42:44]     FUN_00270228 -> fixed without the model
+[21:42:44]     FUN_00066498 -> fixed without the model
+[21:42:44]     FUN_00066cb4 -> fixed without the model
+[21:42:44]     FUN_002721d4 -> fixed without the model
+[21:42:44]     FUN_0006720c -> fixed without the model
+[21:42:44]     FUN_00067340 -> fixed without the model
+[21:42:44]     FUN_0026af40 -> fixed without the model
+[21:42:44]     FUN_00067488 -> fixed without the model
+[21:42:44]     FUN_00048c10 -> fixed without the model
+[21:42:44]     FUN_00067098 -> fixed without the model
+[21:42:44]     FUN_0006aaac -> fixed without the model
+[21:42:44]     FUN_0006ad00 -> fixed without the model
+[21:42:44]     FUN_0006aa04 -> fixed without the model
+[21:42:44]     FUN_0006adc0 -> fixed without the model
+[21:42:45]     FUN_0006b67c -> fixed without the model
+[21:42:45]     FUN_00066104 -> fixed without the model
+[21:42:45]     FUN_0026f624 -> fixed without the model
+[21:42:45]     FUN_0006b64c -> fixed without the model
+[21:42:45]     FUN_0006b6f4 -> fixed without the model
+[21:42:45]     openShellWindow_60180 -> fixed without the model
+[21:42:45]     FUN_0006a594 -> fixed without the model
+[21:42:45]     FUN_0006c174 -> fixed without the model
+[21:42:45]     FUN_0006c470 -> fixed without the model
+[21:42:45]     FUN_0006c21c -> fixed without the model
+[21:42:45]     FUN_0006c530 -> fixed without the model
+[21:42:45]     FUN_0006cdbc -> fixed without the model
+[21:42:45]     FUN_0006a6a8 -> fixed without the model
+[21:42:45]     FUN_0006cdec -> fixed without the model
+[21:42:45]     FUN_0006ce64 -> fixed without the model
+[21:42:45]     FUN_0006a894 -> fixed without the model
+[21:42:45]     FUN_0006bbdc -> fixed without the model
+[21:42:45]     FUN_00076f3c -> fixed without the model
+[21:42:45]     FUN_00074d18 -> fixed without the model
+[21:42:45]     FUN_00076e98 -> fixed without the model
+[21:42:45]     FUN_00086ca4 -> fixed without the model
+[21:42:45]     FUN_00078b80 -> fixed without the model
+[21:42:45]     FUN_00078c8c -> fixed without the model
+[21:42:45]     FUN_000787f0 -> fixed without the model
+[21:42:45]     FUN_0006e4c4 -> fixed without the model
+[21:42:45]     FUN_0006c008 -> fixed without the model
+[21:42:45]     FUN_000791e4 -> fixed without the model
+[21:42:45]     FUN_0006b128 -> fixed without the model
+[21:42:45]     FUN_0006d34c -> fixed without the model
+[21:42:45]     FUN_0007f37c -> fixed without the model
+[21:42:45]     FUN_0007f3ac -> fixed without the model
+[21:42:45]     FUN_0007f3e0 -> fixed without the model
+[21:42:45]     FUN_0007329c -> fixed without the model
+[21:42:45]     FUN_0007349c -> fixed without the model
+[21:42:45]     FUN_00073600 -> fixed without the model
+[21:42:45]     FUN_0006e75c -> fixed without the model
+[21:42:45]     FUN_0006f398 -> fixed without the model
+[21:42:45]     FUN_0006e5cc -> fixed without the model
+[21:42:45]     FUN_0006f784 -> fixed without the model
+[21:42:45]     FUN_0006c898 -> fixed without the model
+[21:42:45]     FUN_0006f17c -> fixed without the model
+[21:42:46]     FUN_00073024 -> fixed without the model
+[21:42:46]     FUN_00079a58 -> fixed without the model
+[21:42:46]     FUN_0006f350 -> fixed without the model
+[21:42:46]     FUN_000793d4 -> fixed without the model
+[21:42:46]     FUN_000701d4 -> fixed without the model
+[21:42:46]     FUN_0007a5dc -> fixed without the model
+[21:42:46]     FUN_0006f3d8 -> fixed without the model
+[21:42:46]     FUN_00079554 -> fixed without the model
+[21:42:46]     FUN_0007a6cc -> fixed without the model
+[21:42:46]     FUN_0007d9a4 -> fixed without the model
+[21:42:46]     FUN_00070418 -> fixed without the model
+[21:42:46]     FUN_0007e444 -> fixed without the model
+[21:42:46]     FUN_00071d64 -> fixed without the model
+[21:42:46]     FUN_00071ef0 -> fixed without the model
+[21:42:46]     FUN_000702cc -> fixed without the model
+[21:42:46]     FUN_0007e504 -> fixed without the model
+[21:42:46]     FUN_0007ef84 -> fixed without the model
+[21:42:46]     FUN_00071bd0 -> fixed without the model
+[21:42:46]     FUN_00073858 -> fixed without the model
+[21:42:46]     FUN_00073900 -> fixed without the model
+[21:42:46]     FUN_0007371c -> fixed without the model
+[21:42:46]     FUN_000727c4 -> fixed without the model
+[21:42:46]     FUN_0006dbb8 -> fixed without the model
+[21:42:46]     FUN_0007394c -> fixed without the model
+[21:42:46]     FUN_00072030 -> fixed without the model
+[21:42:46]     FUN_00073b4c -> fixed without the model
+[21:42:46]     FUN_00073e7c -> fixed without the model
+[21:42:46]     FUN_000721c0 -> fixed without the model
+[21:42:46]     FUN_000740a4 -> fixed without the model
+[21:42:46]     FUN_00072824 -> fixed without the model
+[21:42:46]     FUN_00073bfc -> fixed without the model
+[21:42:46]     FUN_00073cb8 -> fixed without the model
+[21:42:46]     FUN_00074384 -> fixed without the model
+[21:42:46]     FUN_0007468c -> fixed without the model
+[21:42:46]     FUN_00074c2c -> fixed without the model
+[21:42:46]     FUN_00072a8c -> fixed without the model
+[21:42:47]     FUN_00074148 -> fixed without the model
+[21:42:47]     FUN_000752c0 -> fixed without the model
+[21:42:47]     FUN_00075904 -> fixed without the model
+[21:42:47]     FUN_000745dc -> fixed without the model
+[21:42:47]     FUN_00073f14 -> fixed without the model
+[21:42:47]     FUN_00074244 -> fixed without the model
+[21:42:47]     FUN_0007b39c -> fixed without the model
+[21:42:47]     FUN_00074fa8 -> fixed without the model
+[21:42:47]     FUN_0006fa04 -> fixed without the model
+[21:42:47]     FUN_0007b65c -> fixed without the model
+[21:42:47]     FUN_00075c7c -> fixed without the model
+[21:42:47]     FUN_00075988 -> fixed without the model
+[21:42:47]     FUN_0007b71c -> fixed without the model
+[21:42:47]     FUN_0007baa4 -> fixed without the model
+[21:42:47]     FUN_00075344 -> fixed without the model
+[21:42:47]     FUN_0007cd64 -> fixed without the model
+[21:42:47]     FUN_0007d024 -> fixed without the model
+[21:42:47]     FUN_0007d0e4 -> fixed without the model
+[21:42:47]     FUN_0007bac4 -> fixed without the model
+[21:42:47]     FUN_0007d470 -> fixed without the model
+[21:42:47]     FUN_00080060 -> fixed without the model
+[21:42:47]     FUN_0007e88c -> fixed without the model
+[21:42:47]     FUN_00080320 -> fixed without the model
+[21:42:47]     FUN_000803e0 -> fixed without the model
+[21:42:47]     FUN_000807a8 -> fixed without the model
+[21:42:47]     FUN_00072390 -> fixed without the model
+[21:42:47]     FUN_00080768 -> fixed without the model
+[21:42:47]     FUN_000812e8 -> fixed without the model
+[21:42:47]     FUN_00081668 -> fixed without the model
+[21:42:47]     FUN_000815a8 -> fixed without the model
+[21:42:47]     FUN_0008282c -> fixed without the model
+[21:42:47]     FUN_00080788 -> fixed without the model
+[21:42:47]     FUN_000819f4 -> fixed without the model
+[21:42:47]     FUN_00081a14 -> fixed without the model
+[21:42:47]     FUN_00088c34 -> fixed without the model
+[21:42:47]     FUN_001a987c -> fixed without the model
+[21:42:47]     FUN_0008a51c -> fixed without the model
+[21:42:47]     FUN_000862a0 -> fixed without the model
+[21:42:47]     FUN_0008497c -> fixed without the model
+[21:42:47]     FUN_0008656c -> fixed without the model
+[21:42:48]     FUN_00087154 -> fixed without the model
+[21:42:48]     FUN_00087b58 -> fixed without the model
+[21:42:48]     FUN_0008b928 -> fixed without the model
+[21:42:48]     FUN_0008b8c4 -> fixed without the model
+[21:42:48]     FUN_0008954c -> fixed without the model
+[21:42:48]     FUN_0008b8f4 -> fixed without the model
+[21:42:48]     FUN_00090ca8 -> fixed without the model
+[21:42:48]     FUN_000919c8 -> fixed without the model
+[21:42:48]     FUN_0008bea4 -> fixed without the model
+[21:42:48]     FUN_000e49e0 -> fixed without the model
+[21:42:48]     FUN_00075184 -> fixed without the model
+[21:42:48]     FUN_000e4b14 -> fixed without the model
+[21:42:48]     FUN_000e7b30 -> fixed without the model
+[21:42:48]     FUN_0008fdd0 -> fixed without the model
+[21:42:48]     FUN_00087c2c -> fixed without the model
+[21:42:48]     FUN_000e7a8c -> fixed without the model
+[21:42:48]     FUN_00090680 -> fixed without the model
+[21:42:48]     FUN_000e7e3c -> fixed without the model
+[21:42:48]     FUN_000e7d84 -> fixed without the model
+[21:42:48]     FUN_000e8a30 -> fixed without the model
+[21:42:48]     FUN_000e8a60 -> fixed without the model
+[21:42:48]     FUN_000e8ad8 -> fixed without the model
+[21:42:48]     FUN_0008d320 -> fixed without the model
+[21:42:48]     FUN_000ced74 -> fixed without the model
+[21:42:48]     FUN_000ce010 -> fixed without the model
+[21:42:48]     FUN_0008b4cc -> fixed without the model
+[21:42:48]     FUN_00209ca4 -> fixed without the model
+[21:42:48]     FUN_00226ba0 -> fixed without the model
+[21:42:48]     FUN_000e7784 -> fixed without the model
+[21:42:48]     FUN_000cd044 -> fixed without the model
+[21:42:48]     FUN_00226c54 -> fixed without the model
+[21:42:48]     FUN_00226d14 -> fixed without the model
+[21:42:48]     FUN_0009f4b8 -> fixed without the model
+[21:42:48]     FUN_0009e570 -> fixed without the model
+[21:42:48]     FUN_000a14e8 -> fixed without the model
+[21:42:48]     FUN_0009d598 -> fixed without the model
+[21:42:48]     FUN_000a0718 -> fixed without the model
+[21:42:48]     FUN_000a32dc -> fixed without the model
+[21:42:48]     FUN_0009f6fc -> fixed without the model
+[21:42:48]     FUN_000a25bc -> fixed without the model
+[21:42:48]     FUN_000a5058 -> fixed without the model
+[21:42:48]     FUN_000ca214 -> fixed without the model
+[21:42:48]     FUN_000a16d4 -> fixed without the model
+[21:42:48]     FUN_00227144 -> fixed without the model
+[21:42:48]     FUN_000a4338 -> fixed without the model
+[21:42:49]     FUN_0009de0c -> fixed without the model
+[21:42:49]     FUN_0009ffac -> fixed without the model
+[21:42:49]     FUN_000e8654 -> fixed without the model
+[21:42:49]     FUN_000a34a8 -> fixed without the model
+[21:42:49]     FUN_000a9c18 -> fixed without the model
+[21:42:49]     FUN_000ab05c -> fixed without the model
+[21:42:49]     FUN_000ab08c -> fixed without the model
+[21:42:49]     FUN_000ab0c0 -> fixed without the model
+[21:42:49]     FUN_000a6694 -> fixed without the model
+[21:42:49]     FUN_000b091c -> fixed without the model
+[21:42:49]     FUN_000b0a5c -> fixed without the model
+[21:42:49]     FUN_000b09ac -> fixed without the model
+[21:42:49]     FUN_000af760 -> fixed without the model
+[21:42:49]     FUN_000b1034 -> fixed without the model
+[21:42:49]     FUN_000b0498 -> fixed without the model
+[21:42:49]     FUN_000ac698 -> fixed without the model
+[21:42:49]     FUN_000b278c -> fixed without the model
+[21:42:49]     FUN_000b11f8 -> fixed without the model
+[21:42:49]     FUN_000b6ee0 -> fixed without the model
+[21:42:49]     FUN_00099a34 -> fixed without the model
+[21:42:49]     FUN_000b75ec -> fixed without the model
+[21:42:49]     FUN_000b6f14 -> fixed without the model
+[21:42:49]     FUN_000aab98 -> fixed without the model
+[21:42:49]     FUN_000d0430 -> fixed without the model
+[21:42:49]     FUN_000bf520 -> fixed without the model
+[21:42:49]     FUN_001a43cc -> fixed without the model
+[21:42:49]     FUN_000bece4 -> fixed without the model
+[21:42:49]     FUN_000c02d4 -> fixed without the model
+[21:42:50]     FUN_0015b06c -> fixed without the model
+[21:42:50]     FUN_0011e170 -> fixed without the model
+[21:42:50]     FUN_0015a2d4 -> fixed without the model
+[21:42:50]     FUN_000cb488 -> fixed without the model
+[21:42:50]     FUN_000bbafc -> fixed without the model
+[21:42:50]     FUN_0011e1f8 -> fixed without the model
+[21:42:50]     FUN_000b9510 -> fixed without the model
+[21:42:50]     FUN_001592a8 -> fixed without the model
+[21:42:50]     FUN_000d373c -> fixed without the model
+[21:42:50]     FUN_000d29cc -> fixed without the model
+[21:42:50]     FUN_000d0c3c -> fixed without the model
+[21:42:50]     FUN_000d19d4 -> fixed without the model
+[21:42:50]     FUN_0011a1f8 -> fixed without the model
+[21:42:50]     FUN_0009c3ec -> fixed without the model
+[21:42:50]     FUN_000cc0bc -> fixed without the model
+[21:42:50]     FUN_000d5404 -> fixed without the model
+[21:42:50]     FUN_000cb6b0 -> fixed without the model
+[21:42:50]     FUN_000ac208 -> fixed without the model
+[21:42:50]     FUN_000d56dc -> fixed without the model
+[21:42:51]     FUN_000d84c8 -> fixed without the model
+[21:42:51]     FUN_000ddcac -> fixed without the model
+[21:42:51]     FUN_000de03c -> fixed without the model
+[21:42:51]     FUN_000de7e4 -> fixed without the model
+[21:42:51]     FUN_000e08f0 -> fixed without the model
+[21:42:51]     FUN_000e1d58 -> fixed without the model
+[21:42:51]     FUN_000d3ac4 -> fixed without the model
+[21:42:51]     FUN_0016579c -> fixed without the model
+[21:42:51]     FUN_000e4e8c -> fixed without the model
+[21:42:51]     FUN_000e641c -> fixed without the model
+[21:42:51]     FUN_000eb738 -> fixed without the model
+[21:42:51]     FUN_000ea3dc -> fixed without the model
+[21:42:51]     FUN_0016374c -> fixed without the model
+[21:42:51]     FUN_000f235c -> fixed without the model
+[21:42:51]     FUN_00101df8 -> fixed without the model
+[21:42:51]     FUN_000af418 -> fixed without the model
+[21:42:51]     FUN_00109dd8 -> fixed without the model
+[21:42:51]     FUN_0010a09c -> fixed without the model
+[21:42:51]     FUN_000fdd50 -> fixed without the model
+[21:42:52]     FUN_000feb20 -> fixed without the model
+[21:42:52]     FUN_000f660c -> fixed without the model
+[21:42:52]     FUN_000e02e8 -> fixed without the model
+[21:42:52]     FUN_000e6a1c -> fixed without the model
+[21:42:52]     FUN_000d4114 -> fixed without the model
+[21:42:52]     FUN_00101194 -> fixed without the model
+[21:42:52]     FUN_00100548 -> fixed without the model
+[21:42:52]     FUN_00101468 -> fixed without the model
+[21:42:52]     FUN_00100dec -> fixed without the model
+[21:42:52]     FUN_00101b18 -> fixed without the model
+[21:42:52]     FUN_00101574 -> fixed without the model
+[21:42:52]     FUN_00101778 -> fixed without the model
+[21:42:52]     FUN_00101c5c -> fixed without the model
+[21:42:52]     FUN_00101d90 -> fixed without the model
+[21:42:52]     FUN_00101ccc -> fixed without the model
+[21:42:52]     FUN_00101ec8 -> fixed without the model
+[21:42:52]     FUN_000fe7a0 -> fixed without the model
+[21:42:52]     FUN_00101e60 -> fixed without the model
+[21:42:52]     FUN_00101f38 -> fixed without the model
+[21:42:52]     FUN_00102098 -> fixed without the model
+[21:42:52]     FUN_00102034 -> fixed without the model
+[21:42:52]     FUN_00102184 -> fixed without the model
+[21:42:52]     FUN_000fe358 -> fixed without the model
+[21:42:52]     FUN_00102120 -> fixed without the model
+[21:42:52]     FUN_000d44e8 -> fixed without the model
+[21:42:52]     FUN_00105064 -> fixed without the model
+[21:42:52]     FUN_000feb74 -> fixed without the model
+[21:42:52]     FUN_001027bc -> fixed without the model
+[21:42:52]     FUN_00102f48 -> fixed without the model
+[21:42:52]     FUN_00102698 -> fixed without the model
+[21:42:53]     FUN_00105d54 -> fixed without the model
+[21:42:53]     FUN_0010568c -> fixed without the model
+[21:42:53]     FUN_00105884 -> fixed without the model
+[21:42:53]     FUN_00105a7c -> fixed without the model
+[21:42:53]     FUN_00105f4c -> fixed without the model
+[21:42:53]     FUN_00106144 -> fixed without the model
+[21:42:53]     FUN_00103704 -> fixed without the model
+[21:42:53]     FUN_0010234c -> fixed without the model
+[21:42:53]     FUN_0010834c -> fixed without the model
+[21:42:53]     FUN_001f53e0 -> fixed without the model
+[21:42:53]     FUN_00108250 -> fixed without the model
+[21:42:53]     FUN_00107e94 -> fixed without the model
+[21:42:53]     FUN_00108a68 -> fixed without the model
+[21:42:53]     FUN_00108c1c -> fixed without the model
+[21:42:53]     FUN_001090f0 -> fixed without the model
+[21:42:53]     FUN_0010a4b0 -> fixed without the model
+[21:42:53]     FUN_000fddd8 -> fixed without the model
+[21:42:53]     FUN_001120e4 -> fixed without the model
+[21:42:53]     FUN_0011547c -> fixed without the model
+[21:42:53]     FUN_0010f14c -> fixed without the model
+[21:42:53]     FUN_001161d0 -> fixed without the model
+[21:42:53]     FUN_00120e44 -> fixed without the model
+[21:42:53]     FUN_00109774 -> fixed without the model
+[21:42:53]     FUN_000b7074 -> fixed without the model
+[21:42:53]     FUN_001279b8 -> fixed without the model
+[21:42:54]     FUN_00119aac -> fixed without the model
+[21:42:54]     FUN_001282ac -> fixed without the model
+[21:42:54]     FUN_00125aa4 -> fixed without the model
+[21:42:54]     FUN_00106410 -> fixed without the model
+[21:42:54]     FUN_001297c0 -> fixed without the model
+[21:42:54]     FUN_00115b30 -> fixed without the model
+[21:42:54]     FUN_0012f044 -> fixed without the model
+[21:42:54]     FUN_0013838c -> fixed without the model
+[21:42:54]     FUN_001382e8 -> fixed without the model
+[21:42:54]     FUN_0012f164 -> fixed without the model
+[21:42:54]     FUN_001a305c -> fixed without the model
+[21:42:54]     FUN_00132824 -> fixed without the model
+[21:42:54]     FUN_001084c4 -> fixed without the model
+[21:42:54]     FUN_000e0ec0 -> fixed without the model
+[21:42:54]     FUN_00131d50 -> fixed without the model
+[21:42:54]     FUN_0013972c -> fixed without the model
+[21:42:54]     FUN_00139b34 -> fixed without the model
+[21:42:54]     FUN_00138620 -> fixed without the model
+[21:42:54]     FUN_0013872c -> fixed without the model
+[21:42:54]     FUN_0013805c -> fixed without the model
+[21:42:54]     FUN_0013a344 -> fixed without the model
+[21:42:54]     FUN_0013a374 -> fixed without the model
+[21:42:54]     FUN_0013a3ec -> fixed without the model
+[21:42:54]     FUN_001398c4 -> fixed without the model
+[21:42:54]     FUN_0013ad0c -> fixed without the model
+[21:42:54]     FUN_001377ac -> fixed without the model
+[21:42:54]     FUN_0013ad3c -> fixed without the model
+[21:42:54]     FUN_0013785c -> fixed without the model
+[21:42:54]     FUN_00117bd8 -> fixed without the model
+[21:42:54]     FUN_00137f60 -> fixed without the model
+[21:42:54]     FUN_00132b4c -> fixed without the model
+[21:42:54]     FUN_001aff18 -> fixed without the model
+[21:42:54]     FUN_0013ad70 -> fixed without the model
+[21:42:54]     FUN_00154694 -> fixed without the model
+[21:42:55]     FUN_00155cdc -> fixed without the model
+[21:42:55]     FUN_00155e84 -> fixed without the model
+[21:42:55]     FUN_00164f38 -> fixed without the model
+[21:42:55]     FUN_00164e90 -> fixed without the model
+[21:42:55]     FUN_0016516c -> fixed without the model
+[21:42:55]     FUN_001650c4 -> fixed without the model
+[21:42:55]     FUN_001653d8 -> fixed without the model
+[21:42:55]     FUN_001657e4 -> fixed without the model
+[21:42:55]     FUN_0016569c -> fixed without the model
+[21:42:55]     FUN_00139f50 -> fixed without the model
+[21:42:55]     FUN_00165890 -> fixed without the model
+[21:42:55]     FUN_001661fc -> fixed without the model
+[21:42:55]     FUN_0016622c -> fixed without the model
+[21:42:55]     FUN_00166260 -> fixed without the model
+[21:42:55]     FUN_0013a8dc -> fixed without the model
+[21:42:55]     FUN_00166cd8 -> fixed without the model
+[21:42:55]     FUN_00166d08 -> fixed without the model
+[21:42:55]     FUN_00166d3c -> fixed without the model
+[21:42:55]     FUN_00164cf4 -> fixed without the model
+[21:42:55]     FUN_00164dc4 -> fixed without the model
+[21:42:55]     FUN_00155b50 -> fixed without the model
+[21:42:55]     FUN_00134180 -> fixed without the model
+[21:42:55]     mainLoop_ -> fixed without the model
+[21:42:55]     FUN_00135198 -> fixed without the model
+[21:42:55]     worksWhenModal -> fixed without the model
+[21:42:55]     becomeKeyWindow_169ddc -> fixed without the model
+[21:42:55]     setFrame_display__169580 -> fixed without the model
+[21:42:55]     canBecomeKeyWindow_169d4c -> fixed without the model
+[21:42:55]     setStyleMask__169384 -> fixed without the model
+[21:42:56]     canBecomeMainWindow -> fixed without the model
+[21:42:56]     resignKeyWindow_169f10 -> fixed without the model
+[21:42:56]     FUN_00165c30 -> fixed without the model
+[21:42:56]     FUN_00123e8c -> fixed without the model
+[21:42:56]     FUN_00166738 -> fixed without the model
+[21:42:56]     applicationDidUnhide_ -> fixed without the model
+[21:42:56]     screenParameterChanged_ -> fixed without the model
+[21:42:56]     windowWillMiniaturize_ -> fixed without the model
+[21:42:56]     applicationDidHide_ -> fixed without the model
+[21:42:56]     windowDidMove_ -> fixed without the model
+[21:42:56]     applicationDidResignActive_ -> fixed without the model
+[21:42:56]     deminiaturize__16a920 -> fixed without the model
+[21:42:56]     miniaturize__16a88c -> fixed without the model
+[21:42:56]     windowDidDeminiaturize_ -> fixed without the model
+[21:42:56]     zoom__16a9c8 -> fixed without the model
+[21:42:56]     performClose__16aa5c -> fixed without the model
+[21:42:56]     closeButtonProxi_ -> fixed without the model
+[21:42:56]     toggleFullScreen_ -> fixed without the model
+[21:42:56]     windowBecameKeyOrMainWindow_ -> fixed without the model
+[21:42:56]     FUN_00171bd4 -> fixed without the model
+[21:42:56]     performKeyEquivalent_ -> fixed without the model
+[21:42:56]     menuCallback_ -> fixed without the model
+[21:42:57]     openAbout_ -> fixed without the model
+[21:42:57]     openPreferences_ -> fixed without the model
+[21:42:57]     makeBackingLayer_16c910 -> fixed without the model
+[21:42:57]     prepareForDragOperation_ -> fixed without the model
+[21:42:57]     sendEvent__16adcc -> fixed without the model
+[21:42:57]     draggingEntered_ -> fixed without the model
+[21:42:57]     performDragOperation_ -> fixed without the model
+[21:42:57]     createMetalLayer_16c9d0 -> fixed without the model
+[21:42:57]     applicationDidBecomeActive_ -> fixed without the model
+[21:42:57]     markedRange -> fixed without the model
+[21:42:57]     doCommandBySelector_ -> fixed without the model
+[21:42:57]     FUN_0016f248 -> fixed without the model
+[21:42:57]     keyboardInputSourceChanged_ -> fixed without the model
+[21:42:57]     FUN_0016f508 -> fixed without the model
+[21:42:57]     FUN_0016f5c8 -> fixed without the model
+[21:42:57]     FUN_0016f95c -> fixed without the model
+[21:42:57]     FUN_0017036c -> fixed without the model
+[21:42:58]     FUN_001709c8 -> fixed without the model
+[21:42:58]     FUN_001739d0 -> fixed without the model
+[21:42:58]     FUN_0017392c -> fixed without the model
+[21:42:58]     FUN_00173c3c -> fixed without the model
+[21:42:58]     FUN_00173da0 -> fixed without the model
+[21:42:58]     close_169730 -> fixed without the model
+[21:42:58]     initWithContentRect_styleMask_backing_defer__168d74 -> fixed without the model
+[21:42:58]     FUN_00178314 -> fixed without the model
+[21:42:58]     setMarkedText_selectedRange_ -> fixed without the model
+[21:42:58]     firstRectForCharacterRange_ -> fixed without the model
+[21:42:58]     FUN_00187d88 -> fixed without the model
+[21:42:58]     FUN_00190614 -> fixed without the model
+[21:42:58]     FUN_00198f50 -> fixed without the model
+[21:42:58]     layout_1a88bc -> fixed without the model
+[21:42:58]     FUN_003836d4 -> fixed without the model
+[21:42:59]     invalidate_1a8a74 -> fixed without the model
+[21:42:59]     FUN_00215ea0 -> fixed without the model
+[21:42:59]     viewDidMoveToWindow_1a8cf8 -> fixed without the model
+[21:42:59]     viewDidUnhide_1a90dc -> fixed without the model
+[21:42:59]     viewDidHide_1a8e8c -> fixed without the model
+[21:42:59]     viewWillMoveToSuperview__1a8b48 -> fixed without the model
+[21:42:59]     idleTimer_ -> fixed without the model
+[21:42:59]     FUN_001aad28 -> fixed without the model
+[21:42:59]     FUN_001ae660 -> fixed without the model
+[21:42:59]     updateLayerInRect__16ce54 -> fixed without the model
+[21:42:59]     viewFrameChanged_ -> fixed without the model
+[21:42:59]     FUN_001af338 -> fixed without the model
+[21:42:59]     FUN_001ac418 -> fixed without the model
+[21:42:59]     FUN_001af368 -> fixed without the model
+[21:42:59]     FUN_0027f4a0 -> fixed without the model
+[21:42:59]     FUN_001ae170 -> fixed without the model
+[21:42:59]     createLayerTextureWithSize__16cb94 -> fixed without the model
+[21:42:59]     FUN_001af39c -> fixed without the model
+[21:43:00]     FUN_0027f524 -> fixed without the model
+[21:43:00]     FUN_00280b20 -> fixed without the model
+[21:43:00]     FUN_00281380 -> fixed without the model
+[21:43:00]     FUN_002816f8 -> fixed without the model
+[21:43:00]     FUN_00280a84 -> fixed without the model
+[21:43:00]     FUN_00281bac -> fixed without the model
+[21:43:00]     FUN_00281890 -> fixed without the model
+[21:43:00]     FUN_0028112c -> fixed without the model
+[21:43:00]     FUN_00281cf4 -> fixed without the model
+[21:43:00]     FUN_001728ac -> fixed without the model
+[21:43:00]     FUN_00281b94 -> fixed without the model
+[21:43:00]     FUN_00281618 -> fixed without the model
+[21:43:00]     FUN_0028206c -> fixed without the model
+[21:43:00]     FUN_0028144c -> fixed without the model
+[21:43:00]     FUN_001aef24 -> fixed without the model
+[21:43:00]     FUN_00282340 -> fixed without the model
+[21:43:00]     FUN_001722dc -> fixed without the model
+[21:43:00]     FUN_00282484 -> fixed without the model
+[21:43:00]     FUN_00282328 -> fixed without the model
+[21:43:00]     FUN_001a3fa8 -> fixed without the model
+[21:43:00]     FUN_00281f8c -> fixed without the model
+[21:43:00]     FUN_002807ac -> fixed without the model
+[21:43:00]     FUN_00282930 -> fixed without the model
+[21:43:00]     FUN_00282a58 -> fixed without the model
+[21:43:00]     FUN_00281dd8 -> fixed without the model
+[21:43:00]     FUN_00326b70 -> fixed without the model
+[21:43:00]     FUN_00327140 -> fixed without the model
+[21:43:00]     FUN_0032742c -> fixed without the model
+[21:43:00]     FUN_00327590 -> fixed without the model
+[21:43:01]     FUN_00327414 -> fixed without the model
+[21:43:01]     FUN_001725c4 -> fixed without the model
+[21:43:01]     FUN_00327060 -> fixed without the model
+[21:43:01]     FUN_00327658 -> fixed without the model
+[21:43:01]     FUN_00327a08 -> fixed without the model
+[21:43:01]     FUN_00327d38 -> fixed without the model
+[21:43:01]     FUN_00326eac -> fixed without the model
+[21:43:01]     FUN_00327e7c -> fixed without the model
+[21:43:01]     FUN_00327d20 -> fixed without the model
+[21:43:01]     FUN_0032790c -> fixed without the model
+[21:43:01]     FUN_00326aec -> fixed without the model
+[21:43:01]     FUN_001afa08 -> fixed without the model
+[21:43:01]     FUN_002eabb4 -> fixed without the model
+[21:43:01]     FUN_002f9180 -> fixed without the model
+[21:43:01]     FUN_00327758 -> fixed without the model
+[21:43:01]     FUN_00281538 -> fixed without the model
+[21:43:01]     FUN_001b35d4 -> fixed without the model
+[21:43:01]     FUN_00281ec4 -> fixed without the model
+[21:43:01]     FUN_001b7894 -> fixed without the model
+[21:43:01]     FUN_001b7ba8 -> fixed without the model
+[21:43:01]     FUN_001ba28c -> fixed without the model
+[21:43:01]     FUN_001baa64 -> fixed without the model
+[21:43:01]     drawRect__16d1bc -> fixed without the model
+[21:43:01]     FUN_001baac8 -> fixed without the model
+[21:43:01]     FUN_001b8320 -> fixed without the model
+[21:43:01]     FUN_001b8c8c -> fixed without the model
+[21:43:01]     FUN_001baa94 -> fixed without the model
+[21:43:01]     FUN_00326f98 -> fixed without the model
+[21:43:01]     FUN_001bec24 -> fixed without the model
+[21:43:01]     FUN_001bb79c -> fixed without the model
+[21:43:01]     FUN_001c1dd8 -> fixed without the model
+[21:43:02]     FUN_001c1ef0 -> fixed without the model
+[21:43:02]     FUN_001c3870 -> fixed without the model
+[21:43:02]     FUN_001c1e00 -> fixed without the model
+[21:43:02]     FUN_00327844 -> fixed without the model
+[21:43:02]     FUN_001b0ad0 -> fixed without the model
+[21:43:02]     FUN_001c6818 -> fixed without the model
+[21:43:02]     FUN_001c6d78 -> fixed without the model
+[21:43:02]     FUN_001dd434 -> fixed without the model
+[21:43:02]     FUN_001ba68c -> fixed without the model
+[21:43:02]     FUN_001ca15c -> fixed without the model
+[21:43:02]     FUN_001d5ba0 -> fixed without the model
+[21:43:02]     FUN_001d5bd0 -> fixed without the model
+[21:43:02]     FUN_001d5c04 -> fixed without the model
+[21:43:02]     FUN_001ca5b8 -> fixed without the model
+[21:43:02]     FUN_001dd708 -> fixed without the model
+[21:43:02]     FUN_001d94f4 -> fixed without the model
+[21:43:02]     FUN_001cab68 -> fixed without the model
+[21:43:02]     FUN_001e034c -> fixed without the model
+[21:43:02]     FUN_001d1544 -> fixed without the model
+[21:43:02]     FUN_001ebd10 -> fixed without the model
+[21:43:02]     FUN_0025a3b4 -> fixed without the model
+[21:43:02]     FUN_00255938 -> fixed without the model
+[21:43:02]     FUN_002558dc -> fixed without the model
+[21:43:02]     FUN_001f7f0c -> fixed without the model
+[21:43:02]     FUN_001e0d4c -> fixed without the model
+[21:43:02]     FUN_001f88dc -> fixed without the model
+[21:43:02]     FUN_001d5770 -> fixed without the model
+[21:43:02]     FUN_001ad0a4 -> fixed without the model
+[21:43:02]     FUN_002051fc -> fixed without the model
+[21:43:02]     FUN_00217c64 -> fixed without the model
+[21:43:02]     FUN_001e0798 -> fixed without the model
+[21:43:02]     FUN_00206430 -> fixed without the model
+[21:43:02]     FUN_001df4a8 -> fixed without the model
+[21:43:03]     FUN_001dfc68 -> fixed without the model
+[21:43:03]     FUN_002260dc -> fixed without the model
+[21:43:03]     FUN_00216c18 -> fixed without the model
+[21:43:03]     FUN_002265a8 -> fixed without the model
+[21:43:03]     FUN_00227f38 -> fixed without the model
+[21:43:03]     FUN_0022643c -> fixed without the model
+[21:43:03]     FUN_00228374 -> fixed without the model
+[21:43:03]     FUN_00229698 -> fixed without the model
+[21:43:03]     FUN_0022b1ac -> fixed without the model
+[21:43:03]     FUN_0022ac20 -> fixed without the model
+[21:43:03]     FUN_00253b2c -> fixed without the model
+[21:43:03]     FUN_00272dcc -> fixed without the model
+[21:43:03]     FUN_00277880 -> fixed without the model
+[21:43:03]     FUN_00270cac -> fixed without the model
+[21:43:03]     FUN_0027b1d8 -> fixed without the model
+[21:43:03]     FUN_00282b28 -> fixed without the model
+[21:43:03]     FUN_00280990 -> fixed without the model
+[21:43:03]     FUN_0024798c -> fixed without the model
+[21:43:03]     FUN_0028e6b8 -> fixed without the model
+[21:43:03]     FUN_0028f894 -> fixed without the model
+[21:43:03]     FUN_002722a0 -> fixed without the model
+[21:43:03]     FUN_0028e6a0 -> fixed without the model
+[21:43:03]     FUN_0028ad60 -> fixed without the model
+[21:43:03]     FUN_00325a54 -> fixed without the model
+[21:43:03]     FUN_00325a14 -> fixed without the model
+[21:43:03]     FUN_00325b14 -> fixed without the model
+[21:43:03]     FUN_0031f2ac -> fixed without the model
+[21:43:03]     FUN_00320350 -> fixed without the model
+[21:43:03]     FUN_0032004c -> fixed without the model
+[21:43:03]     FUN_00320494 -> fixed without the model
+[21:43:03]     FUN_00320338 -> fixed without the model
+[21:43:03]     FUN_00320b04 -> fixed without the model
+[21:43:03]     FUN_0031ff68 -> fixed without the model
+[21:43:03]     FUN_00320928 -> fixed without the model
+[21:43:03]     FUN_00320d00 -> fixed without the model
+[21:43:03]     FUN_00321728 -> fixed without the model
+[21:43:03]     FUN_00321740 -> fixed without the model
+[21:43:03]     FUN_0031fdb4 -> fixed without the model
+[21:43:04]     FUN_003205e8 -> fixed without the model
+[21:43:04]     FUN_00320ed0 -> fixed without the model
+[21:43:04]     FUN_00321c9c -> fixed without the model
+[21:43:04]     FUN_003217e8 -> fixed without the model
+[21:43:04]     FUN_00321e78 -> fixed without the model
+[21:43:04]     FUN_00322060 -> fixed without the model
+[21:43:04]     FUN_00322a48 -> fixed without the model
+[21:43:04]     FUN_00322a60 -> fixed without the model
+[21:43:04]     FUN_0032195c -> fixed without the model
+[21:43:04]     FUN_00322230 -> fixed without the model
+[21:43:04]     FUN_00322fbc -> fixed without the model
+[21:43:04]     FUN_00323380 -> fixed without the model
+[21:43:04]     FUN_00323198 -> fixed without the model
+[21:43:04]     FUN_00322b08 -> fixed without the model
+[21:43:04]     FUN_00323d68 -> fixed without the model
+[21:43:04]     FUN_00323d80 -> fixed without the model
+[21:43:04]     FUN_00323e28 -> fixed without the model
+[21:43:04]     FUN_00323550 -> fixed without the model
+[21:43:04]     FUN_002cb60c -> fixed without the model
+[21:43:04]     FUN_002d2030 -> fixed without the model
+[21:43:04]     FUN_00322c7c -> fixed without the model
+[21:43:04]     FUN_002d0088 -> fixed without the model
+[21:43:04]     FUN_002e853c -> fixed without the model
+[21:43:04]     FUN_002cc1d0 -> fixed without the model
+[21:43:04]     FUN_002cc784 -> fixed without the model
+[21:43:04]     FUN_002cdff0 -> fixed without the model
+[21:43:04]     FUN_0032dc78 -> fixed without the model
+[21:43:04]     FUN_00277d6c -> fixed without the model
+[21:43:04]     FUN_00299f84 -> fixed without the model
+[21:43:04]     FUN_002fb554 -> fixed without the model
+[21:43:04]     FUN_002fe4a0 -> fixed without the model
+[21:43:04]     FUN_0029f8e8 -> fixed without the model
+[21:43:04]     FUN_0029f988 -> fixed without the model
+[21:43:04]     FUN_0029f9a0 -> fixed without the model
+[21:43:04]     FUN_0029fa70 -> fixed without the model
+[21:43:04]     FUN_0029ff48 -> fixed without the model
+[21:43:04]     FUN_002a0364 -> fixed without the model
+[21:43:04]     FUN_0032ccd4 -> fixed without the model
+[21:43:04]     FUN_002a034c -> fixed without the model
+[21:43:04]     FUN_002a04ac -> fixed without the model
+[21:43:04]     FUN_0029fe4c -> fixed without the model
+[21:43:04]     FUN_0031fea0 -> fixed without the model
+[21:43:04]     FUN_002a09a8 -> fixed without the model
+[21:43:04]     FUN_002a0adc -> fixed without the model
+[21:43:05]     FUN_002a118c -> fixed without the model
+[21:43:05]     FUN_002a13f8 -> fixed without the model
+[21:43:05]     FUN_0029fc5c -> fixed without the model
+[21:43:05]     FUN_002a153c -> fixed without the model
+[21:43:05]     FUN_002a13e0 -> fixed without the model
+[21:43:05]     FUN_002a10a8 -> fixed without the model
+[21:43:05]     FUN_002a1904 -> fixed without the model
+[21:43:05]     FUN_002a06ac -> fixed without the model
+[21:43:05]     FUN_002a1c24 -> fixed without the model
+[21:43:05]     FUN_002a1d68 -> fixed without the model
+[21:43:05]     FUN_002a1c0c -> fixed without the model
+[21:43:05]     FUN_002a0ef4 -> fixed without the model
+[21:43:05]     FUN_002a96d8 -> fixed without the model
+[21:43:05]     FUN_002a1808 -> fixed without the model
+[21:43:05]     FUN_002ccef8 -> fixed without the model
+[21:43:05]     FUN_002cd094 -> fixed without the model
+[21:43:05]     FUN_002cf3b8 -> fixed without the model
+[21:43:05]     FUN_002d4c34 -> fixed without the model
+[21:43:05]     FUN_002a1654 -> fixed without the model
+[21:43:05]     FUN_002ce5f8 -> fixed without the model
+[21:43:05]     FUN_002d5934 -> fixed without the model
+[21:43:05]     FUN_002d5a24 -> fixed without the model
+[21:43:05]     FUN_003020bc -> fixed without the model
+[21:43:05]     FUN_002d4d24 -> fixed without the model
+[21:43:05]     FUN_00302264 -> fixed without the model
+[21:43:05]     FUN_002a1ef0 -> fixed without the model
+[21:43:05]     FUN_00303ab8 -> fixed without the model
+[21:43:05]     FUN_00304acc -> fixed without the model
+[21:43:05]     FUN_003040e4 -> fixed without the model
+[21:43:05]     FUN_00303980 -> fixed without the model
+[21:43:05]     FUN_0030cc98 -> fixed without the model
+[21:43:05]     FUN_0030f060 -> fixed without the model
+[21:43:05]     FUN_0029fd6c -> fixed without the model
+[21:43:05]     FUN_0030cad0 -> fixed without the model
+[21:43:05]     FUN_0030f444 -> fixed without the model
+[21:43:05]     FUN_0030cbd0 -> fixed without the model
+[21:43:06]     FUN_0030fbc0 -> fixed without the model
+[21:43:06]     FUN_0030fdf8 -> fixed without the model
+[21:43:06]     FUN_003101d0 -> fixed without the model
+[21:43:06]     FUN_0030c890 -> fixed without the model
+[21:43:06]     FUN_0030ffb8 -> fixed without the model
+[21:43:06]     FUN_002a0fe0 -> fixed without the model
+[21:43:06]     FUN_0030fafc -> fixed without the model
+[21:43:06]     FUN_00310308 -> fixed without the model
+[21:43:06]     FUN_00310e30 -> fixed without the model
+[21:43:06]     FUN_0030c740 -> fixed without the model
+[21:43:06]     FUN_00311108 -> fixed without the model
+[21:43:06]     FUN_00311574 -> fixed without the model
+[21:43:06]     FUN_00310908 -> fixed without the model
+[21:43:06]     FUN_00310a38 -> fixed without the model
+[21:43:06]     FUN_002a1740 -> fixed without the model
+[21:43:06]     FUN_0030c560 -> fixed without the model
+[21:43:06]     FUN_003196d0 -> fixed without the model
+[21:43:06]     FUN_00315a54 -> fixed without the model
+[21:43:06]     FUN_00311a68 -> fixed without the model
+[21:43:06]     FUN_00315e9c -> fixed without the model
+[21:43:06]     FUN_00316d9c -> fixed without the model
+[21:43:06]     FUN_00312228 -> fixed without the model
+[21:43:06]     FUN_00312658 -> fixed without the model
+[21:43:06]     FUN_00316f00 -> fixed without the model
+[21:43:06]     FUN_00311980 -> fixed without the model
+[21:43:06]     FUN_00317020 -> fixed without the model
+[21:43:06]     FUN_003177a4 -> fixed without the model
+[21:43:06]     FUN_0031980c -> fixed without the model
+[21:43:06]     FUN_0031a0b0 -> fixed without the model
+[21:43:06]     FUN_00315dfc -> fixed without the model
+[21:43:06]     FUN_00311890 -> fixed without the model
+[21:43:06]     FUN_0031a8fc -> fixed without the model
+[21:43:06]     FUN_003197ac -> fixed without the model
+[21:43:06]     FUN_0031a040 -> fixed without the model
+[21:43:06]     FUN_0031b77c -> fixed without the model
+[21:43:06]     FUN_0031d494 -> fixed without the model
+[21:43:06]     FUN_0031a884 -> fixed without the model
+[21:43:06]     FUN_0031d52c -> fixed without the model
+[21:43:06]     FUN_0031b738 -> fixed without the model
+[21:43:06]     FUN_00349a38 -> fixed without the model
+[21:43:06]     FUN_0031c07c -> fixed without the model
+[21:43:06]     FUN_00315d38 -> fixed without the model
+[21:43:06]     FUN_00326800 -> fixed without the model
+[21:43:06]     FUN_0031d248 -> fixed without the model
+[21:43:06]     FUN_0031b70c -> fixed without the model
+[21:43:06]     FUN_00354168 -> fixed without the model
+[21:43:07]   quick fixes (no model): 1106 of 1143 function(s) compile now
+[21:43:07]   ideas (before the one-by-one fixes): 1 kind(s) of error that 8 or more functions share get ideas from the model
+[21:43:22]   ideas: 4 asked, 1 tested, 0 adopted, 2 repeats caught, 0 function(s) compile now. All in build/ideas.txt
+[21:43:22]   fixer loop over 37 failing TU(s), dependency-ordered
+[21:43:41]     [7/37] FUN_00219b04 -> fixed (18s)
+[21:43:42]     [2/37] FUN_00248060 -> fixed (19s)
+[21:43:42]     [14/37] FUN_00220ed0 -> fixed (0s)
+[21:43:42]     [15/37] FUN_001a54e0 -> fixed (0s)
+[21:43:45]     [1/37] FUN_00253668 -> fixed (22s)
+[21:43:45]     [17/37] FUN_00326994 -> fixed (0s)
+[21:43:45]     [18/37] FUN_00255658 -> fixed (0s)
+[21:43:46]     [12/37] FUN_0026f294 -> fixed (23s)
+[21:43:46]     [20/37] FUN_0027ca0c -> fixed (0s)
+[21:43:46]     [21/37] FUN_002875f8 -> fixed (0s)
+[21:43:46]     [22/37] FUN_00287b88 -> fixed (0s)
+[21:43:46]     [23/37] FUN_00287f18 -> fixed (0s)
+[21:43:46]     [24/37] FUN_0028fcd4 -> fixed (0s)
+[21:43:46]     [25/37] FUN_0029133c -> fixed (0s)
+[21:43:46]     [26/37] FUN_0031e640 -> fixed (0s)
+[21:43:46]     [27/37] FUN_002ca1dc -> fixed (0s)
+[21:43:46]     [28/37] FUN_002c9b94 -> fixed (0s)
+[21:43:46]     [29/37] FUN_002cbf10 -> fixed (0s)
+[21:43:46]     [30/37] FUN_0029a1f0 -> fixed (0s)
+[21:43:47]     [31/37] FUN_002d1688 -> fixed (0s)
+[21:43:47]     [32/37] FUN_002d101c -> fixed (0s)
+[21:43:47]     [33/37] FUN_0030798c -> fixed (0s)
+[21:43:47]     [34/37] FUN_0034fb38 -> fixed (0s)
+[21:43:47]     [35/37] FUN_0035ecc4 -> fixed (0s)
+[21:43:47]     [36/37] FUN_0036df48 -> fixed (0s)
+[21:43:47]     [8/37] FUN_0000cbac -> fixed (24s)
+[21:43:47]     [37/37] FUN_003709f8 -> fixed (0s)
+[21:43:48]     [4/37] FUN_00223948 -> fixed (25s)
+[21:43:49]     [10/37] FUN_00030924 -> fixed (26s)
+[21:43:50]     [6/37] FUN_001c0f60 -> fixed (27s)
+[21:43:52]     [9/37] FUN_00220afc -> fixed (30s)
+[21:43:55]     [11/37] FUN_00268dcc -> fixed (32s)
+[21:44:00]   QUARANTINE FUN_001a8494: expected expression
+[21:44:00]     [5/37] FUN_001a8494 -> quarantined (37s)
+[21:44:01]     [13/37] FUN_000cab20 -> fixed (20s)
+[21:44:03]     [16/37] insertText__16d864 -> fixed (20s)
+[21:44:04]     [19/37] FUN_0025d944 -> fixed (19s)
+[21:44:05]     [3/37] FUN_0020f76c -> fixed (42s)
+[21:44:05]     FUN_001a8494 -> fixed after quarantine (learned fix)
+[21:44:05]   learned fixes on quarantined functions: 1 of 1 retried compile now
+[21:44:05]   learned fixes: 122 proven, 515 being tried, 159 retired (41 new this run); used 2111 of 2128 time(s) tried, 99% kept; 1 quarantined function(s) rescued. All in build/learned_fixes.txt
+[21:44:05]   model: 17 small edit(s) asked for, 0 without a usable edit
+[21:44:05]   fixer loop done: 30173 compiling, 0 quarantined
+[21:44:05]   repair loop: 0 quarantined function(s) rescued
+[21:46:04]   link round 1: linking 30176 objects ...
+[21:46:06]   link round 1: 98 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
+[21:46:07]   link round 2: linking 30177 objects ...
+[21:46:08]   24 placeholder definition(s) in stubs.cpp (listed in link_report.txt)
+[21:46:08]   LINK OK (round 2) -> /Users/admin/glitchdecomp/fastpass 3/build_c/program.dylib
+[21:46:28]   previous final/ moved to /Users/admin/glitchdecomp/fastpass 3/snapshots/20261024-214628-final
+[21:46:28]   final C source: /Users/admin/glitchdecomp/fastpass 3/final/program.c (30173 functions, 17.2 MB), built by final/build.sh into program.dylib
 ```
 
 ## pipeline_state.json
@@ -3763,92 +4246,83 @@ streambuf_385ee8
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-24 20:03:18",
-      "at": "2026-10-24 20:04:25",
-      "seconds": 67,
+      "started": "2026-10-24 21:32:31",
+      "at": "2026-10-24 21:34:09",
+      "seconds": 98,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-24 20:04:27",
-      "at": "2026-10-24 20:06:10",
-      "seconds": 103,
+      "started": "2026-10-24 21:34:11",
+      "at": "2026-10-24 21:35:56",
+      "seconds": 105,
       "model": "",
       "note": "30173/30489 rewritten",
       "model_busy": 12
     },
     "split": {
       "done": true,
-      "started": "2026-10-24 20:06:10",
-      "at": "2026-10-24 20:10:42",
-      "seconds": 272,
-      "note": "29748/30173 compile after the sweep"
+      "started": "2026-10-24 21:35:56",
+      "at": "2026-10-24 21:39:06",
+      "seconds": 190,
+      "note": "28984/30173 compile after the sweep"
     },
     "fix": {
       "done": true,
-      "started": "2026-10-24 20:10:42",
-      "at": "2026-10-24 20:14:53",
-      "seconds": 250,
+      "started": "2026-10-24 21:39:06",
+      "at": "2026-10-24 21:44:05",
+      "seconds": 299,
       "model": "qwen2.5-coder-3b-instruct-mlx",
-      "model_busy": 15
+      "model_busy": 18
     },
     "recover": {
       "done": true,
-      "started": "2026-10-24 20:14:53",
-      "at": "2026-10-24 20:14:53",
+      "started": "2026-10-24 21:44:05",
+      "at": "2026-10-24 21:44:06",
       "seconds": 0,
       "model": "qwen2.5-coder-3b-instruct-mlx"
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-24 20:04:25",
-      "at": "2026-10-24 20:04:27",
+      "started": "2026-10-24 21:34:09",
+      "at": "2026-10-24 21:34:11",
       "seconds": 2,
-      "note": "1141 replacement(s)"
+      "note": "1142 replacement(s)"
     },
     "link": {
       "done": true,
-      "started": "2026-10-24 20:14:53",
-      "at": "2026-10-24 20:19:24",
-      "seconds": 271,
+      "started": "2026-10-24 21:44:06",
+      "at": "2026-10-24 21:46:09",
+      "seconds": 123,
       "note": "linked"
     },
     "test": {
       "done": false,
-      "started": "2026-10-24 20:19:24",
-      "at": "2026-10-24 20:19:30",
+      "started": "2026-10-24 21:46:09",
+      "at": "2026-10-24 21:46:15",
       "note": "the rebuilt plugin didn't load: load executable"
     },
     "improve": {
       "done": false,
-      "started": "2026-10-24 20:19:30",
-      "at": "2026-10-24 20:19:30",
+      "started": "2026-10-24 21:46:15",
+      "at": "2026-10-24 21:46:15",
       "note": "off (--improve turns it on)"
     },
     "organize": {
       "done": true,
-      "started": "2026-10-24 20:19:30",
-      "at": "2026-10-24 20:19:42",
+      "started": "2026-10-24 21:46:15",
+      "at": "2026-10-24 21:46:28",
       "note": "final/program.c: 30173 functions",
       "model": "qwen2.5-coder-3b-instruct-mlx",
-      "seconds": 12
+      "seconds": 13
     }
   },
-  "version": "2026-10-25.10",
+  "version": "2026-10-25.11",
   "chars_per_token": {
     "ctx": 8192,
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-24 18:26:45",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "test|the rebuilt plugin didn't load: load executable": 1,
-        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 119,
-        "link|functions replaced by placeholders to link": 24
-      }
-    },
     {
       "at": "2026-10-24 18:56:17",
       "keys": {
@@ -3891,17 +4365,18 @@ streambuf_385ee8
         "fix|small edits the model couldn't give a usable answer for": 2,
         "link|functions replaced by placeholders to link": 24
       }
+    },
+    {
+      "at": "2026-10-24 21:46:28",
+      "keys": {
+        "test|the rebuilt plugin didn't load: load executable": 1,
+        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 119,
+        "fix|fixes that undid each other (the cycle was stopped and the model got the function)": 2,
+        "link|functions replaced by placeholders to link": 24
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-24 17:54",
-      "functions": 30173,
-      "compile_pct": 100.0,
-      "quarantined_pct": 0.0,
-      "to_fix": 0,
-      "test_pass_pct": 0.0
-    },
     {
       "at": "10-24 18:26",
       "functions": 30173,
@@ -3959,6 +4434,21 @@ streambuf_385ee8
       "learned_kept_pct": 98.6,
       "rescued": 2,
       "test_pass_pct": 0.0
+    },
+    {
+      "at": "10-24 21:46",
+      "functions": 30173,
+      "compile_pct": 100.0,
+      "quarantined_pct": 0.0,
+      "to_fix": 0,
+      "fix_tried": 37,
+      "fix_success_pct": 97.3,
+      "fix_per_hour": 795,
+      "learned_proven": 122,
+      "learned_kept_pct": 99.2,
+      "rescued": 1,
+      "ideas_adopted": "0/1",
+      "test_pass_pct": 0.0
     }
   ]
 }
@@ -3968,8 +4458,8 @@ streambuf_385ee8
 
 ```json
 {
-  "generated": "2026-10-24 20:19:42",
-  "pipeline_version": "2026-10-25.10",
+  "generated": "2026-10-24 21:46:28",
+  "pipeline_version": "2026-10-25.11",
   "workdir": "/Users/admin/glitchdecomp/fastpass 3",
   "export": {
     "functions": 30489,
@@ -4005,7 +4495,7 @@ streambuf_385ee8
     "functions": 30173,
     "compile": 30173,
     "quarantined": 0,
-    "fixed_by_model": 119,
+    "fixed_by_model": 127,
     "rederived": 1,
     "rederived_by": {
       "faithful-pseudocode": 1
@@ -4025,75 +4515,75 @@ streambuf_385ee8
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-24 20:03:18",
-      "at": "2026-10-24 20:04:25",
-      "seconds": 67,
+      "started": "2026-10-24 21:32:31",
+      "at": "2026-10-24 21:34:09",
+      "seconds": 98,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-24 20:04:27",
-      "at": "2026-10-24 20:06:10",
-      "seconds": 103,
+      "started": "2026-10-24 21:34:11",
+      "at": "2026-10-24 21:35:56",
+      "seconds": 105,
       "model": "",
       "note": "30173/30489 rewritten",
       "model_busy": 12
     },
     "split": {
       "done": true,
-      "started": "2026-10-24 20:06:10",
-      "at": "2026-10-24 20:10:42",
-      "seconds": 272,
-      "note": "29748/30173 compile after the sweep"
+      "started": "2026-10-24 21:35:56",
+      "at": "2026-10-24 21:39:06",
+      "seconds": 190,
+      "note": "28984/30173 compile after the sweep"
     },
     "fix": {
       "done": true,
-      "started": "2026-10-24 20:10:42",
-      "at": "2026-10-24 20:14:53",
-      "seconds": 250,
+      "started": "2026-10-24 21:39:06",
+      "at": "2026-10-24 21:44:05",
+      "seconds": 299,
       "model": "qwen2.5-coder-3b-instruct-mlx",
-      "model_busy": 15
+      "model_busy": 18
     },
     "recover": {
       "done": true,
-      "started": "2026-10-24 20:14:53",
-      "at": "2026-10-24 20:14:53",
+      "started": "2026-10-24 21:44:05",
+      "at": "2026-10-24 21:44:06",
       "seconds": 0,
       "model": "qwen2.5-coder-3b-instruct-mlx"
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-24 20:04:25",
-      "at": "2026-10-24 20:04:27",
+      "started": "2026-10-24 21:34:09",
+      "at": "2026-10-24 21:34:11",
       "seconds": 2,
-      "note": "1141 replacement(s)"
+      "note": "1142 replacement(s)"
     },
     "link": {
       "done": true,
-      "started": "2026-10-24 20:14:53",
-      "at": "2026-10-24 20:19:24",
-      "seconds": 271,
+      "started": "2026-10-24 21:44:06",
+      "at": "2026-10-24 21:46:09",
+      "seconds": 123,
       "note": "linked"
     },
     "test": {
       "done": false,
-      "started": "2026-10-24 20:19:24",
-      "at": "2026-10-24 20:19:30",
+      "started": "2026-10-24 21:46:09",
+      "at": "2026-10-24 21:46:15",
       "note": "the rebuilt plugin didn't load: load executable"
     },
     "improve": {
       "done": false,
-      "started": "2026-10-24 20:19:30",
-      "at": "2026-10-24 20:19:30",
+      "started": "2026-10-24 21:46:15",
+      "at": "2026-10-24 21:46:15",
       "note": "off (--improve turns it on)"
     },
     "organize": {
       "done": true,
-      "started": "2026-10-24 20:19:30",
-      "at": "2026-10-24 20:19:42",
+      "started": "2026-10-24 21:46:15",
+      "at": "2026-10-24 21:46:28",
       "note": "final/program.c: 30173 functions",
       "model": "qwen2.5-coder-3b-instruct-mlx",
-      "seconds": 12
+      "seconds": 13
     }
   }
 }
@@ -4103,7 +4593,7 @@ streambuf_385ee8
 
 ```json
 {
-  "input_sha": "192ea484b6d5351f",
+  "input_sha": "63b2ba1b109973f6",
   "split_done": true,
   "header_ok": true,
   "sweep_done": true,
