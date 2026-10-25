@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.12"
+PIPELINE_VERSION = "2026-10-25.13"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -4286,7 +4286,7 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
         # a register Ghidra saw read but nothing gave (in_x0, unaff_x19, extraout_x1): its
         # declaration has no value, so it held whatever was there; 0, so it fails the same
         # clear way each time (a null pointer) instead of at random
-        b3 = re.sub(r"^(\s*[A-Za-z_][\w\s]*?\**\s*)((?:in|unaff|extraout)_\w+)\s*;",
+        b3 = re.sub(r"^(\s*(?!(?:return|goto|case|else|do|sizeof)\b)[A-Za-z_][\w\s]*?\**\s*)((?:in|unaff|extraout)_\w+)\s*;",
                     r"\1\2 = {0};", b2, flags=re.M)
         if b3 != b2:
             stats["registers Ghidra saw read but nothing gave (as 0)"] += 1

@@ -2807,11 +2807,13 @@ def test_registers_ghidra_saw_read_but_nothing_gave_start_as_zero(tmp_path):
     import subprocess
     entries = [{"tag": "", "name": "f", "head": "long f(void)",
                 "body": "{\n  undefined8 in_x0;\n  gh16 extraout_q0;\n  long *unaff_x19;\n"
+                        "  if (in_x0) return (long)unaff_x19;\n"
                         "  return (long)in_x0 + (long)unaff_x19 + (long)extraout_q0.q[0];\n}"}]
     known = set(re.findall(r"\btypedef\b[^;]*?\b([A-Za-z_]\w*)\s*;", dp.GHIDRA_INTRINS_H)) | dp.C_BASE_TYPES
     res = dp.c_mode_passes(entries, known)
     b = entries[0]["body"]
     assert "undefined8 in_x0 = {0};" in b and "long *unaff_x19 = {0};" in b and "extraout_q0 = {0};" in b
+    assert "  return (long)in_x0 +" in b                 # a return is never taken for a declaration
     cc = shutil.which("clang") or shutil.which("gcc")
     if not cc:
         return
