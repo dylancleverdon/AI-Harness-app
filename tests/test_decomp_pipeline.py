@@ -2800,4 +2800,24 @@ def test_functions_reading_a_register_they_arent_given_are_checked_too():
                            "20": "long FUN_c(long param_1)\n{\n  return param_1;\n}\n",
                            "30": "void FUN_d(void)\n{\n  FUN_e(in_x1, 2);\n  return;\n}\n"}}
     assert dp._missed_input_functions(data, {"30"}) == ["10"]
-    assert "commitParamsToDatabase" in dp.GHIDRA_SIGFIX_SCRIPT and '"check"' in dp.GHIDRA_SIGFIX_SCRIPT
+    assert "giveParams" in dp.GHIDRA_SIGFIX_SCRIPT and '"check"' in dp.GHIDRA_SIGFIX_SCRIPT
+
+
+def test_registers_ghidra_saw_read_but_nothing_gave_start_as_zero(tmp_path):
+    import subprocess
+    entries = [{"tag": "", "name": "f", "head": "long f(void)",
+                "body": "{\n  undefined8 in_x0;\n  gh16 extraout_q0;\n  long *unaff_x19;\n"
+                        "  return (long)in_x0 + (long)unaff_x19 + (long)extraout_q0.q[0];\n}"}]
+    known = set(re.findall(r"\btypedef\b[^;]*?\b([A-Za-z_]\w*)\s*;", dp.GHIDRA_INTRINS_H)) | dp.C_BASE_TYPES
+    res = dp.c_mode_passes(entries, known)
+    b = entries[0]["body"]
+    assert "undefined8 in_x0 = {0};" in b and "long *unaff_x19 = {0};" in b and "extraout_q0 = {0};" in b
+    cc = shutil.which("clang") or shutil.which("gcc")
+    if not cc:
+        return
+    (tmp_path / "z.c").write_text(dp.GHIDRA_INTRINS_H + "\n" + res["opaque"] + "\n" + entries[0]["head"] + "\n" + b
+                                  + "\nint main(void) { return (int)f(); }\n")
+    r = subprocess.run([cc, "-w", "-x", "c", "-std=gnu11", str(tmp_path / "z.c"), "-o", str(tmp_path / "z")],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert subprocess.run([str(tmp_path / "z")]).returncode == 0

@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.10"
+PIPELINE_VERSION = "2026-10-25.11"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -1780,7 +1780,7 @@ public class GhidraDataExport extends GhidraScript {
 """
 
 
-SIGFIX_VERSION = 3    # raised when the signature fix finds more: it's redone
+SIGFIX_VERSION = 4    # raised when the signature fix finds more: it's redone
 
 GHIDRA_SIGFIX_SCRIPT = r"""
 // GhidraSignatureFix.java - written by decomp_pipeline.py. Ghidra decides a
@@ -1801,10 +1801,8 @@ import ghidra.program.model.data.Undefined8DataType;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.ParameterImpl;
 import ghidra.program.model.listing.Parameter;
-import ghidra.program.model.pcode.HighFunction;
 import ghidra.program.model.symbol.SourceType;
 import java.io.*;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -1814,27 +1812,6 @@ public class GhidraSignatureFix extends GhidraScript {
     static final Pattern MISSED_INPUT = Pattern.compile("\\bin_(?:x[0-7]|w[0-7]|d[0-7]|s[0-7]|q[0-7])\\b");
     static final int ROUNDS = 8;
 
-    // the decompiler's parameters into the function's signature (keeping its return
-    // type): HighFunctionDBUtil, whichever form this Ghidra has
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private boolean commitParams(HighFunction hf) {
-        try {
-            Class<?> u = Class.forName("ghidra.program.model.pcode.HighFunctionDBUtil");
-            try {
-                Class rco = Class.forName("ghidra.program.model.pcode.HighFunctionDBUtil$ReturnCommitOption");
-                Method m = u.getMethod("commitParamsToDatabase", HighFunction.class, boolean.class, rco, SourceType.class);
-                m.invoke(null, hf, true, Enum.valueOf(rco, "NO_COMMIT"), SourceType.ANALYSIS);
-                return true;
-            } catch (ClassNotFoundException | NoSuchMethodException e) {
-                Method m = u.getMethod("commitParamsToDatabase", HighFunction.class, boolean.class, SourceType.class);
-                m.invoke(null, hf, true, SourceType.ANALYSIS);
-                return true;
-            }
-        } catch (Throwable e) {
-            println("  ! couldn't commit the parameters of " + hf.getFunction().getName() + ": " + e);
-            return false;
-        }
-    }
     private static String esc(String s) {
         if (s == null) return "";
         StringBuilder b = new StringBuilder();
@@ -1846,6 +1823,33 @@ public class GhidraSignatureFix extends GhidraScript {
             else b.append(c);
         }
         return b.toString();
+    }
+
+    // the integer argument registers it reads (in_x0..in_x7, in_w0..): it takes that
+    // many parameters, in order (the calling convention puts them there)
+    static final Pattern ARG_REG = Pattern.compile("\\bin_[xw]([0-7])\\b");
+
+    private boolean giveParams(Function f, String c) {
+        int top = -1;
+        java.util.regex.Matcher m = ARG_REG.matcher(c);
+        while (m.find()) top = Math.max(top, Integer.parseInt(m.group(1)));
+        int have = f.getParameterCount();
+        if (top < have) return false;
+        try {
+            Parameter[] ps = new Parameter[top + 1];
+            Parameter[] old = f.getParameters();
+            for (int i = 0; i <= top; i++) {
+                ps[i] = i < old.length
+                        ? new ParameterImpl(old[i].getName(), old[i].getDataType(), currentProgram)
+                        : new ParameterImpl("param_" + (i + 1), Undefined8DataType.dataType, currentProgram);
+            }
+            f.replaceParameters(Function.FunctionUpdateType.DYNAMIC_STORAGE_ALL_PARAMS, true,
+                    SourceType.USER_DEFINED, ps);
+            return f.getParameterCount() > have;
+        } catch (Exception e) {
+            println("  ! couldn't give " + f.getName() + " its parameters: " + e);
+            return false;
+        }
     }
 
     @Override
@@ -1903,9 +1907,8 @@ public class GhidraSignatureFix extends GhidraScript {
                     DecompileResults res = d.decompileFunction(f, 60, monitor);
                     if (res == null || !res.decompileCompleted() || res.getDecompiledFunction() == null) continue;
                     String c = res.getDecompiledFunction().getC();
-                    if (c == null || !MISSED_INPUT.matcher(c).find() || res.getHighFunction() == null) continue;
-                    int before = f.getParameterCount();
-                    if (commitParams(res.getHighFunction()) && f.getParameterCount() > before) {
+                    if (c == null || !MISSED_INPUT.matcher(c).find()) continue;
+                    if (giveParams(f, c)) {
                         changed.add(f);
                         committed++;
                     }
@@ -2047,6 +2050,7 @@ def run_signature_fix(P: Paths, args, targets: list, checks: list = ()) -> Optio
                            f"fixing their signatures and decompiling them and their callers again "
                            f"(headless, read-only)")
     tail: list = []
+    complaints = 0
     try:
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in proc.stdout:
@@ -2057,6 +2061,10 @@ def run_signature_fix(P: Paths, args, targets: list, checks: list = ()) -> Optio
                         or "round " in line or "parameters found" in line \
                         or line.lstrip().startswith(("Done", "!")) or "ERROR" in line or "Exception" in line:
                     print("  " + line, flush=True)
+                if (line.lstrip().startswith("!") or "ERROR" in line or "round " in line
+                        or "parameters found" in line) and complaints < 40:
+                    plog(P, msg="    ghidra: " + line.strip()[:220])       # into the log, for the report
+                    complaints += 1
         code = proc.wait()
     except Exception as e:
         plog(P, show=True, msg=f"  !! couldn't launch Ghidra for the signature fix: {e}")
@@ -4275,7 +4283,14 @@ def c_mode_passes(entries: list[dict], known_types: set, tick=lambda: None,
         b2 = re.sub(r"(?<![\w.>])NAN\s*\(", "isnan(", b)
         if b2 != b:
             stats["NAN(x) tests (as isnan)"] += 1
-        e["body"] = b2
+        # a register Ghidra saw read but nothing gave (in_x0, unaff_x19, extraout_x1): its
+        # declaration has no value, so it held whatever was there; 0, so it fails the same
+        # clear way each time (a null pointer) instead of at random
+        b3 = re.sub(r"^(\s*[A-Za-z_][\w\s]*?\**\s*)((?:in|unaff|extraout)_\w+)\s*;",
+                    r"\1\2 = {0};", b2, flags=re.M)
+        if b3 != b2:
+            stats["registers Ghidra saw read but nothing gave (as 0)"] += 1
+        e["body"] = b3
     parts = {e["name"]: _head_parts(e["head"]) for e in entries}
     functions = set(parts)
 
