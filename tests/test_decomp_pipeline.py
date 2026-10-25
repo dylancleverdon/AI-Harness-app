@@ -2730,7 +2730,8 @@ def test_functions_ghidra_lost_the_return_value_of_are_fixed_in_ghidra(tmp_path,
             "300": "long FUN_caller(long param_1)\n\n{\n  long *p;\n  long v;\n"
                    "  v = FUN_chain();\n  p = (long *)FUN_getter();\n  *p = v;\n  FUN_quiet();\n  return param_1;\n}\n",
             "400": "void FUN_quiet(void)\n\n{\n  return;\n}\n"},
-        "signatures": {"100": "void FUN_getter(void)", "200": "void FUN_chain(void)",
+        # Ghidra's stored signature often says "undefined"; the decompiled code says void
+        "signatures": {"100": "undefined FUN_getter(void)", "200": "undefined FUN_chain(void)",
                        "300": "long FUN_caller(long param_1)", "400": "void FUN_quiet(void)"}}
     # FUN_quiet's result is never used: it's left alone
     assert dp._lost_return_targets(export) == [("100", True), ("200", False)]
@@ -2781,3 +2782,14 @@ def test_constants_among_the_code_are_read_but_the_code_is_never_a_pointers_targ
     assert n == 0 and "at 2000 -> 1008" in (P.rewrite / "data_unresolved_pointers.txt").read_text()
     entries = [{"name": "f", "head": "long f(void)", "body": "{\n  return *(long *)0x1008;\n}"}]
     assert dp._data_address_literals(entries, data) == 0                 # a code address stays one
+
+
+def test_the_final_privacy_check_passes_the_sweeps_own_stand_ins():
+    clean = ('const char *a = "https://example.invalid/3"; const char *b = "/Users/user1/x";\n'
+             'const char *c = "Copyright (removed 2)"; const char *d = "com.example.app4";\n'
+             'const char *e = "/Library/Audio/Plug-Ins/Components/"; const char *f = "1.2.3";\n'
+             'const char *g = "user2@example.invalid"; long Name3Window = 0;\n')
+    assert dp.final_privacy_hits(clean, ["acmeaudio"]) == []
+    dirty = 'const char *a = "https://acme.example.com/x"; long AcmeAudioWindow = 0;\n'
+    kinds = [k for k, _, _ in dp.final_privacy_hits(dirty, ["acmeaudio"])]
+    assert kinds == ["string: web address", "ident: a word from the blocklist"]

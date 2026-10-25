@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.8"
+PIPELINE_VERSION = "2026-10-25.9"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -1780,7 +1780,7 @@ public class GhidraDataExport extends GhidraScript {
 """
 
 
-SIGFIX_VERSION = 1    # raised when the signature fix finds more: it's redone
+SIGFIX_VERSION = 2    # raised when the signature fix finds more: it's redone
 
 GHIDRA_SIGFIX_SCRIPT = r"""
 // GhidraSignatureFix.java - written by decomp_pipeline.py. Ghidra decides a
@@ -1906,9 +1906,12 @@ def _lost_return_targets(data: dict) -> list:
         if isinstance(f, dict) and f.get("addr") and f.get("name"):
             by_name.setdefault(f["name"].split("::")[-1], []).append(f["addr"])
     void = {}
-    for a, s in sigs.items():
-        head = re.sub(r"\b(?:__thiscall|__cdecl|__stdcall|static|virtual)\b", "", str(s)).strip()
-        if head.startswith("void ") and "*" not in head.split("(")[0]:
+    for a in set(sigs) | set(pseudo):
+        # what the decompiler shows (Ghidra's stored signature often still says "undefined")
+        code = strip_comments(pseudo.get(a) or "")
+        head = code[:code.find("{")] if "{" in code else str(sigs.get(a) or "")
+        head = re.sub(r"\b(?:__thiscall|__cdecl|__stdcall|__fastcall|static|virtual)\b", "", head).strip()
+        if re.match(r"void\s+[^*(]*\(", head):
             void[a] = True
     if not void:
         return []
@@ -12226,6 +12229,28 @@ PRIVACY_STR = re.compile(r"[/\\][A-Za-z0-9._-]+[/\\]|https?://|www\.|@[\w-]+\.\w
                          r"(?i:copyright|\(c\)|©|\b(?:inc|ltd|llc|gmbh|corp|corporation)\b)")
 
 
+STAND_IN = re.compile(r"example\.invalid|com\.example\.app\d+|/Users/user\d+|Copyright \(removed \d+\)|"
+                      r"\bName\d+")
+
+
+def final_privacy_hits(text: str, terms: list[str]) -> list[tuple[str, str, int]]:
+    """The C build's last check, on code the privacy stage already swept: what the
+    sweep would still replace (a web address, an email address, a bundle ID, a user
+    folder, a copyright line that isn't its stand-in) and the blocklist's words."""
+    out = []
+    low_terms = [t.lower() for t in terms]
+    for k, t, s, e in tokens(text):
+        if k not in ("string", "comment", "ident"):
+            continue
+        rule = next((kind for kind, rx, _ in PRIVACY_PATTERNS if k != "ident"
+                     for m in rx.finditer(t) if not STAND_IN.search(m.group(0))), None)
+        if rule is None and any(x in t.lower() for x in low_terms):
+            rule = "a word from the blocklist"
+        if rule:
+            out.append((f"{k}: {rule}", t, s))
+    return out
+
+
 def privacy_hits(text: str, terms: list[str]) -> list[tuple[str, str, int]]:
     """(kind, token text, position) for strings/comments/identifiers that identify."""
     out = []
@@ -13809,12 +13834,15 @@ def run_organize_c(P: "Paths", cfg: "Config", records: dict, args) -> dict:
         if p.is_file() and p.suffix in (".h", ".c", ".md", ".sh") and \
                 p.name not in ("ghidra_intrins.h", "ghidra_data.c", "ghidra_data.h"):
             txt = p.read_text(errors="replace")
-            for kind, tok, s in privacy_hits(txt, load_blocklist(P)):
-                hits.append(f"{p.relative_to(tmp)}:{_line_of(txt, s)}: {kind} {tok[:80]}")
+            for kind, tok, s in final_privacy_hits(txt, load_blocklist(P)):
+                hits.append((kind, f"{p.relative_to(tmp)}:{_line_of(txt, s)}: {kind} {tok[:80]}"))
+    by_kind = Counter(k for k, _ in hits)
     (P.root / "privacy_report.txt").write_text(
         "Nothing found that identifies the original program.\n" if not hits else
-        "Possible identifying text in the final code:\n" + "\n".join(hits[:500]) + "\n")
+        "Possible identifying text in the final code:\n" + "\n".join(h for _, h in hits[:500]) + "\n")
     result["privacy_hits"] = len(hits)
+    if hits:                                       # what kinds (never the text: the report is public)
+        log(cfg, show=True, msg="  privacy check, by kind: " + ", ".join(f"{n} × {k}" for k, n in by_kind.most_common()))
     if hits and not args.allow_privacy_findings:
         struggle("organize", "possible identifying items left (final/ not written)", n=len(hits),
                  hint="see the privacy report; add names to privacy_blocklist.txt")
