@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.9"
+PIPELINE_VERSION = "2026-10-25.10"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -1780,7 +1780,7 @@ public class GhidraDataExport extends GhidraScript {
 """
 
 
-SIGFIX_VERSION = 2    # raised when the signature fix finds more: it's redone
+SIGFIX_VERSION = 3    # raised when the signature fix finds more: it's redone
 
 GHIDRA_SIGFIX_SCRIPT = r"""
 // GhidraSignatureFix.java - written by decomp_pipeline.py. Ghidra decides a
@@ -1801,12 +1801,40 @@ import ghidra.program.model.data.Undefined8DataType;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.ParameterImpl;
 import ghidra.program.model.listing.Parameter;
+import ghidra.program.model.pcode.HighFunction;
 import ghidra.program.model.symbol.SourceType;
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class GhidraSignatureFix extends GhidraScript {
+    // a register the code reads that its signature doesn't have: a parameter Ghidra missed
+    static final Pattern MISSED_INPUT = Pattern.compile("\\bin_(?:x[0-7]|w[0-7]|d[0-7]|s[0-7]|q[0-7])\\b");
+    static final int ROUNDS = 8;
+
+    // the decompiler's parameters into the function's signature (keeping its return
+    // type): HighFunctionDBUtil, whichever form this Ghidra has
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private boolean commitParams(HighFunction hf) {
+        try {
+            Class<?> u = Class.forName("ghidra.program.model.pcode.HighFunctionDBUtil");
+            try {
+                Class rco = Class.forName("ghidra.program.model.pcode.HighFunctionDBUtil$ReturnCommitOption");
+                Method m = u.getMethod("commitParamsToDatabase", HighFunction.class, boolean.class, rco, SourceType.class);
+                m.invoke(null, hf, true, Enum.valueOf(rco, "NO_COMMIT"), SourceType.ANALYSIS);
+                return true;
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+                Method m = u.getMethod("commitParamsToDatabase", HighFunction.class, boolean.class, SourceType.class);
+                m.invoke(null, hf, true, SourceType.ANALYSIS);
+                return true;
+            }
+        } catch (Throwable e) {
+            println("  ! couldn't commit the parameters of " + hf.getFunction().getName() + ": " + e);
+            return false;
+        }
+    }
     private static String esc(String s) {
         if (s == null) return "";
         StringBuilder b = new StringBuilder();
@@ -1837,6 +1865,10 @@ public class GhidraSignatureFix extends GhidraScript {
                     .getAddress(Long.parseUnsignedLong(p[0], 16));
             Function f = getFunctionAt(ad);
             if (f == null || f.isExternal()) continue;
+            if (p.length > 1 && p[1].equals("check")) {    // reads a register it isn't given
+                redo.add(f);
+                continue;
+            }
             try {
                 if (p.length > 1 && p[1].equals("empty") && f.getParameterCount() == 0) {
                     // its code is just "ret": it returns the value it's given
@@ -1858,9 +1890,42 @@ public class GhidraSignatureFix extends GhidraScript {
                 + "decompiling " + redo.size() + " function(s) again");
         DecompInterface d = new DecompInterface();
         if (!d.openProgram(currentProgram)) { println("ERROR: could not open the decompiler"); return; }
+        // up the call chains: once a callee takes the value it passes on, its caller is
+        // seen reading a register it was never given (in_x0): that becomes its parameter,
+        // and its callers are looked at next, until nothing changes
+        LinkedHashSet<Function> work = new LinkedHashSet<Function>(redo);
+        int committed = 0;
+        for (int round = 1; round <= ROUNDS && !work.isEmpty() && !monitor.isCancelled(); round++) {
+            LinkedHashSet<Function> changed = new LinkedHashSet<Function>();
+            for (Function f : work) {
+                if (monitor.isCancelled()) break;
+                try {
+                    DecompileResults res = d.decompileFunction(f, 60, monitor);
+                    if (res == null || !res.decompileCompleted() || res.getDecompiledFunction() == null) continue;
+                    String c = res.getDecompiledFunction().getC();
+                    if (c == null || !MISSED_INPUT.matcher(c).find() || res.getHighFunction() == null) continue;
+                    int before = f.getParameterCount();
+                    if (commitParams(res.getHighFunction()) && f.getParameterCount() > before) {
+                        changed.add(f);
+                        committed++;
+                    }
+                } catch (Exception e) {
+                    println("  ! " + f.getName() + ": " + e);
+                }
+            }
+            println("  round " + round + ": " + changed.size() + " function(s) given the parameters they read");
+            LinkedHashSet<Function> next = new LinkedHashSet<Function>();
+            for (Function f : changed) {
+                redo.add(f);
+                for (Function c : f.getCallingFunctions(monitor)) { next.add(c); redo.add(c); }
+            }
+            work = next;
+        }
+        println("parameters found up the call chains: " + committed + "; decompiling " + redo.size()
+                + " function(s) for the export");
         Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8));
         StringBuilder sigs = new StringBuilder();
-        w.write("{\"version\":1,\"fixed\":" + fixed + ",\"pseudocode\":{");
+        w.write("{\"version\":2,\"fixed\":" + fixed + ",\"committed\":" + committed + ",\"pseudocode\":{");
         boolean first = true;
         int n = 0;
         long t0 = System.currentTimeMillis();
@@ -1946,17 +2011,31 @@ def _lost_return_targets(data: dict) -> list:
     return out
 
 
-def run_signature_fix(P: Paths, args, targets: list) -> Optional[dict]:
-    """GhidraSignatureFix.java over the targets (headless, read-only): the patch."""
+MISSED_INPUT = re.compile(r"\bin_(?:x[0-7]|w[0-7]|d[0-7]|s[0-7]|q[0-7])\b")
+
+
+def _missed_input_functions(data: dict, skip: set) -> list:
+    """Functions whose code reads an argument register their signature doesn't
+    have (Ghidra's in_x0): a parameter Ghidra missed, often because the function
+    it passes it on to took none when it looked."""
+    return sorted((a for a, c in (data.get("pseudocode") or {}).items()
+                   if a not in skip and isinstance(c, str) and MISSED_INPUT.search(c)),
+                  key=lambda x: int(x, 16))
+
+
+def run_signature_fix(P: Paths, args, targets: list, checks: list = ()) -> Optional[dict]:
+    """GhidraSignatureFix.java over the targets, and the functions to check for
+    parameters Ghidra missed (headless, read-only): the patch."""
     ah = find_analyze_headless(args.ghidra_home)
-    if not ah or not args.project or not targets:
+    if not ah or not args.project or not (targets or checks):
         return None
     proj_dir, proj_name = _project_dir_name(args.project)
     script_dir = P.ghidra / ".script"
     script_dir.mkdir(parents=True, exist_ok=True)
     (script_dir / "GhidraSignatureFix.java").write_text(GHIDRA_SIGFIX_SCRIPT)
     lst = P.ghidra / "signature_fix_targets.txt"
-    lst.write_text("".join(f"{a}{' empty' if e else ''}\n" for a, e in targets))
+    lst.write_text("".join(f"{a}{' empty' if e else ''}\n" for a, e in targets)
+                   + "".join(f"{a} check\n" for a in checks))
     patch = P.ghidra / "ghidra_signature_patch.json"
     patch.unlink(missing_ok=True)
     cmd = [ah, proj_dir, proj_name, "-process", *([args.program] if args.program else []),
@@ -1964,7 +2043,8 @@ def run_signature_fix(P: Paths, args, targets: list) -> Optional[dict]:
            "-postScript", "GhidraSignatureFix.java", str(lst), str(P.ghidra)]
     plog(P, show=True, msg=f"  Ghidra lost the return value of {len(targets)} function(s) "
                            f"({sum(1 for _, e in targets if e)} of them empty: they return what they're "
-                           f"given): fixing their signatures and decompiling them and their callers again "
+                           f"given), and {len(checks)} read an argument their signature doesn't have: "
+                           f"fixing their signatures and decompiling them and their callers again "
                            f"(headless, read-only)")
     tail: list = []
     try:
@@ -1974,6 +2054,7 @@ def run_signature_fix(P: Paths, args, targets: list) -> Optional[dict]:
             if line:
                 tail = (tail + [line])[-40:]
                 if "GhidraSignatureFix" in line or "decompiled again" in line or "signatures fixed" in line \
+                        or "round " in line or "parameters found" in line \
                         or line.lstrip().startswith(("Done", "!")) or "ERROR" in line or "Exception" in line:
                     print("  " + line, flush=True)
         code = proc.wait()
@@ -2015,11 +2096,12 @@ def apply_signature_fix(P: Paths, args) -> int:
                                "fix them)")
         return 0
     targets = _lost_return_targets(data)
-    if not targets:
+    checks = _missed_input_functions(data, {a for a, _ in targets})
+    if not targets and not checks:
         data["signature_fix"] = {"version": SIGFIX_VERSION, "functions": 0, "redecompiled": 0}
         write_atomic(src, json.dumps(data))
         return 0
-    patch = run_signature_fix(P, args, targets)
+    patch = run_signature_fix(P, args, targets, checks)
     if not patch:
         return 0
     n = 0
@@ -2036,7 +2118,8 @@ def apply_signature_fix(P: Paths, args) -> int:
         write_atomic(f, json.dumps(d))
         n = len(patch.get("pseudocode") or {})
     plog(P, show=True, msg=f"  signature fix: {len(targets)} function(s) given back their return value, "
-                           f"{n} decompiled again with it")
+                           f"{patch.get('committed', 0)} given the parameters they pass on (up the call "
+                           f"chains), {n} decompiled again with them")
     return n
 
 

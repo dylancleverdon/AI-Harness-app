@@ -2741,8 +2741,8 @@ def test_functions_ghidra_lost_the_return_value_of_are_fixed_in_ghidra(tmp_path,
     P.export.write_text(json.dumps(export))
     seen = {}
 
-    def fake_fix(P, args, targets):            # what the Ghidra script gives back
-        seen["targets"] = targets
+    def fake_fix(P, args, targets, checks=()):    # what the Ghidra script gives back
+        seen["targets"], seen["checks"] = targets, list(checks)
         return {"pseudocode": {"100": "undefined8 FUN_getter(undefined8 param_1)\n\n{\n  return param_1;\n}\n",
                                "300": "long FUN_caller(long param_1)\n\n{\n  long *p;\n  long v;\n"
                                       "  v = FUN_chain();\n  p = (long *)FUN_getter(param_1 + 0x10);\n"
@@ -2793,3 +2793,11 @@ def test_the_final_privacy_check_passes_the_sweeps_own_stand_ins():
     dirty = 'const char *a = "https://acme.example.com/x"; long AcmeAudioWindow = 0;\n'
     kinds = [k for k, _, _ in dp.final_privacy_hits(dirty, ["acmeaudio"])]
     assert kinds == ["string: web address", "ident: a word from the blocklist"]
+
+
+def test_functions_reading_a_register_they_arent_given_are_checked_too():
+    data = {"pseudocode": {"10": "undefined8 FUN_a(void)\n{\n  undefined8 uVar1;\n  uVar1 = FUN_b(in_x0);\n  return uVar1;\n}\n",
+                           "20": "long FUN_c(long param_1)\n{\n  return param_1;\n}\n",
+                           "30": "void FUN_d(void)\n{\n  FUN_e(in_x1, 2);\n  return;\n}\n"}}
+    assert dp._missed_input_functions(data, {"30"}) == ["10"]
+    assert "commitParamsToDatabase" in dp.GHIDRA_SIGFIX_SCRIPT and '"check"' in dp.GHIDRA_SIGFIX_SCRIPT
