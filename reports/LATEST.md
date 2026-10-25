@@ -1,11 +1,11 @@
-# Diagnostics — fastpass 3 — 2026-10-24 17:54:17
+# Diagnostics — fastpass 3 — 2026-10-24 18:26:45
 
 
 ## Run
 
 ```
-script: decomp_pipeline 2026-10-25.2 (build 2026-10-18.1)
-command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from rewrite --to organize --headless-export --ghidra-home /Users/admin/Downloads/ghidra_12.1.4_PUBLIC --project /Users/admin/glitchpt2.gpr --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --repair-minutes 1 --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
+script: decomp_pipeline 2026-10-25.4 (build 2026-10-18.1)
+command: /Users/admin/AIHarness/scripts/decomp_pipeline.py --workdir /Users/admin/glitchdecomp/fastpass 3 --from export --to organize --headless-export --ghidra-home /Users/admin/Downloads/ghidra_12.1.4_PUBLIC --project /Users/admin/glitchpt2.gpr --ctx 8192 --parallel 50 --workers 12 --lang c --no-pseudo --repair-minutes 1 --plugin /Users/admin/Downloads/Glitch_2_1_5_Mac_Free/Glitch2.component
 python: 3.15.0 on darwin
 compiler: /usr/bin/clang++ (clang)
 compile flags: -Wno-c++11-narrowing -arch arm64
@@ -23,78 +23,81 @@ fix stage model edits: {'calls': 0, 'no_answer': 0, 'rejected': 0}
 (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
 rates (this run last; earlier runs above it):
   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-  10-23 00:06               100.0                0.0                  0                  5                0.0                 77                  -                 96              100.0                  -                     -                0.0
   10-23 10:28               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
   10-23 10:48               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
   10-24 17:30               100.0                0.0                  0                  -                  -                  -                  -                 96                  -                  -                     -                0.0
   10-24 17:54               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                0.0
+  10-24 18:26               100.0                0.0                  0                  -                  -                  -                  -                 96               98.1                  -                     -                0.0
 couldn't handle:
   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
                     → tried again next run
-  test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)   [also in the last 4 run(s)]
+  test          1 × the rebuilt plugin didn't load: load executable
                     → see build/test/test_report.txt
 worked around (cost time, nothing lost):
-  fix         119 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 4 run(s)]
-  link         24 × functions replaced by placeholders to link   [also in the last 4 run(s)]
+  fix         119 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 5 run(s)]
+  link         24 × functions replaced by placeholders to link   [also in the last 5 run(s)]
 ```
 
 ## Log of this run (pipeline.log)
 
 ```
-[17:43:15] decomp_pipeline 2026-10-25.2: /Users/admin/glitchdecomp/fastpass 3 — stages rewrite → organize
-[17:43:15]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
-[17:43:15] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
-[17:43:45]     functions with a system function's name (the system's is used): 3: sync, setbuf, objc_msgSend
-[17:43:45]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
-[17:43:45]     fields Ghidra named that the system's type calls something else (read at their offset): 14
-[17:43:48]     pointers only the loader's fix-up list has (no reference in Ghidra): 583, fixed up too
-[17:43:48]     static initializers: none found in the data export (no __mod_init_func or __init_offsets section among its blocks: rewrite/data_blocks.txt)
-[17:43:48]     pointers in the data to addresses outside it (not fixed up): 7, listed in rewrite/data_unresolved_pointers.txt
-[17:43:48]     data found by its address (not in Ghidra's label list): 467
-[17:44:38]     addresses in the data written in the code as numbers ((long *)0x453400): 320, now the rebuilt data's
-[17:44:52]     pieces of variables (v._0_8_): 6357
-[17:44:52]     functions Ghidra said return nothing, whose callers use the result: 2949
-[17:44:52]     16-byte register values (as gh16): 1908
-[17:44:52]     C++/Objective-C names in definitions: 1285
-[17:44:52]     C++ qualified names in code: 190
-[17:44:52]     types C didn't know (declared opaque): 19
-[17:44:52]     types that are also functions (as struct tags): 18
-[17:44:52]     switches on a pointer (on its value): 11
-[17:44:52]     NAN(x) tests (as isnan): 8
-[17:44:57]     names that are a type and also a function (the type keeps its struct tag): 12
-[17:44:57]   C source from Ghidra's pseudocode: 30173 function(s), 311 library stub(s) called directly, 29 data type(s) with Ghidra's layout, the program's data (34 block(s), 2968 labelled location(s) used, 33768 pointer fix-up(s), 30 placeholder(s) for data outside the export: rewrite/data_placeholders.txt) -> pseudocode.c
-[17:44:57] ━━━━ Stage 4/10 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
-[17:48:22] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
-[17:51:40] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
-[17:51:41] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
-[17:54:10] ━━━━ Stage 8/10 · test ━━━━ the rebuilt plugin and the original (--plugin) render the same test signals in a small test host; their outputs are compared sample by sample
-[17:54:16]   test: the rebuilt plugin didn't load: crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
-[17:54:16]   test: everything it saw is in /Users/admin/glitchdecomp/fastpass 3/build_c/test/test_report.txt
-[17:54:16] ━━━━ Stage 9/10 · improve ━━━━ checks find small problems, worst functions first; each is fixed by a rule or one small planned edit, and kept only if it still compiles and behaves like Ghidra's version
-[17:54:16]   improve: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
-[17:54:16] ━━━━ Stage 10/10 · organize ━━━━ the improved code is arranged into modules and classes, checked for anything identifying, and written to final/ as a project that builds
-[17:54:16]   organize: not in C mode yet (its behaviour checks are built for the C++ build). In C mode, what comes after link is the run test against the original plugin.
-[17:54:17] ============================================================
-[17:54:17] SUMMARY: 30173/30173 functions compile, 0 quarantined, 2 re-derived, link=OK
-[17:54:17] Report: /Users/admin/glitchdecomp/fastpass 3/REPORT.md
-[17:54:17] 
-[17:54:17] ━━━━ what the script struggled with this run ━━━━
-[17:54:17] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
-[17:54:17] rates (this run last; earlier runs above it):
-[17:54:17]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
-[17:54:17]   10-23 00:06               100.0                0.0                  0                  5                0.0                 77                  -                 96              100.0                  -                     -                0.0
-[17:54:17]   10-23 10:28               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
-[17:54:17]   10-23 10:48               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
-[17:54:17]   10-24 17:30               100.0                0.0                  0                  -                  -                  -                  -                 96                  -                  -                     -                0.0
-[17:54:17]   10-24 17:54               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                0.0
-[17:54:17] couldn't handle:
-[17:54:17]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
-[17:54:17]                     → tried again next run
-[17:54:17]   test          1 × the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)   [also in the last 4 run(s)]
-[17:54:17]                     → see build/test/test_report.txt
-[17:54:17] worked around (cost time, nothing lost):
-[17:54:17]   fix         119 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 4 run(s)]
-[17:54:17]   link         24 × functions replaced by placeholders to link   [also in the last 4 run(s)]
+[18:08:40] decomp_pipeline 2026-10-25.4: /Users/admin/glitchdecomp/fastpass 3 — stages export → organize
+[18:08:40]   --ctx 8192: pieces up to 5303 characters, recover stage up to 11006
+[18:08:40] ━━━━ Stage 1/10 · export ━━━━ getting every function's pseudocode from Ghidra (once — after that Ghidra can be closed)
+[18:08:40]   snapshot of the current files before 'redo-data-export': /Users/admin/glitchdecomp/fastpass 3/snapshots/20261024-180840-redo-data-export
+[18:08:40]   exporting the program's data with Ghidra headless (no decompiling)
+[18:08:46]   using the existing ghidra_export.json (Ghidra not needed)
+[18:08:54]   callgraph.json: 22076 functions with internal calls
+[18:08:54]   export: 30489/30489 functions have pseudocode, 205 data types, 30489 signatures
+[18:08:54] ━━━━ Stage 2/10 · privacy ━━━━ identifying information (names, web and email addresses, bundle IDs, paths, copyright lines) is replaced in Ghidra's export, before anything else sees it; what was replaced is kept in private/ on this Mac only
+[18:08:56]   privacy: 1141 replacement(s) in Ghidra's export (6 names, 14 web addresses, 8 copyright lines, 1 email address, 3 user folders, 3 bundle IDs). What was replaced: private/privacy_report.txt (stays on this Mac)
+[18:08:56]   privacy: 17 stand-in(s) are values the plugin uses while it runs (bundle ID, web addresses): the rebuilt plugin's Info.plist must use the same ones (listed in private/privacy_report.txt)
+[18:08:56] ━━━━ Stage 3/10 · rewrite ━━━━ Ghidra's pseudocode is written out as one C file, with the program's data (no model: the code is what Ghidra decompiled)
+[18:09:26]     functions with a system function's name (the system's is used): 3: sync, setbuf, objc_msgSend
+[18:09:26]     Ghidra's copies of types the system headers define (the system's are used): 63, e.g. Byte, CGPoint, CGRect, CGSize, FILE, SEL
+[18:09:26]     fields Ghidra named that the system's type calls something else (read at their offset): 14
+[18:09:30]     pointers only the loader's fix-up list has (no reference in Ghidra): 583, fixed up too
+[18:09:30]     static initializers the plugin runs when it loads (as the original does): 91
+[18:09:30]     pointers in the data to addresses outside it (not fixed up): 7, listed in rewrite/data_unresolved_pointers.txt
+[18:09:30]     data found by its address (not in Ghidra's label list): 467
+[18:10:20]     addresses in the data written in the code as numbers ((long *)0x453400): 320, now the rebuilt data's
+[18:10:35]     pieces of variables (v._0_8_): 6357
+[18:10:35]     functions Ghidra said return nothing, whose callers use the result: 2949
+[18:10:35]     16-byte register values (as gh16): 1908
+[18:10:35]     C++/Objective-C names in definitions: 1285
+[18:10:35]     C++ qualified names in code: 190
+[18:10:35]     types C didn't know (declared opaque): 19
+[18:10:35]     types that are also functions (as struct tags): 18
+[18:10:35]     switches on a pointer (on its value): 11
+[18:10:35]     NAN(x) tests (as isnan): 8
+[18:10:39]     names that are a type and also a function (the type keeps its struct tag): 12
+[18:10:39]   C source from Ghidra's pseudocode: 30173 function(s), 311 library stub(s) called directly, 29 data type(s) with Ghidra's layout, the program's data (34 block(s), 2968 labelled location(s) used, 33768 pointer fix-up(s), 30 placeholder(s) for data outside the export: rewrite/data_placeholders.txt) -> pseudocode.c
+[18:10:39] ━━━━ Stage 4/10 · split ━━━━ libclang splits the rewrite into shared.h + one file per function, repairs the header, then compiles every function on its own
+[18:15:23] ━━━━ Stage 5/10 · fix ━━━━ functions that don't compile are repaired, callees first: quick deterministic fixes, then the model; what can't be fixed is quarantined
+[18:18:43] ━━━━ Stage 6/10 · recover ━━━━ quarantined functions are rebuilt from their Ghidra pseudocode
+[18:18:43] ━━━━ Stage 7/10 · link ━━━━ the whole program is compiled and linked; anything still missing gets a placeholder and is listed in link_report.txt
+[18:22:19] ━━━━ Stage 8/10 · test ━━━━ the rebuilt plugin and the original (--plugin) render the same test signals in a small test host; their outputs are compared sample by sample
+[18:22:27]   test: the rebuilt plugin didn't load: crashed (SIGSEGV) during: load executable
+[18:22:27]   test: everything it saw is in /Users/admin/glitchdecomp/fastpass 3/build_c/test/test_report.txt
+[18:22:27] ━━━━ Stage 9/10 · improve ━━━━ the code is made easier to read (names, Ghidra's helpers, casts, pointer arithmetic), worst functions first; a change is kept only if the function compiles to the same machine code, so the plugin does exactly what it did
+[18:26:45] 
+[18:26:45] ━━━━ what the script struggled with this run ━━━━
+[18:26:45] (errors it fixed on its own are left out; [also in the last N runs] marks the ones worth changing the script for)
+[18:26:45] rates (this run last; earlier runs above it):
+[18:26:45]   run                   compile %      quarantined %             to fix        fixer tried    fixer success %     fixer per hour  recover success %      learned fixes     learned kept %            rescued  ideas adopted/tested        test pass %
+[18:26:45]   10-23 10:28               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
+[18:26:45]   10-23 10:48               100.0                0.0                  0                  -                  -                  -                  -                 96              100.0                  -                     -                0.0
+[18:26:45]   10-24 17:30               100.0                0.0                  0                  -                  -                  -                  -                 96                  -                  -                     -                0.0
+[18:26:45]   10-24 17:54               100.0                0.0                  0                  -                  -                  -                  -                  -                  -                  -                     -                0.0
+[18:26:45]   10-24 18:26               100.0                0.0                  0                  -                  -                  -                  -                 96               98.1                  -                     -                0.0
+[18:26:45] couldn't handle:
+[18:26:45]   rewrite       3 × no usable rewrite: model returned no code (empty reply)   e.g. FUN_001f30d0, FUN_00284a84, FUN_0030c740   [also in the last 5 run(s)]
+[18:26:45]                     → tried again next run
+[18:26:45]   test          1 × the rebuilt plugin didn't load: load executable
+[18:26:45]                     → see build/test/test_report.txt
+[18:26:45] worked around (cost time, nothing lost):
+[18:26:45]   fix         119 × Ghidra globals / library functions nothing declared (declared once in shared.h)   e.g. LAB_001806a4   [also in the last 5 run(s)]
+[18:26:45]   link         24 × functions replaced by placeholders to link   [also in the last 5 run(s)]
 ```
 
 ## Build status
@@ -12637,7 +12640,7 @@ every function with the same error and kept only where they work.
 [170 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2(@1.@3, 1);
   → @1 = @2(*(unsigned char*)&@1, 1);
-[143 worked, 0 didn't] too few arguments to function call, expected at least N, have N
+[159 worked, 0 didn't] too few arguments to function call, expected at least N, have N
     @1 = @2((@3)@4);
   → @1 = @2((@3)@4, 1);
 [112 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
@@ -12649,6 +12652,9 @@ every function with the same error and kept only where they work.
 [82 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2();
   → unsigned char @1[16];
+[80 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    (@1);
+  → (@1, 1);
 [73 worked, 0 didn't] member reference base type 'X' is not a structure or union
     @1 = @2.@3;
   → @1 = @2[8];
@@ -12661,18 +12667,15 @@ every function with the same error and kept only where they work.
 [64 worked, 0 didn't] operand of type 'X' where arithmetic or pointer type is required (part of a line)
     @1 = (void*)@2(
   → @1 = @2(
-[56 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    (@1);
-  → (@1, 1);
+[51 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    )@1);
+  → )@1, 1);
 [44 worked, 12 didn't] initializing 'X' with an expression of incompatible type 'X' (part of a line)
     @1 = @2(
   → @1 = (unsigned long long)@2(
 [43 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2.@3;
   → *(unsigned char*)&@1 = *(unsigned char*)&@2;
-[42 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    )@1);
-  → )@1, 1);
 [35 worked, 0 didn't] assigning to 'X' (aka 'X') from incompatible type 'X'
     @1 = @2();
   → (void)@1 = @2();
@@ -12706,12 +12709,12 @@ every function with the same error and kept only where they work.
 [18 worked, 8 didn't] array type 'X' (aka 'X') is not assignable (part of a line)
     @1[0] = @2(
   → unsigned char @1[1] = {0};@2(
+[17 worked, 1 didn't] too few arguments to function call, expected at least N, have N (part of a line)
+    @1 = @2((
+  → @1 = ((uint64_t(*)())@2)((
 [16 worked, 0 didn't] operand of type 'X' where arithmetic or pointer type is required
     @1 = (long)@2(@3, @4);
   → long @1 = @2(@3, @4);
-[16 worked, 0 didn't] too few arguments to function call, expected at least N, have N (part of a line)
-    @1 = @2((
-  → @1 = ((uint64_t(*)())@2)((
 [14 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2(@1.@3, @4);
   → @1 = @2(*(unsigned int*)&@1, @4);
@@ -12748,6 +12751,9 @@ every function with the same error and kept only where they work.
 [8 worked, 0 didn't] too few arguments to function call, single argument 'X' was not specified (part of a line)
     @1()
   → ((uint64_t(*)())@1)()
+[8 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
+    *(@1(*)[16])(@2+(long)@3) = @4[0];
+  → memcpy(&(*(@1(*)[16])(@2+(long)@3)), &(@4[0]), sizeof(*(@1(*)[16])(@2+(long)@3))<sizeof(@4[0]) ? sizeof(*(@1(*)[16])(@2+(long)@3)) : sizeof(@4[0]));
 [7 worked, 0 didn't] variable has incomplete type 'X'
     void std:: @1:: @1(@1*this)
   → void @1(@1*this)
@@ -12787,9 +12793,6 @@ every function with the same error and kept only where they work.
 [6 worked, 0 didn't] indirection requires pointer operand ('X' (aka 'X') invalid) (part of a line)
     *@1 =
   → *(uint64_t*)@1 =
-[6 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
-    *(@1(*)[16])(@2+(long)@3) = @4[0];
-  → memcpy(&(*(@1(*)[16])(@2+(long)@3)), &(@4[0]), sizeof(*(@1(*)[16])(@2+(long)@3))<sizeof(@4[0]) ? sizeof(*(@1(*)[16])(@2+(long)@3)) : sizeof(@4[0]));
 [5 worked, 0 didn't] member reference base type 'X' (aka 'X') is not a structure or union
     @1 = @2(@1.@3, (int)@1+1);
   → @1 = @2(*(unsigned int*)&@1, (int)@1+1);
@@ -12911,7 +12914,7 @@ every function with the same error and kept only where they work.
     @1[2
   → ((uint64_t*)(uintptr_t)(@1))[2
 
-== candidate: 487
+== candidate: 488
 [85 worked, 206 didn't] redefinition of 'X' with a different type: 'X' (aka 'X') vs 'X' (aka 'X') (part of a line)
     @1 @2[
   → uint64_t @2[
@@ -13113,6 +13116,9 @@ every function with the same error and kept only where they work.
 [2 worked, 0 didn't] redefinition of 'X'
     uint64_t @1;
   → uint64_t @1[1];
+[2 worked, 0 didn't] too few arguments to function call, expected at least N, have N
+    @1(*(@2*)(@3+0x20));
+  → ((uint64_t(*)())@1)(*(@2*)(@3+0x20));
 [2 worked, 0 didn't] too few arguments to function call, single argument 'X' was not specified
     @1();
   → ((uint64_t(*)())@1)();
@@ -13809,9 +13815,6 @@ every function with the same error and kept only where they work.
 [1 worked, 0 didn't] array type 'X' (aka 'X') is not assignable
     @1 = @2(0.6060606, @3);
   → unsigned char @1[12] = {0};@2(0.6060606, @3);
-[1 worked, 0 didn't] too few arguments to function call, expected N, have N
-    @1((unsigned char*)@2, @3, @4, @5, @6, 0);
-  → @1((unsigned char*)@2, @3, @4, @5, @6, 0, 1);
 
 == retired: 159
 [5940 worked, 0 didn't] assigning to 'X' (aka 'X') from incompatible type 'X' — retired: it and its opposite only undo each other
@@ -14740,502 +14743,245 @@ happened to each (newest last). 'adopted' ones are in the build.
 ## build/test/test_report.txt
 
 ```
-Run test: the rebuilt plugin against the original (2026-10-24 17:54:10)
+Run test: the rebuilt plugin against the original (2026-10-24 18:22:19)
 
 original: Original.component
   architectures: x86_64, arm64; tested as arm64
 rebuilt:  /Users/user?/name1decomp/fastpass 3/build_c/program.dylib (arm64)
 
-packaged the rebuilt program as /Users/user?/name1decomp/fastpass 3/build_c/test/run-yixyns6k/Rebuilt.component (deleted after the test), with the original's Info.plist (35 privacy stand-in(s) applied) and its Resources folder linked in
+packaged the rebuilt program as /Users/user?/name1decomp/fastpass 3/build_c/test/run-hdlw_pr1/Rebuilt.component (deleted after the test), with the original's Info.plist (35 privacy stand-in(s) applied) and its Resources folder linked in
 
 == component Illformed: Name1 (aumf/igl2/DBlu)
 factory: original AUPluginFactory; rebuilt AUPluginFactory (as in the original)
 rebuilt plugin, loading: FAILED
-crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
+crashed (SIGSEGV) during: load executable
     CRASH signal=11 (SIGSEGV: bad memory access) address=0x0
     CRASH stack:
-    0   aharness_host-arm64-325db53723      0x00000001007512a4 on_crash + 196
+    0   aharness_host-arm64-325db53723      0x00000001024692a4 on_crash + 196
     1   libsystem_platform.dylib            0x000000018d081744 _sigtramp + 56
-    2   program                             0x0000000106626188 FUN_00208a8c + 24
-    3   program                             0x0000000106626188 FUN_00208a8c + 24
-    4   program                             0x000000010662615c FUN_00208a68 + 32
-    5   program                             0x000000010631a7d0 FUN_0000be10 + 56
-    6   program                             0x000000010631805c FUN_0000a1d8 + 32
-    7   program                             0x000000010663c868 FUN_00218330 + 52
-    8   program                             0x000000010661deec FUN_002027bc + 56
-    9   program                             0x000000010661d66c FUN_00202134 + 32
-    10  program                             0x000000010661d57c FUN_00202038 + 60
-    11  program                             0x00000001063991c4 FUN_000659a0 + 248
-    12  AudioToolboxCore                    0x000000018fcdaa94 _ZN11APComponent11newInstanceEjbU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 2376
-    13  AudioToolboxCore                    0x000000018fe2fb38 _ZL11instantiateP20OpaqueAudioComponentj25AudioComponentOpeningModeU13block_pointerFvP28OpaqueAudioComponentInstanceiE + 372
-    14  AudioToolboxCore                    0x000000018fe305b4 __AudioComponentInstanceNew_block_invoke + 120
-    15  AudioToolboxCore                    0x000000018fc44528 Synchronously + 132
-    16  AudioToolboxCore                    0x000000018fe303bc AudioComponentInstanceNew + 240
-    17  aharness_host-arm64-325db53723      0x00000001007517fc open_unit + 672
-    18  aharness_host-arm64-325db53723      0x00000001007508c8 main + 248
-    19  dyld                                0x000000018ccac4e4 start + 6992
-    rebuilt functions in the stack (innermost first): FUN_00208a8c (funcs/_FUN_00208a8c.cpp), FUN_00208a68 (funcs/_FUN_00208a68.cpp), FUN_0000be10 (funcs/_FUN_0000be10.cpp), FUN_0000a1d8 (funcs/_FUN_0000a1d8.cpp), FUN_00218330 (funcs/_FUN_00218330.cpp), FUN_002027bc (funcs/_FUN_002027bc.cpp), FUN_00202134 (funcs/_FUN_00202134.cpp), FUN_00202038 (funcs/_FUN_00202038.cpp), FUN_000659a0 (funcs/_FUN_000659a0.cpp)
+    2   program                             0x0000000108192d70 FUN_00067718 + 80
+    3   program                             0x0000000108192d10 FUN_000676ec + 32
+    4   program                             0x0000000108192cb0 FUN_00067690 + 56
+    5   program                             0x0000000108187840 FUN_0005fa70 + 24
+    6   program                             0x000000010819633c FUN_0006a480 + 32
+    7   program                             0x0000000108196368 FUN_0006a4c0 + 12
+    8   program                             0x000000010873b188 gd_relocate + 1240
+    9   dyld                                0x000000018ccdaa28 ___ZZNK5dyld46Loader25findAndRunAllInitializersERNS_12RuntimeStateEENK3$_0clEv_block_invoke + 180
+    10  dyld                                0x000000018cce5a8c ___ZNK5dyld313MachOAnalyzer18forEachInitializerER11DiagnosticsRKNS0_15VMAddrConverterEU13block_pointerFvjEPKv_block_invoke.204 + 320
+    11  dyld                                0x000000018cd25fac ___ZNK6mach_o12UnsafeHeader14forEachSectionEU13block_pointerFvRKNS0_11SectionInfoERbE_block_invoke + 312
+    12  dyld                                0x000000018cd229a4 _ZNK6mach_o12UnsafeHeader18forEachLoadCommandEU13block_pointerFvPK12load_commandRbE + 208
+    13  dyld                                0x000000018cd2424c _ZNK6mach_o12UnsafeHeader14forEachSectionEU13block_pointerFvRKNS0_11SectionInfoERbE + 124
+    14  dyld                                0x000000018cce5580 _ZNK5dyld313MachOAnalyzer18forEachInitializerER11DiagnosticsRKNS0_15VMAddrConverterEU13block_pointerFvjEPKv + 516
+    15  dyld                                0x000000018ccd5394 _ZNK5dyld46Loader25findAndRunAllInitializersERNS_12RuntimeStateE + 528
+    16  dyld                                0x000000018cccdcd0 _ZNK5dyld416JustInTimeLoader15runInitializersERNS_12RuntimeStateE + 36
+    17  dyld                                0x000000018ccd5ab0 _ZNK5dyld46Loader23runInitializersBottomUpERNS_12RuntimeStateERN3lsl6VectorI18AuthenticatedValueIPKS0_EEESA_ + 568
+    18  dyld                                0x000000018ccdaac0 _ZZNK5dyld46Loader38runInitializersBottomUpPlusUpwardLinksERNS_12RuntimeStateEENK3$_0clEv + 116
+    19  dyld                                0x000000018ccd5d98 _ZNK5dyld46Loader38runInitializersBottomUpPlusUpwardLinksERNS_12RuntimeStateE + 716
+    20  dyld                                0x000000018cca42cc _ZZN5dyld44APIs11dlopen_fromEPKciPvENK3$_0clEv + 2320
+    21  dyld                                0x000000018cc98004 _ZN5dyld44APIs11dlopen_fromEPKciPv + 1116
+    22  dyld                                0x000000018cc97b04 _ZN5dyld44APIs6dlopenEPKci + 120
+    23  CoreFoundation                      0x000000018d16c750 _CFBundleDlfcnLoadFramework + 156
+    24  CoreFoundation                      0x000000018d1c2c20 _CFBundleLoadExecutableAndReturnError + 472
+    25  aharness_host-arm64-325db53723      0x0000000102469628 open_unit + 204
+    26  aharness_host-arm64-325db53723      0x00000001024688c8 main + 248
+    27  dyld                                0x000000018ccac4e4 start + 6992
+    rebuilt functions in the stack (innermost first): FUN_00067718 (funcs/_FUN_00067718.cpp), FUN_000676ec (funcs/_FUN_000676ec.cpp), FUN_00067690 (funcs/_FUN_00067690.cpp), FUN_0005fa70 (funcs/_FUN_0005fa70.cpp), FUN_0006a480 (funcs/_FUN_0006a480.cpp), FUN_0006a4c0 (funcs/_FUN_0006a4c0.cpp)
     (an address near zero: a null pointer, often a global or object the rebuilt program never set up)
-    code of FUN_00208a8c (funcs/_FUN_00208a8c.cpp):
+    code of FUN_00067718 (funcs/_FUN_00067718.cpp):
          1 | #include "shared.h"
          2 | 
-         3 | int FUN_00208a8c(pthread_mutex_t *param_1)
+         3 | long FUN_00067718(long param_1,undefined8 param_2)
          4 | {
-         5 |   int iVar1;
-         6 | 
-         7 |   iVar1 = pthread_mutex_lock(param_1);
-         8 |   return iVar1;
-         9 | }
+         5 |   undefined8 uVar1;
+         6 |   undefined8 *puVar2;
+         7 |   int local_34;
+         8 |   undefined8 local_30;
+         9 |   long lStack_28;
         10 | 
-    code of FUN_00208a68 (funcs/_FUN_00208a68.cpp):
+        11 |   local_30 = param_2;
+        12 |   lStack_28 = param_1;
+        13 |   FUN_0006777c((undefined8 *)(param_1 + 8));
+        14 |   local_34 = 0;
+        15 |   FUN_0006779c((long *)(param_1 + 0x10),&local_34);
+        16 |   uVar1 = FUN_000677c0();
+        17 |   puVar2 = (undefined8 *)FUN_000677e8();
+        18 |   *puVar2 = uVar1;
+        19 |   return param_1;
+        20 | }
+        21 | 
+    code of FUN_000676ec (funcs/_FUN_000676ec.cpp):
          1 | #include "shared.h"
          2 | 
-         3 | int FUN_00208a68(long param_1)
+         3 | void FUN_000676ec(long param_1,undefined8 param_2)
          4 | {
-         5 |   int iVar1;
-         6 | 
-         7 |   iVar1 = FUN_00208a8c(*(pthread_mutex_t **)(param_1 + 0x40));
-         8 |   return iVar1;
-         9 | }
-        10 | 
-    code of FUN_0000be10 (funcs/_FUN_0000be10.cpp):
-         1 | #include "shared.h"
-         2 | 
-         3 | long * FUN_0000be10(long *param_1,long param_2)
-         4 | {
-         5 |   *param_1 = param_2;
-         6 |   if (param_2 != 0) {
-         7 |     FUN_00208a68(*param_1);
-         8 |   }
-         9 |   return param_1;
-        10 | }
-        11 | 
-    code of FUN_0000a1d8 (funcs/_FUN_0000a1d8.cpp):
-         1 | #include "shared.h"
-         2 | 
-         3 | uint64_t FUN_0000a1d8(long *param_1,long param_2)
-         4 | {
-         5 |   
-         6 |   return (uint64_t)FUN_0000be10(param_1,param_2);
-         7 | }
-         8 | 
-    code of FUN_00218330 (funcs/_FUN_00218330.cpp):
-         1 | #include "shared.h"
-         2 | 
-         3 | void FUN_00218330(long param_1)
-         4 | {
-         5 |   bool bVar1;
-         6 |   long *plVar2;
-         7 |   long lVar3;
-         8 |   undefined8 *puVar4;
-         9 |   long alStack_50 [3];
-        10 |   pthread_t local_38;
-        11 |   long lStack_30;
-        12 |   long local_28;
-        13 | 
-        14 |   local_28 = param_1;
-        15 |   FUN_0000a1d8(&lStack_30,param_1);
-        16 |   local_38 = (pthread_t)FUN_00217f74();
-        17 |   while( true ) {
-        18 |     plVar2 = (long *)FUN_00217c50((undefined8 *)(param_1 + 200));
-        19 |     lVar3 = FUN_00217f88(plVar2);
-        20 |     if ((lVar3 + *(int *)(param_1 + 0xd4) == 0) ||
-        21 |        (bVar1 = FUN_00217fa4(*(pthread_t *)(param_1 + 0xd8),local_38), bVar1)) break;
-        22 |     plVar2 = (long *)FUN_00217c50((undefined8 *)(param_1 + 200));
-        23 |     lVar3 = FUN_00217f88(plVar2);
-        24 |     if (lVar3 == 1) {
-        25 |       plVar2 = (long *)FUN_00217c50((undefined8 *)(param_1 + 200));
-        26 |       puVar4 = (undefined8 *)FUN_00217fcc(plVar2,0);
-        27 |       bVar1 = FUN_00217fa4((pthread_t)*puVar4,local_38);
-        28 |       if (bVar1) break;
-        29 |     }
-        30 |     FUN_00218090(alStack_50,param_1);
-        31 |     *(int *)(param_1 + 0xd0) = *(int *)(param_1 + 0xd0) + 1;
-        32 |     FUN_0021552c(param_1 + 0x48,5);
-        33 |     *(int *)(param_1 + 0xd0) = *(int *)(param_1 + 0xd0) + -1;
-        34 |     FUN_002180b0(alStack_50);
-        35 |   }
-        36 |   *(pthread_t *)(param_1 + 0xd8) = local_38;
-        37 |   *(int *)(param_1 + 0xd4) = *(int *)(param_1 + 0xd4) + 1;
-        38 |   FUN_0000a284(&lStack_30);
-        39 |   return;
-        40 | }
-        41 | 
-    code of FUN_002027bc (funcs/_FUN_002027bc.cpp):
-         1 | #include "shared.h"
-         2 | 
-         3 | long * FUN_002027bc(long *param_1,long param_2)
-         4 | {
-         5 |   *param_1 = param_2;
-         6 |   if (param_2 != 0) {
-         7 |     FUN_00218330(*param_1);
-         8 |   }
-         9 |   return param_1;
-        10 | }
-        11 | 
-    code of FUN_00202134 (funcs/_FUN_00202134.cpp):
-         1 | #include "shared.h"
-         2 | 
-         3 | void FUN_00202134(long *param_1,long param_2)
-         4 | {
-         5 |   FUN_002027bc(param_1,param_2);
+         5 |   FUN_00067718(param_1,param_2);
          6 |   return;
          7 | }
          8 | 
-    code of FUN_00202038 (funcs/_FUN_00202038.cpp):
+    code of FUN_00067690 (funcs/_FUN_00067690.cpp):
          1 | #include "shared.h"
          2 | 
-         3 | undefined4 FUN_00202038(undefined8 param_1,undefined8 param_2,long param_3,undefined8 param_4)
+         3 | void FUN_00067690(long param_1)
          4 | {
-         5 |   undefined4 uVar1;
-         6 |   long *plVar2;
-         7 |   long lVar3;
-         8 |   int *piVar4;
-         9 |   long lStack_50;
-        10 |   int *local_48;
-        11 |   undefined4 local_2c;
-        12 |   long lStack_28;
+         5 |   undefined1 auStack_30 [8];
+         6 |   long local_28;
+         7 | 
+         8 |   local_28 = param_1;
+         9 |   FUN_000676cc();
+        10 |   FUN_000676ec(param_1,auStack_30);
+        11 |   return;
+        12 | }
         13 | 
-        14 |   FUN_00202134(&lStack_28,(uintptr_t)(g_block_30 + 0x22c0));
-        15 |   plVar2 = (long *)FUN_00201e80((undefined8 *)&GD_DAT_00873d78);
-        16 |   lVar3 = FUN_00202154(plVar2);
-        17 |   local_2c = (undefined4)lVar3;
-        18 |   piVar4 = operator_new(0x808);
-        19 |   FUN_00201b08(piVar4,local_2c);
-        20 |   local_48 = piVar4;
-        21 |   plVar2 = (long *)FUN_00201e80((undefined8 *)&GD_DAT_00873d78);
-        22 |   FUN_002021c0(&lStack_50,local_48);
-        23 |   FUN_00202170(plVar2,&lStack_50,param_3,param_4);
-        24 |   FUN_002021e0(&lStack_50);
-        25 |   if (GD_DAT_00873d80 == (int *)0x0) {
-        26 |     GD_DAT_00873d80 = local_48;
-        27 |   }
-        28 |   FUN_00201b2c(local_48);
-        29 |   uVar1 = local_2c;
-        30 |   FUN_00202200(&lStack_28);
-        31 |   return uVar1;
-        32 | }
-        33 | 
-    code of FUN_000659a0 (funcs/_FUN_000659a0.cpp):
+    code of FUN_0005fa70 (funcs/_FUN_0005fa70.cpp):
          1 | #include "shared.h"
          2 | 
-         3 | undefined4 FUN_000659a0(long param_1,undefined8 param_2,long param_3,undefined8 param_4)
+         3 | void FUN_0005fa70(long param_1)
          4 | {
-         5 |   long *plVar1;
-         6 |   gh16 auVar2;
-         7 |   int aiStack_60 [7];
-         8 |   int local_44;
-         9 |   long lStack_40;
-        10 |   undefined8 local_38;
-        11 |   long lStack_30;
-        12 |   undefined4 local_24;
-        13 | 
-        14 |   local_38 = param_2;
-        15 |   lStack_30 = param_1;
-        16 |   if ((GD_DAT_00453408 & 1) == 0) {
-        17 |     FUN_002089d4((pthread_mutex_t *)&GD_DAT_004533c0);
-        18 |     param_3 = 0;
-        19 |     __cxa_atexit(FUN_00208a48,&GD_DAT_004533c0);
-        20 |     GD_DAT_00453408 = 1;
-        21 |   }
-        22 |   auVar2 = GH16(FUN_0000a1d8(&lStack_40,(uintptr_t)(g_block_27 + 0x190)));
-        23 |   local_44 = FUN_00202038(GH_GET(auVar2, 0, 8),GH_GET(auVar2, 8, 8),param_3,param_4);
-        24 |   FUN_00201c00(aiStack_60,local_44);
-        25 |   plVar1 = (long *)(lStack_30 + 0x40);
-        26 |   GD_DAT_00877f28 = 1;
-        27 |   (**(code **)(lStack_30 + 0x20))(plVar1,local_38);
-        28 |   if (*plVar1 == 0) {
-        29 |     FUN_00202220(local_44);
-        30 |     local_24 = 0xffffffe9;
-        31 |   }
-        32 |   else {
-        33 |     local_24 = 0;
-        34 |   }
-        35 |   FUN_00201c3c(aiStack_60);
-        36 |   FUN_0000a284(&lStack_40);
-        37 |   return local_24;
-        38 | }
-        39 | 
+         5 |   FUN_00067690(param_1);
+         6 |   return;
+         7 | }
+         8 | 
+    code of FUN_0006a480 (funcs/_FUN_0006a480.cpp):
+         1 | #include "shared.h"
+         2 | 
+         3 | void FUN_0006a480(void)
+         4 | {
+         5 |   FUN_0005fa70((uintptr_t)(g_block_28 + 0x8));
+         6 |   __cxa_atexit(FUN_0005fa90,&GD_DAT_0045e138,0);
+         7 |   return;
+         8 | }
+         9 | 
+    code of FUN_0006a4c0 (funcs/_FUN_0006a4c0.cpp):
+         1 | #include "shared.h"
+         2 | 
+         3 | void FUN_0006a4c0(void)
+         4 | {
+         5 |   FUN_0006a480();
+         6 |   return;
+         7 | }
+         8 | 
     the rebuilt plugin's load steps (GD_DEBUG):
-      import not found (left null): typeinfo, at block 14 + 0x1afe0
-      import not found (left null): ~iostream, at block 14 + 0x1afe8
-      import not found (left null): ~iostream, at block 14 + 0x1aff0
-      import not found (left null): typeinfo, at block 14 + 0x1b008
-      import not found (left null): ~istream, at block 14 + 0x1b010
-      import not found (left null): ~istream, at block 14 + 0x1b018
-      import not found (left null): typeinfo, at block 14 + 0x1b030
-      import not found (left null): ~istream, at block 14 + 0x1b038
-      import not found (left null): ~istream, at block 14 + 0x1b040
-      import not found (left null): typeinfo, at block 14 + 0x1b058
-      import not found (left null): ~ostream, at block 14 + 0x1b060
-      import not found (left null): ~ostream, at block 14 + 0x1b068
-      import not found (left null): typeinfo, at block 14 + 0x1b080
-      import not found (left null): ~ostream, at block 14 + 0x1b088
-      import not found (left null): ~ostream, at block 14 + 0x1b090
-      import not found (left null): vtable, at block 14 + 0x1b098
-      import not found (left null): vtable, at block 14 + 0x1b1c0
-      import not found (left null): vtable, at block 14 + 0x1b3a8
-      import not found (left null): vtable, at block 14 + 0x1b3b8
-      import not found (left null): vtable, at block 14 + 0x1b418
-      import not found (left null): vtable, at block 14 + 0x1ba30
-      import not found (left null): vtable, at block 14 + 0x1ba48
-      import not found (left null): vtable, at block 14 + 0x1bbc0
-      import not found (left null): vtable, at block 14 + 0x1bff0
-      import not found (left null): vtable, at block 14 + 0x1c2f0
-      import not found (left null): vtable, at block 14 + 0x1c3e0
-      import not found (left null): vtable, at block 14 + 0x1c4a0
-      import not found (left null): vtable, at block 14 + 0x1ce98
-      import not found (left null): vtable, at block 14 + 0x1d098
-      import not found (left null): vtable, at block 14 + 0x1d108
-      import not found (left null): vtable, at block 14 + 0x1d738
-      import not found (left null): vtable, at block 14 + 0x1d988
-      import not found (left null): vtable, at block 14 + 0x1dac0
-      import not found (left null): vtable, at block 14 + 0x1dc18
-      import not found (left null): vtable, at block 14 + 0x1dc30
-      import not found (left null): vtable, at block 14 + 0x1dc48
-      import not found (left null): vtable, at block 14 + 0x1dc60
-      import not found (left null): vtable, at block 14 + 0x1dc78
-      import not found (left null): vtable, at block 14 + 0x1dc90
-      import not found (left null): vtable, at block 14 + 0x1df40
-      import not found (left null): vtable, at block 14 + 0x1e218
-      import not found (left null): vtable, at block 14 + 0x1e588
-      import not found (left null): vtable, at block 14 + 0x1e970
-      import not found (left null): vtable, at block 14 + 0x1e988
-      import not found (left null): vtable, at block 14 + 0x1ead8
-      import not found (left null): vtable, at block 14 + 0x1eb20
-      import not found (left null): vtable, at block 14 + 0x1eb80
-      import not found (left null): vtable, at block 14 + 0x1eb90
-      import not found (left null): vtable, at block 14 + 0x1eda0
-      import not found (left null): vtable, at block 14 + 0x1ee60
-      import not found (left null): vtable, at block 14 + 0x1ee80
-      import not found (left null): vtable, at block 14 + 0x1ee90
-      import not found (left null): vtable, at block 14 + 0x1eea0
-      import not found (left null): vtable, at block 14 + 0x1eec0
-      import not found (left null): vtable, at block 14 + 0x1efb0
-      import not found (left null): vtable, at block 14 + 0x1efe0
-      import not found (left null): vtable, at block 14 + 0x1eff0
-      import not found (left null): vtable, at block 14 + 0x1f0d8
-      fix-ups done; imports not found: 267
-      loaded: 0 initializer(s) ran
+      data at 0=0x10880c000 1=0x10880da40 2=0x10880e100 3=0x108831080 4=0x10886c510 5=0x10888b3e0 6=0x10888b520 7=0x10888dae0 8=0x10888dc20 9=0x10888e670 10=0x1088a7100 11=0x1088a7a60 12=0x1088a7cd0 13=0x1088a7fb0 14=0x1088a7fc0 15=0x1088d1e50 16=0x1088d23b0 17=0x1088d2400 18=0x1088d2420 19=0x1088d3a80 20=0x1088d4580 21=0x1088d5b30 22=0x1088d6770 23=0x1088d6910 24=0x1088d6960 25=0x1088d69f0 26=0x1088d6a00 27=0x1088d6cd0 28=0x1088e1bd0 29=0x10890b050 30=0x108d1ca30 31=0x108d23630 32=0x1088e3aa0 33=0x108d27060
+      fixing up 32214 pointer(s) and 1554 import(s)
+      import not found (left null): dyld_stub_binder, at block 11 + 0x268
+      fix-ups done; imports not found: 1
+      initializer 1/91: FUN_00007144
+      initializer 2/91: FUN_0000717c
+      initializer 3/91: FUN_00021f34
+      initializer 4/91: FUN_00035e5c
+      initializer 5/91: FUN_000383cc
+      initializer 6/91: FUN_0004530c
+      initializer 7/91: FUN_0006a4c0
     registers when it crashed (the ones that point into the rebuilt program explained):
        x0 = 0x0000000000000000  (zero)
-       x1 = 0x0000000106f22cf0  in the rebuilt data: g_block_30 + 0x22c0 (block __common); original 0x873c98, Ghidra's DAT_00873c98; the original has there: (zero-filled block); no fix-up there
-       x2 = 0x0000000000000000  (zero)
-       x3 = 0x00000001009e1d40
-       x4 = 0x00000008a90c40a0
-       x5 = 0x0000000000000000  (zero)
-       x6 = 0x0000000000000000  (zero)
-       x7 = 0xfffff0003ffff800
-       x8 = 0x0000000106f22d30  in the rebuilt data: g_block_30 + 0x2300 (block __common); original 0x873cd8; the original has there: (zero-filled block); no fix-up there
-       x9 = 0x000000016f6ae178
-      x10 = 0x00000000000022c0  (near zero)
-      x11 = 0x0000000000000008  (near zero)
+       x1 = 0x000000016d99547c
+       x2 = 0x00000000000120a8
+       x3 = 0x000000016d99501a
+       x4 = 0x0000000108752607  in the rebuilt program: zoom_ + 0x13d73
+       x5 = 0x000000016d995550
+       x6 = 0x000000000000000a  (near zero)
+       x7 = 0x0000000000000000  (zero)
+       x8 = 0x0000000000000000  (zero)
+       x9 = 0x0000000000000000  (zero)
+      x10 = 0x0000000000000002  (near zero)
+      x11 = 0x00000000fffffffd
       x12 = 0x0000000000000000  (zero)
-      x13 = 0x0000000000000002  (near zero)
+      x13 = 0x0000000000000000  (zero)
       x14 = 0x0000000000000000  (zero)
-      x15 = 0x00000008a90c4000
-      x16 = 0x000000018d0723fc
-      x17 = 0x00000001fb13ccf0
+      x15 = 0x0000000000000000  (zero)
+      x16 = 0x000000018d034618
+      x17 = 0x00000001fb0f7228
       x18 = 0x0000000000000000  (zero)
-      x19 = 0x000000016f6ae4e8
-      x20 = 0x00000008a9010058
-      x21 = 0x0000000100db9f00
-      x22 = 0x0000000000000000  (zero)
-      x23 = 0x0000000000000000  (zero)
-      x24 = 0x0000000100dbaee0
-      x25 = 0x0000000100dbc6a0
-      x26 = 0x00000008a8c28aa0
-      x27 = 0x000000000bb8c0d3
-      x28 = 0x0000000000000000  (zero)
-       fp = 0x000000016f6ae0d0
-       lr = 0x0000000106626188  in the rebuilt program: FUN_00208a8c + 0x18
-       sp = 0x000000016f6ae0d0
-       pc = 0x000000018d072408
+      x19 = 0x000000016d995be8
+      x20 = 0x000000010873acb0  in the rebuilt program: gd_relocate + 0x0
+      x21 = 0x00000001f9801360
+      x22 = 0x000000010873f744  in the rebuilt program: zoom_ + 0xeb0
+      x23 = 0x0000000108104118
+      x24 = 0x0000000000000006  (near zero)
+      x25 = 0x00000000000000a0  (near zero)
+      x26 = 0x0000000108104248
+      x27 = 0x00000001081040c0
+      x28 = 0x0000000000000010  (near zero)
+       fp = 0x000000016d9954a0
+       lr = 0x0000000108192d70  in the rebuilt program: FUN_00067718 + 0x50
+       sp = 0x000000016d995460
+       pc = 0x0000000108192d7c  in the rebuilt program: FUN_00067718 + 0x5c
     the rebuilt frames as source lines:
-        2: FUN_00208a8c (in program.dylib) (_FUN_00208a8c.cpp:7)
-        3: FUN_00208a8c (in program.dylib) (_FUN_00208a8c.cpp:7)
-        4: FUN_00208a68 (in program.dylib) (_FUN_00208a68.cpp:7)
-        5: FUN_0000be10 (in program.dylib) (_FUN_0000be10.cpp:8)
-        6: FUN_0000a1d8 (in program.dylib) (_FUN_0000a1d8.cpp:6)
-        7: FUN_00218330 (in program.dylib) (_FUN_00218330.cpp:16)
-        8: FUN_002027bc (in program.dylib) (_FUN_002027bc.cpp:8)
-        9: FUN_00202134 (in program.dylib) (_FUN_00202134.cpp:6)
-       10: FUN_00202038 (in program.dylib) (_FUN_00202038.cpp:14)
-       11: FUN_000659a0 (in program.dylib) (_FUN_000659a0.cpp:23)
-       lr: FUN_00208a8c (in program.dylib) (_FUN_00208a8c.cpp:7)
-    Ghidra's pseudocode of FUN_00208a8c:
-      int FUN_00208a8c(pthread_mutex_t *param_1)
+        2: FUN_00067718 (in program.dylib) (_FUN_00067718.cpp:17)
+        3: FUN_000676ec (in program.dylib) (_FUN_000676ec.cpp:6)
+        4: FUN_00067690 (in program.dylib) (_FUN_00067690.cpp:11)
+        5: FUN_0005fa70 (in program.dylib) (_FUN_0005fa70.cpp:6)
+        6: FUN_0006a480 (in program.dylib) (_FUN_0006a480.cpp:5)
+        7: FUN_0006a4c0 (in program.dylib) (_FUN_0006a4c0.cpp:6)
+        8: gd_relocate (in program.dylib) (ghidra_data.c:29968)
+       pc: FUN_00067718 (in program.dylib) (_FUN_00067718.cpp:18)
+       lr: FUN_00067718 (in program.dylib) (_FUN_00067718.cpp:17)
+    Ghidra's pseudocode of FUN_00067718:
+      long FUN_00067718(long param_1,undefined8 param_2)
       
       {
-        int iVar1;
+        undefined8 uVar1;
+        undefined8 *puVar2;
+        int local_34;
+        undefined8 local_30;
+        long lStack_28;
         
-        iVar1 = _pthread_mutex_lock(param_1);
-        return iVar1;
-      }
-    Ghidra's pseudocode of FUN_00208a68:
-      int FUN_00208a68(long param_1)
-      
-      {
-        int iVar1;
-        
-        iVar1 = FUN_00208a8c(*(pthread_mutex_t **)(param_1 + 0x40));
-        return iVar1;
-      }
-    Ghidra's pseudocode of FUN_0000be10:
-      long * FUN_0000be10(long *param_1,long param_2)
-      
-      {
-        *param_1 = param_2;
-        if (param_2 != 0) {
-          FUN_00208a68(*param_1);
-        }
+        local_30 = param_2;
+        lStack_28 = param_1;
+        FUN_0006777c((undefined8 *)(param_1 + 8));
+        local_34 = 0;
+        FUN_0006779c((long *)(param_1 + 0x10),&local_34);
+        uVar1 = FUN_000677c0();
+        puVar2 = (undefined8 *)FUN_000677e8();
+        *puVar2 = uVar1;
         return param_1;
       }
-    Ghidra's pseudocode of FUN_0000a1d8:
-      void FUN_0000a1d8(long *param_1,long param_2)
+    Ghidra's pseudocode of FUN_000676ec:
+      void FUN_000676ec(long param_1,undefined8 param_2)
       
       {
-        FUN_0000be10(param_1,param_2);
+        FUN_00067718(param_1,param_2);
         return;
       }
-    Ghidra's pseudocode of FUN_00218330:
-      void FUN_00218330(long param_1)
+    Ghidra's pseudocode of FUN_00067690:
+      void FUN_00067690(long param_1)
       
       {
-        bool bVar1;
-        long *plVar2;
-        long lVar3;
-        undefined8 *puVar4;
-        long alStack_50 [3];
-        pthread_t local_38;
-        long lStack_30;
+        undefined1 auStack_30 [8];
         long local_28;
         
         local_28 = param_1;
-        FUN_0000a1d8(&lStack_30,param_1);
-        local_38 = (pthread_t)FUN_00217f74();
-        while( true ) {
-          plVar2 = (long *)FUN_00217c50((undefined8 *)(param_1 + 200));
-          lVar3 = FUN_00217f88(plVar2);
-          if ((lVar3 + *(int *)(param_1 + 0xd4) == 0) ||
-             (bVar1 = FUN_00217fa4(*(pthread_t *)(param_1 + 0xd8),local_38), bVar1)) break;
-          plVar2 = (long *)FUN_00217c50((undefined8 *)(param_1 + 200));
-          lVar3 = FUN_00217f88(plVar2);
-          if (lVar3 == 1) {
-            plVar2 = (long *)FUN_00217c50((undefined8 *)(param_1 + 200));
-            puVar4 = (undefined8 *)FUN_00217fcc(plVar2,0);
-            bVar1 = FUN_00217fa4((pthread_t)*puVar4,local_38);
-            if (bVar1) break;
-          }
-          FUN_00218090(alStack_50,param_1);
-          *(int *)(param_1 + 0xd0) = *(int *)(param_1 + 0xd0) + 1;
-          FUN_0021552c(param_1 + 0x48,5);
-          *(int *)(param_1 + 0xd0) = *(int *)(param_1 + 0xd0) + -1;
-          FUN_002180b0(alStack_50);
-        }
-        *(pthread_t *)(param_1 + 0xd8) = local_38;
-        *(int *)(param_1 + 0xd4) = *(int *)(param_1 + 0xd4) + 1;
-        FUN_0000a284(&lStack_30);
+        FUN_000676cc();
+        FUN_000676ec(param_1,auStack_30);
         return;
       }
-    Ghidra's pseudocode of FUN_002027bc:
-      long * FUN_002027bc(long *param_1,long param_2)
+    Ghidra's pseudocode of FUN_0005fa70:
+      void FUN_0005fa70(long param_1)
       
       {
-        *param_1 = param_2;
-        if (param_2 != 0) {
-          FUN_00218330(*param_1);
-        }
-        return param_1;
-      }
-    Ghidra's pseudocode of FUN_00202134:
-      void FUN_00202134(long *param_1,long param_2)
-      
-      {
-        FUN_002027bc(param_1,param_2);
+        FUN_00067690(param_1);
         return;
       }
-    data FUN_00202038 uses:
-      GD_DAT_00873d78: block __common + 0x23a0; original 0x873d78, Ghidra's DAT_00873d78; the original has there: (zero-filled block); no fix-up there
-      GD_DAT_00873d80: block __common + 0x23a8; original 0x873d80, Ghidra's DAT_00873d80; the original has there: (zero-filled block); no fix-up there
-      g_block_30 + 0x22c0 (an address written as a number): original 0x873c98, Ghidra's DAT_00873c98; the original has there: (zero-filled block); no fix-up there
-    Ghidra's pseudocode of FUN_00202038:
-      undefined4 FUN_00202038(undefined8 param_1,undefined8 param_2,long param_3,undefined8 param_4)
+    data FUN_0006a480 uses:
+      GD_DAT_0045e138: block __bss + 0x8; original 0x45e138, Ghidra's DAT_0045e138; the original has there: 00 00 00 00 00 00 00 00; no fix-up there
+      g_block_28 + 0x8 (an address written as a number): original 0x45e138, Ghidra's DAT_0045e138; the original has there: 00 00 00 00 00 00 00 00; no fix-up there
+    Ghidra's pseudocode of FUN_0006a480:
+      void FUN_0006a480(void)
       
       {
-        undefined4 uVar1;
-        long *plVar2;
-        long lVar3;
-        int *piVar4;
-        long lStack_50;
-        int *local_48;
-        undefined4 local_2c;
-        long lStack_28;
-        
-        FUN_00202134(&lStack_28,0x873c98);
-        plVar2 = (long *)FUN_00201e80((undefined8 *)&DAT_00873d78);
-        lVar3 = FUN_00202154(plVar2);
-        local_2c = (undefined4)lVar3;
-        piVar4 = operator_new(0x808);
-        FUN_00201b08(piVar4,local_2c);
-        local_48 = piVar4;
-        plVar2 = (long *)FUN_00201e80((undefined8 *)&DAT_00873d78);
-        FUN_002021c0(&lStack_50,local_48);
-        FUN_00202170(plVar2,&lStack_50,param_3,param_4);
-        FUN_002021e0(&lStack_50);
-        if (DAT_00873d80 == (int *)0x0) {
-          DAT_00873d80 = local_48;
-        }
-        FUN_00201b2c(local_48);
-        uVar1 = local_2c;
-        FUN_00202200(&lStack_28);
-        return uVar1;
+        FUN_0005fa70(0x45e138);
+        ___cxa_atexit(FUN_0005fa90,&DAT_0045e138,0);
+        return;
       }
-    data FUN_000659a0 uses:
-      GD_DAT_004533c0: block __data + 0x190; original 0x4533c0, Ghidra's DAT_004533c0; the original has there: 00 00 00 00 00 00 00 00; no fix-up there
-      GD_DAT_00453408: block __data + 0x1d8; original 0x453408, Ghidra's DAT_00453408; the original has there: 00 00 00 00 00 00 00 00; no fix-up there
-      GD_DAT_00877f28: block __common + 0x6550; original 0x877f28, Ghidra's DAT_00877f28; the original has there: (zero-filled block); no fix-up there
-      g_block_27 + 0x190 (an address written as a number): original 0x4533c0, Ghidra's DAT_004533c0; the original has there: 00 00 00 00 00 00 00 00; no fix-up there
-    Ghidra's pseudocode of FUN_000659a0:
-      undefined4 FUN_000659a0(long param_1,undefined8 param_2,long param_3,undefined8 param_4)
+    Ghidra's pseudocode of FUN_0006a4c0:
+      void FUN_0006a4c0(void)
       
       {
-        long *plVar1;
-        undefined1 auVar2 [16];
-        int aiStack_60 [7];
-        int local_44;
-        long lStack_40;
-        undefined8 local_38;
-        long lStack_30;
-        undefined4 local_24;
-        
-        local_38 = param_2;
-        lStack_30 = param_1;
-        if ((DAT_00453408 & 1) == 0) {
-          FUN_002089d4((pthread_mutex_t *)&DAT_004533c0);
-          param_3 = 0;
-          ___cxa_atexit(FUN_00208a48,&DAT_004533c0);
-          DAT_00453408 = 1;
-        }
-        auVar2 = FUN_0000a1d8(&lStack_40,0x4533c0);
-        local_44 = FUN_00202038(auVar2._0_8_,auVar2._8_8_,param_3,param_4);
-        FUN_00201c00(aiStack_60,local_44);
-        plVar1 = (long *)(lStack_30 + 0x40);
-        DAT_00877f28 = 1;
-        (**(code **)(lStack_30 + 0x20))(plVar1,local_38);
-        if (*plVar1 == 0) {
-          FUN_00202220(local_44);
-          local_24 = 0xffffffe9;
-        }
-        else {
-          local_24 = 0;
-        }
-        FUN_00201c3c(aiStack_60);
-        FUN_0000a284(&lStack_40);
-        return local_24;
+        FUN_0006a480();
+        return;
       }
 
-the rebuilt plugin didn't load: crashed (SIGSEGV) during: instantiate (the plugin's factory and constructor run here)
+the rebuilt plugin didn't load: crashed (SIGSEGV) during: load executable
 ```
 
 ## rewrite/data_placeholders.txt
@@ -15335,34 +15081,74 @@ __LINKEDIT  0x8a3100  3840  -  zero-filled
 ## Build log of this run (build/worklist.log)
 
 ```
-[17:44:57] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/pseudocode.c
-[17:44:57] Resume check (30173 functions in manifest):
-[17:44:57]   [redo] split + header: out of date — rebuilding shared.h/globals.cpp and merging with the work already done
-[17:44:58]   libclang reported 2 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
-[17:44:58]     _parse_monolith.cpp:220: static assertion failed due to requirement 'sizeof(struct section) == 80': Ghidra's size of section
-[17:44:58]     _parse_monolith.cpp:236: static assertion failed due to requirement 'sizeof(struct segment_command) == 72': Ghidra's size of segment_command
-[17:45:05]   split -> 30173 function TUs, 65 types (+37 forward decls), 30173 prototypes, 0 globals
-[17:45:18]     functions: 0 changed in the rewrite (new code taken), 325 already fixed by the model (kept), 29848 untouched (refreshed with the new split), 0 previously quarantined (restored for another try), 0 not in the old run
-[17:45:19]   [redo] header check
-[17:45:19]   » validate/repair shared headers
-[17:45:19]   [redo] compile status
-[17:45:19]   » preflight diagnose (surface any systemic cause before spending model time on 30173 functions)
-[17:45:20]   preflight: sampled TUs compile — proceeding
-[17:45:20]   » isolated compile sweep
-[17:45:21]   compiling with 11 parallel worker(s)
-[17:48:22]   isolated compile: 30119/30173 TUs pass, 54 need repair (182s)
-[17:48:22]   status: 30119 compile, 54 still to fix, 0 quarantined
-[17:51:39]   declared 119 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 54 function(s) that use them again
-[17:51:40]   compiling with 11 parallel worker(s)
-[17:51:40]   isolated compile: 54/54 TUs pass, 0 need repair (0s)
-[17:51:40]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
-[17:51:40]   repair loop: 0 quarantined function(s) rescued
-[17:51:40]   nothing to fix
-[17:54:06]   link round 1: linking 30176 objects ...
-[17:54:07]   link round 1: 98 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
-[17:54:09]   link round 2: linking 30177 objects ...
-[17:54:10]   24 placeholder definition(s) in stubs.cpp (listed in link_report.txt)
-[17:54:10]   LINK OK (round 2) -> /Users/admin/glitchdecomp/fastpass 3/build_c/program.dylib
+[18:10:39] build 2026-10-18.1 on /Users/admin/glitchdecomp/fastpass 3/rewrite/pseudocode.c
+[18:10:40] Resume check (30173 functions in manifest):
+[18:10:40]   the rewrite changed since the last build — updating the split (functions whose code changed get the new code; the others keep their fixes)
+[18:10:40]   [redo] split + header: input changed — rebuilding shared.h/globals.cpp and merging with the work already done
+[18:10:40]   libclang reported 2 error(s) in the declarations (saved to libclang_parse_errors.txt), e.g.:
+[18:10:40]     _parse_monolith.cpp:220: static assertion failed due to requirement 'sizeof(struct section) == 80': Ghidra's size of section
+[18:10:40]     _parse_monolith.cpp:236: static assertion failed due to requirement 'sizeof(struct segment_command) == 72': Ghidra's size of segment_command
+[18:10:47]   split -> 30173 function TUs, 65 types (+37 forward decls), 30173 prototypes, 0 globals
+[18:11:01]     functions: 32 changed in the rewrite (new code taken), 305 already fixed by the model (kept), 29836 untouched (refreshed with the new split), 0 previously quarantined (restored for another try), 0 not in the old run
+[18:11:01]     (the replaced versions are in /Users/admin/glitchdecomp/fastpass 3/snapshots/20261024-181051-build-update)
+[18:11:01]   [redo] header check
+[18:11:01]   » validate/repair shared headers
+[18:11:01]   [redo] compile status
+[18:11:01]   » preflight diagnose (surface any systemic cause before spending model time on 30173 functions)
+[18:11:02]   preflight: sampled TUs compile — proceeding
+[18:11:02]   » isolated compile sweep
+[18:11:03]   compiling with 11 parallel worker(s)
+[18:15:22]   isolated compile: 30098/30173 TUs pass, 75 need repair (260s)
+[18:15:23]   status: 30098 compile, 75 still to fix, 0 quarantined
+[18:18:40]   declared 119 name(s) the code uses that Ghidra's pseudocode has too (globals like DAT_..., library functions); compiling the 54 function(s) that use them again
+[18:18:40]   compiling with 11 parallel worker(s)
+[18:18:40]   isolated compile: 52/54 TUs pass, 2 need repair (1s)
+[18:18:40]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
+[18:18:40]   » dependency order + fixer loop
+[18:18:40]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
+[18:18:41]   callgraph: 582 callee name(s) not in our TU set (external/library calls) — ignored for ordering
+[18:18:41]   callgraph: exact deps for 21706/30173 functions
+[18:18:41]     FUN_0016e460 -> fixed without the model
+[18:18:41]     FUN_0020cc04 -> fixed without the model
+[18:18:41]     FUN_0020d54c -> fixed without the model
+[18:18:41]     applicationDidBecomeActive_ -> fixed without the model
+[18:18:41]     FUN_001718c0 -> fixed without the model
+[18:18:41]     FUN_001680c4 -> fixed without the model
+[18:18:41]     FUN_00171a30 -> fixed without the model
+[18:18:41]     FUN_00173590 -> fixed without the model
+[18:18:41]     FUN_001736b4 -> fixed without the model
+[18:18:42]     FUN_001a2588 -> fixed without the model
+[18:18:42]     buildMenuGroupEntries_entry__16bb04 -> fixed without the model
+[18:18:42]     FUN_00168600 -> fixed without the model
+[18:18:42]     FUN_0017073c -> fixed without the model
+[18:18:42]     updateLayerInRect__16ce54 -> fixed without the model
+[18:18:42]     createLayerTextureWithSize__16cb94 -> fixed without the model
+[18:18:42]     FUN_001725c4 -> fixed without the model
+[18:18:42]     FUN_001a374c -> fixed without the model
+[18:18:42]     FUN_001728ac -> fixed without the model
+[18:18:42]     viewWillMoveToSuperview__1a8b48 -> fixed without the model
+[18:18:42]     drawRect__16d1bc -> fixed without the model
+[18:18:42]     FUN_00173144 -> fixed without the model
+[18:18:42]     insertText__16d864 -> fixed without the model
+[18:18:42]     FUN_001a54e0 -> fixed without the model
+[18:18:42]   quick fixes (no model): 23 of 23 function(s) compile now
+[18:18:42]   fixer loop over 0 failing TU(s), dependency-ordered
+[18:18:42]   learned fixes: 96 proven, 488 being tried, 159 retired (1 new this run); used 52 of 53 time(s) tried, 98% kept; 0 quarantined function(s) rescued. All in build/learned_fixes.txt
+[18:18:42]   fixer loop done: 30173 compiling, 0 quarantined
+[18:18:42]   repair loop: 0 quarantined function(s) rescued
+[18:22:15]   link round 1: linking 30176 objects ...
+[18:22:17]   link round 1: 98 undefined, 0 duplicate symbol(s) — stubbed/quarantined, relinking
+[18:22:18]   link round 2: linking 30177 objects ...
+[18:22:19]   24 placeholder definition(s) in stubs.cpp (listed in link_report.txt)
+[18:22:19]   LINK OK (round 2) -> /Users/admin/glitchdecomp/fastpass 3/build_c/program.dylib
+[18:22:27]   LM Studio OK — using the loaded model qwen2.5-coder-3b-instruct-mlx
+[18:22:27]   improve (C): casts, goto, helpers, magic_div, names, ptr_arith, warnings; each change is kept only if the function compiles to the same machine code
+[18:22:28]   (clang-tidy not found — its clean-ups are skipped)
+[18:22:28]   (clang-format not found — its clean-ups are skipped)
+[18:22:28]   callgraph imported: 22076 callers, 64251 edges from callgraph.json
+[18:22:28]   callgraph: 582 callee name(s) not in our TU set (external/library calls) — ignored for ordering
+[18:22:28]   callgraph: exact deps for 21706/30173 functions
+[18:22:28]   » round 1: changes across the code (names, duplicates, types, constants, privacy)
 ```
 
 ## pipeline_state.json
@@ -15372,66 +15158,66 @@ __LINKEDIT  0x8a3100  3840  -  zero-filled
   "stages": {
     "export": {
       "done": true,
-      "started": "2026-10-23 10:34:32",
-      "at": "2026-10-23 10:34:39",
-      "seconds": 8,
+      "started": "2026-10-24 18:08:40",
+      "at": "2026-10-24 18:08:54",
+      "seconds": 14,
       "note": "30489/30489 with pseudocode"
     },
     "rewrite": {
       "done": true,
-      "started": "2026-10-24 17:43:15",
-      "at": "2026-10-24 17:44:57",
-      "seconds": 102,
+      "started": "2026-10-24 18:08:56",
+      "at": "2026-10-24 18:10:39",
+      "seconds": 103,
       "model": "",
       "note": "30173/30489 rewritten",
       "model_busy": 12
     },
     "split": {
       "done": true,
-      "started": "2026-10-24 17:44:57",
-      "at": "2026-10-24 17:48:22",
-      "seconds": 205,
-      "note": "30119/30173 compile after the sweep"
+      "started": "2026-10-24 18:10:39",
+      "at": "2026-10-24 18:15:23",
+      "seconds": 283,
+      "note": "30098/30173 compile after the sweep"
     },
     "fix": {
       "done": true,
-      "started": "2026-10-24 17:48:22",
-      "at": "2026-10-24 17:51:40",
-      "seconds": 198,
+      "started": "2026-10-24 18:15:23",
+      "at": "2026-10-24 18:18:43",
+      "seconds": 200,
       "model": "qwen2.5-coder-3b-instruct-mlx",
       "model_busy": 34
     },
     "recover": {
       "done": true,
-      "started": "2026-10-24 17:51:40",
-      "at": "2026-10-24 17:51:41",
+      "started": "2026-10-24 18:18:43",
+      "at": "2026-10-24 18:18:43",
       "seconds": 0,
       "model": "qwen2.5-coder-3b-instruct-mlx"
     },
     "privacy": {
       "done": true,
-      "started": "2026-10-23 10:34:39",
-      "at": "2026-10-23 10:34:41",
+      "started": "2026-10-24 18:08:54",
+      "at": "2026-10-24 18:08:56",
       "seconds": 2,
       "note": "1141 replacement(s)"
     },
     "link": {
       "done": true,
-      "started": "2026-10-24 17:51:41",
-      "at": "2026-10-24 17:54:10",
-      "seconds": 149,
+      "started": "2026-10-24 18:18:43",
+      "at": "2026-10-24 18:22:19",
+      "seconds": 217,
       "note": "linked"
     },
     "test": {
       "done": false,
-      "started": "2026-10-24 17:54:10",
-      "at": "2026-10-24 17:54:16",
-      "note": "the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)"
+      "started": "2026-10-24 18:22:19",
+      "at": "2026-10-24 18:22:27",
+      "note": "the rebuilt plugin didn't load: load executable"
     },
     "improve": {
       "done": false,
-      "started": "2026-10-24 17:54:16",
-      "at": "2026-10-24 17:54:16",
+      "started": "2026-10-24 18:22:27",
+      "at": "2026-10-24 18:22:27",
       "note": "not in C mode yet"
     },
     "organize": {
@@ -15441,26 +15227,12 @@ __LINKEDIT  0x8a3100  3840  -  zero-filled
       "note": "not in C mode yet"
     }
   },
-  "version": "2026-10-25.2",
+  "version": "2026-10-25.4",
   "chars_per_token": {
     "ctx": 8192,
     "value": 2.06
   },
   "struggles": [
-    {
-      "at": "2026-10-23 00:06:49",
-      "keys": {
-        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
-        "fix|quarantined: no member named 'X' in 'X'": 3,
-        "fix|quarantined: too many arguments to function call, expected N, have N": 1,
-        "fix|quarantined: invalid operands to binary expression ('X' (aka 'X') and 'X' (aka 'X'))": 1,
-        "test|the rebuilt plugin didn't load: instantiate (the plugin's factory and constructor run here)": 1,
-        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 120,
-        "fix|fixes that undid each other (the cycle was stopped and the model got the function)": 10,
-        "fix|the model repeated an edit that had already failed (skipped)": 5,
-        "link|functions replaced by placeholders to link": 29
-      }
-    },
     {
       "at": "2026-10-23 10:28:55",
       "keys": {
@@ -15496,16 +15268,18 @@ __LINKEDIT  0x8a3100  3840  -  zero-filled
         "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 119,
         "link|functions replaced by placeholders to link": 24
       }
+    },
+    {
+      "at": "2026-10-24 18:26:45",
+      "keys": {
+        "rewrite|no usable rewrite: model returned no code (empty reply)": 3,
+        "test|the rebuilt plugin didn't load: load executable": 1,
+        "fix|Ghidra globals / library functions nothing declared (declared once in shared.h)": 119,
+        "link|functions replaced by placeholders to link": 24
+      }
     }
   ],
   "rates": [
-    {
-      "at": "10-22 23:52",
-      "functions": 30173,
-      "compile_pct": 100.0,
-      "quarantined_pct": 0.0,
-      "to_fix": 0
-    },
     {
       "at": "10-23 00:06",
       "functions": 30173,
@@ -15554,6 +15328,16 @@ __LINKEDIT  0x8a3100  3840  -  zero-filled
       "compile_pct": 100.0,
       "quarantined_pct": 0.0,
       "to_fix": 0,
+      "test_pass_pct": 0.0
+    },
+    {
+      "at": "10-24 18:26",
+      "functions": 30173,
+      "compile_pct": 100.0,
+      "quarantined_pct": 0.0,
+      "to_fix": 0,
+      "learned_proven": 96,
+      "learned_kept_pct": 98.1,
       "test_pass_pct": 0.0
     }
   ]
@@ -15698,7 +15482,7 @@ __LINKEDIT  0x8a3100  3840  -  zero-filled
 
 ```json
 {
-  "input_sha": "f2c71158ba444a4b",
+  "input_sha": "00c3eb43c3be688e",
   "split_done": true,
   "header_ok": true,
   "sweep_done": true,
