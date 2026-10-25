@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.2"
+PIPELINE_VERSION = "2026-10-25.3"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -203,6 +203,11 @@ STAGE_INFO = {
 STAGE_INFO_C = {
     "rewrite": "Ghidra's pseudocode is written out as one C file, with the program's data "
                "(no model: the code is what Ghidra decompiled)",
+    "improve": "the code is made easier to read (names, Ghidra's helpers, casts, pointer arithmetic), "
+               "worst functions first; a change is kept only if the function compiles to the same "
+               "machine code, so the plugin does exactly what it did",
+    "organize": "the whole program is written out as one C source file, final/program.c, with its "
+                "headers, its data and build.sh; final/ is only replaced once that builds",
 }
 
 
@@ -11292,6 +11297,8 @@ class ImproveCtx:
         # every task gets the room the context leaves: a thinking model capped at a
         # few hundred tokens is cut off before it writes anything, every time
         max_out = max(max_out, answer_room(self.cfg.ctx, len(system) + len(user)))
+        if getattr(self.cfg, "lang", "") == "c":       # the code is C: say so, or it writes C++
+            system = system.replace("C++", "C").replace("```cpp", "```c")
         return self.cfg.client.chat(self.model, [{"role": "system", "content": system},
                                                  {"role": "user", "content": user}],
                                     max_out=max_out, temperature=temperature,
@@ -11383,6 +11390,47 @@ class ImproveCtx:
 
 # ---------------------------------------------------------------- the gate
 
+def machine_code(cfg: Config, rel: str, text: str) -> Optional[str]:
+    """What `text` (the code of the function file rel) compiles to, as assembly with
+    everything that isn't the code itself left out (file names, comments, debug and
+    unwind directives). Two versions with the same machine code do exactly the same
+    thing. None if it doesn't compile."""
+    src = cfg.workdir / rel
+    tmp = src.with_name(f".mc_{os.getpid()}_{threading.get_ident()}_{src.name}")
+    out = tmp.with_suffix(".s")
+    try:
+        tmp.write_text(text)
+        cmd = [cfg.cxx, *lang_args(cfg), f"-I{cfg.workdir}", f"-I{src.parent}", "-w", "-S", "-O1", "-g0",
+               "-fno-asynchronous-unwind-tables", *PIC_FLAGS, *_pch_flags(cfg, rebuild=False),
+               *cfg.extra_flags, str(tmp), "-o", str(out)]
+        with HEADER_LOCK.read():
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        if r.returncode != 0:
+            r = subprocess.run([x for x in cmd if x not in _pch_flags(cfg, rebuild=False)],
+                               capture_output=True, text=True, timeout=300)
+        if r.returncode != 0 or not out.exists():
+            return None
+        keep = []
+        for l in out.read_text(errors="replace").splitlines():
+            s = l.split(";")[0].split("//")[0].strip() if not l.lstrip().startswith("#") else ""
+            if not s or s.startswith((".file", ".ident", ".loc", ".cfi_", ".addrsig", ".build_version",
+                                      ".section\t__DWARF", ".subsections_via_symbols")):
+                continue
+            keep.append(re.sub(r"\s+", " ", s))
+        return "\n".join(keep)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    finally:
+        tmp.unlink(missing_ok=True)
+        out.unlink(missing_ok=True)
+
+
+# what the improve stage does in C: changes that make the code easier to read and
+# compile to the same machine code (names, Ghidra's helpers, pointer arithmetic,
+# casts, divisions written as multiplications, gotos); never C++ library calls
+C_IMPROVE_CHECKS = {"names", "helpers", "magic_div", "ptr_arith", "casts", "goto", "warnings"}
+
+
 def gate_change(ctx: ImproveCtx, rec, old: str, new: str, behaviour=True,
                 allow_shrink=False) -> tuple[bool, str]:
     """Write `new`; keep it only if it compiles and still behaves like before.
@@ -11403,6 +11451,14 @@ def gate_change(ctx: ImproveCtx, rec, old: str, new: str, behaviour=True,
     if not ok:
         first = next((l for l in err.splitlines() if "error" in l), err[:200])
         why = "doesn't compile: " + first.split("error:", 1)[-1].strip()[:160]
+    elif getattr(ctx.cfg, "lang", "") == "c":
+        # C: kept only if it compiles to exactly the same machine code, so it can't
+        # change what the plugin does (the run test against the original stays valid)
+        a, b = machine_code(ctx.cfg, rec.file, old), machine_code(ctx.cfg, rec.file, new)
+        if a is None or b is None:
+            why = "its machine code couldn't be compared"
+        elif a != b:
+            why = "compiles to different machine code (it would change what the function does)"
     elif behaviour:
         pc = ctx.pseudo_calls(rec)
         if pc:
@@ -12683,6 +12739,11 @@ def _revert(ctx, change: dict, why: str) -> None:
 def run_improve(P: "Paths", cfg: "Config", records: dict, args) -> dict:
     model_check(cfg)
     checks = set(args.improve_checks.split(",")) if args.improve_checks else None
+    c_mode = getattr(cfg, "lang", "") == "c"
+    if c_mode:
+        checks = (checks or set(C_IMPROVE_CHECKS)) & C_IMPROVE_CHECKS
+        log(cfg, show=True, msg=f"  improve (C): {', '.join(sorted(checks))}; each change is kept only if "
+                                f"the function compiles to the same machine code")
     ctx = ImproveCtx(cfg, records, P, checks)
     if "improve" in (args.redo or []):
         n = 0
@@ -12702,7 +12763,8 @@ def run_improve(P: "Paths", cfg: "Config", records: dict, args) -> dict:
         if not shutil.which(tool):
             log(cfg, f"  ({tool} not found — its clean-ups are skipped)")
     build_dep_order(cfg, records)
-    deadline = time.time() + args.improve_minutes * 60 if args.improve_minutes else None
+    minutes = args.improve_minutes if args.improve_minutes is not None else (120 if c_mode else 0)
+    deadline = time.time() + minutes * 60 if minutes else None
     link_ok_before = bool(load_state(cfg).get("link_ok"))
     first_score = None
     kept_total = 0
@@ -12711,8 +12773,8 @@ def run_improve(P: "Paths", cfg: "Config", records: dict, args) -> dict:
         log(cfg, f"  » round {rnd}: changes across the code (names, duplicates, types, "
                  f"constants, privacy)")
         for name, fn in GLOBAL_PASSES:
-            if checks and name not in checks:
-                continue
+            if checks and name not in checks or c_mode:
+                continue                       # (C: the whole-program renames aren't gated yet)
             try:
                 fn(ctx, round_log)
             except Exception as e:
@@ -13176,6 +13238,281 @@ def run_organize(P: "Paths", cfg: "Config", records: dict, args) -> dict:
     result["written"] = True
     log(cfg, show=True, msg=f"  final code written to {final}: {len(modules)} module(s), "
              f"{result['classes']} class(es)")
+    return result
+
+
+# ---------------------------------------------------------------- organize, in C
+#
+# The C build's final output: the whole program as ONE C source file,
+# final/program.c (every function, the placeholders and the Objective-C message
+# senders), with the headers it includes, the program's data (ghidra_data.c and
+# its bytes in data/) and build.sh, which builds the plugin library from them.
+# final/ is only replaced once build.sh has built it; the previous one is moved
+# to snapshots/.
+
+def _toplevel_items(text: str) -> list[tuple[str, str]]:
+    """A C file's top level, in order: ("pp", a preprocessor line), ("decl", a
+    declaration ending in ';', a struct/union/enum definition included) or ("def", a
+    function definition). Strings, characters and comments are skipped over."""
+    items, buf, i, n = [], [], 0, len(text)
+
+    def flush(kind):
+        s = "".join(buf).strip()
+        if s:
+            items.append((kind, s))
+        buf.clear()
+    while i < n:
+        ch = text[i]
+        if ch == "#" and not "".join(buf).strip():          # a preprocessor line (with \ continuations)
+            j = i
+            while True:
+                e = text.find("\n", j)
+                e = n if e < 0 else e
+                if e > 0 and text[e - 1] == "\\" and e < n:
+                    j = e + 1
+                    continue
+                break
+            items.append(("pp", text[i:e].strip()))
+            i = e + 1
+            continue
+        if text.startswith("//", i):
+            e = text.find("\n", i)
+            e = n if e < 0 else e
+            buf.append(text[i:e])
+            i = e
+            continue
+        if text.startswith("/*", i):
+            e = text.find("*/", i + 2)
+            e = n if e < 0 else e + 2
+            buf.append(text[i:e])
+            i = e
+            continue
+        if ch in "\"'":
+            j = i + 1
+            while j < n and text[j] != ch:
+                j += 2 if text[j] == "\\" else 1
+            buf.append(text[i:j + 1])
+            i = j + 1
+            continue
+        if ch == ";":
+            buf.append(ch)
+            flush("decl")
+            i += 1
+            continue
+        if ch == "{":
+            head = "".join(buf)
+            depth, j = 0, i
+            while j < n:                                    # the matching brace
+                c = text[j]
+                if c in "\"'":
+                    k = j + 1
+                    while k < n and text[k] != c:
+                        k += 2 if text[k] == "\\" else 1
+                    j = k + 1
+                    continue
+                if text.startswith("//", j):
+                    e = text.find("\n", j)
+                    j = n if e < 0 else e
+                    continue
+                if text.startswith("/*", j):
+                    e = text.find("*/", j + 2)
+                    j = n if e < 0 else e + 2
+                    continue
+                depth += c == "{"
+                depth -= c == "}"
+                j += 1
+                if depth == 0:
+                    break
+            buf.append(text[i:j])
+            i = j
+            if re.search(r"\)\s*(?:__attribute__\s*\(\(.*\)\)\s*)?$", strip_comments(head).strip(), re.S):
+                flush("def")                                # a function: head(...) { ... }
+            continue                                        # struct/enum: goes on to its ';'
+        buf.append(ch)
+        i += 1
+    flush("decl")
+    return items
+
+
+def run_organize_c(P: "Paths", cfg: "Config", records: dict, args) -> dict:
+    import shlex
+    result = {"modules": 0, "classes": 0, "built": False, "written": False, "functions": 0}
+    tmp = P.root / "final.new"
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    tmp.mkdir(parents=True)
+    funcs = [r for r in records.values() if r.compiles and not r.quarantined
+             and not getattr(r, "duplicate_of", "")]
+
+    def addr_key(r):
+        try:
+            return (0, int(str(r.ghidra_addr or ""), 16), r.name)
+        except ValueError:
+            return (1, 0, r.name)
+    funcs.sort(key=addr_key)
+    includes: list = []
+    seen_decl: set = set()
+    parts: list = []
+    bar = Progress(len(funcs) + 3, 0, title="organize: the whole program as one C file")
+
+    def take(text: str, title: str):
+        out = []
+        for kind, s in _toplevel_items(text):
+            if kind == "pp":
+                m = re.match(r'#\s*include\s*(<[^>]+>|"[^"]+")', s)
+                if m:
+                    if m.group(1) != '"shared.h"' and s not in includes:
+                        includes.append(s)
+                    continue
+                if s.startswith("#define") and s in seen_decl:
+                    continue
+                seen_decl.add(s)
+                out.append(s)
+            elif kind == "decl":
+                key = re.sub(r"\s+", " ", strip_comments(s)).strip()
+                if key in seen_decl:
+                    continue                    # the same declaration in another file: once
+                seen_decl.add(key)
+                out.append(s)
+            else:
+                out.append(s)
+        if out:
+            parts.append(f"// ---- {title}\n" + "\n\n".join(out))
+    try:
+        for r in funcs:
+            bar.begin(r.name, r.name)
+            try:
+                take((cfg.workdir / r.file).read_text(), f"{r.name}"
+                     + (f" (Ghidra {r.ghidra_addr})" if r.ghidra_addr else ""))
+            except OSError:
+                pass
+            bar.end(r.name)
+        for name, title in (("globals.cpp", "the program's globals"),
+                            ("stubs.cpp", "placeholders and library forwarders (see build/link_report.txt)"),
+                            ("objc_messages.c", "Objective-C messages, sent for real")):
+            p = cfg.workdir / name
+            if p.exists():
+                take(p.read_text(), title)
+            bar.end(name)
+    finally:
+        bar.close()
+    result["functions"] = len(funcs)
+    head = [f"// {len(funcs)} functions rebuilt from Ghidra's decompilation, as C (generated by",
+            f"// decomp_pipeline {PIPELINE_VERSION}). Build it with build.sh.", "",
+            '#include "shared.h"'] + includes
+    write_atomic(tmp / "program.c", "\n".join(head) + "\n\n" + "\n\n".join(parts) + "\n")
+    # the headers it includes, and the program's data with its bytes
+    todo, copied = ["shared.h", "ghidra_data.h"], set()
+    while todo:
+        name = todo.pop()
+        p = cfg.workdir / name
+        if name in copied or not p.exists():
+            continue
+        copied.add(name)
+        txt = p.read_text()
+        (tmp / name).write_text(txt)
+        todo += re.findall(r'^\s*#\s*include\s*"([^"]+)"', txt, re.M)
+    data_c = cfg.workdir / "ghidra_data.c"
+    if data_c.exists():
+        (tmp / "data").mkdir(exist_ok=True)
+        dc = data_c.read_text()
+
+        def bin_rel(m):
+            src = Path(m.group(1))
+            if src.exists():
+                shutil.copy2(src, tmp / "data" / src.name)
+            return f'.incbin \\"data/{src.name}\\"'
+        dc = re.sub(r'\.incbin \\"([^"\\]+)\\"', bin_rel, dc)
+        (tmp / "ghidra_data.c").write_text(dc)
+    lib = "program.dylib" if sys.platform == "darwin" else "program.so"
+    lib_flags = ["-dynamiclib"] if sys.platform == "darwin" else ["-shared", "-Wl,--no-undefined"]
+    q = lambda xs: " ".join(shlex.quote(x) for x in xs)
+    cflags = [*lang_args(cfg), "-w", *PIC_FLAGS, *cfg.extra_flags]
+    script = ["#!/bin/sh", "# Builds the rebuilt plugin library from program.c and the program's data.",
+              "set -e", 'cd "$(dirname "$0")"', 'CC="${CC:-clang}"',
+              f'"$CC" {q(cflags)} -I. -c program.c -o program.o',
+              f'"$CC" -x c -std=gnu11 -w {q(PIC_FLAGS)} -I. -c ghidra_data.c -o ghidra_data.o'
+              if data_c.exists() else "",
+              f'"$CC" {q(lib_flags + PIC_FLAGS + cfg.extra_flags)} program.o'
+              + (" ghidra_data.o" if data_c.exists() else "") + f" {q(c_link_flags(cfg))} -o {lib}",
+              f'echo "built $(pwd)/{lib}"']
+    (tmp / "build.sh").write_text("\n".join(x for x in script if x) + "\n")
+    os.chmod(tmp / "build.sh", 0o755)
+    (tmp / "README.md").write_text(
+        "# The rebuilt program, in C\n\n"
+        f"- `program.c`: all {len(funcs)} functions, in the order of their addresses in the original, "
+        "then the placeholders for what couldn't be rebuilt and the library forwarders.\n"
+        "- `shared.h` (and the headers it includes): the program's types and declarations.\n"
+        "- `ghidra_data.c`, `ghidra_data.h`, `data/`: the program's data, byte for byte, and the code that "
+        "fixes up its pointers and runs its static initializers when the library loads.\n"
+        f"- `build.sh`: builds `{lib}`.\n")
+    # it has to build before it replaces final/
+    decls = {x for x in seen_decl if "\n" not in x}
+    for attempt in range(1, 5):
+        with busy(f"organize: building final/ with its build.sh (the whole program as one file), "
+                  f"try {attempt}"):
+            try:
+                r = subprocess.run(["sh", str(tmp / "build.sh")], capture_output=True, text=True,
+                                   timeout=getattr(args, "organize_build_minutes", 60) * 60)
+                ok, err = r.returncode == 0, (r.stderr or r.stdout)
+            except subprocess.TimeoutExpired:
+                ok, err = False, "build.sh took longer than the time it's given"
+        if ok:
+            break
+        # one file's declaration clashing with another's, now that they're in one file
+        # (each compiled on its own before): the later one goes, and it's built again
+        lines = (tmp / "program.c").read_text().split("\n")
+        bad = set()
+        for m in re.finditer(r"program\.c:(\d+):\d+: error: (?:redefinition of|conflicting types for|"
+                             r"redeclaration of|non-static declaration of|static declaration of)", err):
+            k = int(m.group(1)) - 1
+            if 0 <= k < len(lines) and re.sub(r"\s+", " ", strip_comments(lines[k])).strip() in decls:
+                bad.add(k)
+        if not bad:
+            break
+        log(cfg, show=True, msg=f"  organize: {len(bad)} declaration(s) clash now that every function is in "
+                                f"one file — the later copies are left out, building again")
+        (tmp / "program.c").write_text("\n".join(l for k, l in enumerate(lines) if k not in bad))
+    if not ok:
+        (tmp / "build_errors.txt").write_text(err)
+        first = next((l for l in err.splitlines() if "error" in l), err[:300])
+        struggle("organize", "the final C file doesn't build, so final/ wasn't written",
+                 hint="see final.new/build_errors.txt")
+        log(cfg, show=True, msg=f"  organize: final/program.c doesn't build ({first.strip()[:200]}); final/ "
+                                f"was NOT updated — what was written is in {tmp} (build_errors.txt)")
+        return result
+    result["built"] = True
+    for leftover in ("program.o", "ghidra_data.o"):
+        (tmp / leftover).unlink(missing_ok=True)
+    hits = []
+    for p in sorted(tmp.rglob("*")):
+        # (the program's data was swept in the privacy stage; ghidra_data.c only embeds it)
+        if p.is_file() and p.suffix in (".h", ".c", ".md", ".sh") and \
+                p.name not in ("ghidra_intrins.h", "ghidra_data.c", "ghidra_data.h"):
+            txt = p.read_text(errors="replace")
+            for kind, tok, s in privacy_hits(txt, load_blocklist(P)):
+                hits.append(f"{p.relative_to(tmp)}:{_line_of(txt, s)}: {kind} {tok[:80]}")
+    (P.root / "privacy_report.txt").write_text(
+        "Nothing found that identifies the original program.\n" if not hits else
+        "Possible identifying text in the final code:\n" + "\n".join(hits[:500]) + "\n")
+    result["privacy_hits"] = len(hits)
+    if hits and not args.allow_privacy_findings:
+        struggle("organize", "possible identifying items left (final/ not written)", n=len(hits),
+                 hint="see the privacy report; add names to privacy_blocklist.txt")
+        log(cfg, show=True, msg=f"  privacy check: {len(hits)} possible identifying item(s) — final/ NOT "
+                                f"updated (see privacy_report.txt, or --allow-privacy-findings)")
+        return result
+    final = P.root / "final"
+    if final.exists():
+        dest = P.snapshots / f"{time.strftime('%Y%m%d-%H%M%S')}-final"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(final), str(dest))
+        log(cfg, f"  previous final/ moved to {dest}")
+    shutil.move(str(tmp), str(final))
+    result["written"] = True
+    size = (final / "program.c").stat().st_size
+    log(cfg, show=True, msg=f"  final C source: {final / 'program.c'} ({len(funcs)} functions, "
+                            f"{size / 1e6:.1f} MB), built by final/build.sh into {lib}")
     return result
 
 
@@ -15856,13 +16193,6 @@ def run_pipeline(args) -> int:
                     ran_something = True
                     continue
                 info = {"note": f"{tr['passed']}/{tr['cases']} case(s) pass"}
-            elif stage in ("improve", "organize") and args.lang == "c":
-                plog(P, show=True, msg=f"  {stage}: not in C mode yet (its behaviour checks are "
-                                       f"built for the C++ build). In C mode, what comes after "
-                                       f"link is the run test against the original plugin.")
-                mark_stage(P, stage, done=False, note="not in C mode yet")
-                ran_something = True
-                continue
             elif stage in ("fix", "recover", "link", "improve", "organize"):
                 if records is None:
                     records = load_manifest(cfg)
@@ -15872,9 +16202,10 @@ def run_pipeline(args) -> int:
                             "note": f"score {s['score_before']} → {s['score_after']}, "
                                     f"{s['kept']} change(s)"}
                 elif stage == "organize":
-                    s = run_organize(P, cfg, records, args)
+                    s = (run_organize_c if args.lang == "c" else run_organize)(P, cfg, records, args)
                     info = {"model": cfg.fix_model_used or "",
-                            "note": (f"{s['modules']} modules, {s['classes']} classes"
+                            "note": ((f"final/program.c: {s.get('functions', 0)} functions" if args.lang == "c"
+                                      else f"{s['modules']} modules, {s['classes']} classes")
                                      if s.get("written") else "final/ not updated")}
                     if not s.get("written"):
                         mark_stage(P, stage, done=False, **info)
@@ -16063,9 +16394,9 @@ def build_parser() -> argparse.ArgumentParser:
     g = ap.add_argument_group("build (split / fix / recover / link)")
     g.add_argument("--cxx", default="auto", help="C++ compiler: auto (clang++, else g++), "
                                                  "a name or a path")
-    g.add_argument("--lang", choices=["c", "c++"], default="c++",
-                   help="c: build Ghidra's pseudocode as C, no model rewrite (in build_c/); "
-                        "c++: the model's rewrites (in build/)")
+    g.add_argument("--lang", choices=["c", "c++"], default="c",
+                   help="c (the default): build Ghidra's pseudocode as C, no model rewrite (in "
+                        "build_c/); c++: the older path, the model's rewrites (in build/)")
     g.add_argument("--std", default=None, help="language standard (default gnu11 for C, c++17)")
     g.add_argument("--libclang", default=None, help="path to libclang .dylib/.so")
     g.add_argument("--callgraph", type=Path, default=None,
@@ -16111,8 +16442,9 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--improve-rounds", type=int, default=3,
                    help="rounds of checks and small fixes (a round with nothing to fix ends "
                         "the stage early)")
-    g.add_argument("--improve-minutes", type=float, default=0,
-                   help="stop improving after this many minutes (0: no limit)")
+    g.add_argument("--improve-minutes", type=float, default=None,
+                   help="stop improving after this many minutes (0: no limit; default: 120 in C, "
+                        "no limit in C++)")
     g.add_argument("--improve-per-function", type=int, default=6,
                    help="most small fixes per function per round (spreads the work)")
     g.add_argument("--improve-checks", default=None,

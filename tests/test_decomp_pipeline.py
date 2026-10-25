@@ -310,7 +310,9 @@ def write_export(workdir: Path, pseudo=PSEUDO):
 
 
 def run(workdir, model, *extra):
-    argv = ["--workdir", str(workdir), "--api", model.url, *extra]
+    # the C++ path's tests say nothing about the language: C is the default now
+    lang = [] if "--lang" in extra else ["--lang", "c++"]
+    argv = ["--workdir", str(workdir), "--api", model.url, *lang, *extra]
     return dp.main(argv)
 
 
@@ -839,7 +841,7 @@ def test_stop_button_prints_errors_and_stops_cleanly(tmp_path, model):
         return orig(msgs)
     model.reply = slow
     proc = subprocess.Popen([sys.executable, str(SCRIPT), "--workdir", str(tmp_path),
-                             "--api", model.url, "--to", "link"],
+                             "--api", model.url, "--to", "link", "--lang", "c++", "--no-update"],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     log = tmp_path / "pipeline.log"
     deadline = time.time() + 240
@@ -2615,3 +2617,75 @@ def test_a_crash_is_explained_in_the_programs_own_terms(tmp_path, model):
     assert "in the rebuilt data: g_block_0 + 0x8" in out and "original 0x2008, Ghidra's PTR_FUN_00002008" in out
     assert "fixed up at load: function -> 1000" in out and "x1 = 0x0000000000000000  (zero)" in out
     assert "the rebuilt plugin's load steps" in out and "plugin said hello" in out
+
+
+def test_the_c_pipeline_runs_to_the_end_and_writes_one_c_file_that_builds(tmp_path, model):
+    import base64
+    import ctypes
+    import struct
+    pseudo = {**C_PSEUDO,
+              "10a0": ("FUN_000010a0", "long FUN_000010a0(void)\n\n{\n  long lVar1;\n"
+                                       "  lVar1 = (*(code *)PTR_FUN_00002008)(DAT_00002000,1);\n"
+                                       "  return lVar1;\n}\n")}
+    write_export(tmp_path, pseudo)
+    blob = struct.pack("<qq", 41, 0x1000)
+    (tmp_path / "ghidra" / "ghidra_data.json").write_text(json.dumps({
+        "version": 4, "image_base": "0",
+        "blocks": [{"name": "__data", "start": "2000", "size": len(blob), "write": True,
+                    "bytes": base64.b64encode(blob).decode()}],
+        "symbols": [{"addr": "2000", "name": "DAT_00002000", "type": "long", "size": 8},
+                    {"addr": "2008", "name": "PTR_FUN_00002008", "type": "pointer", "size": 8, "pointer": True}],
+        "refs": [{"from": "2008", "to": "1000", "kind": "function", "name": "FUN_00001000"}],
+        "relocs": [], "callees": {}}))
+    # C is the default: no --lang
+    assert dp.main(["--workdir", str(tmp_path), "--api", model.url, "--improve-minutes", "1"]) == 0
+    log = (tmp_path / "pipeline.log").read_text()
+    assert "not in C mode yet" not in log and "same machine code" in log
+    assert "improve (C):" in (tmp_path / "build_c" / "worklist.log").read_text()
+    final = tmp_path / "final"
+    src = (final / "program.c").read_text()
+    assert src.count('#include "shared.h"') == 1 and "FUN_000010a0" in src and "FUN_00001000" in src
+    assert (final / "build.sh").exists() and (final / "ghidra_data.c").exists()
+    assert list((final / "data").glob("block_*.bin"))
+    lib = next(final.glob("program.*"))
+    so = ctypes.CDLL(str(lib))
+    so.FUN_000010a0.restype = ctypes.c_long
+    assert so.FUN_000010a0() == 42          # the final library works: data, fix-ups and all
+
+
+def test_the_c_improve_gate_keeps_only_changes_with_the_same_machine_code(tmp_path):
+    cc = shutil.which("clang")
+    if not cc:
+        pytest.skip("needs clang")
+    cfg = dp.Config(input_file=tmp_path / "x.c", workdir=tmp_path, cxx=cc, lang="c", std="gnu11")
+    (tmp_path / "shared.h").write_text("#pragma once\n#include <stdint.h>\n")
+    (tmp_path / "funcs").mkdir()
+    old = '#include "shared.h"\nlong f(long param_1)\n{\n  long lVar1;\n  lVar1 = param_1 * 3;\n  return lVar1 + 1;\n}\n'
+    renamed = old.replace("param_1", "count").replace("lVar1", "tripled")
+    changed = old.replace("* 3", "* 4")
+    assert dp.machine_code(cfg, "funcs/f.c", old) == dp.machine_code(cfg, "funcs/f.c", renamed)
+    assert dp.machine_code(cfg, "funcs/f.c", old) != dp.machine_code(cfg, "funcs/f.c", changed)
+    (tmp_path / "funcs" / "f.c").write_text(old)
+    rec = dp.FuncRecord(name="f", mangled="f", file="funcs/f.c", start=0, end=0)
+
+    class Ctx:
+        pass
+    ctx = Ctx()
+    ctx.cfg = cfg
+    assert dp.gate_change(ctx, rec, old, renamed) == (True, "")
+    ok, why = dp.gate_change(ctx, rec, renamed, changed)
+    assert not ok and "different machine code" in why
+    assert (tmp_path / "funcs" / "f.c").read_text() == renamed      # the rejected one is undone
+
+
+def test_declarations_that_clash_in_one_file_are_left_out_and_it_builds(tmp_path, model):
+    write_export(tmp_path, C_PSEUDO)
+    assert dp.main(["--workdir", str(tmp_path), "--api", model.url, "--to", "link"]) == 0
+    funcs = sorted((tmp_path / "build_c" / "funcs").glob("*.cpp"))
+    # fine one file at a time, a clash in one
+    funcs[0].write_text(funcs[0].read_text() + "\nextern long gh_clash;\n")
+    funcs[1].write_text(funcs[1].read_text() + "\nextern int gh_clash;\n")
+    assert dp.main(["--workdir", str(tmp_path), "--api", model.url, "--from", "organize"]) == 0
+    src = (tmp_path / "final" / "program.c").read_text()
+    assert src.count("gh_clash") == 1
+    assert "clash now that every function is in one file" in (tmp_path / "build_c" / "worklist.log").read_text()
