@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.5"
+PIPELINE_VERSION = "2026-10-25.6"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -13426,12 +13426,16 @@ def run_organize_c(P: "Paths", cfg: "Config", records: dict, args) -> dict:
             except OSError:
                 pass
             bar.end(r.name)
-        for name, title in (("globals.cpp", "the program's globals"),
-                            ("stubs.cpp", "placeholders and library forwarders (see build/link_report.txt)"),
-                            ("objc_messages.c", "Objective-C messages, sent for real")):
+        p = cfg.workdir / "globals.cpp"
+        if p.exists():
+            take(p.read_text(), "the program's globals")
+        bar.end("globals")
+        # the placeholders and the Objective-C message senders stay files of their own,
+        # as the link builds them: they define names shared.h declares differently
+        for name, dest in (("stubs.cpp", "stubs.c"), ("objc_messages.c", "objc_messages.c")):
             p = cfg.workdir / name
             if p.exists():
-                take(p.read_text(), title)
+                (tmp / dest).write_text(p.read_text())
             bar.end(name)
     finally:
         bar.close()
@@ -13467,20 +13471,25 @@ def run_organize_c(P: "Paths", cfg: "Config", records: dict, args) -> dict:
     lib_flags = ["-dynamiclib"] if sys.platform == "darwin" else ["-shared", "-Wl,--no-undefined"]
     q = lambda xs: " ".join(shlex.quote(x) for x in xs)
     cflags = [*lang_args(cfg), "-w", *PIC_FLAGS, *cfg.extra_flags]
+    others = [n for n in ("stubs.c", "objc_messages.c") if (tmp / n).exists()]
+    objs = ["program.o"] + [n[:-2] + ".o" for n in others] + (["ghidra_data.o"] if data_c.exists() else [])
     script = ["#!/bin/sh", "# Builds the rebuilt plugin library from program.c and the program's data.",
               "set -e", 'cd "$(dirname "$0")"', 'CC="${CC:-clang}"',
               f'"$CC" {q(cflags)} -I. -c program.c -o program.o',
+              *[f'"$CC" {q(cflags if n == "stubs.c" else ["-x", "c", "-std=gnu11", "-w", *PIC_FLAGS])} '
+                f'-I. -c {n} -o {n[:-2]}.o' for n in others],
               f'"$CC" -x c -std=gnu11 -w {q(PIC_FLAGS)} -I. -c ghidra_data.c -o ghidra_data.o'
               if data_c.exists() else "",
-              f'"$CC" {q(lib_flags + PIC_FLAGS + cfg.extra_flags)} program.o'
-              + (" ghidra_data.o" if data_c.exists() else "") + f" {q(c_link_flags(cfg))} -o {lib}",
+              f'"$CC" {q(lib_flags + PIC_FLAGS + cfg.extra_flags)} {" ".join(objs)} '
+              f'{q(c_link_flags(cfg))} -o {lib}',
               f'echo "built $(pwd)/{lib}"']
     (tmp / "build.sh").write_text("\n".join(x for x in script if x) + "\n")
     os.chmod(tmp / "build.sh", 0o755)
     (tmp / "README.md").write_text(
         "# The rebuilt program, in C\n\n"
-        f"- `program.c`: all {len(funcs)} functions, in the order of their addresses in the original, "
-        "then the placeholders for what couldn't be rebuilt and the library forwarders.\n"
+        f"- `program.c`: all {len(funcs)} functions, in the order of their addresses in the original.\n"
+        "- `stubs.c`: placeholders for what couldn't be rebuilt, and forwarders to library functions; "
+        "`objc_messages.c`: the Objective-C messages the code sends.\n"
         "- `shared.h` (and the headers it includes): the program's types and declarations.\n"
         "- `ghidra_data.c`, `ghidra_data.h`, `data/`: the program's data, byte for byte, and the code that "
         "fixes up its pointers and runs its static initializers when the library loads.\n"
@@ -13521,7 +13530,7 @@ def run_organize_c(P: "Paths", cfg: "Config", records: dict, args) -> dict:
                                 f"was NOT updated — what was written is in {tmp} (build_errors.txt)")
         return result
     result["built"] = True
-    for leftover in ("program.o", "ghidra_data.o"):
+    for leftover in ("program.o", "ghidra_data.o", "stubs.o", "objc_messages.o"):
         (tmp / leftover).unlink(missing_ok=True)
     hits = []
     for p in sorted(tmp.rglob("*")):
