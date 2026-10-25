@@ -2821,3 +2821,13 @@ def test_registers_ghidra_saw_read_but_nothing_gave_start_as_zero(tmp_path):
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     assert subprocess.run([str(tmp_path / "z")]).returncode == 0
+
+
+def test_a_crash_in_a_library_built_from_program_c_shows_program_cs_code(tmp_path):
+    src = tmp_path / "program.c"
+    src.write_text('#include "shared.h"\n\n// ---- FUN_a (Ghidra a)\nlong FUN_a(long p)\n{\n  return FUN_b(p);\n}\n\n'
+                   '// ---- FUN_b (Ghidra b)\nlong FUN_b(long p)\n{\n  return *(long *)p;\n}\n')
+    extra = {"source": src, "recs": {}, "cfg": None}
+    assert dp._code_of("FUN_b", extra).startswith("// ---- FUN_b") and "*(long *)p" in dp._code_of("FUN_b", extra)
+    lines, spans = dp._program_c(src)
+    assert next(n for n, (s, e) in spans.items() if s < 13 <= e) == "FUN_b"      # line 13: its return

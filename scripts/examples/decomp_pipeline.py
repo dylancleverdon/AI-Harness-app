@@ -124,7 +124,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-PIPELINE_VERSION = "2026-10-25.11"
+PIPELINE_VERSION = "2026-10-25.12"
 STAGES = ["export", "privacy", "rewrite", "split", "fix", "recover", "link", "test", "improve",
           "organize"]
 MODEL_STAGES = {"rewrite": "rewrite", "fix": "fix"}   # stage -> which model it uses
@@ -13869,7 +13869,7 @@ def run_organize_c(P: "Paths", cfg: "Config", records: dict, args) -> dict:
     objs = ["program.o"] + [n[:-2] + ".o" for n in others] + (["ghidra_data.o"] if data_c.exists() else [])
     script = ["#!/bin/sh", "# Builds the rebuilt plugin library from program.c and the program's data.",
               "set -e", 'cd "$(dirname "$0")"', 'CC="${CC:-clang}"',
-              f'"$CC" {q(cflags)} -I. -c program.c -o program.o',
+              f'"$CC" {q(cflags)} -gline-tables-only -I. -c program.c -o program.o',
               *[f'"$CC" {q(cflags if n == "stubs.c" else ["-x", "c", "-std=gnu11", "-w", *PIC_FLAGS])} '
                 f'-I. -c {n} -o {n[:-2]}.o' for n in others],
               f'"$CC" -x c -std=gnu11 -w {q(PIC_FLAGS)} -I. -c ghidra_data.c -o ghidra_data.o'
@@ -16020,6 +16020,41 @@ def _run_host(argv: list[str], timeout: int = TEST_TIMEOUT) -> dict:
     return res
 
 
+_PROGRAM_C: dict = {}
+
+
+def _program_c(source: Path) -> tuple:
+    """(lines, {function: (first line, last line)}) of a final program.c, by its
+    '// ---- NAME' markers (cached)."""
+    key = (str(source), source.stat().st_mtime)
+    if key not in _PROGRAM_C:
+        lines = source.read_text(errors="replace").split("\n")
+        marks = [(i, m.group(1)) for i, l in enumerate(lines)
+                 for m in [re.match(r"// ---- (\S+)", l)] if m]
+        spans = {n: (s, (marks[k + 1][0] if k + 1 < len(marks) else len(lines)))
+                 for k, (s, n) in enumerate(marks)}
+        _PROGRAM_C.clear()
+        _PROGRAM_C[key] = (lines, spans)
+    return _PROGRAM_C[key]
+
+
+def _code_of(name: str, extra: dict) -> Optional[str]:
+    """A rebuilt function's code: from the program.c being tested (--test-lib), or
+    its own file in the build."""
+    src = extra.get("source")
+    if src:
+        lines, spans = _program_c(src)
+        if name in spans:
+            s, e = spans[name]
+            return "\n".join(lines[s:e]).rstrip()
+        return None
+    rec = (extra.get("recs") or {}).get(name)
+    try:
+        return (extra["cfg"].workdir / rec.file).read_text() if rec else None
+    except OSError:
+        return None
+
+
 def _crash_context(res: dict, extra: dict) -> list[str]:
     """Everything the crash tells about the rebuilt program, in its own terms: each
     rebuilt frame as file:line, every register that points into the program (a
@@ -16149,11 +16184,17 @@ def _crash_context(res: dict, extra: dict) -> list[str]:
         if m:
             fname, ln = m.group(1).lstrip("_"), int(m.group(2))
             rec = recs.get(fname)
-            if rec:
+            lines = []
+            if extra.get("source") and fname == "program":       # program.c: the function it's in
+                lines, spans = _program_c(extra["source"])
+                fname = next((n for n, (s, e) in spans.items() if s < ln <= e), fname)
+                rec = recs.get(fname) or (fname if fname in spans else None)
+            elif rec:
                 try:
                     lines = (cfg.workdir / rec.file).read_text().split("\n")
                 except OSError:
                     lines = []
+            if rec:
                 near = "\n".join(lines[max(0, ln - 4):ln])
                 out.append(f"    where it crashed: {fname} line {ln}: {lines[ln - 1].strip() if 0 < ln <= len(lines) else '?'}")
                 called_here = [c for c in dict.fromkeys(re.findall(r"(?<![\w.>])([A-Za-z_]\w*)\s*\(", near))
@@ -16164,11 +16205,10 @@ def _crash_context(res: dict, extra: dict) -> list[str]:
         exp0, idx0 = {}, {}
     for c in called_here[:6]:
         rec = recs[c]
-        try:
-            code = (cfg.workdir / rec.file).read_text()
-        except OSError:
+        code = _code_of(c, extra)
+        if code is None:
             continue
-        out.append(f"    called just before the crash: {c} ({rec.file})"
+        out.append(f"    called just before the crash: {c} ({'program.c' if extra.get('source') else rec.file})"
                    + ("  — Ghidra says it returns nothing; here it returns a stand-in 0"
                       if c in lost else ""))
         out += [f"      {i + 1:4} | {l}" for i, l in enumerate(code.split("\n")[:40])]
@@ -16195,10 +16235,7 @@ def _crash_context(res: dict, extra: dict) -> list[str]:
             seen.append(m.group(1))
     for name in seen[:10]:
         rec = recs[name]
-        try:
-            code = (cfg.workdir / rec.file).read_text()
-        except OSError:
-            code = ""
+        code = _code_of(name, extra) or ""
         used = sorted(set(re.findall(r"\bGD_\w+", code)))
         lits = sorted(set(re.findall(r"g_block_(\d+) \+ (0x[0-9a-fA-F]+)", code)))
         if used or lits:
@@ -16253,12 +16290,14 @@ def _describe_failure(res: dict, records_by_name: dict, workdir: Optional[Path] 
             out.append("    (an address from the ORIGINAL program's layout: a pointer the load-time "
                        "fix-ups missed, still pointing where the original kept that thing)")
         for n in list(dict.fromkeys(frames))[:10] if workdir else []:
-            try:
-                code = (workdir / records_by_name[n]).read_text()
-            except OSError:
-                continue
+            code = _code_of(n, extra) if extra and extra.get("source") else None
+            if code is None:
+                try:
+                    code = (workdir / records_by_name[n]).read_text()
+                except OSError:
+                    continue
             body = code.split("\n")
-            out.append(f"    code of {n} ({records_by_name[n]}):")
+            out.append(f"    code of {n} ({'program.c' if extra and extra.get('source') else records_by_name[n]}):")
             out += [f"      {i + 1:4} | {l}" for i, l in enumerate(body[:60])]
             if len(body) > 60:
                 out.append(f"      ... ({len(body) - 60} more lines)")
@@ -16379,6 +16418,8 @@ def run_test(P: Paths, cfg: Config, args) -> dict:
         result["skipped"] = "not macOS"
         return result
     lib = cfg.workdir / ("program.dylib" if sys.platform == "darwin" else "program.so")
+    if getattr(args, "test_lib", None):                # a library built elsewhere (final/, a repo)
+        lib = Path(args.test_lib).expanduser().resolve()
     if not lib.exists():
         result["failure"] = "no rebuilt library"
         return finish(f"there's no rebuilt program to test ({lib} is missing): run the link "
@@ -16400,6 +16441,8 @@ def run_test(P: Paths, cfg: Config, args) -> dict:
         pass
     by_name = {r.name: r.file for r in records.values()}
     crash_extra = {"lib": lib, "P": P, "cfg": cfg, "recs": {r.name: r for r in records.values()}}
+    if getattr(args, "test_lib", None) and (lib.parent / "program.c").exists():
+        crash_extra["source"] = lib.parent / "program.c"     # its code, for the crash report
     exported = _exported_functions(lib)
 
     # the hosts: one for this Mac's architecture (the rebuilt program), and one
@@ -16907,6 +16950,9 @@ def build_parser() -> argparse.ArgumentParser:
                    help="at link time, stub EVERY undefined symbol that has a prototype")
     g.add_argument("--no-pseudo", action="store_true",
                    help="skip rebuilding quarantined functions from pseudocode")
+    g.add_argument("--test-lib", default=None,
+                   help="test this library instead of the build's own (e.g. a program.dylib built "
+                        "from final/ or a repo, with its program.c next to it)")
     g.add_argument("--no-update", action="store_true",
                    help="don't check for a newer version of this script when it starts")
     g.add_argument("--repair-minutes", type=int, default=30,
